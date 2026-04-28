@@ -403,15 +403,16 @@ export default function Hero() {
           #hero {
             height: 100vh !important;
             align-items: flex-start !important;
+            overflow: hidden !important;
           }
           .hero-grid {
             grid-template-columns: 1fr !important;
-            padding: 100px 24px 48px !important;
-            align-self: stretch !important;
+            padding: 100px 24px 60px !important;
             display: flex !important;
             flex-direction: column !important;
-            justify-content: space-between !important;
+            justify-content: flex-start !important;
             min-height: 100vh !important;
+            gap: 0 !important;
           }
           .hero-cards { display: none !important; }
           .hero-scroll-hint { display: none !important; }
@@ -421,7 +422,7 @@ export default function Hero() {
           .hero-stats-row {
             padding-top: 24px !important;
             border-top: 1px solid rgba(253,250,245,0.1) !important;
-            margin-top: auto !important;
+            margin-top: 32px !important;
           }
         }
       `}</style>
