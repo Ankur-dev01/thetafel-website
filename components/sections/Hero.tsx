@@ -48,8 +48,7 @@ export default function Hero() {
         position: 'relative',
         height: '100vh',
         display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
+        alignItems: 'center',
         overflow: 'hidden',
         backgroundColor: 'var(--night)',
       }}
@@ -107,7 +106,7 @@ export default function Hero() {
               style={{
                 fontFamily: 'var(--font-raleway), sans-serif',
                 fontWeight: 900,
-                fontSize: 'clamp(32px, 8vw, 80px)',
+                fontSize: 'clamp(42px, 11vw, 80px)',
                 letterSpacing: '-0.03em',
                 lineHeight: 0.95,
                 color: 'var(--cream)',
@@ -121,7 +120,7 @@ export default function Hero() {
               style={{
                 fontFamily: 'var(--font-raleway), sans-serif',
                 fontWeight: 900,
-                fontSize: 'clamp(32px, 8vw, 80px)',
+                fontSize: 'clamp(42px, 11vw, 80px)',
                 letterSpacing: '-0.03em',
                 lineHeight: 0.95,
                 color: 'var(--cream)',
@@ -135,7 +134,7 @@ export default function Hero() {
               style={{
                 fontFamily: 'var(--font-raleway), sans-serif',
                 fontWeight: 900,
-                fontSize: 'clamp(32px, 8vw, 80px)',
+                fontSize: 'clamp(42px, 11vw, 80px)',
                 letterSpacing: '-0.03em',
                 lineHeight: 0.95,
                 color: 'var(--amber)',
@@ -199,6 +198,7 @@ export default function Hero() {
           {/* Stats Row */}
           <div
             ref={statsRef}
+            className="hero-stats-row"
             style={{ display: 'flex', alignItems: 'center' }}
           >
             {[
@@ -402,26 +402,27 @@ export default function Hero() {
         @media (max-width: 768px) {
           #hero {
             height: 100vh !important;
-            height: 100svh !important;
-            min-height: -webkit-fill-available !important;
+            align-items: flex-start !important;
           }
           .hero-grid {
             grid-template-columns: 1fr !important;
-            padding: 80px 24px 40px !important;
-            height: 100% !important;
+            padding: 100px 24px 48px !important;
+            align-self: stretch !important;
             display: flex !important;
             flex-direction: column !important;
-            justify-content: center !important;
+            justify-content: space-between !important;
+            min-height: 100vh !important;
           }
-          .hero-cards {
-            display: none !important;
+          .hero-cards { display: none !important; }
+          .hero-scroll-hint { display: none !important; }
+          .hero-headline-group { margin-bottom: 20px !important; }
+          .hero-sub { font-size: 15px !important; margin-bottom: 28px !important; }
+          .hero-cta-group { margin-bottom: 0 !important; }
+          .hero-stats-row {
+            padding-top: 24px !important;
+            border-top: 1px solid rgba(253,250,245,0.1) !important;
+            margin-top: auto !important;
           }
-          .hero-scroll-hint {
-            display: none !important;
-          }
-          .hero-headline-group { margin-bottom: 16px !important; }
-          .hero-sub { margin-bottom: 20px !important; }
-          .hero-cta-group { margin-bottom: 32px !important; }
         }
       `}</style>
     </section>
