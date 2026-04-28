@@ -46,9 +46,10 @@ export default function Hero() {
       id="hero"
       style={{
         position: 'relative',
-        minHeight: '100vh',
+        height: '100vh',
         display: 'flex',
-        alignItems: 'center',
+        flexDirection: 'column',
+        justifyContent: 'center',
         overflow: 'hidden',
         backgroundColor: 'var(--night)',
       }}
@@ -100,7 +101,7 @@ export default function Hero() {
         {/* Left Column */}
         <div>
           {/* Headline */}
-          <div style={{ marginBottom: '20px' }}>
+          <div className="hero-headline-group" style={{ marginBottom: '20px' }}>
             <div
               ref={line1Ref}
               style={{
@@ -147,6 +148,7 @@ export default function Hero() {
           {/* Subheadline */}
           <div
             ref={subRef}
+            className="hero-sub"
             style={{
               fontFamily: 'var(--font-jost), sans-serif',
               fontSize: 'clamp(14px, 3.5vw, 17px)',
@@ -163,6 +165,7 @@ export default function Hero() {
           {/* CTA Group */}
           <div
             ref={ctaRef}
+            className="hero-cta-group"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -397,9 +400,18 @@ export default function Hero() {
           color: var(--cream) !important;
         }
         @media (max-width: 768px) {
+          #hero {
+            height: 100vh !important;
+            height: 100svh !important;
+            min-height: -webkit-fill-available !important;
+          }
           .hero-grid {
             grid-template-columns: 1fr !important;
-            padding: 88px 24px 60px !important;
+            padding: 80px 24px 40px !important;
+            height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
           }
           .hero-cards {
             display: none !important;
@@ -407,11 +419,9 @@ export default function Hero() {
           .hero-scroll-hint {
             display: none !important;
           }
-          #hero {
-            min-height: unset !important;
-            height: auto !important;
-            padding-bottom: 60px !important;
-          }
+          .hero-headline-group { margin-bottom: 16px !important; }
+          .hero-sub { margin-bottom: 20px !important; }
+          .hero-cta-group { margin-bottom: 32px !important; }
         }
       `}</style>
     </section>

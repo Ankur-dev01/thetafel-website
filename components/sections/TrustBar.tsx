@@ -45,7 +45,7 @@ export default function TrustBar() {
       className="trust-bar-outer"
       style={{
         backgroundColor: 'var(--warm2)',
-        padding: '20px 64px',
+        padding: '16px 0',
       }}
     >
       <div
@@ -84,6 +84,7 @@ export default function TrustBar() {
               }}
             />
             <span
+              className="trust-label"
               style={{
                 fontFamily: 'var(--font-jost), sans-serif',
                 fontSize: '11px',
@@ -101,9 +102,10 @@ export default function TrustBar() {
 
       <style>{`
         @media (max-width: 768px) {
-          .trust-bar-outer { padding: 20px 0 !important; }
-          .trust-grid { grid-template-columns: repeat(2, 1fr) !important; padding: 0 24px !important; }
-          .trust-item { border-right: none !important; border-bottom: 1px solid rgba(156,139,106,0.25) !important; justify-content: flex-start !important; padding: 12px 8px !important; }
+          .trust-bar-outer { padding: 16px 0 !important; }
+          .trust-grid { grid-template-columns: repeat(2, 1fr) !important; padding: 0 20px !important; gap: 0 !important; }
+          .trust-item { border-right: none !important; border-bottom: 1px solid rgba(156,139,106,0.2) !important; justify-content: flex-start !important; padding: 14px 12px !important; gap: 8px !important; }
+          .trust-label { font-size: 10px !important; letter-spacing: 0.12em !important; }
         }
       `}</style>
     </div>
