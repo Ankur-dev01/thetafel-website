@@ -119,10 +119,22 @@
     "copyright": "© 2026 The Tafel. Alle rechten voorbehouden.",
     "madeWith": "Gemaakt met ♥ in Nederland"
   },
+  "verifyEmail": {
+    "heading": "Controleer je e-mail",
+    "sub": "We hebben een activatielink gestuurd naar",
+    "instructions": "Klik op de link in de e-mail om je account te activeren. De link is 1 uur geldig.",
+    "spam": "Geen e-mail ontvangen? Controleer je spammap.",
+    "resend": "Opnieuw versturen",
+    "resending": "Bezig...",
+    "resent": "Nieuwe link verstuurd.",
+    "errorExpired": "Deze link is verlopen. Vraag een nieuwe aan.",
+    "errorUsed": "Deze link is al gebruikt. Vraag een nieuwe aan.",
+    "errorGeneral": "Er is iets misgegaan. Probeer het opnieuw."
+  },
   "modal": {
   "eyebrow": "Gratis starten",
   "heading": "Jouw restaurant op The Tafel.",
-  "sub": "Geen creditcard. Geen contract. We nemen binnen 24 uur contact op.",
+  "sub": "Geen creditcard. Geen contract. Je ontvangt direct een activatielink per e-mail.",
   "labelNaam": "Naam",
   "labelEmail": "E-mail",
   "labelTelefoon": "Telefoon",
@@ -136,9 +148,11 @@
   "submit": "Aanmelden — gratis",
   "submitting": "Bezig...",
   "successTitle": "Aanmelding ontvangen.",
-  "successBody": "We nemen binnen 24 uur contact met je op om je restaurant te activeren.",
   "successClose": "Sluiten",
   "errorFallback": "Er is een fout opgetreden. Probeer het opnieuw.",
+  "errorEmailExists": "Dit e-mailadres is al aangemeld.",
+  "errorRateLimit": "Te veel pogingen. Probeer het over 1 uur opnieuw.",
+  "errorGeneral": "Er is een fout opgetreden. Probeer het opnieuw.",
   "disclaimer": "Geen commissie. Geen verborgen kosten. Gratis tijdens de probeerperiode."
 }
 }

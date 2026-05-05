@@ -86,7 +86,7 @@ export default async function AlgemeneVoorwaardenPage({ params }: Props) {
                   The Tafel platform.
                 </li>
                 <li style={{ marginBottom: '8px' }}>
-                  <strong>User</strong>: any person who visits thetafel.nl or uses The Tafel's services,
+                  <strong>User</strong>: any person who visits thetafel.nl or uses The Tafel&apos;s services,
                   including restaurants and their guests.
                 </li>
                 <li style={{ marginBottom: '8px' }}>

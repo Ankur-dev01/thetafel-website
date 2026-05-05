@@ -119,10 +119,22 @@
     "copyright": "© 2026 The Tafel. All rights reserved.",
     "madeWith": "Made with ♥ in the Netherlands"
   },
+  "verifyEmail": {
+    "heading": "Check your email",
+    "sub": "We sent an activation link to",
+    "instructions": "Click the link in the email to activate your account. The link is valid for 1 hour.",
+    "spam": "No email received? Check your spam folder.",
+    "resend": "Resend link",
+    "resending": "Sending...",
+    "resent": "New link sent.",
+    "errorExpired": "This link has expired. Request a new one.",
+    "errorUsed": "This link has already been used. Request a new one.",
+    "errorGeneral": "Something went wrong. Please try again."
+  },
   "modal": {
   "eyebrow": "Start for free",
   "heading": "Your restaurant on The Tafel.",
-  "sub": "No credit card. No contract. We will contact you within 24 hours.",
+  "sub": "No credit card. No contract. You will receive an activation link by email instantly.",
   "labelNaam": "Name",
   "labelEmail": "Email",
   "labelTelefoon": "Phone",
@@ -136,9 +148,11 @@
   "submit": "Sign up — free",
   "submitting": "Processing...",
   "successTitle": "Registration received.",
-  "successBody": "We will contact you within 24 hours to activate your restaurant.",
   "successClose": "Close",
   "errorFallback": "Something went wrong. Please try again.",
+  "errorEmailExists": "This email address is already registered.",
+  "errorRateLimit": "Too many attempts. Please try again in 1 hour.",
+  "errorGeneral": "Something went wrong. Please try again.",
   "disclaimer": "No commission. No hidden costs. Free during the trial period."
 }
 }

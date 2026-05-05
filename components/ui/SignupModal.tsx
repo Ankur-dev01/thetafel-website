@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 
 interface SignupModalProps {
@@ -11,6 +12,7 @@ interface SignupModalProps {
 export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
   const t = useTranslations('modal')
   const locale = useLocale()
+  const router = useRouter()
   const [formData, setFormData] = useState({
     naam: '',
     email: '',
@@ -18,7 +20,7 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
     restaurant: '',
     stad: '',
   })
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
   const [gdprAccepted, setGdprAccepted] = useState(false)
 
@@ -43,12 +45,20 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
       const data = await response.json()
 
       if (!response.ok) {
-        setErrorMessage(data.error || t('errorFallback'))
+        if (data.code === 'EMAIL_ALREADY_REGISTERED') {
+          setErrorMessage(t('errorEmailExists'))
+        } else if (data.code === 'RATE_LIMIT_EXCEEDED') {
+          setErrorMessage(t('errorRateLimit'))
+        } else {
+          setErrorMessage(t('errorGeneral'))
+        }
         setStatus('error')
         return
       }
 
-      setStatus('success')
+      const base = locale === 'en' ? '/en' : ''
+      onClose()
+      router.push(`${base}/verify-email?email=${encodeURIComponent(formData.email)}`)
     } catch {
       setErrorMessage(t('errorFallback'))
       setStatus('error')
@@ -140,268 +150,206 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
           x
         </button>
 
-        {status === 'success' ? (
-          <div style={{ textAlign: 'center', padding: '24px 0' }}>
-            <div
+        <div style={{ marginBottom: '32px' }}>
+          <div
+            style={{
+              fontFamily: 'var(--font-jost), sans-serif',
+              fontSize: '11px',
+              fontWeight: 600,
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: 'var(--amber)',
+              marginBottom: '8px',
+            }}
+          >
+            {t('eyebrow')}
+          </div>
+          <h2
+            style={{
+              fontFamily: 'var(--font-raleway), sans-serif',
+              fontWeight: 900,
+              fontSize: '32px',
+              letterSpacing: '-0.025em',
+              lineHeight: 1.05,
+              color: 'var(--earth)',
+              marginBottom: '8px',
+            }}
+          >
+            {t('heading')}
+          </h2>
+          <p
+            style={{
+              fontFamily: 'var(--font-jost), sans-serif',
+              fontSize: '14px',
+              fontWeight: 300,
+              lineHeight: 1.7,
+              color: 'var(--stone)',
+            }}
+          >
+            {t('sub')}
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={labelStyle}>{t('labelNaam')}</label>
+            <input
+              type="text"
+              name="naam"
+              value={formData.naam}
+              onChange={handleChange}
+              placeholder={t('placeholderNaam')}
+              style={inputStyle}
+              required
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>{t('labelEmail')}</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder={t('placeholderEmail')}
+              style={inputStyle}
+              required
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>{t('labelTelefoon')}</label>
+            <input
+              type="tel"
+              name="telefoon"
+              value={formData.telefoon}
+              onChange={handleChange}
+              placeholder={t('placeholderTelefoon')}
+              style={inputStyle}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>{t('labelRestaurant')}</label>
+            <input
+              type="text"
+              name="restaurant"
+              value={formData.restaurant}
+              onChange={handleChange}
+              placeholder={t('placeholderRestaurant')}
+              style={inputStyle}
+              required
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>{t('labelStad')}</label>
+            <input
+              type="text"
+              name="stad"
+              value={formData.stad}
+              onChange={handleChange}
+              placeholder={t('placeholderStad')}
+              style={inputStyle}
+              required
+            />
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+            <input
+              type="checkbox"
+              id="gdpr-consent"
+              checked={gdprAccepted}
+              onChange={(e) => setGdprAccepted(e.target.checked)}
               style={{
-                width: '64px',
-                height: '64px',
-                borderRadius: '50%',
-                backgroundColor: 'var(--amber-light)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 24px',
+                marginTop: '2px',
+                flexShrink: 0,
+                accentColor: 'var(--amber)',
+                width: '15px',
+                height: '15px',
+                cursor: 'pointer',
               }}
-            >
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 28 28"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M5 14L11 20L23 8"
-                  stroke="#d4820a"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <h2
-              style={{
-                fontFamily: 'var(--font-raleway), sans-serif',
-                fontWeight: 900,
-                fontSize: '28px',
-                letterSpacing: '-0.02em',
-                color: 'var(--earth)',
-                marginBottom: '12px',
-              }}
-            >
-              {t('successTitle')}
-            </h2>
-            <p
+            />
+            <label
+              htmlFor="gdpr-consent"
               style={{
                 fontFamily: 'var(--font-jost), sans-serif',
-                fontSize: '15px',
-                fontWeight: 300,
-                lineHeight: 1.7,
+                fontSize: '12px',
+                fontWeight: 400,
                 color: 'var(--stone)',
-                marginBottom: '32px',
+                lineHeight: 1.5,
+                cursor: 'pointer',
               }}
             >
-              {t('successBody')}
-            </p>
-            <button onClick={onClose} className="btn-primary">
-              {t('successClose')}
-            </button>
-          </div>
-        ) : (
-          <>
-            <div style={{ marginBottom: '32px' }}>
-              <div
-                style={{
-                  fontFamily: 'var(--font-jost), sans-serif',
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  letterSpacing: '0.2em',
-                  textTransform: 'uppercase',
-                  color: 'var(--amber)',
-                  marginBottom: '8px',
-                }}
-              >
-                {t('eyebrow')}
-              </div>
-              <h2
-                style={{
-                  fontFamily: 'var(--font-raleway), sans-serif',
-                  fontWeight: 900,
-                  fontSize: '32px',
-                  letterSpacing: '-0.025em',
-                  lineHeight: 1.05,
-                  color: 'var(--earth)',
-                  marginBottom: '8px',
-                }}
-              >
-                {t('heading')}
-              </h2>
-              <p
-                style={{
-                  fontFamily: 'var(--font-jost), sans-serif',
-                  fontSize: '14px',
-                  fontWeight: 300,
-                  lineHeight: 1.7,
-                  color: 'var(--stone)',
-                }}
-              >
-                {t('sub')}
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div>
-                <label style={labelStyle}>{t('labelNaam')}</label>
-                <input
-                  type="text"
-                  name="naam"
-                  value={formData.naam}
-                  onChange={handleChange}
-                  placeholder={t('placeholderNaam')}
-                  style={inputStyle}
-                  required
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>{t('labelEmail')}</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder={t('placeholderEmail')}
-                  style={inputStyle}
-                  required
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>{t('labelTelefoon')}</label>
-                <input
-                  type="tel"
-                  name="telefoon"
-                  value={formData.telefoon}
-                  onChange={handleChange}
-                  placeholder={t('placeholderTelefoon')}
-                  style={inputStyle}
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>{t('labelRestaurant')}</label>
-                <input
-                  type="text"
-                  name="restaurant"
-                  value={formData.restaurant}
-                  onChange={handleChange}
-                  placeholder={t('placeholderRestaurant')}
-                  style={inputStyle}
-                  required
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>{t('labelStad')}</label>
-                <input
-                  type="text"
-                  name="stad"
-                  value={formData.stad}
-                  onChange={handleChange}
-                  placeholder={t('placeholderStad')}
-                  style={inputStyle}
-                  required
-                />
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                <input
-                  type="checkbox"
-                  id="gdpr-consent"
-                  checked={gdprAccepted}
-                  onChange={(e) => setGdprAccepted(e.target.checked)}
-                  style={{
-                    marginTop: '2px',
-                    flexShrink: 0,
-                    accentColor: 'var(--amber)',
-                    width: '15px',
-                    height: '15px',
-                    cursor: 'pointer',
-                  }}
-                />
-                <label
-                  htmlFor="gdpr-consent"
-                  style={{
-                    fontFamily: 'var(--font-jost), sans-serif',
-                    fontSize: '12px',
-                    fontWeight: 400,
-                    color: 'var(--stone)',
-                    lineHeight: 1.5,
-                    cursor: 'pointer',
-                  }}
-                >
-                  {locale === 'en' ? (
-                    <>
-                      I agree to the{' '}
-                      <a
-                        href="/en/privacybeleid"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ color: 'var(--amber)', textDecoration: 'underline' }}
-                      >
-                        privacy policy
-                      </a>
-                      {' '}and data processing by The Tafel.
-                    </>
-                  ) : (
-                    <>
-                      Ik ga akkoord met de{' '}
-                      <a
-                        href="/privacybeleid"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ color: 'var(--amber)', textDecoration: 'underline' }}
-                      >
-                        privacybeleid
-                      </a>
-                      {' '}en gegevensverwerking door The Tafel.
-                    </>
-                  )}
-                </label>
-              </div>
-
-              {status === 'error' && (
-                <div
-                  style={{
-                    backgroundColor: '#fef2f2',
-                    border: '1px solid #fecaca',
-                    borderRadius: '8px',
-                    padding: '12px 16px',
-                    fontFamily: 'var(--font-jost), sans-serif',
-                    fontSize: '13px',
-                    color: '#dc2626',
-                  }}
-                >
-                  {errorMessage}
-                </div>
+              {locale === 'en' ? (
+                <>
+                  I agree to the{' '}
+                  <a
+                    href="/en/privacybeleid"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: 'var(--amber)', textDecoration: 'underline' }}
+                  >
+                    privacy policy
+                  </a>
+                  {' '}and data processing by The Tafel.
+                </>
+              ) : (
+                <>
+                  Ik ga akkoord met de{' '}
+                  <a
+                    href="/privacybeleid"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: 'var(--amber)', textDecoration: 'underline' }}
+                  >
+                    privacybeleid
+                  </a>
+                  {' '}en gegevensverwerking door The Tafel.
+                </>
               )}
+            </label>
+          </div>
 
-              <button
-                onClick={handleSubmit}
-                disabled={!gdprAccepted || status === 'loading'}
-                className="btn-primary"
-                style={{
-                  width: '100%',
-                  marginTop: '8px',
-                  opacity: !gdprAccepted || status === 'loading' ? 0.5 : 1,
-                  cursor: !gdprAccepted || status === 'loading' ? 'not-allowed' : 'pointer',
-                }}
-              >
-                {status === 'loading' ? t('submitting') : t('submit')}
-              </button>
-
-              <p
-                style={{
-                  fontFamily: 'var(--font-jost), sans-serif',
-                  fontSize: '11px',
-                  fontWeight: 400,
-                  color: 'var(--stone-light)',
-                  textAlign: 'center',
-                  lineHeight: 1.5,
-                }}
-              >
-                {t('disclaimer')}
-              </p>
+          {status === 'error' && (
+            <div
+              style={{
+                backgroundColor: '#fef2f2',
+                border: '1px solid #fecaca',
+                borderRadius: '8px',
+                padding: '12px 16px',
+                fontFamily: 'var(--font-jost), sans-serif',
+                fontSize: '13px',
+                color: '#dc2626',
+              }}
+            >
+              {errorMessage}
             </div>
-          </>
-        )}
+          )}
+
+          <button
+            onClick={handleSubmit}
+            disabled={!gdprAccepted || status === 'loading'}
+            className="btn-primary"
+            style={{
+              width: '100%',
+              marginTop: '8px',
+              opacity: !gdprAccepted || status === 'loading' ? 0.5 : 1,
+              cursor: !gdprAccepted || status === 'loading' ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {status === 'loading' ? t('submitting') : t('submit')}
+          </button>
+
+          <p
+            style={{
+              fontFamily: 'var(--font-jost), sans-serif',
+              fontSize: '11px',
+              fontWeight: 400,
+              color: 'var(--stone-light)',
+              textAlign: 'center',
+              lineHeight: 1.5,
+            }}
+          >
+            {t('disclaimer')}
+          </p>
+        </div>
       </div>
 
       <style>{`

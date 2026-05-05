@@ -201,7 +201,7 @@ export default async function PrivacybeleidPage({ params }: Props) {
               <>
                 <li style={{ marginBottom: '6px' }}><strong>Right of access</strong> — you can request which data we process about you.</li>
                 <li style={{ marginBottom: '6px' }}><strong>Right to rectification</strong> — you can ask us to correct inaccurate or incomplete data.</li>
-                <li style={{ marginBottom: '6px' }}><strong>Right to erasure</strong> — you can ask us to delete your data ('right to be forgotten').</li>
+                <li style={{ marginBottom: '6px' }}><strong>Right to erasure</strong> — you can ask us to delete your data (&apos;right to be forgotten&apos;).</li>
                 <li style={{ marginBottom: '6px' }}><strong>Right to restriction of processing</strong> — you can ask us to restrict processing in certain circumstances.</li>
                 <li style={{ marginBottom: '6px' }}><strong>Right to object</strong> — you can object to the processing of your data.</li>
               </>
@@ -209,7 +209,7 @@ export default async function PrivacybeleidPage({ params }: Props) {
               <>
                 <li style={{ marginBottom: '6px' }}><strong>Recht op inzage</strong> — u kunt opvragen welke gegevens wij van u verwerken.</li>
                 <li style={{ marginBottom: '6px' }}><strong>Recht op rectificatie</strong> — u kunt ons verzoeken onjuiste of onvolledige gegevens te corrigeren.</li>
-                <li style={{ marginBottom: '6px' }}><strong>Recht op verwijdering</strong> — u kunt ons verzoeken uw gegevens te verwijderen ('recht op vergetelheid').</li>
+                <li style={{ marginBottom: '6px' }}><strong>Recht op verwijdering</strong> — u kunt ons verzoeken uw gegevens te verwijderen (&apos;recht op vergetelheid&apos;).</li>
                 <li style={{ marginBottom: '6px' }}><strong>Recht op beperking van verwerking</strong> — u kunt ons vragen de verwerking te beperken in bepaalde omstandigheden.</li>
                 <li style={{ marginBottom: '6px' }}><strong>Recht op bezwaar</strong> — u kunt bezwaar maken tegen de verwerking van uw gegevens.</li>
               </>
