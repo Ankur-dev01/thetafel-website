@@ -131,7 +131,51 @@
     "errorUsed": "This link has already been used. Request a new one.",
     "errorGeneral": "Something went wrong. Please try again."
   },
-  "modal": {
+  "setPassword": {
+    "eyebrow": "Step 1 — Password",
+    "heading": "Set your password.",
+    "sub": "Choose a password of at least 8 characters. You will use this to sign in to your dashboard and the mobile app.",
+    "labelPassword": "Password",
+    "labelConfirm": "Confirm password",
+    "placeholderPassword": "Minimum 8 characters",
+    "placeholderConfirm": "Repeat your password",
+    "strengthMin": "Minimum 8 characters required.",
+    "strengthOk": "Strong enough.",
+    "errorMismatch": "Passwords do not match.",
+    "errorTooShort": "Password must be at least 8 characters.",
+    "errorUnauthorized": "Session expired. Click your activation link again.",
+    "errorGeneral": "Something went wrong. Please try again.",
+    "submit": "Continue",
+    "submitting": "Saving..."
+  },
+  "login": {
+    "heading": "Sign in.",
+    "sub": "Sign in to your Tafel dashboard.",
+    "labelEmail": "Email",
+    "labelPassword": "Password",
+    "placeholderEmail": "your@restaurant.com",
+    "placeholderPassword": "Your password",
+    "forgotPassword": "Forgot password?",
+    "submit": "Sign in",
+    "submitting": "Signing in...",
+    "errorInvalid": "Invalid credentials.",
+    "errorRateLimit": "Too many attempts. Please try again in a few minutes.",
+    "errorGeneral": "Something went wrong. Please try again."
+  },
+  "forgotPassword": {
+    "heading": "Forgot password?",
+    "sub": "Enter your email address. We will send you a link to reset your password.",
+    "labelEmail": "Email",
+    "placeholderEmail": "your@restaurant.com",
+    "submit": "Send reset link",
+    "submitting": "Sending...",
+    "backToLogin": "Back to sign in",
+    "sentHeading": "Check your email.",
+    "sentSub": "If an account exists for this email, you will receive a reset link within 1 minute. The link is valid for 1 hour.",
+    "errorRateLimit": "Too many requests. Please try again in 1 hour.",
+    "errorGeneral": "Something went wrong. Please try again."
+  },
+ "modal": {
   "eyebrow": "Start for free",
   "heading": "Your restaurant on The Tafel.",
   "sub": "No credit card. No contract. You will receive an activation link by email instantly.",
