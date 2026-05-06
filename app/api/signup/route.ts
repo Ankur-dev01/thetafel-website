@@ -22,12 +22,18 @@ const ratelimit = new Ratelimit({
   analytics: false,
 })
 
+const SITE_URL = 'https://thetafel.nl'
+
 function sanitize(str: string): string {
   return str.replace(/<[^>]*>/g, '').trim()
 }
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
+function normalizeLocale(value: unknown): 'nl' | 'en' {
+  return value === 'en' ? 'en' : 'nl'
 }
 
 export async function POST(request: NextRequest) {
@@ -75,6 +81,7 @@ export async function POST(request: NextRequest) {
     const restaurant = sanitize(body.restaurant || '')
     const stad = sanitize(body.stad || '')
     const bron = sanitize(body.bron || 'website')
+    const locale = normalizeLocale(body.locale)
 
     if (!naam || !email || !restaurant || !stad) {
       return NextResponse.json(
@@ -135,20 +142,27 @@ export async function POST(request: NextRequest) {
       console.error('Auth user creation error:', authError)
     }
 
-    // Generate magic link
+    // Generate magic link. We use linkData.properties.hashed_token to construct
+    // a direct link to /auth/confirm — bypassing Supabase's hosted verify page —
+    // so the session is established server-side via verifyOtp. This is the
+    // documented SSR-compatible pattern.
     const { data: linkData, error: linkError } = await supabaseProd.auth.admin.generateLink({
       type: 'magiclink',
       email: email.toLowerCase(),
       options: {
-        redirectTo: 'https://thetafel.nl/auth/confirm',
+        redirectTo: `${SITE_URL}/auth/confirm`,
       },
     })
 
     console.log('LINK DATA:', JSON.stringify(linkData, null, 2))
     console.log('LINK ERROR:', linkError)
 
-    if (!linkError && linkData?.properties?.action_link) {
-      const magicLink = linkData.properties.action_link
+    if (!linkError && linkData?.properties?.hashed_token) {
+      const tokenHash = linkData.properties.hashed_token
+      const localePrefix = locale === 'en' ? '/en' : ''
+      const magicLink = `${SITE_URL}${localePrefix}/auth/confirm?token_hash=${encodeURIComponent(
+        tokenHash
+      )}&type=magiclink&locale=${locale}`
 
       const { data: magicEmailData, error: magicEmailError } = await resend.emails.send({
         from: 'The Tafel <hallo@thetafel.nl>',
@@ -201,6 +215,7 @@ export async function POST(request: NextRequest) {
         <p><strong>Restaurant:</strong> ${restaurant}</p>
         <p><strong>Stad:</strong> ${stad}</p>
         <p><strong>Bron:</strong> ${bron}</p>
+        <p><strong>Taal:</strong> ${locale}</p>
         <hr />
         <p style="color: #9c8b6a; font-size: 12px;">The Tafel — thetafel.nl</p>
       `,

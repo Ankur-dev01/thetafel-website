@@ -17,10 +17,17 @@ const ratelimit = new Ratelimit({
   analytics: false,
 })
 
+const SITE_URL = 'https://thetafel.nl'
+
+function normalizeLocale(value: unknown): 'nl' | 'en' {
+  return value === 'en' ? 'en' : 'nl'
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const email = (body.email || '').trim().toLowerCase()
+    const locale = normalizeLocale(body.locale)
 
     if (!email) {
       return NextResponse.json({ error: 'Email is required.' }, { status: 400 })
@@ -39,15 +46,19 @@ export async function POST(request: NextRequest) {
       type: 'magiclink',
       email,
       options: {
-        redirectTo: 'https://thetafel.nl/auth/confirm',
+        redirectTo: `${SITE_URL}/auth/confirm`,
       },
     })
 
-    if (linkError || !linkData?.properties?.action_link) {
+    if (linkError || !linkData?.properties?.hashed_token) {
       return NextResponse.json({ error: 'Could not generate link.' }, { status: 500 })
     }
 
-    const magicLink = linkData.properties.action_link
+    const tokenHash = linkData.properties.hashed_token
+    const localePrefix = locale === 'en' ? '/en' : ''
+    const magicLink = `${SITE_URL}${localePrefix}/auth/confirm?token_hash=${encodeURIComponent(
+      tokenHash
+    )}&type=magiclink&locale=${locale}`
 
     await resend.emails.send({
       from: 'The Tafel <hallo@thetafel.nl>',

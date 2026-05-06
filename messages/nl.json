@@ -175,6 +175,10 @@
     "errorRateLimit": "Te veel verzoeken. Probeer het over 1 uur opnieuw.",
     "errorGeneral": "Er is iets misgegaan. Probeer het opnieuw."
   },
+  "languageToggle": {
+    "toEnglish": "EN",
+    "toDutch": "NL"
+  },
   "modal": {
   "eyebrow": "Gratis starten",
   "heading": "Jouw restaurant op The Tafel.",

@@ -175,6 +175,10 @@
     "errorRateLimit": "Too many requests. Please try again in 1 hour.",
     "errorGeneral": "Something went wrong. Please try again."
   },
+  "languageToggle": {
+    "toEnglish": "EN",
+    "toDutch": "NL"
+  },
  "modal": {
   "eyebrow": "Start for free",
   "heading": "Your restaurant on The Tafel.",

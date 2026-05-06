@@ -39,7 +39,11 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
       const response = await fetch('/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, bron: 'website-modal' }),
+        body: JSON.stringify({
+          ...formData,
+          bron: 'website-modal',
+          locale,
+        }),
       })
 
       const data = await response.json()
@@ -57,7 +61,6 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
       }
 
       const base = locale === 'en' ? '/en' : ''
-      onClose()
       router.push(`${base}/verify-email?email=${encodeURIComponent(formData.email)}`)
     } catch {
       setErrorMessage(t('errorFallback'))
@@ -65,130 +68,138 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
     }
   }
 
-  const inputStyle = {
+  const overlayStyle: React.CSSProperties = {
+    position: 'fixed',
+    inset: 0,
+    backgroundColor: 'rgba(30, 21, 8, 0.55)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000,
+    padding: '24px',
+  }
+
+  const modalStyle: React.CSSProperties = {
+    backgroundColor: 'var(--cream)',
+    borderRadius: '24px',
+    maxWidth: '520px',
+    width: '100%',
+    maxHeight: '90vh',
+    overflowY: 'auto',
+    padding: '40px',
+    position: 'relative',
+    boxShadow: '0 24px 60px rgba(30, 21, 8, 0.25)',
+  }
+
+  const inputStyle: React.CSSProperties = {
     width: '100%',
     padding: '14px 16px',
     fontFamily: 'var(--font-jost), sans-serif',
-    fontSize: '14px',
+    fontSize: '15px',
     fontWeight: 400,
     color: 'var(--earth)',
     backgroundColor: 'var(--warm)',
     border: '1px solid rgba(156,139,106,0.25)',
     borderRadius: '12px',
     outline: 'none',
-    boxSizing: 'border-box' as const,
+    boxSizing: 'border-box',
     transition: 'border-color 0.2s ease',
   }
 
-  const labelStyle = {
+  const labelStyle: React.CSSProperties = {
     display: 'block',
     fontFamily: 'var(--font-jost), sans-serif',
     fontSize: '11px',
     fontWeight: 600,
     letterSpacing: '0.15em',
-    textTransform: 'uppercase' as const,
+    textTransform: 'uppercase',
     color: 'var(--stone)',
-    marginBottom: '6px',
+    marginBottom: '8px',
   }
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 1000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '24px',
-        backgroundColor: 'rgba(15,13,8,0.8)',
-        backdropFilter: 'blur(8px)',
-        animation: 'modalFadeIn 0.25s ease',
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose()
-      }}
-    >
-      <div
-        className="modal-inner modal-inner-content"
-        style={{
-          backgroundColor: 'var(--cream)',
-          borderRadius: '24px',
-          padding: '48px',
-          width: '100%',
-          maxWidth: '480px',
-          position: 'relative',
-          animation: 'modalSlideUp 0.3s cubic-bezier(0.16,1,0.3,1)',
-          maxHeight: '90vh',
-          overflowY: 'auto',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-        }}
-      >
+    <div style={overlayStyle} onClick={onClose}>
+      <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
         <button
           onClick={onClose}
+          aria-label="Close"
           style={{
             position: 'absolute',
-            top: '20px',
-            right: '20px',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
+            top: '16px',
+            right: '16px',
             width: '32px',
             height: '32px',
-            borderRadius: '50%',
-            backgroundColor: 'var(--warm)',
+            border: 'none',
+            background: 'transparent',
+            cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: 'var(--stone)',
-            fontFamily: 'var(--font-jost), sans-serif',
-            fontSize: '16px',
           }}
-          aria-label="Close"
         >
-          x
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
         </button>
 
-        <div style={{ marginBottom: '32px' }}>
+        <p
+          style={{
+            fontFamily: 'var(--font-jost), sans-serif',
+            fontSize: '11px',
+            fontWeight: 600,
+            letterSpacing: '0.22em',
+            textTransform: 'uppercase',
+            color: 'var(--amber)',
+            marginBottom: '12px',
+          }}
+        >
+          {t('eyebrow')}
+        </p>
+
+        <h2
+          style={{
+            fontFamily: 'var(--font-raleway), sans-serif',
+            fontWeight: 900,
+            fontSize: '28px',
+            letterSpacing: '-0.02em',
+            color: 'var(--earth)',
+            marginBottom: '12px',
+            lineHeight: 1.1,
+          }}
+        >
+          {t('heading')}
+        </h2>
+
+        <p
+          style={{
+            fontFamily: 'var(--font-jost), sans-serif',
+            fontSize: '14px',
+            fontWeight: 300,
+            lineHeight: 1.7,
+            color: 'var(--stone)',
+            marginBottom: '24px',
+          }}
+        >
+          {t('sub')}
+        </p>
+
+        {errorMessage && (
           <div
             style={{
+              backgroundColor: '#fef2f2',
+              border: '1px solid #fecaca',
+              borderRadius: '12px',
+              padding: '12px 16px',
+              marginBottom: '16px',
               fontFamily: 'var(--font-jost), sans-serif',
-              fontSize: '11px',
-              fontWeight: 600,
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              color: 'var(--amber)',
-              marginBottom: '8px',
+              fontSize: '13px',
+              color: '#dc2626',
             }}
           >
-            {t('eyebrow')}
+            {errorMessage}
           </div>
-          <h2
-            style={{
-              fontFamily: 'var(--font-raleway), sans-serif',
-              fontWeight: 900,
-              fontSize: '32px',
-              letterSpacing: '-0.025em',
-              lineHeight: 1.05,
-              color: 'var(--earth)',
-              marginBottom: '8px',
-            }}
-          >
-            {t('heading')}
-          </h2>
-          <p
-            style={{
-              fontFamily: 'var(--font-jost), sans-serif',
-              fontSize: '14px',
-              fontWeight: 300,
-              lineHeight: 1.7,
-              color: 'var(--stone)',
-            }}
-          >
-            {t('sub')}
-          </p>
-        </div>
+        )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
@@ -307,31 +318,16 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
             </label>
           </div>
 
-          {status === 'error' && (
-            <div
-              style={{
-                backgroundColor: '#fef2f2',
-                border: '1px solid #fecaca',
-                borderRadius: '8px',
-                padding: '12px 16px',
-                fontFamily: 'var(--font-jost), sans-serif',
-                fontSize: '13px',
-                color: '#dc2626',
-              }}
-            >
-              {errorMessage}
-            </div>
-          )}
-
           <button
+            type="button"
             onClick={handleSubmit}
-            disabled={!gdprAccepted || status === 'loading'}
+            disabled={status === 'loading' || !gdprAccepted}
             className="btn-primary"
             style={{
               width: '100%',
+              opacity: status === 'loading' || !gdprAccepted ? 0.5 : 1,
+              cursor: status === 'loading' || !gdprAccepted ? 'not-allowed' : 'pointer',
               marginTop: '8px',
-              opacity: !gdprAccepted || status === 'loading' ? 0.5 : 1,
-              cursor: !gdprAccepted || status === 'loading' ? 'not-allowed' : 'pointer',
             }}
           >
             {status === 'loading' ? t('submitting') : t('submit')}
@@ -340,34 +336,17 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
           <p
             style={{
               fontFamily: 'var(--font-jost), sans-serif',
-              fontSize: '11px',
+              fontSize: '12px',
               fontWeight: 400,
               color: 'var(--stone-light)',
               textAlign: 'center',
-              lineHeight: 1.5,
+              marginTop: '4px',
             }}
           >
             {t('disclaimer')}
           </p>
         </div>
       </div>
-
-      <style>{`
-        @keyframes modalFadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes modalSlideUp {
-          from { opacity: 0; transform: translateY(24px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .modal-inner::-webkit-scrollbar {
-          display: none;
-        }
-        @media (max-width: 480px) {
-          .modal-inner-content { padding: 32px 24px !important; }
-        }
-      `}</style>
     </div>
   )
 }
