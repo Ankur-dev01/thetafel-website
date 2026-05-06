@@ -60,8 +60,14 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
         return
       }
 
+      // Success: reset loading state, close the modal, then redirect.
+      // Order matters — close before push so the modal unmounts cleanly while
+      // the navigation is queued.
       const base = locale === 'en' ? '/en' : ''
-      router.push(`${base}/verify-email?email=${encodeURIComponent(formData.email)}`)
+      const redirectUrl = `${base}/verify-email?email=${encodeURIComponent(formData.email)}`
+      setStatus('idle')
+      onClose()
+      router.push(redirectUrl)
     } catch {
       setErrorMessage(t('errorFallback'))
       setStatus('error')
