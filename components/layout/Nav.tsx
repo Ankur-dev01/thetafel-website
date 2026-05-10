@@ -51,6 +51,8 @@ export default function Nav() {
     { label: t('pricing'), href: '#proof' },
   ]
 
+  const loginHref = locale === 'nl' ? '/login' : '/en/login'
+
   return (
     <>
       <nav
@@ -100,18 +102,18 @@ export default function Nav() {
               THE
             </div>
             <div
-  style={{
-    fontFamily: 'var(--font-raleway)',
-    fontSize: '22px',
-    fontWeight: 900,
-    letterSpacing: '-0.03em',
-    lineHeight: 1,
-    color: scrolled ? 'var(--earth)' : 'var(--cream)',
-    transition: 'color 0.4s ease',
-  }}
->
-  TAFEL
-</div>
+              style={{
+                fontFamily: 'var(--font-raleway)',
+                fontSize: '22px',
+                fontWeight: 900,
+                letterSpacing: '-0.03em',
+                lineHeight: 1,
+                color: scrolled ? 'var(--earth)' : 'var(--cream)',
+                transition: 'color 0.4s ease',
+              }}
+            >
+              TAFEL
+            </div>
           </Link>
 
           <div
@@ -166,6 +168,27 @@ export default function Nav() {
             >
               {locale === 'nl' ? 'EN' : 'NL'}
             </button>
+
+            <Link
+              href={loginHref}
+              style={{
+                fontFamily: 'var(--font-jost), sans-serif',
+                fontSize: '13px',
+                fontWeight: 400,
+                letterSpacing: '0.02em',
+                textDecoration: 'none',
+                color: scrolled ? 'var(--stone)' : 'rgba(253,250,245,0.7)',
+                transition: 'color 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = scrolled ? 'var(--earth)' : 'var(--cream)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = scrolled ? 'var(--stone)' : 'rgba(253,250,245,0.7)'
+              }}
+            >
+              {t('restaurantLogin')}
+            </Link>
 
             <button
               onClick={openModal}
@@ -250,6 +273,20 @@ export default function Nav() {
               {link.label}
             </a>
           ))}
+          <Link
+            href={loginHref}
+            onClick={() => setMenuOpen(false)}
+            style={{
+              fontFamily: 'var(--font-jost), sans-serif',
+              fontSize: '18px',
+              fontWeight: 400,
+              letterSpacing: '0.02em',
+              textDecoration: 'none',
+              color: 'var(--stone)',
+            }}
+          >
+            {t('restaurantLogin')}
+          </Link>
           <button
             onClick={switchLocale}
             style={{

@@ -2,13 +2,14 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { useParams, usePathname } from 'next/navigation'
+import { useParams, usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 export default function ForgotPasswordPage() {
   const t = useTranslations('forgotPassword')
   const params = useParams()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const locale = (params?.locale as string) || 'nl'
   const localePrefix = locale === 'en' ? '/en' : ''
 
@@ -48,14 +49,18 @@ export default function ForgotPasswordPage() {
     }
   }
 
-  // Build language toggle target
+  // Build language toggle target — strip current locale prefix, add the other,
+  // and preserve query params
   const otherLocale = locale === 'en' ? 'nl' : 'en'
   const pathWithoutLocale =
     pathname.replace(/^\/(en|nl)(?=\/|$)/, '') || '/'
-  const otherHref =
+  const queryString = searchParams.toString()
+  const querySuffix = queryString ? `?${queryString}` : ''
+  const basePath =
     otherLocale === 'en'
       ? `/en${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`
       : pathWithoutLocale
+  const otherHref = `${basePath}${querySuffix}`
 
   // ───── styles (dark theme — matches /login) ─────
   const labelStyle = {

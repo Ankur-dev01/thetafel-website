@@ -41,13 +41,17 @@ export default function VerifyEmailPage() {
     return ''
   }
 
-  // Build language toggle target — strip current locale prefix and add the other
+  // Build language toggle target — strip current locale prefix, add the other,
+  // and preserve query params (e.g. ?error=expired, ?email=...)
   const pathWithoutLocale = pathname.replace(/^\/(en|nl)(?=\/|$)/, '') || '/'
   const otherLocale = locale === 'en' ? 'nl' : 'en'
-  const otherHref =
+  const queryString = searchParams.toString()
+  const querySuffix = queryString ? `?${queryString}` : ''
+  const basePath =
     otherLocale === 'en'
       ? `/en${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`
       : pathWithoutLocale
+  const otherHref = `${basePath}${querySuffix}`
   const toggleLabel = locale === 'en' ? tToggle('toDutch') : tToggle('toEnglish')
 
   return (

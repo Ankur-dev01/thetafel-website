@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { useRouter, useParams, usePathname } from 'next/navigation'
+import { useRouter, useParams, usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 export default function SetPasswordPage() {
@@ -11,6 +11,7 @@ export default function SetPasswordPage() {
   const router = useRouter()
   const params = useParams()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const locale = (params?.locale as string) || 'nl'
   const localePrefix = locale === 'en' ? '/en' : ''
 
@@ -72,13 +73,17 @@ export default function SetPasswordPage() {
     }
   }
 
-  // Build language toggle target — strip current locale prefix and add the other
+  // Build language toggle target — strip current locale prefix, add the other,
+  // and preserve query params
   const pathWithoutLocale = pathname.replace(/^\/(en|nl)(?=\/|$)/, '') || '/'
   const otherLocale = locale === 'en' ? 'nl' : 'en'
-  const otherHref =
+  const queryString = searchParams.toString()
+  const querySuffix = queryString ? `?${queryString}` : ''
+  const basePath =
     otherLocale === 'en'
       ? `/en${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`
       : pathWithoutLocale
+  const otherHref = `${basePath}${querySuffix}`
   const toggleLabel = locale === 'en' ? tToggle('toDutch') : tToggle('toEnglish')
 
   // ───── styles ─────
