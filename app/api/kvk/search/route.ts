@@ -4,50 +4,26 @@
 //
 // Per Phase C kickoff prompt:
 //   - All KVK calls server-side only.
-//   - Rate limit: 10 calls per IP per minute.
 //   - Cache results in Upstash with 5min TTL.
 //
-// KVK V2 Zoeken response shape (confirmed against the test environment):
-//   {
-//     "pagina": 1,
-//     "resultatenPerPagina": 10,
-//     "totaal": 3,
-//     "resultaten": [
-//       {
-//         "kvkNummer": "68750110",
-//         "naam": "Test BV Donald",
-//         "type": "rechtspersoon" | "hoofdvestiging" | "nevenvestiging",
-//         "vestigingsnummer": "000037178598",       // only on vestigings
-//         "adres": {
-//           "binnenlandsAdres": {                   // or "buitenlandsAdres"
-//             "type": "bezoekadres",
-//             "straatnaam": "Hizzaarderlaan",
-//             "plaats": "Lollum"
-//           }
-//         },
-//         "links": [...]
-//       },
-//       ...
-//     ]
-//   }
+// Configurable behaviour:
+//   - Minimum query length: 1 (dropdown opens from the first keystroke).
+//   - Rate limit: 30 calls per IP per minute. Tuned for 1-character min:
+//     a fast typer hitting 30 keystrokes per minute is plausible, and
+//     30/min gives them headroom while still capping cost/abuse.
 //
-// One KVK number can appear up to 3 times in a single response:
-//   - "rechtspersoon"   — the bare legal entity (often has NO adres)
-//   - "hoofdvestiging"  — the main branch (the actual restaurant venue)
-//   - "nevenvestiging"  — secondary branches
+// Smart digit routing:
+//   - 8-digit all-numeric query  → /v2/zoeken?kvkNummer={query}
+//     (KVK rejects partial numeric values; only exact 8-digit matches.)
+//   - 1-7-digit all-numeric query → /v2/zoeken?naam={query}
+//     (KVK's name search does substring matching that picks up partial
+//     KVK numbers AND company names containing those digits.)
+//   - Anything with letters       → /v2/zoeken?naam={query}
 //
-// For onboarding we deduplicate by kvkNummer and prefer hoofdvestiging
-// (the actual venue address), falling back to rechtspersoon, then
-// nevenvestiging. This means the user sees one row per business with the
-// most useful address pre-filled.
-//
-// Response shape (stable narrow contract):
-//   { results: [{ kvkNummer, handelsnaam, plaats }, ...] }
-//
-// We keep the OUTPUT field name "handelsnaam" because that's the Dutch
-// business-name convention the rest of our app uses (and it matches the
-// Basisprofiel response in /api/kvk/profile). The KVK V2 Zoeken endpoint
-// just happens to call it "naam" internally — we normalise on the way out.
+// One KVK number can appear up to 3 times in a single response
+// (rechtspersoon + hoofdvestiging + nevenvestiging). We dedupe and
+// prefer hoofdvestiging so the user sees one row per business with the
+// actual venue address.
 
 import { NextRequest, NextResponse } from 'next/server'
 import { Ratelimit } from '@upstash/ratelimit'
@@ -57,13 +33,13 @@ const redis = Redis.fromEnv()
 
 const ratelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(10, '1 m'),
+  limiter: Ratelimit.slidingWindow(30, '1 m'),
   analytics: false,
   prefix: 'kvk-search',
 })
 
 const SEARCH_CACHE_TTL_SECONDS = 5 * 60
-const MIN_QUERY_LENGTH = 2
+const MIN_QUERY_LENGTH = 1
 const MAX_RESULTS = 10
 
 type KvkAdres = {
@@ -98,8 +74,6 @@ type CachedPayload = {
   results: MappedResult[]
 }
 
-// Priority order for picking the "best" row when a KVK number appears
-// multiple times in the response. Lower number = higher priority.
 function typePriority(type: string | undefined): number {
   switch (type) {
     case 'hoofdvestiging':
@@ -142,8 +116,15 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Smart digit routing.
+    //   - 8 digits exactly  → use kvkNummer search (precise lookup)
+    //   - 1-7 digits        → use naam search (KVK's name search matches
+    //                         partial digit strings; kvkNummer search
+    //                         rejects anything less than 8 digits)
+    //   - Has any letter    → use naam search
     const isAllDigits = /^\d+$/.test(rawQuery)
-    const mode: 'n' | 't' = isAllDigits ? 'n' : 't'
+    const useKvkNummerSearch = isAllDigits && rawQuery.length === 8
+    const mode: 'n' | 't' = useKvkNummerSearch ? 'n' : 't'
     const normalized = rawQuery.toLowerCase()
 
     // Rate limit by IP
@@ -169,10 +150,9 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Cache lookup — version the key (v2) so the old cached empties from
-    // the buggy mapper don't poison results. After this deploy the old
-    // keys (kvk:search:n:68750110 etc.) will simply expire untouched.
-    const cacheKey = `kvk:search:v2:${mode}:${normalized}`
+    // Cache lookup. Key version bumped to v3 so cached error/empty payloads
+    // from earlier configurations expire cleanly.
+    const cacheKey = `kvk:search:v3:${mode}:${normalized}`
     try {
       const cached = await redis.get<CachedPayload>(cacheKey)
       if (cached && Array.isArray(cached.results)) {
@@ -195,7 +175,7 @@ export async function GET(request: NextRequest) {
     }
 
     const upstreamUrl = new URL(`${baseUrl}/v2/zoeken`)
-    if (isAllDigits) {
+    if (useKvkNummerSearch) {
       upstreamUrl.searchParams.set('kvkNummer', rawQuery)
     } else {
       upstreamUrl.searchParams.set('naam', rawQuery)
@@ -238,6 +218,22 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(empty, { status: 200 })
     }
 
+    // KVK returns 400 for malformed queries (e.g. partial KVK numbers
+    // that slipped through, weird unicode, etc). Treat as empty rather
+    // than surfacing the upstream error to the user — the typeahead has
+    // plenty of "no match yet" states already.
+    if (upstreamRes.status === 400) {
+      const empty: CachedPayload = { results: [] }
+      try {
+        await redis.set(cacheKey, empty, {
+          ex: SEARCH_CACHE_TTL_SECONDS,
+        })
+      } catch (cacheErr) {
+        console.warn('kvk-search: cache write failed:', cacheErr)
+      }
+      return NextResponse.json(empty, { status: 200 })
+    }
+
     if (!upstreamRes.ok) {
       const text = await upstreamRes.text().catch(() => '')
       console.error(
@@ -266,8 +262,7 @@ export async function GET(request: NextRequest) {
       : []
 
     // Dedupe by kvkNummer, keeping the highest-priority row (hoofdvestiging
-    // > rechtspersoon > nevenvestiging). For each KVK number we end up with
-    // one row showing the most useful address.
+    // > rechtspersoon > nevenvestiging).
     const byKvkNummer = new Map<string, KvkZoekenResultaat>()
     for (const r of rawResults) {
       if (typeof r.kvkNummer !== 'string' || !r.kvkNummer) continue
