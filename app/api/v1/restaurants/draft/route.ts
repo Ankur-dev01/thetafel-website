@@ -118,6 +118,15 @@ const FIELD_WHITELIST: Record<string, FieldValidator> = {
   address: makeTextValidator(200, true),
   postcode: validatePostcode,
   city: makeTextValidator(100, true),
+
+  // ---- Cuisine & vibe (Step 3) ----
+  // cuisine_type is a single choice from a fixed list rendered in the
+  // Step 3 page; we store it as plain text. description is the short
+  // free-text "vibe" paragraph. hero_image_url is NOT whitelisted here
+  // because it is written directly by /api/v1/restaurants/photo, never
+  // by the client.
+  cuisine_type: makeTextValidator(60, true),
+  description: makeTextValidator(600, true),
 }
 
 // ---- Columns returned by GET ---------------------------------------------
