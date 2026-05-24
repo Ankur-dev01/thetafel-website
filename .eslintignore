@@ -1,0 +1,9 @@
+# Next.js build output
+.next/
+out/
+
+# Dependencies
+node_modules/
+
+# Archived legacy code (kept for reference, excluded from lint)
+_legacy_c1_c4/
