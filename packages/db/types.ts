@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -14,30 +14,95 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          actor_email: string | null
+          actor_user_id: string | null
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          ip_address: unknown
+          restaurant_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          actor_email?: string | null
+          actor_user_id?: string | null
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: unknown
+          restaurant_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          actor_email?: string | null
+          actor_user_id?: string | null
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown
+          restaurant_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       availability: {
         Row: {
           close_time: string
+          closes_next_day: boolean
+          created_at: string
           day_of_week: number
           id: string
-          is_active: boolean | null
+          is_active: boolean
           open_time: string
           restaurant_id: string
+          service_scope: string
+          tag_brunch: boolean
+          tag_dinner: boolean
+          tag_lunch: boolean
+          updated_at: string
         }
         Insert: {
           close_time: string
+          closes_next_day?: boolean
+          created_at?: string
           day_of_week: number
           id?: string
-          is_active?: boolean | null
+          is_active?: boolean
           open_time: string
           restaurant_id: string
+          service_scope?: string
+          tag_brunch?: boolean
+          tag_dinner?: boolean
+          tag_lunch?: boolean
+          updated_at?: string
         }
         Update: {
           close_time?: string
+          closes_next_day?: boolean
+          created_at?: string
           day_of_week?: number
           id?: string
-          is_active?: boolean | null
+          is_active?: boolean
           open_time?: string
           restaurant_id?: string
+          service_scope?: string
+          tag_brunch?: boolean
+          tag_dinner?: boolean
+          tag_lunch?: boolean
+          updated_at?: string
         }
         Relationships: [
           {
@@ -49,103 +114,57 @@ export type Database = {
           },
         ]
       }
-      blocked_dates: {
+      bookings: {
         Row: {
-          blocked_date: string
+          assigned_table_id: string | null
+          booking_date: string
+          booking_time: string
+          created_at: string
+          guest_email: string | null
+          guest_name: string
+          guest_phone: string | null
           id: string
-          reason: string | null
+          party_size: number
           restaurant_id: string
+          status: string
+          zone_id: string | null
         }
         Insert: {
-          blocked_date: string
+          assigned_table_id?: string | null
+          booking_date: string
+          booking_time: string
+          created_at?: string
+          guest_email?: string | null
+          guest_name: string
+          guest_phone?: string | null
           id?: string
-          reason?: string | null
+          party_size: number
           restaurant_id: string
+          status?: string
+          zone_id?: string | null
         }
         Update: {
-          blocked_date?: string
+          assigned_table_id?: string | null
+          booking_date?: string
+          booking_time?: string
+          created_at?: string
+          guest_email?: string | null
+          guest_name?: string
+          guest_phone?: string | null
           id?: string
-          reason?: string | null
+          party_size?: number
           restaurant_id?: string
+          status?: string
+          zone_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "blocked_dates_restaurant_id_fkey"
-            columns: ["restaurant_id"]
+            foreignKeyName: "bookings_assigned_table_id_fkey"
+            columns: ["assigned_table_id"]
             isOneToOne: false
-            referencedRelation: "restaurants"
+            referencedRelation: "restaurant_tables"
             referencedColumns: ["id"]
           },
-        ]
-      }
-      bookings: {
-        Row: {
-          amount_paid: number | null
-          booking_date: string
-          booking_reference: string
-          booking_time: string
-          created_at: string | null
-          discount_applied: number | null
-          gdpr_consent: boolean | null
-          guest_email: string
-          guest_name: string
-          guest_phone: string
-          id: string
-          internal_notes: string | null
-          language: string | null
-          mollie_payment_id: string | null
-          order_type: string | null
-          party_size: number
-          payment_status: string | null
-          reminder_sent: boolean | null
-          restaurant_id: string
-          status: string | null
-        }
-        Insert: {
-          amount_paid?: number | null
-          booking_date: string
-          booking_reference: string
-          booking_time: string
-          created_at?: string | null
-          discount_applied?: number | null
-          gdpr_consent?: boolean | null
-          guest_email: string
-          guest_name: string
-          guest_phone: string
-          id?: string
-          internal_notes?: string | null
-          language?: string | null
-          mollie_payment_id?: string | null
-          order_type?: string | null
-          party_size: number
-          payment_status?: string | null
-          reminder_sent?: boolean | null
-          restaurant_id: string
-          status?: string | null
-        }
-        Update: {
-          amount_paid?: number | null
-          booking_date?: string
-          booking_reference?: string
-          booking_time?: string
-          created_at?: string | null
-          discount_applied?: number | null
-          gdpr_consent?: boolean | null
-          guest_email?: string
-          guest_name?: string
-          guest_phone?: string
-          id?: string
-          internal_notes?: string | null
-          language?: string | null
-          mollie_payment_id?: string | null
-          order_type?: string | null
-          party_size?: number
-          payment_status?: string | null
-          reminder_sent?: boolean | null
-          restaurant_id?: string
-          status?: string | null
-        }
-        Relationships: [
           {
             foreignKeyName: "bookings_restaurant_id_fkey"
             columns: ["restaurant_id"]
@@ -153,51 +172,102 @@ export type Database = {
             referencedRelation: "restaurants"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "bookings_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
         ]
       }
-      invoices: {
+      contracts: {
         Row: {
-          amount_ex_vat: number
-          amount_incl_vat: number
-          created_at: string | null
+          created_at: string
           id: string
-          invoice_number: string
-          mollie_payment_id: string
-          pdf_url: string | null
-          period_end: string
-          period_start: string
+          locale: string
+          pdf_path: string
           restaurant_id: string
-          vat_amount: number
+          signature_image_path: string | null
+          signed_at: string
+          signed_ip: unknown
+          signed_name: string
+          signed_user_agent: string | null
+          updated_at: string
+          version: string
         }
         Insert: {
-          amount_ex_vat: number
-          amount_incl_vat: number
-          created_at?: string | null
+          created_at?: string
           id?: string
-          invoice_number: string
-          mollie_payment_id: string
-          pdf_url?: string | null
-          period_end: string
-          period_start: string
+          locale: string
+          pdf_path: string
           restaurant_id: string
-          vat_amount: number
+          signature_image_path?: string | null
+          signed_at: string
+          signed_ip: unknown
+          signed_name: string
+          signed_user_agent?: string | null
+          updated_at?: string
+          version: string
         }
         Update: {
-          amount_ex_vat?: number
-          amount_incl_vat?: number
-          created_at?: string | null
+          created_at?: string
           id?: string
-          invoice_number?: string
-          mollie_payment_id?: string
-          pdf_url?: string | null
-          period_end?: string
-          period_start?: string
+          locale?: string
+          pdf_path?: string
           restaurant_id?: string
-          vat_amount?: number
+          signature_image_path?: string | null
+          signed_at?: string
+          signed_ip?: unknown
+          signed_name?: string
+          signed_user_agent?: string | null
+          updated_at?: string
+          version?: string
         }
         Relationships: [
           {
-            foreignKeyName: "invoices_restaurant_id_fkey"
+            foreignKeyName: "contracts_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: true
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      menu_categories: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          name_en: string | null
+          name_nl: string
+          restaurant_id: string
+          visible_qr: boolean
+          visible_takeaway: boolean
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          name_en?: string | null
+          name_nl: string
+          restaurant_id: string
+          visible_qr?: boolean
+          visible_takeaway?: boolean
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          name_en?: string | null
+          name_nl?: string
+          restaurant_id?: string
+          visible_qr?: boolean
+          visible_takeaway?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_categories_restaurant_id_fkey"
             columns: ["restaurant_id"]
             isOneToOne: false
             referencedRelation: "restaurants"
@@ -205,48 +275,502 @@ export type Database = {
           },
         ]
       }
-      push_tokens: {
+      menu_item_variants: {
         Row: {
-          created_at: string | null
-          device_platform: string
-          expo_push_token: string
+          created_at: string
           id: string
-          is_active: boolean | null
-          user_id: string
+          item_id: string
+          name_nl: string
+          price_delta_cents: number
         }
         Insert: {
-          created_at?: string | null
-          device_platform: string
-          expo_push_token: string
+          created_at?: string
           id?: string
-          is_active?: boolean | null
-          user_id: string
+          item_id: string
+          name_nl: string
+          price_delta_cents?: number
         }
         Update: {
-          created_at?: string | null
-          device_platform?: string
-          expo_push_token?: string
+          created_at?: string
           id?: string
-          is_active?: boolean | null
-          user_id?: string
+          item_id?: string
+          name_nl?: string
+          price_delta_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_item_variants_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      menu_items: {
+        Row: {
+          available: boolean
+          category_id: string | null
+          created_at: string
+          description_en: string | null
+          description_nl: string | null
+          dietary_tags: string[]
+          display_order: number
+          id: string
+          name_en: string | null
+          name_nl: string
+          photo_path: string | null
+          price_cents: number
+          restaurant_id: string
+          updated_at: string
+          visible_qr: boolean
+          visible_takeaway: boolean
+        }
+        Insert: {
+          available?: boolean
+          category_id?: string | null
+          created_at?: string
+          description_en?: string | null
+          description_nl?: string | null
+          dietary_tags?: string[]
+          display_order?: number
+          id?: string
+          name_en?: string | null
+          name_nl: string
+          photo_path?: string | null
+          price_cents: number
+          restaurant_id: string
+          updated_at?: string
+          visible_qr?: boolean
+          visible_takeaway?: boolean
+        }
+        Update: {
+          available?: boolean
+          category_id?: string | null
+          created_at?: string
+          description_en?: string | null
+          description_nl?: string | null
+          dietary_tags?: string[]
+          display_order?: number
+          id?: string
+          name_en?: string | null
+          name_nl?: string
+          photo_path?: string | null
+          price_cents?: number
+          restaurant_id?: string
+          updated_at?: string
+          visible_qr?: boolean
+          visible_takeaway?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "menu_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menu_items_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      menu_source_uploads: {
+        Row: {
+          channel: Database["public"]["Enums"]["menu_upload_channel"]
+          created_at: string
+          deleted_at: string | null
+          file_size_bytes: number
+          id: string
+          mime_type: string
+          original_filename: string
+          restaurant_id: string
+          storage_path: string
+          upload_type: Database["public"]["Enums"]["menu_upload_type"]
+        }
+        Insert: {
+          channel?: Database["public"]["Enums"]["menu_upload_channel"]
+          created_at?: string
+          deleted_at?: string | null
+          file_size_bytes: number
+          id?: string
+          mime_type: string
+          original_filename: string
+          restaurant_id: string
+          storage_path: string
+          upload_type?: Database["public"]["Enums"]["menu_upload_type"]
+        }
+        Update: {
+          channel?: Database["public"]["Enums"]["menu_upload_channel"]
+          created_at?: string
+          deleted_at?: string | null
+          file_size_bytes?: number
+          id?: string
+          mime_type?: string
+          original_filename?: string
+          restaurant_id?: string
+          storage_path?: string
+          upload_type?: Database["public"]["Enums"]["menu_upload_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_source_uploads_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mollie_webhook_events: {
+        Row: {
+          event_type: string
+          id: string
+          mollie_event_id: string
+          payload: Json
+          processed_at: string | null
+          processing_error: string | null
+          received_at: string
+        }
+        Insert: {
+          event_type: string
+          id?: string
+          mollie_event_id: string
+          payload: Json
+          processed_at?: string | null
+          processing_error?: string | null
+          received_at?: string
+        }
+        Update: {
+          event_type?: string
+          id?: string
+          mollie_event_id?: string
+          payload?: Json
+          processed_at?: string | null
+          processing_error?: string | null
+          received_at?: string
         }
         Relationships: []
       }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          item_name: string
+          line_total_cents: number
+          menu_item_id: string | null
+          notes: string | null
+          order_id: string
+          quantity: number
+          unit_price_cents: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_name: string
+          line_total_cents: number
+          menu_item_id?: string | null
+          notes?: string | null
+          order_id: string
+          quantity: number
+          unit_price_cents: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_name?: string
+          line_total_cents?: number
+          menu_item_id?: string | null
+          notes?: string | null
+          order_id?: string
+          quantity?: number
+          unit_price_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_menu_item_id_fkey"
+            columns: ["menu_item_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          channel: string
+          commission_cents: number
+          created_at: string
+          guest_email: string | null
+          guest_name: string | null
+          guest_phone: string | null
+          id: string
+          item_notes: string | null
+          payment_id: string | null
+          payment_status: string
+          pickup_time: string | null
+          restaurant_id: string
+          status: string
+          table_session_id: string | null
+          total_cents: number
+          updated_at: string
+        }
+        Insert: {
+          channel: string
+          commission_cents?: number
+          created_at?: string
+          guest_email?: string | null
+          guest_name?: string | null
+          guest_phone?: string | null
+          id?: string
+          item_notes?: string | null
+          payment_id?: string | null
+          payment_status?: string
+          pickup_time?: string | null
+          restaurant_id: string
+          status?: string
+          table_session_id?: string | null
+          total_cents?: number
+          updated_at?: string
+        }
+        Update: {
+          channel?: string
+          commission_cents?: number
+          created_at?: string
+          guest_email?: string | null
+          guest_name?: string | null
+          guest_phone?: string | null
+          id?: string
+          item_notes?: string | null
+          payment_id?: string | null
+          payment_status?: string
+          pickup_time?: string | null
+          restaurant_id?: string
+          status?: string
+          table_session_id?: string | null
+          total_cents?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_orders_table_session"
+            columns: ["table_session_id"]
+            isOneToOne: false
+            referencedRelation: "table_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          currency: string
+          description: string | null
+          failed_at: string | null
+          failure_reason: string | null
+          id: string
+          kind: Database["public"]["Enums"]["payment_kind"]
+          mollie_payment_id: string | null
+          mollie_subscription_id: string | null
+          paid_at: string | null
+          related_payment_id: string | null
+          restaurant_id: string
+          status: Database["public"]["Enums"]["payment_status"]
+          subscription_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          failed_at?: string | null
+          failure_reason?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["payment_kind"]
+          mollie_payment_id?: string | null
+          mollie_subscription_id?: string | null
+          paid_at?: string | null
+          related_payment_id?: string | null
+          restaurant_id: string
+          status?: Database["public"]["Enums"]["payment_status"]
+          subscription_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          failed_at?: string | null
+          failure_reason?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["payment_kind"]
+          mollie_payment_id?: string | null
+          mollie_subscription_id?: string | null
+          paid_at?: string | null
+          related_payment_id?: string | null
+          restaurant_id?: string
+          status?: Database["public"]["Enums"]["payment_status"]
+          subscription_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_related_payment_id_fkey"
+            columns: ["related_payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          locale: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id: string
+          locale?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          locale?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      restaurant_tables: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          id: string
+          is_bookable: boolean
+          is_qr_enabled: boolean
+          label: string
+          qr_image_path: string | null
+          qr_token: string | null
+          restaurant_id: string
+          seats: number
+          updated_at: string
+          zone_id: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          is_bookable?: boolean
+          is_qr_enabled?: boolean
+          label: string
+          qr_image_path?: string | null
+          qr_token?: string | null
+          restaurant_id: string
+          seats: number
+          updated_at?: string
+          zone_id: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          is_bookable?: boolean
+          is_qr_enabled?: boolean
+          label?: string
+          qr_image_path?: string | null
+          qr_token?: string | null
+          restaurant_id?: string
+          seats?: number
+          updated_at?: string
+          zone_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_tables_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "restaurant_tables_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       restaurants: {
         Row: {
-          address: string | null
-          booking_lead_days: number | null
-          city: string | null
+          booking_question_allergies: boolean
+          booking_question_occasion: boolean
+          booking_question_requests: boolean
+          booking_window_days: number | null
+          confirmation_template_en: string | null
+          confirmation_template_nl: string | null
+          contact_email: string | null
           contact_phone: string | null
-          created_at: string | null
+          created_at: string
           cuisine_type: string | null
-          description: string | null
-          discount_percentage: number | null
+          current_onboarding_step: number
+          deleted_at: string | null
+          director_name: string | null
           display_name: string | null
-          email: string | null
-          hero_image_url: string | null
+          guest_zone_choice_enabled: boolean
+          hours_per_service_override: boolean
           id: string
+          kitchen_closes_offset_minutes: number | null
           kvk_number: string | null
+          kvk_verified_at: string | null
           legal_address_city: string | null
           legal_address_house_letter: string | null
           legal_address_house_number: string | null
@@ -255,37 +779,79 @@ export type Database = {
           legal_address_street: string | null
           legal_form: string | null
           legal_name: string | null
-          listing_rank: number | null
+          max_guests_per_slot: number | null
           max_party_size: number | null
-          min_notice_hours: number | null
-          mollie_customer_id: string | null
-          mollie_mandate_id: string | null
+          menu_built_at: string | null
+          menu_cuisine_description: string | null
+          menu_design_preferences: string | null
+          menu_same_for_both: boolean
+          min_lead_time_minutes: number | null
+          mollie_initiated_at: string | null
+          mollie_organization_id: string | null
+          mollie_status: Database["public"]["Enums"]["mollie_status"]
+          mollie_verified_at: string | null
           name: string
-          postcode: string | null
+          noshow_prepaid_amount_cents: number | null
+          noshow_prepaid_enabled: boolean
+          noshow_reconfirmation_enabled: boolean
+          noshow_reminders_email_enabled: boolean
+          noshow_reminders_whatsapp_enabled: boolean
+          occupancy_duration_by_party: Json | null
+          occupancy_duration_minutes: number | null
+          qr_auto_accept: boolean
+          qr_cards_shipped_at: string | null
+          qr_codes_generated_at: string | null
+          qr_item_notes_allowed: boolean
+          qr_menu_language: string
+          qr_plan: Database["public"]["Enums"]["qr_plan"] | null
+          qr_widget_accent_color: string
           sbi_code: string | null
+          service_delivery_enabled: boolean
+          service_qr_enabled: boolean
+          service_reservations_enabled: boolean
+          service_takeaway_enabled: boolean
           slot_interval_minutes: number | null
           slug: string
-          status: string | null
-          trial_end_date: string | null
-          trial_start_date: string | null
-          updated_at: string | null
+          status: Database["public"]["Enums"]["restaurant_status"]
+          submitted_at: string | null
+          subscription_tier:
+            | Database["public"]["Enums"]["subscription_tier"]
+            | null
+          takeaway_accepting_orders: boolean
+          takeaway_item_notes_allowed: boolean
+          takeaway_min_order_cents: number | null
+          takeaway_prep_time_minutes: number | null
+          takeaway_scheduled_orders_allowed: boolean
+          takeaway_slot_interval_minutes: number | null
+          trade_name: string | null
+          turnover_buffer_minutes: number | null
+          updated_at: string
           user_id: string
+          waitlist_enabled: boolean
           website: string | null
+          went_live_at: string | null
         }
         Insert: {
-          address?: string | null
-          booking_lead_days?: number | null
-          city?: string | null
+          booking_question_allergies?: boolean
+          booking_question_occasion?: boolean
+          booking_question_requests?: boolean
+          booking_window_days?: number | null
+          confirmation_template_en?: string | null
+          confirmation_template_nl?: string | null
+          contact_email?: string | null
           contact_phone?: string | null
-          created_at?: string | null
+          created_at?: string
           cuisine_type?: string | null
-          description?: string | null
-          discount_percentage?: number | null
+          current_onboarding_step?: number
+          deleted_at?: string | null
+          director_name?: string | null
           display_name?: string | null
-          email?: string | null
-          hero_image_url?: string | null
+          guest_zone_choice_enabled?: boolean
+          hours_per_service_override?: boolean
           id?: string
+          kitchen_closes_offset_minutes?: number | null
           kvk_number?: string | null
+          kvk_verified_at?: string | null
           legal_address_city?: string | null
           legal_address_house_letter?: string | null
           legal_address_house_number?: string | null
@@ -294,37 +860,79 @@ export type Database = {
           legal_address_street?: string | null
           legal_form?: string | null
           legal_name?: string | null
-          listing_rank?: number | null
+          max_guests_per_slot?: number | null
           max_party_size?: number | null
-          min_notice_hours?: number | null
-          mollie_customer_id?: string | null
-          mollie_mandate_id?: string | null
-          name: string
-          postcode?: string | null
+          menu_built_at?: string | null
+          menu_cuisine_description?: string | null
+          menu_design_preferences?: string | null
+          menu_same_for_both?: boolean
+          min_lead_time_minutes?: number | null
+          mollie_initiated_at?: string | null
+          mollie_organization_id?: string | null
+          mollie_status?: Database["public"]["Enums"]["mollie_status"]
+          mollie_verified_at?: string | null
+          name?: string
+          noshow_prepaid_amount_cents?: number | null
+          noshow_prepaid_enabled?: boolean
+          noshow_reconfirmation_enabled?: boolean
+          noshow_reminders_email_enabled?: boolean
+          noshow_reminders_whatsapp_enabled?: boolean
+          occupancy_duration_by_party?: Json | null
+          occupancy_duration_minutes?: number | null
+          qr_auto_accept?: boolean
+          qr_cards_shipped_at?: string | null
+          qr_codes_generated_at?: string | null
+          qr_item_notes_allowed?: boolean
+          qr_menu_language?: string
+          qr_plan?: Database["public"]["Enums"]["qr_plan"] | null
+          qr_widget_accent_color?: string
           sbi_code?: string | null
+          service_delivery_enabled?: boolean
+          service_qr_enabled?: boolean
+          service_reservations_enabled?: boolean
+          service_takeaway_enabled?: boolean
           slot_interval_minutes?: number | null
           slug: string
-          status?: string | null
-          trial_end_date?: string | null
-          trial_start_date?: string | null
-          updated_at?: string | null
+          status?: Database["public"]["Enums"]["restaurant_status"]
+          submitted_at?: string | null
+          subscription_tier?:
+            | Database["public"]["Enums"]["subscription_tier"]
+            | null
+          takeaway_accepting_orders?: boolean
+          takeaway_item_notes_allowed?: boolean
+          takeaway_min_order_cents?: number | null
+          takeaway_prep_time_minutes?: number | null
+          takeaway_scheduled_orders_allowed?: boolean
+          takeaway_slot_interval_minutes?: number | null
+          trade_name?: string | null
+          turnover_buffer_minutes?: number | null
+          updated_at?: string
           user_id: string
+          waitlist_enabled?: boolean
           website?: string | null
+          went_live_at?: string | null
         }
         Update: {
-          address?: string | null
-          booking_lead_days?: number | null
-          city?: string | null
+          booking_question_allergies?: boolean
+          booking_question_occasion?: boolean
+          booking_question_requests?: boolean
+          booking_window_days?: number | null
+          confirmation_template_en?: string | null
+          confirmation_template_nl?: string | null
+          contact_email?: string | null
           contact_phone?: string | null
-          created_at?: string | null
+          created_at?: string
           cuisine_type?: string | null
-          description?: string | null
-          discount_percentage?: number | null
+          current_onboarding_step?: number
+          deleted_at?: string | null
+          director_name?: string | null
           display_name?: string | null
-          email?: string | null
-          hero_image_url?: string | null
+          guest_zone_choice_enabled?: boolean
+          hours_per_service_override?: boolean
           id?: string
+          kitchen_closes_offset_minutes?: number | null
           kvk_number?: string | null
+          kvk_verified_at?: string | null
           legal_address_city?: string | null
           legal_address_house_letter?: string | null
           legal_address_house_number?: string | null
@@ -333,59 +941,346 @@ export type Database = {
           legal_address_street?: string | null
           legal_form?: string | null
           legal_name?: string | null
-          listing_rank?: number | null
+          max_guests_per_slot?: number | null
           max_party_size?: number | null
-          min_notice_hours?: number | null
-          mollie_customer_id?: string | null
-          mollie_mandate_id?: string | null
+          menu_built_at?: string | null
+          menu_cuisine_description?: string | null
+          menu_design_preferences?: string | null
+          menu_same_for_both?: boolean
+          min_lead_time_minutes?: number | null
+          mollie_initiated_at?: string | null
+          mollie_organization_id?: string | null
+          mollie_status?: Database["public"]["Enums"]["mollie_status"]
+          mollie_verified_at?: string | null
           name?: string
-          postcode?: string | null
+          noshow_prepaid_amount_cents?: number | null
+          noshow_prepaid_enabled?: boolean
+          noshow_reconfirmation_enabled?: boolean
+          noshow_reminders_email_enabled?: boolean
+          noshow_reminders_whatsapp_enabled?: boolean
+          occupancy_duration_by_party?: Json | null
+          occupancy_duration_minutes?: number | null
+          qr_auto_accept?: boolean
+          qr_cards_shipped_at?: string | null
+          qr_codes_generated_at?: string | null
+          qr_item_notes_allowed?: boolean
+          qr_menu_language?: string
+          qr_plan?: Database["public"]["Enums"]["qr_plan"] | null
+          qr_widget_accent_color?: string
           sbi_code?: string | null
+          service_delivery_enabled?: boolean
+          service_qr_enabled?: boolean
+          service_reservations_enabled?: boolean
+          service_takeaway_enabled?: boolean
           slot_interval_minutes?: number | null
           slug?: string
-          status?: string | null
-          trial_end_date?: string | null
-          trial_start_date?: string | null
-          updated_at?: string | null
+          status?: Database["public"]["Enums"]["restaurant_status"]
+          submitted_at?: string | null
+          subscription_tier?:
+            | Database["public"]["Enums"]["subscription_tier"]
+            | null
+          takeaway_accepting_orders?: boolean
+          takeaway_item_notes_allowed?: boolean
+          takeaway_min_order_cents?: number | null
+          takeaway_prep_time_minutes?: number | null
+          takeaway_scheduled_orders_allowed?: boolean
+          takeaway_slot_interval_minutes?: number | null
+          trade_name?: string | null
+          turnover_buffer_minutes?: number | null
+          updated_at?: string
           user_id?: string
+          waitlist_enabled?: boolean
           website?: string | null
+          went_live_at?: string | null
         }
         Relationships: []
       }
-      subscriptions: {
+      review_tasks: {
         Row: {
-          amount_eur: number | null
-          created_at: string | null
+          approved_at: string | null
+          approved_by: string | null
+          assigned_to: string | null
+          created_at: string
           id: string
-          mollie_customer_id: string
-          mollie_subscription_id: string
-          next_charge_date: string
+          notes: string | null
           restaurant_id: string
-          status: string
+          status: Database["public"]["Enums"]["review_status"]
+          updated_at: string
         }
         Insert: {
-          amount_eur?: number | null
-          created_at?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          assigned_to?: string | null
+          created_at?: string
           id?: string
-          mollie_customer_id: string
-          mollie_subscription_id: string
-          next_charge_date: string
+          notes?: string | null
           restaurant_id: string
-          status: string
+          status?: Database["public"]["Enums"]["review_status"]
+          updated_at?: string
         }
         Update: {
-          amount_eur?: number | null
-          created_at?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          assigned_to?: string | null
+          created_at?: string
           id?: string
-          mollie_customer_id?: string
-          mollie_subscription_id?: string
-          next_charge_date?: string
+          notes?: string | null
           restaurant_id?: string
-          status?: string
+          status?: Database["public"]["Enums"]["review_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_tasks_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_members: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          id: string
+          invite_email: string | null
+          restaurant_id: string
+          role: string
+          user_id: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          id?: string
+          invite_email?: string | null
+          restaurant_id: string
+          role?: string
+          user_id?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          id?: string
+          invite_email?: string | null
+          restaurant_id?: string
+          role?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_members_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string
+          mollie_customer_id: string | null
+          mollie_mandate_id: string | null
+          mollie_subscription_id: string | null
+          monthly_amount_cents: number
+          next_charge_at: string | null
+          restaurant_id: string
+          status: Database["public"]["Enums"]["subscription_status"]
+          suspended_at: string | null
+          tier: Database["public"]["Enums"]["subscription_tier"]
+          trial_ends_at: string
+          trial_started_at: string
+          updated_at: string
+        }
+        Insert: {
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          mollie_customer_id?: string | null
+          mollie_mandate_id?: string | null
+          mollie_subscription_id?: string | null
+          monthly_amount_cents: number
+          next_charge_at?: string | null
+          restaurant_id: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          suspended_at?: string | null
+          tier: Database["public"]["Enums"]["subscription_tier"]
+          trial_ends_at: string
+          trial_started_at?: string
+          updated_at?: string
+        }
+        Update: {
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          mollie_customer_id?: string | null
+          mollie_mandate_id?: string | null
+          mollie_subscription_id?: string | null
+          monthly_amount_cents?: number
+          next_charge_at?: string | null
+          restaurant_id?: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          suspended_at?: string | null
+          tier?: Database["public"]["Enums"]["subscription_tier"]
+          trial_ends_at?: string
+          trial_started_at?: string
+          updated_at?: string
         }
         Relationships: [
           {
             foreignKeyName: "subscriptions_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      table_sessions: {
+        Row: {
+          closed_at: string | null
+          closed_by_user_id: string | null
+          id: string
+          opened_at: string
+          restaurant_id: string
+          table_id: string
+        }
+        Insert: {
+          closed_at?: string | null
+          closed_by_user_id?: string | null
+          id?: string
+          opened_at?: string
+          restaurant_id: string
+          table_id: string
+        }
+        Update: {
+          closed_at?: string | null
+          closed_by_user_id?: string | null
+          id?: string
+          opened_at?: string
+          restaurant_id?: string
+          table_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "table_sessions_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "table_sessions_table_id_fkey"
+            columns: ["table_id"]
+            isOneToOne: false
+            referencedRelation: "restaurant_tables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      waitlist_entries: {
+        Row: {
+          booking_date: string
+          booking_time: string
+          converted_booking_id: string | null
+          created_at: string
+          guest_email: string | null
+          guest_name: string
+          guest_phone: string | null
+          id: string
+          notified_at: string | null
+          party_size: number
+          restaurant_id: string
+        }
+        Insert: {
+          booking_date: string
+          booking_time: string
+          converted_booking_id?: string | null
+          created_at?: string
+          guest_email?: string | null
+          guest_name: string
+          guest_phone?: string | null
+          id?: string
+          notified_at?: string | null
+          party_size: number
+          restaurant_id: string
+        }
+        Update: {
+          booking_date?: string
+          booking_time?: string
+          converted_booking_id?: string | null
+          created_at?: string
+          guest_email?: string | null
+          guest_name?: string
+          guest_phone?: string | null
+          id?: string
+          notified_at?: string | null
+          party_size?: number
+          restaurant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waitlist_entries_converted_booking_id_fkey"
+            columns: ["converted_booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "waitlist_entries_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      zones: {
+        Row: {
+          color: string | null
+          created_at: string
+          deleted_at: string | null
+          display_order: number
+          id: string
+          name: string
+          restaurant_id: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          display_order?: number
+          id?: string
+          name: string
+          restaurant_id: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          display_order?: number
+          id?: string
+          name?: string
+          restaurant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "zones_restaurant_id_fkey"
             columns: ["restaurant_id"]
             isOneToOne: false
             referencedRelation: "restaurants"
@@ -401,7 +1296,42 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      menu_upload_channel: "takeaway" | "qr" | "both"
+      menu_upload_type: "menu" | "photo" | "reference"
+      mollie_status:
+        | "not_started"
+        | "pending"
+        | "verified"
+        | "rejected"
+        | "needs_action"
+      payment_kind:
+        | "onetime_qr_setup"
+        | "onetime_extra_tables"
+        | "subscription_charge"
+        | "takeaway_commission"
+        | "prepaid_booking"
+        | "refund"
+      payment_status:
+        | "pending"
+        | "paid"
+        | "failed"
+        | "refunded"
+        | "partially_refunded"
+      qr_plan: "basic" | "premium"
+      restaurant_status:
+        | "onboarding"
+        | "pending_review"
+        | "live"
+        | "suspended"
+        | "cancelled"
+      review_status: "pending" | "approved" | "needs_followup" | "cancelled"
+      subscription_status:
+        | "trialing"
+        | "active"
+        | "past_due"
+        | "suspended"
+        | "cancelled"
+      subscription_tier: "starter" | "plus" | "premium"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -528,6 +1458,48 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      menu_upload_channel: ["takeaway", "qr", "both"],
+      menu_upload_type: ["menu", "photo", "reference"],
+      mollie_status: [
+        "not_started",
+        "pending",
+        "verified",
+        "rejected",
+        "needs_action",
+      ],
+      payment_kind: [
+        "onetime_qr_setup",
+        "onetime_extra_tables",
+        "subscription_charge",
+        "takeaway_commission",
+        "prepaid_booking",
+        "refund",
+      ],
+      payment_status: [
+        "pending",
+        "paid",
+        "failed",
+        "refunded",
+        "partially_refunded",
+      ],
+      qr_plan: ["basic", "premium"],
+      restaurant_status: [
+        "onboarding",
+        "pending_review",
+        "live",
+        "suspended",
+        "cancelled",
+      ],
+      review_status: ["pending", "approved", "needs_followup", "cancelled"],
+      subscription_status: [
+        "trialing",
+        "active",
+        "past_due",
+        "suspended",
+        "cancelled",
+      ],
+      subscription_tier: ["starter", "plus", "premium"],
+    },
   },
 } as const
