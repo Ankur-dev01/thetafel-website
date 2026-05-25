@@ -1,396 +1,484 @@
-// app/api/v1/restaurants/draft/route.ts
-//
-// PUT endpoint hit by the C.1 saveDraft() helper on every onboarding-form
-// field blur, AND a GET endpoint hit by every step page on mount to
-// pre-fill its inputs from existing draft data.
-//
-// Per Phase 1 PRD §C.1 ("Auto-save on every field blur"):
-//   - The client does NOT pass a restaurantId. The server resolves the
-//     restaurant row from the session (user_id = auth.uid()).
-//   - If no row exists yet, PUT creates one with status='draft' and
-//     minimum-required NOT NULL placeholders for `name` and `slug`
-//     (regenerated properly during the Publish step in C.7).
-//   - Field name is validated against a server-side whitelist — clients
-//     can never write to status, slug, listing_rank, mollie_*, etc.
-//
-// Special case for kvk_number:
-//   - kvk_number is the FIRST field every onboarding user fills in.
-//   - It is the ONLY field that triggers row creation. All other fields
-//     assume the row already exists.
-//   - If a different user already owns a row with this kvk_number,
-//     return 409 (the DB's UNIQUE constraint enforces this; we surface
-//     it cleanly).
-//
-// Requests:
-//   GET                                      → 200 { restaurant: {...} | null }
-//   PUT  application/json   { field, value } → 200 { ok: true, restaurant: {...} }
-//                                              400 / 401 / 409 / 500 on error
-//
-// Auth: required on both verbs. Uses the standard SSR-aware Supabase
-// client (NOT the service-role admin client) so RLS policies are
-// enforced automatically.
+/**
+ * /api/v1/restaurants/draft
+ *
+ * GET   → returns the current user's onboarding draft, including
+ *         zones, tables, availability, and menu_uploads. Auto-creates
+ *         the restaurants row on first call.
+ *
+ * PATCH → partial update. Body may include any subset of:
+ *           { restaurant, zones, tables, availability, menu_uploads }
+ *         Sub-resource arrays are replace-all semantics. Restaurant
+ *         fields are merged column by column.
+ *
+ * Security:
+ *   - All DB reads/writes use the user's Supabase client; RLS scopes
+ *     everything to the user's own restaurant row automatically.
+ *   - audit_logs writes use the admin client (service role) because
+ *     audit_logs has no INSERT policy for regular users.
+ *
+ * Rate limit:
+ *   - 30 PATCH requests per minute per user (Upstash).
+ */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { Ratelimit } from '@upstash/ratelimit'
+import { Redis } from '@upstash/redis'
 
-// ---- Field whitelist ----------------------------------------------------
-//
-// Each entry maps the PUBLIC field name (what the client sends) to the
-// validator that returns either a normalised value or a string error.
+import {
+  createSupabaseServerClient,
+  createSupabaseServerClientAdmin,
+} from '@/lib/supabase/server'
+import {
+  draftPatchBodySchema,
+  type DraftPatchBody,
+} from '@/lib/onboarding/draftSchema'
 
-type FieldValidator = (raw: unknown) =>
-  | { ok: true; value: string | null }
-  | { ok: false; error: string }
+// ---- Types ------------------------------------------------------------------
 
-function validateKvkNumber(raw: unknown): ReturnType<FieldValidator> {
-  if (typeof raw !== 'string') {
-    return { ok: false, error: 'kvk_number must be a string.' }
+type SupabaseUserClient = Awaited<ReturnType<typeof createSupabaseServerClient>>
+
+// ---- Rate limiter (lazy singleton) -----------------------------------------
+
+let _ratelimit: Ratelimit | null = null
+function getRateLimiter(): Ratelimit {
+  if (_ratelimit) return _ratelimit
+  const redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL!,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+  })
+  _ratelimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(30, '1 m'),
+    prefix: 'draft_patch',
+    analytics: false,
+  })
+  return _ratelimit
+}
+
+// ---- Helpers ----------------------------------------------------------------
+
+function generateSlugFromUserId(userId: string): string {
+  return `draft-${userId.replace(/-/g, '').slice(0, 16)}`
+}
+
+async function getOrCreateDraftRestaurant(
+  supabase: SupabaseUserClient,
+  userId: string
+) {
+  const { data: existing, error: findErr } = await supabase
+    .from('restaurants')
+    .select('*')
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  if (findErr) throw findErr
+  if (existing) return existing
+
+  const slug = generateSlugFromUserId(userId)
+  const { data: created, error: insertErr } = await supabase
+    .from('restaurants')
+    .insert({
+      user_id: userId,
+      slug,
+      name: 'Mijn restaurant',
+      status: 'onboarding',
+    })
+    .select('*')
+    .single()
+
+  if (insertErr) throw insertErr
+  return created
+}
+
+async function logAudit(opts: {
+  userId: string
+  userEmail: string | null
+  restaurantId: string
+  eventType: string
+  eventData: Record<string, unknown>
+  ip: string | null
+  userAgent: string | null
+}) {
+  try {
+    const admin = await createSupabaseServerClientAdmin()
+    await admin.from('audit_logs').insert({
+      actor_user_id: opts.userId,
+      actor_email: opts.userEmail,
+      restaurant_id: opts.restaurantId,
+      event_type: opts.eventType,
+      event_data: opts.eventData,
+      ip_address: opts.ip,
+      user_agent: opts.userAgent,
+    })
+  } catch {
+    // Audit failure must never break the user-visible request.
   }
-  const trimmed = raw.trim()
-  if (!/^\d{8}$/.test(trimmed)) {
-    return { ok: false, error: 'kvk_number must be exactly 8 digits.' }
-  }
-  return { ok: true, value: trimmed }
 }
 
-function makeTextValidator(
-  maxLen: number,
-  allowEmpty: boolean
-): FieldValidator {
-  return (raw: unknown) => {
-    if (raw === null || raw === undefined) {
-      return { ok: true, value: null }
-    }
-    if (typeof raw !== 'string') {
-      return { ok: false, error: 'Value must be a string.' }
-    }
-    const trimmed = raw.trim()
-    if (!allowEmpty && trimmed.length === 0) {
-      return { ok: false, error: 'Value cannot be empty.' }
-    }
-    if (trimmed.length > maxLen) {
-      return { ok: false, error: `Value cannot exceed ${maxLen} characters.` }
-    }
-    return { ok: true, value: trimmed.length === 0 ? null : trimmed }
-  }
+function getClientIp(req: NextRequest): string | null {
+  const forwarded = req.headers.get('x-forwarded-for')
+  if (forwarded) return forwarded.split(',')[0]!.trim()
+  const real = req.headers.get('x-real-ip')
+  if (real) return real
+  return null
 }
 
-// Dutch postcode: 1234 AB (with or without space). Stored normalised
-// without the internal space.
-function validatePostcode(raw: unknown): ReturnType<FieldValidator> {
-  if (raw === null || raw === undefined) return { ok: true, value: null }
-  if (typeof raw !== 'string') {
-    return { ok: false, error: 'Postcode must be a string.' }
-  }
-  const stripped = raw.trim().replace(/\s+/g, '').toUpperCase()
-  if (stripped.length === 0) return { ok: true, value: null }
-  if (!/^\d{4}[A-Z]{2}$/.test(stripped)) {
-    return { ok: false, error: 'Postcode must match 1234 AB format.' }
-  }
-  return { ok: true, value: stripped }
-}
-
-const FIELD_WHITELIST: Record<string, FieldValidator> = {
-  // ---- KVK identity (Step 1) ----
-  kvk_number: validateKvkNumber,
-  legal_name: makeTextValidator(200, true),
-  display_name: makeTextValidator(120, false),
-  legal_form: makeTextValidator(100, true),
-  sbi_code: makeTextValidator(20, true),
-
-  // ---- Legal address from KVK (Step 1) ----
-  legal_address_street: makeTextValidator(120, true),
-  legal_address_house_number: makeTextValidator(20, true),
-  legal_address_house_letter: makeTextValidator(10, true),
-  legal_address_house_number_addition: makeTextValidator(20, true),
-  legal_address_postcode: validatePostcode,
-  legal_address_city: makeTextValidator(100, true),
-
-  // ---- Optional website (Step 1) ----
-  // Uses the existing `website` column per PRD scoping rule.
-  website: makeTextValidator(500, true),
-
-  // ---- Dining venue address (Step 2) ----
-  // Single `address` column holds "street + house number" combined
-  // (existing schema from Phase A/B; the PRD's userflow Stage 4 names
-  // them straat + huisnummer separately, but the column model is one
-  // text field).
-  address: makeTextValidator(200, true),
-  postcode: validatePostcode,
-  city: makeTextValidator(100, true),
-
-  // ---- Cuisine & vibe (Step 3) ----
-  // cuisine_type is a single choice from a fixed list rendered in the
-  // Step 3 page; we store it as plain text. description is the short
-  // free-text "vibe" paragraph. hero_image_url is NOT whitelisted here
-  // because it is written directly by /api/v1/restaurants/photo, never
-  // by the client.
-  cuisine_type: makeTextValidator(60, true),
-  description: makeTextValidator(600, true),
-}
-
-// ---- Columns returned by GET ---------------------------------------------
-//
-// Explicit list rather than SELECT *. When new columns are added later
-// (Mollie, billing, etc.) they don't accidentally leak out of this
-// endpoint, and the response shape stays stable for the client.
-
-const DRAFT_SELECT_COLUMNS = [
-  'id',
-  'status',
-  'name',
-  'slug',
-  // KVK identity (Step 1)
-  'kvk_number',
-  'legal_name',
-  'display_name',
-  'legal_form',
-  'sbi_code',
-  'website',
-  // Legal address from KVK (Step 1)
-  'legal_address_street',
-  'legal_address_house_number',
-  'legal_address_house_letter',
-  'legal_address_house_number_addition',
-  'legal_address_postcode',
-  'legal_address_city',
-  // Dining venue address (Step 2)
-  'address',
-  'postcode',
-  'city',
-  // Step 3 — cuisine, photo, vibe
-  'cuisine_type',
-  'description',
-  'hero_image_url',
-  // Step 4-5 — operations
-  'max_party_size',
-  'booking_lead_days',
-  'min_notice_hours',
-  'slot_interval_minutes',
-  // Step 6 — contact
-  'contact_phone',
-  'email',
-].join(', ')
-
-// ---- Helpers --------------------------------------------------------------
-
-function randomSlug(): string {
-  return `draft-${crypto.randomUUID()}`
-}
-
-function nameFromEmail(email: string | null | undefined): string {
-  if (!email) return 'Mijn restaurant'
-  const localPart = email.split('@')[0] ?? ''
-  if (localPart.length === 0) return 'Mijn restaurant'
-  const trimmed = localPart.slice(0, 80)
-  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1)
-}
-
-// ---- GET handler ---------------------------------------------------------
-//
-// Returns the authenticated user's draft restaurant row, or
-// { restaurant: null } if none exists yet.
+// ---- GET --------------------------------------------------------------------
 
 export async function GET() {
+  const supabase = await createSupabaseServerClient()
+
+  const {
+    data: { user },
+    error: authErr,
+  } = await supabase.auth.getUser()
+
+  if (authErr || !user) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+  }
+
   try {
-    const supabase = await createSupabaseServerClient()
+    const restaurant = await getOrCreateDraftRestaurant(supabase, user.id)
 
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser()
+    const [zonesRes, tablesRes, availabilityRes, uploadsRes] =
+      await Promise.all([
+        supabase
+          .from('zones')
+          .select('*')
+          .eq('restaurant_id', restaurant.id)
+          .is('deleted_at', null)
+          .order('display_order', { ascending: true }),
+        supabase
+          .from('restaurant_tables')
+          .select('*')
+          .eq('restaurant_id', restaurant.id)
+          .is('deleted_at', null)
+          .order('label', { ascending: true }),
+        supabase
+          .from('availability')
+          .select('*')
+          .eq('restaurant_id', restaurant.id)
+          .order('day_of_week', { ascending: true })
+          .order('service_scope', { ascending: true }),
+        supabase
+          .from('menu_source_uploads')
+          .select('*')
+          .eq('restaurant_id', restaurant.id)
+          .is('deleted_at', null)
+          .order('created_at', { ascending: true }),
+      ])
 
-    if (userError || !user) {
-      return NextResponse.json(
-        { restaurant: null, error: 'Not authenticated.' },
-        { status: 401 }
-      )
-    }
-
-    const { data: restaurant, error: lookupError } = await supabase
-      .from('restaurants')
-      .select(DRAFT_SELECT_COLUMNS)
-      .eq('user_id', user.id)
-      .maybeSingle()
-
-    if (lookupError) {
-      console.error('draft GET lookup error:', lookupError)
-      return NextResponse.json(
-        { restaurant: null, error: 'Could not load draft.' },
-        { status: 500 }
-      )
-    }
-
-    return NextResponse.json({ restaurant: restaurant ?? null }, { status: 200 })
-  } catch (err) {
-    console.error('draft GET unexpected error:', err)
+    return NextResponse.json({
+      restaurant,
+      zones: zonesRes.data ?? [],
+      tables: tablesRes.data ?? [],
+      availability: availabilityRes.data ?? [],
+      menu_uploads: uploadsRes.data ?? [],
+    })
+  } catch (e) {
+    const message = e instanceof Error ? e.message : 'internal_error'
     return NextResponse.json(
-      { restaurant: null, error: 'Something went wrong.' },
+      { error: 'load_failed', message },
       { status: 500 }
     )
   }
 }
 
-// ---- PUT handler ---------------------------------------------------------
+// ---- PATCH ------------------------------------------------------------------
 
-export async function PUT(request: NextRequest) {
+export async function PATCH(req: NextRequest) {
+  const supabase = await createSupabaseServerClient()
+
+  const {
+    data: { user },
+    error: authErr,
+  } = await supabase.auth.getUser()
+
+  if (authErr || !user) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+  }
+
+  // Rate limit by user id.
   try {
-    const supabase = await createSupabaseServerClient()
-
-    // 1. Auth
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser()
-
-    if (userError || !user) {
+    const rl = getRateLimiter()
+    const { success } = await rl.limit(user.id)
+    if (!success) {
       return NextResponse.json(
-        { ok: false, error: 'Not authenticated.' },
-        { status: 401 }
+        { error: 'rate_limited', retry_after_seconds: 60 },
+        { status: 429 }
       )
     }
+  } catch {
+    // If Redis is down, fail open rather than block autosave.
+  }
 
-    // 2. Body
-    let body: { field?: unknown; value?: unknown }
-    try {
-      body = await request.json()
-    } catch {
+  // Parse + validate body.
+  let body: DraftPatchBody
+  try {
+    const raw = await req.json()
+    const parsed = draftPatchBodySchema.safeParse(raw)
+    if (!parsed.success) {
       return NextResponse.json(
-        { ok: false, error: 'Invalid JSON body.' },
+        { error: 'validation_failed', issues: parsed.error.issues },
         { status: 400 }
       )
     }
+    body = parsed.data
+  } catch {
+    return NextResponse.json({ error: 'invalid_json' }, { status: 400 })
+  }
 
-    const field =
-      typeof body.field === 'string' ? body.field.trim() : ''
-    if (!field) {
-      return NextResponse.json(
-        { ok: false, error: 'Missing field name.' },
-        { status: 400 }
-      )
+  // Empty body → no-op, return current state.
+  const isEmpty =
+    !body.restaurant &&
+    !body.zones &&
+    !body.tables &&
+    !body.availability &&
+    !body.menu_uploads
+
+  try {
+    const restaurant = await getOrCreateDraftRestaurant(supabase, user.id)
+
+    if (isEmpty) {
+      return NextResponse.json({ restaurant }, { status: 200 })
     }
 
-    const validator = FIELD_WHITELIST[field]
-    if (!validator) {
-      return NextResponse.json(
-        { ok: false, error: `Field "${field}" cannot be written.` },
-        { status: 400 }
-      )
-    }
+    const restaurantId = restaurant.id as string
 
-    const validated = validator(body.value)
-    if (!validated.ok) {
-      return NextResponse.json(
-        { ok: false, error: validated.error },
-        { status: 400 }
-      )
-    }
-
-    // 3. Look up the existing restaurant row for this user.
-    const { data: existing, error: lookupError } = await supabase
-      .from('restaurants')
-      .select('id, status')
-      .eq('user_id', user.id)
-      .maybeSingle()
-
-    if (lookupError) {
-      console.error('draft route lookup error:', lookupError)
-      return NextResponse.json(
-        { ok: false, error: 'Could not load draft.' },
-        { status: 500 }
-      )
-    }
-
-    // 4. If no row yet, only allow kvk_number to create it.
-    if (!existing) {
-      if (field !== 'kvk_number') {
+    // ---- 1. Restaurant fields: merge update --------------------------------
+    if (body.restaurant && Object.keys(body.restaurant).length > 0) {
+      const { error } = await supabase
+        .from('restaurants')
+        .update(body.restaurant)
+        .eq('id', restaurantId)
+      if (error) {
         return NextResponse.json(
-          {
-            ok: false,
-            error:
-              'KVK number must be entered first before other fields can be saved.',
-          },
+          { error: 'restaurant_update_failed', message: error.message },
           { status: 400 }
         )
       }
+    }
 
-      const insertPayload = {
-        user_id: user.id,
-        name: nameFromEmail(user.email),
-        slug: randomSlug(),
-        status: 'draft' as const,
-        [field]: validated.value,
-      }
+    // ---- 2. Zones: replace-all by name -------------------------------------
+    if (body.zones) {
+      const incomingNames = new Set(body.zones.map((z) => z.name))
+      const { data: existingZones } = await supabase
+        .from('zones')
+        .select('id, name')
+        .eq('restaurant_id', restaurantId)
+        .is('deleted_at', null)
 
-      const { data: inserted, error: insertError } = await supabase
-        .from('restaurants')
-        .insert(insertPayload)
-        .select('id, status, kvk_number')
-        .single()
-
-      if (insertError) {
-        const code = (insertError as { code?: string }).code
-        if (code === '23505') {
+      const toSoftDelete = (existingZones ?? []).filter(
+        (z) => !incomingNames.has(z.name)
+      )
+      if (toSoftDelete.length > 0) {
+        const idsToDelete = toSoftDelete.map((z) => z.id)
+        const { error: delErr } = await supabase
+          .from('zones')
+          .update({ deleted_at: new Date().toISOString() })
+          .in('id', idsToDelete)
+        if (delErr) {
           return NextResponse.json(
-            {
-              ok: false,
-              error:
-                'This KVK number is already linked to another account.',
-            },
-            { status: 409 }
+            { error: 'zones_delete_failed', message: delErr.message },
+            { status: 400 }
           )
         }
-        console.error('draft route insert error:', insertError)
-        return NextResponse.json(
-          { ok: false, error: 'Could not save draft.' },
-          { status: 500 }
-        )
       }
 
-      return NextResponse.json(
-        { ok: true, restaurant: inserted },
-        { status: 200 }
-      )
+      for (const z of body.zones) {
+        const payload = {
+          restaurant_id: restaurantId,
+          name: z.name,
+          display_order: z.display_order ?? 0,
+          color: z.color ?? '#d4820a',
+          deleted_at: null,
+        }
+        const { error: upErr } = await supabase
+          .from('zones')
+          .upsert(payload, { onConflict: 'restaurant_id,name' })
+        if (upErr) {
+          return NextResponse.json(
+            {
+              error: 'zone_upsert_failed',
+              message: upErr.message,
+              zone: z.name,
+            },
+            { status: 400 }
+          )
+        }
+      }
     }
 
-    // 5. Row exists — UPDATE the single field.
-    const updatePayload = { [field]: validated.value }
+    // ---- 3. Tables: replace-all by label -----------------------------------
+    if (body.tables) {
+      const incomingLabels = new Set(body.tables.map((t) => t.label))
+      const { data: existingTables } = await supabase
+        .from('restaurant_tables')
+        .select('id, label')
+        .eq('restaurant_id', restaurantId)
+        .is('deleted_at', null)
 
-    const { data: updated, error: updateError } = await supabase
+      const toSoftDelete = (existingTables ?? []).filter(
+        (t) => !incomingLabels.has(t.label)
+      )
+      if (toSoftDelete.length > 0) {
+        const idsToDelete = toSoftDelete.map((t) => t.id)
+        const { error: delErr } = await supabase
+          .from('restaurant_tables')
+          .update({ deleted_at: new Date().toISOString() })
+          .in('id', idsToDelete)
+        if (delErr) {
+          return NextResponse.json(
+            { error: 'tables_delete_failed', message: delErr.message },
+            { status: 400 }
+          )
+        }
+      }
+
+      for (const t of body.tables) {
+        const payload = {
+          restaurant_id: restaurantId,
+          zone_id: t.zone_id,
+          label: t.label,
+          seats: t.seats,
+          is_bookable: t.is_bookable ?? true,
+          is_qr_enabled: t.is_qr_enabled ?? true,
+          deleted_at: null,
+        }
+        const { error: upErr } = await supabase
+          .from('restaurant_tables')
+          .upsert(payload, { onConflict: 'restaurant_id,label' })
+        if (upErr) {
+          return NextResponse.json(
+            {
+              error: 'table_upsert_failed',
+              message: upErr.message,
+              label: t.label,
+            },
+            { status: 400 }
+          )
+        }
+      }
+    }
+
+    // ---- 4. Availability: replace-all by (day, scope) ----------------------
+    if (body.availability) {
+      const incomingKeys = new Set(
+        body.availability.map(
+          (a) => `${a.day_of_week}__${a.service_scope ?? 'all'}`
+        )
+      )
+      const { data: existingAvail } = await supabase
+        .from('availability')
+        .select('id, day_of_week, service_scope')
+        .eq('restaurant_id', restaurantId)
+
+      const toDelete = (existingAvail ?? []).filter(
+        (a) => !incomingKeys.has(`${a.day_of_week}__${a.service_scope}`)
+      )
+      if (toDelete.length > 0) {
+        const idsToDelete = toDelete.map((a) => a.id)
+        const { error: delErr } = await supabase
+          .from('availability')
+          .delete()
+          .in('id', idsToDelete)
+        if (delErr) {
+          return NextResponse.json(
+            { error: 'availability_delete_failed', message: delErr.message },
+            { status: 400 }
+          )
+        }
+      }
+
+      for (const a of body.availability) {
+        const payload = {
+          restaurant_id: restaurantId,
+          day_of_week: a.day_of_week,
+          service_scope: a.service_scope ?? 'all',
+          open_time: a.open_time,
+          close_time: a.close_time,
+          closes_next_day: a.closes_next_day ?? false,
+          is_active: a.is_active ?? true,
+          tag_brunch: a.tag_brunch ?? false,
+          tag_lunch: a.tag_lunch ?? false,
+          tag_dinner: a.tag_dinner ?? false,
+        }
+        const { error: upErr } = await supabase
+          .from('availability')
+          .upsert(payload, {
+            onConflict: 'restaurant_id,day_of_week,service_scope',
+          })
+        if (upErr) {
+          return NextResponse.json(
+            {
+              error: 'availability_upsert_failed',
+              message: upErr.message,
+              day: a.day_of_week,
+              scope: a.service_scope,
+            },
+            { status: 400 }
+          )
+        }
+      }
+    }
+
+    // ---- 5. Menu uploads: append-only --------------------------------------
+    if (body.menu_uploads && body.menu_uploads.length > 0) {
+      const toInsert = body.menu_uploads.filter((u) => !u.id)
+      if (toInsert.length > 0) {
+        const payloads = toInsert.map((u) => ({
+          restaurant_id: restaurantId,
+          channel: u.channel ?? 'both',
+          upload_type: u.upload_type ?? 'menu',
+          storage_path: u.storage_path,
+          original_filename: u.original_filename,
+          file_size_bytes: u.file_size_bytes,
+          mime_type: u.mime_type,
+        }))
+        const { error: insErr } = await supabase
+          .from('menu_source_uploads')
+          .insert(payloads)
+        if (insErr) {
+          return NextResponse.json(
+            { error: 'menu_upload_insert_failed', message: insErr.message },
+            { status: 400 }
+          )
+        }
+      }
+    }
+
+    // ---- 6. Audit log ------------------------------------------------------
+    await logAudit({
+      userId: user.id,
+      userEmail: user.email ?? null,
+      restaurantId,
+      eventType: 'draft.patch',
+      eventData: {
+        keys: Object.keys(body),
+        restaurant_fields: body.restaurant
+          ? Object.keys(body.restaurant)
+          : [],
+        zones_count: body.zones?.length,
+        tables_count: body.tables?.length,
+        availability_count: body.availability?.length,
+        menu_uploads_count: body.menu_uploads?.length,
+      },
+      ip: getClientIp(req),
+      userAgent: req.headers.get('user-agent'),
+    })
+
+    // ---- 7. Return refreshed state -----------------------------------------
+    const { data: refreshed } = await supabase
       .from('restaurants')
-      .update(updatePayload)
-      .eq('id', existing.id)
-      .eq('user_id', user.id)
-      .select('id, status, kvk_number')
+      .select('*')
+      .eq('id', restaurantId)
       .single()
 
-    if (updateError) {
-      const code = (updateError as { code?: string }).code
-      if (code === '23505') {
-        return NextResponse.json(
-          {
-            ok: false,
-            error:
-              'This KVK number is already linked to another account.',
-          },
-          { status: 409 }
-        )
-      }
-      console.error('draft route update error:', updateError)
-      return NextResponse.json(
-        { ok: false, error: 'Could not save draft.' },
-        { status: 500 }
-      )
-    }
-
+    return NextResponse.json({ restaurant: refreshed }, { status: 200 })
+  } catch (e) {
+    const message = e instanceof Error ? e.message : 'internal_error'
     return NextResponse.json(
-      { ok: true, restaurant: updated },
-      { status: 200 }
-    )
-  } catch (err) {
-    console.error('draft route unexpected error:', err)
-    return NextResponse.json(
-      { ok: false, error: 'Something went wrong.' },
+      { error: 'patch_failed', message },
       { status: 500 }
     )
   }

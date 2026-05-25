@@ -766,6 +766,7 @@ export type Database = {
           director_name: string | null
           display_name: string | null
           guest_zone_choice_enabled: boolean
+          hero_image_url: string | null
           hours_per_service_override: boolean
           id: string
           kitchen_closes_offset_minutes: number | null
@@ -847,6 +848,7 @@ export type Database = {
           director_name?: string | null
           display_name?: string | null
           guest_zone_choice_enabled?: boolean
+          hero_image_url?: string | null
           hours_per_service_override?: boolean
           id?: string
           kitchen_closes_offset_minutes?: number | null
@@ -928,6 +930,7 @@ export type Database = {
           director_name?: string | null
           display_name?: string | null
           guest_zone_choice_enabled?: boolean
+          hero_image_url?: string | null
           hours_per_service_override?: boolean
           id?: string
           kitchen_closes_offset_minutes?: number | null
