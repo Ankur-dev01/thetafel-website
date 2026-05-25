@@ -1,53 +1,59 @@
-'use client'
+'use client';
 
 /**
  * MobileShellWrapper
  *
- * Client component that handles the responsive two-pane behaviour:
- *   - Desktop (>= 768 px): sidebar fixed left at 280 px, main pane fills rest.
- *   - Mobile (< 768 px): sidebar hidden behind hamburger; tap to slide in.
+ * Responsive two-pane layout for the onboarding shell.
  *
- * Receives the sidebar contents and the main-pane children as props.
- * Holds the open/closed state for the mobile slide-in panel.
+ *   Desktop (>= 768 px):
+ *     - Sidebar fixed at 280px wide on the left.
+ *     - Main pane fills the remaining width.
+ *     - Mobile top bar hidden.
+ *     - Slide-in mobile sidebar never visible.
+ *
+ *   Mobile (< 768 px):
+ *     - Sidebar column hidden.
+ *     - Mobile top bar visible with hamburger + small wordmark.
+ *     - Tapping hamburger opens a slide-in mobile sidebar from the left.
+ *
+ * Uses CSS transform for the slide-in (always present in DOM, off-screen
+ * by default, slides in when mobileOpen is true). This avoids conditional
+ * rendering bugs where the slide-in panel leaks into the desktop layout.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 
 type MobileShellWrapperProps = {
-  sidebar: React.ReactNode
-  children: React.ReactNode
-}
+  sidebar: React.ReactNode;
+  children: React.ReactNode;
+};
 
 export default function MobileShellWrapper({
   sidebar,
   children,
 }: MobileShellWrapperProps) {
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Close the slide-in on route changes (popstate).
+  // Close on browser back/forward.
   useEffect(() => {
     function onPop() {
-      setMobileOpen(false)
+      setMobileOpen(false);
     }
-    window.addEventListener('popstate', onPop)
-    return () => window.removeEventListener('popstate', onPop)
-  }, [])
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
 
   // Prevent body scroll while the mobile sidebar is open.
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
     return () => {
-      document.body.style.overflow = ''
-    }
-  }, [mobileOpen])
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
 
   return (
     <div className="min-h-screen bg-[#fdfaf5] text-[#1e1508]">
-      {/* Mobile top bar — visible < 768 px only */}
+      {/* Mobile top bar (only visible < 768 px) */}
       <div className="md:hidden flex items-center justify-between border-b border-[#f0e8d8] bg-[#fdfaf5] px-4 py-3 sticky top-0 z-30">
         <button
           type="button"
@@ -72,7 +78,7 @@ export default function MobileShellWrapper({
           </svg>
         </button>
         <div
-          className="font-black leading-none text-right"
+          className="leading-none text-right"
           style={{ fontFamily: 'var(--font-raleway), Raleway, sans-serif' }}
         >
           <div
@@ -91,58 +97,62 @@ export default function MobileShellWrapper({
       </div>
 
       <div className="flex min-h-screen">
-        {/* Desktop sidebar — fixed at 280 px */}
+        {/* Desktop sidebar — fixed 280px column, visible >= 768 px */}
         <aside className="hidden md:flex md:w-[280px] md:flex-shrink-0 md:flex-col bg-[#1e1508] text-[#fdfaf5] sticky top-0 h-screen overflow-y-auto">
           {sidebar}
         </aside>
 
-        {/* Mobile slide-in sidebar */}
-        {mobileOpen && (
-          <>
-            {/* Backdrop */}
-            <div
-              className="md:hidden fixed inset-0 bg-black/50 z-40"
+        {/* Mobile backdrop — always in DOM, opacity-controlled */}
+        <div
+          className={
+            'md:hidden fixed inset-0 bg-black/50 z-40 transition-opacity duration-200 ' +
+            (mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none')
+          }
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+
+        {/* Mobile slide-in panel — always in DOM, translate-controlled */}
+        <aside
+          className={
+            'md:hidden fixed inset-y-0 left-0 w-[280px] bg-[#1e1508] text-[#fdfaf5] z-50 overflow-y-auto transition-transform duration-200 ' +
+            (mobileOpen ? 'translate-x-0' : '-translate-x-full')
+          }
+          role="dialog"
+          aria-modal="true"
+          aria-label="Onboarding navigation"
+          aria-hidden={!mobileOpen}
+        >
+          <div className="flex justify-end p-2">
+            <button
+              type="button"
               onClick={() => setMobileOpen(false)}
-              aria-hidden="true"
-            />
-            {/* Slide-in panel */}
-            <aside
-              className="md:hidden fixed inset-y-0 left-0 w-[280px] bg-[#1e1508] text-[#fdfaf5] z-50 overflow-y-auto"
-              role="dialog"
-              aria-modal="true"
-              aria-label="Onboarding navigation"
+              className="p-2 text-[#fdfaf5] hover:bg-white/10 rounded transition-colors"
+              aria-label="Close menu"
+              tabIndex={mobileOpen ? 0 : -1}
             >
-              <div className="flex justify-end p-2">
-                <button
-                  type="button"
-                  onClick={() => setMobileOpen(false)}
-                  className="p-2 text-[#fdfaf5] hover:bg-white/10 rounded transition-colors"
-                  aria-label="Close menu"
-                >
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              </div>
-              {sidebar}
-            </aside>
-          </>
-        )}
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+          {sidebar}
+        </aside>
 
         {/* Main content pane */}
         <main className="flex-1 min-w-0">{children}</main>
       </div>
     </div>
-  )
+  );
 }
