@@ -49,6 +49,10 @@ export async function proxy(request: NextRequest) {
   // it must run uninterrupted.
   await supabase.auth.getUser()
 
+  // Inject the request pathname so server components (e.g. onboarding layout)
+  // can conditionally skip wrappers for auth sub-pages like /set-password.
+  response.headers.set('x-pathname', request.nextUrl.pathname)
+
   return response
 }
 
