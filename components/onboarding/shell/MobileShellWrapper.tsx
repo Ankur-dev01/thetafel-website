@@ -6,19 +6,20 @@
  * Responsive two-pane layout for the onboarding shell.
  *
  *   Desktop (>= 768 px):
- *     - Sidebar fixed at 280px wide on the left.
- *     - Main pane fills the remaining width.
+ *     - Sidebar fixed at 280px wide on the left, pinned to viewport
+ *       (does NOT scroll with page content).
+ *     - Main pane has 280px left padding to compensate.
  *     - Mobile top bar hidden.
- *     - Slide-in mobile sidebar never visible.
  *
  *   Mobile (< 768 px):
  *     - Sidebar column hidden.
  *     - Mobile top bar visible with hamburger + small wordmark.
  *     - Tapping hamburger opens a slide-in mobile sidebar from the left.
+ *     - Main pane has no left padding.
  *
- * Uses CSS transform for the slide-in (always present in DOM, off-screen
- * by default, slides in when mobileOpen is true). This avoids conditional
- * rendering bugs where the slide-in panel leaks into the desktop layout.
+ * Uses position: fixed (not sticky) for the desktop sidebar — sticky was
+ * silently breaking inside the flex container, causing the sidebar to
+ * scroll away with long step pages.
  */
 
 import { useEffect, useState } from 'react';
@@ -96,63 +97,63 @@ export default function MobileShellWrapper({
         </div>
       </div>
 
-      <div className="flex min-h-screen">
-        {/* Desktop sidebar — fixed 280px column, visible >= 768 px */}
-        <aside className="hidden md:flex md:w-[280px] md:flex-shrink-0 md:flex-col bg-[#1e1508] text-[#fdfaf5] sticky top-0 h-screen overflow-y-auto">
-          {sidebar}
-        </aside>
+      {/* Desktop sidebar — FIXED to viewport, never scrolls */}
+      <aside className="hidden md:flex md:flex-col fixed top-0 left-0 w-70 h-screen bg-[#1e1508] text-[#fdfaf5] overflow-y-auto z-20">
+        {sidebar}
+      </aside>
 
-        {/* Mobile backdrop — always in DOM, opacity-controlled */}
-        <div
-          className={
-            'md:hidden fixed inset-0 bg-black/50 z-40 transition-opacity duration-200 ' +
-            (mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none')
-          }
-          onClick={() => setMobileOpen(false)}
-          aria-hidden="true"
-        />
+      {/* Mobile slide-in backdrop — always in DOM, transitions opacity */}
+      <div
+        className={
+          'md:hidden fixed inset-0 bg-black/50 z-40 transition-opacity duration-200 ' +
+          (mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none')
+        }
+        onClick={() => setMobileOpen(false)}
+        aria-hidden="true"
+      />
 
-        {/* Mobile slide-in panel — always in DOM, translate-controlled */}
-        <aside
-          className={
-            'md:hidden fixed inset-y-0 left-0 w-[280px] bg-[#1e1508] text-[#fdfaf5] z-50 overflow-y-auto transition-transform duration-200 ' +
-            (mobileOpen ? 'translate-x-0' : '-translate-x-full')
-          }
-          role="dialog"
-          aria-modal="true"
-          aria-label="Onboarding navigation"
-          aria-hidden={!mobileOpen}
-        >
-          <div className="flex justify-end p-2">
-            <button
-              type="button"
-              onClick={() => setMobileOpen(false)}
-              className="p-2 text-[#fdfaf5] hover:bg-white/10 rounded transition-colors"
-              aria-label="Close menu"
-              tabIndex={mobileOpen ? 0 : -1}
+      {/* Mobile slide-in panel — always in DOM, translates X */}
+      <aside
+        className={
+          'md:hidden fixed inset-y-0 left-0 w-70 bg-[#1e1508] text-[#fdfaf5] z-50 overflow-y-auto transition-transform duration-200 ' +
+          (mobileOpen ? 'translate-x-0' : '-translate-x-full')
+        }
+        role="dialog"
+        aria-modal="true"
+        aria-label="Onboarding navigation"
+        aria-hidden={!mobileOpen}
+      >
+        <div className="flex justify-end p-2">
+          <button
+            type="button"
+            onClick={() => setMobileOpen(false)}
+            className="p-2 text-[#fdfaf5] hover:bg-white/10 rounded transition-colors"
+            aria-label="Close menu"
+            tabIndex={mobileOpen ? 0 : -1}
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
             >
-              <svg
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          </div>
-          {sidebar}
-        </aside>
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        {sidebar}
+      </aside>
 
-        {/* Main content pane */}
-        <main className="flex-1 min-w-0">{children}</main>
-      </div>
+      {/* Main content pane — pushed right by 280px on desktop to clear the fixed sidebar */}
+      <main className="md:pl-70 min-h-screen">
+        {children}
+      </main>
     </div>
   );
 }

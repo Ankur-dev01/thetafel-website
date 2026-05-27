@@ -180,6 +180,37 @@
     "toEnglish": "EN",
     "toDutch": "NL"
   },
+  "onboarding": {
+    "services": {
+      "serviceTag": "Choose your services",
+      "heading": "Which services would you like to set up?",
+      "sub": "Pick one or combine all three. You can always add more later.",
+      "hintBanner": "Set up all three services — recommended. Restaurants that use all services see the highest combined revenue.",
+      "comingSoon": "Coming soon",
+      "continueLabel": "Set up services",
+      "continueSubmitting": "Saving…",
+      "errorSave": "We couldn't save that. Please try again.",
+      "errorAdvance": "We couldn't move you to the next step. Please try again.",
+      "cards": {
+        "reservations": {
+          "title": "Reservations",
+          "description": "Online reservations, floor plan, opening hours, and no-show protection."
+        },
+        "takeaway": {
+          "title": "Takeaway",
+          "description": "Online takeaway orders with instant payment via iDEAL or card."
+        },
+        "qr": {
+          "title": "QR ordering",
+          "description": "Guests order directly from their table by scanning a QR code on their phone."
+        },
+        "delivery": {
+          "title": "Delivery",
+          "description": "Own-delivery flow with connected courier partners."
+        }
+      }
+    }
+  },
  "modal": {
   "eyebrow": "Start for free",
   "heading": "Your restaurant on The Tafel.",

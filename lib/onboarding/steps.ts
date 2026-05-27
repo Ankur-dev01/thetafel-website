@@ -25,7 +25,7 @@ export const ALL_STEPS: StepDescriptor[] = [
     key: 'services',
     label_nl: 'Diensten kiezen',
     label_en: 'Choose services',
-    path: '/onboarding/services',
+    path: '/onboarding',
     services: [],
   },
   {
@@ -73,7 +73,7 @@ export const ALL_STEPS: StepDescriptor[] = [
     key: 'guest-experience',
     label_nl: 'Gastervaring',
     label_en: 'Guest experience',
-    path: '/onboarding/guest-experience',
+    path: '/onboarding/guests',
     services: ['reservations'],
   },
   {

@@ -180,6 +180,37 @@
     "toEnglish": "EN",
     "toDutch": "NL"
   },
+  "onboarding": {
+    "services": {
+      "serviceTag": "Kies je diensten",
+      "heading": "Welke diensten wil je instellen?",
+      "sub": "Je kunt er één kiezen of alle drie combineren. Je kunt later altijd uitbreiden.",
+      "hintBanner": "Stel alle drie de diensten in — aanbevolen. Restaurants die alle diensten gebruiken zien gemiddeld de hoogste omzet.",
+      "comingSoon": "Binnenkort",
+      "continueLabel": "Diensten instellen",
+      "continueSubmitting": "Bezig met opslaan…",
+      "errorSave": "Opslaan mislukt. Probeer het opnieuw.",
+      "errorAdvance": "Kon niet doorgaan naar de volgende stap. Probeer het opnieuw.",
+      "cards": {
+        "reservations": {
+          "title": "Reserveringen",
+          "description": "Online reserveringen, plattegrond, openingstijden en no-show bescherming."
+        },
+        "takeaway": {
+          "title": "Afhalen",
+          "description": "Online afhaalbestellingen met directe betaling via iDEAL of kaart."
+        },
+        "qr": {
+          "title": "QR-bestellen",
+          "description": "Gasten bestellen direct vanaf hun tafel via een QR-code op hun telefoon."
+        },
+        "delivery": {
+          "title": "Bezorging",
+          "description": "Eigen bezorgflow met gekoppelde koerier-partners."
+        }
+      }
+    }
+  },
   "modal": {
   "eyebrow": "Gratis starten",
   "heading": "Jouw restaurant op The Tafel.",
