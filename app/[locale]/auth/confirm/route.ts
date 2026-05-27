@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { resolveDestination } from '@/lib/auth/resolveDestination'
 
 /**
  * GET /[locale]/auth/confirm
@@ -14,9 +15,13 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
  *
  * Routing after session establishment:
  *   - type=recovery (any user state)        → /onboarding/set-password
- *   - no restaurant row                     → /onboarding/set-password (first-time user)
- *   - restaurant.status = 'active'          → /dashboard
- *   - any other status                      → /onboarding
+ *   - Otherwise → resolveDestination() decides:
+ *       no restaurant row                   → /onboarding/set-password
+ *       status = 'live'                     → /dashboard
+ *       status = 'pending_review'           → /onboarding/submitted
+ *       status = 'suspended'/'cancelled'    → /login?error=account_unavailable
+ *       status = 'onboarding' & step >= 1   → that step's path
+ *       status = 'onboarding' & step = 0    → /onboarding (service picker)
  *
  * Failure cases redirect to /verify-email?error={expired|used}.
  *
@@ -40,7 +45,7 @@ export async function GET(
   const type = typeRaw === 'recovery' ? 'recovery' : 'magiclink'
   const queryLocale = url.searchParams.get('locale')
 
-  const effectiveLocale =
+  const effectiveLocale: 'nl' | 'en' =
     queryLocale === 'en' || queryLocale === 'nl'
       ? queryLocale
       : pathLocale === 'en'
@@ -102,7 +107,7 @@ export async function GET(
   // Magic-link signup flow — look up the restaurant record for this user.
   const { data: restaurant, error: restaurantError } = await supabase
     .from('restaurants')
-    .select('status')
+    .select('status, current_onboarding_step')
     .eq('user_id', userId)
     .maybeSingle()
 
@@ -113,15 +118,6 @@ export async function GET(
     )
   }
 
-  if (!restaurant) {
-    return NextResponse.redirect(
-      `${origin}${localePrefix}/onboarding/set-password`
-    )
-  }
-
-  if (restaurant.status === 'active') {
-    return NextResponse.redirect(`${origin}${localePrefix}/dashboard`)
-  }
-
-  return NextResponse.redirect(`${origin}${localePrefix}/onboarding`)
+  const destination = resolveDestination(restaurant ?? null, effectiveLocale)
+  return NextResponse.redirect(`${origin}${destination}`)
 }

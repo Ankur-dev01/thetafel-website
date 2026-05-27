@@ -35,7 +35,24 @@ export default function LoginPage() {
       })
 
       if (res.ok) {
-        router.push(`${localePrefix}/dashboard`)
+        // Resolve where this user belongs (status-based) before pushing.
+        try {
+          const destRes = await fetch(
+            `/api/auth/me/destination?locale=${locale}`,
+            { cache: 'no-store' }
+          )
+          if (destRes.ok) {
+            const data = (await destRes.json()) as { destination?: string }
+            if (data?.destination && typeof data.destination === 'string') {
+              router.push(data.destination)
+              return
+            }
+          }
+        } catch {
+          // Fall through to the safe default below.
+        }
+        // Safe default if the destination lookup failed.
+        router.push(`${localePrefix}/onboarding`)
         return
       }
 
