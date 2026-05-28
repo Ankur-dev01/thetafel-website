@@ -181,6 +181,34 @@ export function getTotalWizardSteps(visibleSteps: StepDescriptor[]): number {
 
 export type StepStatus = 'completed' | 'current' | 'reachable' | 'unreachable';
 
+/**
+ * Derives the canonical step id from a URL pathname.
+ * Uses exact-match first, then longest-prefix so /onboarding never
+ * greedily absorbs /onboarding/floor-plan before step 2 gets a chance.
+ * Strips the locale prefix (/en or /nl) before matching.
+ * Exported so both the server shell and the client sidebar can share
+ * one implementation.
+ */
+export function resolveStepIdFromPath(pathname: string): number | null {
+  if (!pathname) return null
+
+  let stripped = pathname.replace(/^\/(en|nl)(?=\/|$)/, '')
+  if (stripped === '') stripped = '/'
+  if (stripped.length > 1 && stripped.endsWith('/')) {
+    stripped = stripped.slice(0, -1)
+  }
+
+  const exact = ALL_STEPS.find((s) => s.path === stripped)
+  if (exact) return exact.id
+
+  const prefixMatches = ALL_STEPS.filter((s) =>
+    stripped.startsWith(s.path + '/')
+  )
+  if (prefixMatches.length === 0) return null
+  prefixMatches.sort((a, b) => b.path.length - a.path.length)
+  return prefixMatches[0]!.id
+}
+
 export function getStepStatus(
   stepId: number,
   currentOnboardingStep: number,

@@ -1,8 +1,12 @@
+'use client';
+
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import type { Database } from '@/packages/db/types';
 import {
   getVisibleSteps,
   getStepStatus,
+  resolveStepIdFromPath,
   type StepDescriptor,
 } from '@/lib/onboarding/steps';
 import LanguageToggle from './LanguageToggle';
@@ -20,6 +24,13 @@ export default function OnboardingSidebar({
   restaurant,
   currentRouteStepId,
 }: OnboardingSidebarProps) {
+  const pathname = usePathname();
+  // Derive the active step from the live client pathname so the highlight
+  // updates immediately on soft (client-side) navigation without waiting
+  // for the server layout to re-render. Fall back to the server-provided
+  // value for the initial SSR pass (avoids a highlight flash).
+  const liveStepId = resolveStepIdFromPath(pathname) ?? currentRouteStepId;
+
   const visibleSteps = getVisibleSteps(restaurant);
   const currentOnboardingStep = restaurant?.current_onboarding_step ?? 0;
 
@@ -105,7 +116,7 @@ export default function OnboardingSidebar({
             const status = getStepStatus(
               step.id,
               currentOnboardingStep,
-              currentRouteStepId
+              liveStepId
             );
             return (
               <li key={step.key}>

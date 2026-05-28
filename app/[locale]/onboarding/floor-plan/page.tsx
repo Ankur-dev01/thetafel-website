@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import StepFrame from '@/components/onboarding/shell/StepFrame'
@@ -47,6 +47,17 @@ const PARTY_SIZES = ['2', '4', '6', '8', '10'] as const
 function extractTableNumber(label: string): number {
   const m = /^T(\d+)$/.exec(label)
   return m ? parseInt(m[1]!, 10) : 0
+}
+
+// Returns the lowest positive integer N such that T{N} is not already in use,
+// scanning all tables across all zones (labels are per-restaurant).
+function nextFreeTableLabel(tables: LocalTable[]): string {
+  const used = new Set(
+    tables.map((t) => extractTableNumber(t.label)).filter((n) => n > 0)
+  )
+  let n = 1
+  while (used.has(n)) n++
+  return `T${n}`
 }
 
 function buildPartyMap(
@@ -128,9 +139,6 @@ export default function FloorPlanPage() {
   const [zones, setZones] = useState<LocalZone[]>([])
   const [tables, setTables] = useState<LocalTable[]>([])
   const [selectedSize, setSelectedSize] = useState<(typeof TABLE_SIZES)[number]>(2)
-  // Ref so handleAddTable always reads the current next number without
-  // needing to re-create the callback on every table addition.
-  const nextTableNumRef = useRef(1)
 
   // Zone creation UI
   const [isAddingZone, setIsAddingZone] = useState(false)
@@ -215,13 +223,6 @@ export default function FloorPlanPage() {
             is_bookable: t.is_bookable,
             is_qr_enabled: t.is_qr_enabled,
           }))
-
-        // Compute starting label number — per-restaurant, stable across reloads
-        const maxNum = loadedTables.reduce((max, t) => {
-          const n = extractTableNumber(t.label)
-          return n > max ? n : max
-        }, 0)
-        nextTableNumRef.current = maxNum + 1
 
         // Auto-create the default zone on first visit (no zones yet)
         if (loadedZones.length === 0) {
@@ -359,9 +360,7 @@ export default function FloorPlanPage() {
 
   const handleAddTable = useCallback(
     (zoneId: string) => {
-      const num = nextTableNumRef.current
-      nextTableNumRef.current = num + 1
-      const label = `T${num}`
+      const label = nextFreeTableLabel(tables)
       const newTable: LocalTable = {
         tempId: `${label}-${Date.now()}`,
         zone_id: zoneId,
