@@ -261,6 +261,39 @@
         "other": "Other"
       }
     },
+    "floorPlan": {
+      "serviceTag": "Step 2 — Reservations",
+      "heading": "Floor plan",
+      "sub": "Add zones and tables for table reservations.",
+      "loading": "Loading…",
+      "continueLabel": "Continue",
+      "tiles": {
+        "tables": "Tables",
+        "seats": "Seats",
+        "zones": "Zones",
+        "maxPerShift": "Max. guests"
+      },
+      "sizeSelector": "Table size",
+      "addTable": "+ Add table",
+      "addZone": "+ Add zone",
+      "zoneNamePlaceholder": "Zone name",
+      "confirmZone": "Confirm",
+      "cancelZone": "Cancel",
+      "removeZone": "Remove zone",
+      "removeTable": "Remove table",
+      "occupancyLabel": "Occupancy time per table",
+      "turnoverLabel": "Turnover buffer",
+      "occupancyPerParty": "Per party size",
+      "partyGridLabel": "Minutes per party size",
+      "partySize": "guests",
+      "minutesSuffix": "min.",
+      "errors": {
+        "hydrate": "We couldn't load your data. Please refresh the page.",
+        "zoneNameRequired": "Please enter a name for the zone.",
+        "zoneNameDuplicate": "A zone with that name already exists.",
+        "zoneSaveFailed": "The zone couldn't be saved. Please try again."
+      }
+    },
     "services": {
       "serviceTag": "Choose your services",
       "heading": "Which services would you like to set up?",

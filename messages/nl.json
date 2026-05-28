@@ -261,6 +261,39 @@
         "other": "Overig"
       }
     },
+    "floorPlan": {
+      "serviceTag": "Stap 2 — Reserveringen",
+      "heading": "Plattegrond",
+      "sub": "Voeg zones en tafels toe voor reserveringen.",
+      "loading": "Bezig met laden…",
+      "continueLabel": "Doorgaan",
+      "tiles": {
+        "tables": "Tafels",
+        "seats": "Stoelen",
+        "zones": "Zones",
+        "maxPerShift": "Max. gasten"
+      },
+      "sizeSelector": "Tafelmaat",
+      "addTable": "+ Tafel toevoegen",
+      "addZone": "+ Zone toevoegen",
+      "zoneNamePlaceholder": "Naam van de zone",
+      "confirmZone": "Bevestigen",
+      "cancelZone": "Annuleren",
+      "removeZone": "Zone verwijderen",
+      "removeTable": "Tafel verwijderen",
+      "occupancyLabel": "Bezettingstijd per tafel",
+      "turnoverLabel": "Omsteltijd",
+      "occupancyPerParty": "Per gezelschapsgrootte",
+      "partyGridLabel": "Minuten per groepsgrootte",
+      "partySize": "personen",
+      "minutesSuffix": "min.",
+      "errors": {
+        "hydrate": "Kon je eerdere gegevens niet laden. Vernieuw de pagina.",
+        "zoneNameRequired": "Geef de zone een naam.",
+        "zoneNameDuplicate": "Er bestaat al een zone met deze naam.",
+        "zoneSaveFailed": "Zone kon niet worden opgeslagen. Probeer het opnieuw."
+      }
+    },
     "services": {
       "serviceTag": "Kies je diensten",
       "heading": "Welke diensten wil je instellen?",
