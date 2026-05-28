@@ -261,6 +261,42 @@
         "other": "Other"
       }
     },
+    "hours": {
+      "serviceTag": "Step 3 — Opening hours",
+      "heading": "Opening hours",
+      "sub": "Set when you're open. This applies to all your services.",
+      "loading": "Loading…",
+      "continueLabel": "Continue",
+      "days": {
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat",
+        "sun": "Sun"
+      },
+      "openLabel": "Open",
+      "closeLabel": "Close",
+      "closesNextDay": "+1 day",
+      "tagBrunch": "Brunch",
+      "tagLunch": "Lunch",
+      "tagDinner": "Dinner",
+      "slotIntervalLabel": "Booking slot interval",
+      "kitchenClosesLabel": "Kitchen closes",
+      "kitchenClosesHint": "Last order before closing time.",
+      "perServiceLabel": "Use different hours per service",
+      "perServiceHint": "Set separate opening hours per service (reservations, takeaway, QR).",
+      "serviceReservations": "Reservations",
+      "serviceTakeaway": "Takeaway",
+      "serviceQr": "QR ordering",
+      "errors": {
+        "hydrate": "We couldn't load your data. Please refresh the page.",
+        "needOneDay": "Enable at least one day to continue.",
+        "invalidTime": "Please enter valid times.",
+        "closeEqualsOpen": "Closing time must differ from opening time."
+      }
+    },
     "floorPlan": {
       "serviceTag": "Step 2 — Reservations",
       "heading": "Floor plan",

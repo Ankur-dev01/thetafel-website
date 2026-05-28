@@ -261,6 +261,42 @@
         "other": "Overig"
       }
     },
+    "hours": {
+      "serviceTag": "Stap 3 — Openingstijden",
+      "heading": "Openingstijden",
+      "sub": "Stel in wanneer je open bent. Dit geldt voor al je diensten.",
+      "loading": "Bezig met laden…",
+      "continueLabel": "Doorgaan",
+      "days": {
+        "mon": "Ma",
+        "tue": "Di",
+        "wed": "Wo",
+        "thu": "Do",
+        "fri": "Vr",
+        "sat": "Za",
+        "sun": "Zo"
+      },
+      "openLabel": "Open",
+      "closeLabel": "Sluit",
+      "closesNextDay": "+1 dag",
+      "tagBrunch": "Brunch",
+      "tagLunch": "Lunch",
+      "tagDinner": "Diner",
+      "slotIntervalLabel": "Reserveringsinterval",
+      "kitchenClosesLabel": "Keuken sluit",
+      "kitchenClosesHint": "Laatste bestelling voor sluitingstijd.",
+      "perServiceLabel": "Gebruik andere tijden per dienst",
+      "perServiceHint": "Stel aparte openingstijden in per dienst (reserveringen, afhalen, QR).",
+      "serviceReservations": "Reserveringen",
+      "serviceTakeaway": "Afhalen",
+      "serviceQr": "QR-bestellen",
+      "errors": {
+        "hydrate": "Kon je eerdere gegevens niet laden. Vernieuw de pagina.",
+        "needOneDay": "Zet ten minste één dag aan om door te gaan.",
+        "invalidTime": "Vul geldige tijden in.",
+        "closeEqualsOpen": "Sluitingstijd moet afwijken van openingstijd."
+      }
+    },
     "floorPlan": {
       "serviceTag": "Stap 2 — Reserveringen",
       "heading": "Plattegrond",
