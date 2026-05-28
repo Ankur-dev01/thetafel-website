@@ -181,6 +181,86 @@
     "toDutch": "NL"
   },
   "onboarding": {
+    "business": {
+      "serviceTag": "Identiteit",
+      "loading": "Bezig met laden…",
+      "continueLabel": "Doorgaan",
+      "phase1": {
+        "heading": "Vind je bedrijf.",
+        "sub": "Vul je KVK-nummer of bedrijfsnaam in. We halen automatisch je gegevens op uit het KVK-register.",
+        "searchLabel": "KVK-nummer of bedrijfsnaam",
+        "searchPlaceholder": "Bijv. 68750110 of Restaurant Voorbeeld",
+        "hintIdle": "Vul je KVK-nummer of volledige bedrijfsnaam in.",
+        "hintTypeMore": "Typ minimaal 3 tekens om te zoeken.",
+        "hintSearching": "Zoeken…",
+        "hintNoResults": "Geen bedrijven gevonden. Probeer een volledig woord of het KVK-nummer.",
+        "hintError": "Zoeken mislukt. Probeer het opnieuw.",
+        "hintFetching": "Bedrijfsgegevens ophalen…"
+      },
+      "phase2": {
+        "heading": "Controleer je gegevens.",
+        "sub": "We hebben je bedrijf gevonden in het KVK-register. Klopt alles?",
+        "verifiedPill": "KVK geverifieerd",
+        "kvkFoundPill": "KVK gevonden",
+        "changeBusiness": "Wijzig bedrijf",
+        "sbiError": "Dit KVK-nummer staat niet geregistreerd als horecabedrijf. Neem contact op met support als dit niet klopt.",
+        "kvkAlreadyLinked": "Dit KVK-nummer is al gekoppeld aan een ander account.",
+        "fields": {
+          "legalName": "Bedrijfsnaam",
+          "tradeName": "Handelsnaam",
+          "kvkNumber": "KVK-nummer",
+          "legalForm": "Rechtsvorm",
+          "sbiCode": "SBI-code",
+          "address": "Bezoekadres",
+          "postcode": "Postcode",
+          "city": "Plaats",
+          "website": "Website"
+        },
+        "form": {
+          "displayNameLabel": "Weergavenaam",
+          "displayNameHint": "Zo wordt je restaurant weergegeven aan gasten.",
+          "phoneLabel": "Publiek telefoonnummer",
+          "phonePlaceholder": "+31 6 00 000 000",
+          "emailLabel": "Publiek e-mailadres",
+          "emailPlaceholder": "info@restaurant.nl",
+          "cuisineLabel": "Keukenstijl",
+          "cuisinePlaceholder": "Kies een keukenstijl",
+          "websiteLabel": "Website",
+          "websitePlaceholder": "https://www.restaurant.nl"
+        }
+      },
+      "errors": {
+        "hydrate": "Kon je eerdere gegevens niet laden. Vernieuw de pagina.",
+        "profileFetch": "Kon bedrijfsgegevens niet ophalen. Probeer het opnieuw.",
+        "saveFailed": "Opslaan mislukt. Probeer het opnieuw.",
+        "displayNameRequired": "Weergavenaam is verplicht.",
+        "phoneInvalid": "Ongeldig telefoonnummer. Gebruik bijv. +31 6 12345678.",
+        "emailInvalid": "Ongeldig e-mailadres.",
+        "websiteInvalid": "Ongeldige website-URL. Gebruik bijv. https://www.restaurant.nl.",
+        "cuisineRequired": "Kies een keukenstijl om door te gaan."
+      },
+      "cuisineOptions": {
+        "italian": "Italiaans",
+        "french": "Frans",
+        "asian": "Aziatisch",
+        "chinese": "Chinees",
+        "japanese": "Japans",
+        "indian": "Indiaas",
+        "mediterranean": "Mediterraans",
+        "dutch": "Hollands",
+        "american": "Amerikaans",
+        "mexican": "Mexicaans",
+        "middle_eastern": "Midden-Oosters",
+        "vegetarian": "Vegetarisch / vegan",
+        "seafood": "Vis & zeevruchten",
+        "steakhouse": "Steakhouse",
+        "cafe": "Café / grand café",
+        "bakery": "Bakkerij / lunchroom",
+        "bar": "Bar",
+        "fine_dining": "Fine dining",
+        "other": "Overig"
+      }
+    },
     "services": {
       "serviceTag": "Kies je diensten",
       "heading": "Welke diensten wil je instellen?",

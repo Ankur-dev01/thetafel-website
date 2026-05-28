@@ -99,9 +99,28 @@ export default async function OnboardingShell({
 }
 
 function resolveStepIdFromPath(pathname: string): number | null {
-  const stripped = pathname.replace(/^\/en/, '') || '/';
-  const match = ALL_STEPS.find(
-    (s) => stripped === s.path || stripped.startsWith(s.path + '/')
+  if (!pathname) return null;
+
+  // Strip locale prefix (/en or /nl).
+  let stripped = pathname.replace(/^\/(en|nl)(?=\/|$)/, '');
+  if (stripped === '') stripped = '/';
+
+  // Strip trailing slash unless it's the root.
+  if (stripped.length > 1 && stripped.endsWith('/')) {
+    stripped = stripped.slice(0, -1);
+  }
+
+  // Exact match first.
+  const exact = ALL_STEPS.find((s) => s.path === stripped);
+  if (exact) return exact.id;
+
+  // Prefix match — pick the LONGEST matching path so step 0's "/onboarding"
+  // doesn't greedy-match "/onboarding/business" before step 1 gets a chance.
+  const prefixMatches = ALL_STEPS.filter((s) =>
+    stripped.startsWith(s.path + '/')
   );
-  return match ? match.id : null;
+  if (prefixMatches.length === 0) return null;
+
+  prefixMatches.sort((a, b) => b.path.length - a.path.length);
+  return prefixMatches[0]!.id;
 }

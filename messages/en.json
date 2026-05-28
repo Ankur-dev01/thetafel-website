@@ -181,6 +181,86 @@
     "toDutch": "NL"
   },
   "onboarding": {
+    "business": {
+      "serviceTag": "Identity",
+      "loading": "Loading…",
+      "continueLabel": "Continue",
+      "phase1": {
+        "heading": "Find your business.",
+        "sub": "Enter your KVK number or business name. We will pull your details from the Dutch Chamber of Commerce register.",
+        "searchLabel": "KVK number or business name",
+        "searchPlaceholder": "e.g. 68750110 or Restaurant Voorbeeld",
+        "hintIdle": "Enter your KVK number or full business name.",
+        "hintTypeMore": "Type at least 3 characters to search.",
+        "hintSearching": "Searching…",
+        "hintNoResults": "No businesses found. Try a full word or the KVK number.",
+        "hintError": "Search failed. Please try again.",
+        "hintFetching": "Fetching business details…"
+      },
+      "phase2": {
+        "heading": "Check your details.",
+        "sub": "We found your business in the KVK register. Does everything look right?",
+        "verifiedPill": "KVK verified",
+        "kvkFoundPill": "KVK found",
+        "changeBusiness": "Change business",
+        "sbiError": "This KVK number isn't registered as a restaurant or food-service business. Contact support if you think this is a mistake.",
+        "kvkAlreadyLinked": "This KVK number is already linked to another account.",
+        "fields": {
+          "legalName": "Legal name",
+          "tradeName": "Trade name",
+          "kvkNumber": "KVK number",
+          "legalForm": "Legal form",
+          "sbiCode": "SBI code",
+          "address": "Visiting address",
+          "postcode": "Postcode",
+          "city": "City",
+          "website": "Website"
+        },
+        "form": {
+          "displayNameLabel": "Display name",
+          "displayNameHint": "This is how your restaurant will appear to guests.",
+          "phoneLabel": "Public phone number",
+          "phonePlaceholder": "+31 6 00 000 000",
+          "emailLabel": "Public email address",
+          "emailPlaceholder": "info@restaurant.com",
+          "cuisineLabel": "Cuisine type",
+          "cuisinePlaceholder": "Choose a cuisine type",
+          "websiteLabel": "Website",
+          "websitePlaceholder": "https://www.restaurant.com"
+        }
+      },
+      "errors": {
+        "hydrate": "We couldn't load your earlier data. Please refresh the page.",
+        "profileFetch": "We couldn't fetch the business details. Please try again.",
+        "saveFailed": "Save failed. Please try again.",
+        "displayNameRequired": "Display name is required.",
+        "phoneInvalid": "Invalid phone number. Use e.g. +31 6 12345678.",
+        "emailInvalid": "Invalid email address.",
+        "websiteInvalid": "Invalid website URL. Use e.g. https://www.restaurant.com.",
+        "cuisineRequired": "Please choose a cuisine type to continue."
+      },
+      "cuisineOptions": {
+        "italian": "Italian",
+        "french": "French",
+        "asian": "Asian",
+        "chinese": "Chinese",
+        "japanese": "Japanese",
+        "indian": "Indian",
+        "mediterranean": "Mediterranean",
+        "dutch": "Dutch",
+        "american": "American",
+        "mexican": "Mexican",
+        "middle_eastern": "Middle Eastern",
+        "vegetarian": "Vegetarian / vegan",
+        "seafood": "Seafood",
+        "steakhouse": "Steakhouse",
+        "cafe": "Café / brasserie",
+        "bakery": "Bakery / lunchroom",
+        "bar": "Bar",
+        "fine_dining": "Fine dining",
+        "other": "Other"
+      }
+    },
     "services": {
       "serviceTag": "Choose your services",
       "heading": "Which services would you like to set up?",

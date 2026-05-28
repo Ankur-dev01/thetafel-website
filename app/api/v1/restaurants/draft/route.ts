@@ -252,6 +252,17 @@ export async function PATCH(req: NextRequest) {
         .update(body.restaurant)
         .eq('id', restaurantId)
       if (error) {
+        // Postgres unique_violation (SQLSTATE 23505). The only UNIQUE constraint
+        // reachable via a client PATCH is restaurants.kvk_number — surface as 409
+        // so the client can show "already linked to another account". If a future
+        // step allows clients to set `slug`, this handler would need to disambiguate
+        // by constraint name (error.details) rather than using a generic message.
+        if ((error as { code?: string }).code === '23505') {
+          return NextResponse.json(
+            { error: 'kvk_already_linked', message: error.message },
+            { status: 409 }
+          )
+        }
         return NextResponse.json(
           { error: 'restaurant_update_failed', message: error.message },
           { status: 400 }

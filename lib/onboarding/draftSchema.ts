@@ -62,6 +62,7 @@ export const restaurantPatchSchema = z
     display_name: z.string().max(300).optional(),
     legal_form: z.string().max(100).optional(),
     sbi_code: z.string().max(20).optional(),
+    kvk_verified_at: z.string().datetime().optional(),
     legal_address_street: z.string().max(200).optional(),
     legal_address_house_number: z.string().max(20).optional(),
     legal_address_house_letter: z.string().max(10).optional(),
