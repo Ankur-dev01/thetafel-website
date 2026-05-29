@@ -29,11 +29,13 @@ type DayConfig = {
 // ---- Module-level constants and helpers ------------------------------------
 
 const DAY_NUMS = [1, 2, 3, 4, 5, 6, 7] as const
-const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
 const DEFAULT_OPEN = '12:00'
 const DEFAULT_CLOSE = '22:00'
 const SLOT_OPTIONS = ['15', '30', '45', '60']
 const KITCHEN_OPTIONS = ['0', '15', '30', '45', '60']
+// Must match availabilitySchema's time24 regex exactly — rows with invalid
+// times are skipped before send to avoid validation_failed on .strict() schema.
+const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/
 
 function makeDefaultDays(): Record<number, DayConfig> {
   return Object.fromEntries(
@@ -80,6 +82,9 @@ function buildAvailabilityPayload(
     for (const d of DAY_NUMS) {
       const day = days[d]!
       if (!day.enabled) continue
+      // Skip rows whose times don't satisfy the server's time24 regex so we
+      // never send a payload that fails availabilitySchema's .strict() check.
+      if (!TIME_RE.test(day.openTime) || !TIME_RE.test(day.closeTime)) continue
       rows.push({
         day_of_week: d,
         service_scope: 'all',
@@ -98,6 +103,7 @@ function buildAvailabilityPayload(
       for (const d of DAY_NUMS) {
         const day = scopeDays[d]!
         if (!day.enabled) continue
+        if (!TIME_RE.test(day.openTime) || !TIME_RE.test(day.closeTime)) continue
         rows.push({
           day_of_week: d,
           service_scope: scope,
@@ -222,7 +228,13 @@ export default function HoursPage() {
         if (typeof r.kitchen_closes_offset_minutes === 'number') {
           setKitchenOffset(String(r.kitchen_closes_offset_minutes))
         }
-        const override = r.hours_per_service_override === true
+        // Derive override state from the actual rows, not the DB flag.
+        // A stale DB flag (e.g. set true then availability cleared) must not
+        // show per-service blocks on a fresh state.
+        const hasPerServiceRows = rows.some(
+          (row) => String(row.service_scope ?? 'all') !== 'all'
+        )
+        const override = hasPerServiceRows
         setUseOverride(override)
 
         // Build day configs from availability rows
@@ -629,7 +641,19 @@ function DayBlock({
             error={err}
             t={t}
             borderBottom={!isLast}
-            onToggle={(enabled) => onChange(dayNum, { enabled })}
+            onToggle={(enabled) =>
+              onChange(dayNum, {
+                enabled,
+                // When activating a row, guarantee valid HH:MM times so the
+                // time inputs never show the browser's current time.
+                ...(enabled
+                  ? {
+                      openTime: cfg.openTime || DEFAULT_OPEN,
+                      closeTime: cfg.closeTime || DEFAULT_CLOSE,
+                    }
+                  : {}),
+              })
+            }
             onOpenChange={(openTime) => onChange(dayNum, { openTime })}
             onCloseChange={(closeTime) => onChange(dayNum, { closeTime })}
             onTagToggle={(tag) => {
