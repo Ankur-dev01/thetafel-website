@@ -415,14 +415,17 @@ export default function HoursPage() {
     [days, perServiceDays, useOverride, enabledServices]
   )
 
-  const payload = useMemo(
-    () =>
-      buildAvailabilityPayload(days, perServiceDays, useOverride, enabledServices),
-    [days, perServiceDays, useOverride, enabledServices]
-  )
+  // At least one day is active — no day is special, Mon is not required.
+  // Kept separate from buildAvailabilityPayload so the TIME_RE filter there
+  // can't accidentally make Continue think zero days are active.
+  const hasActiveDay = useOverride
+    ? enabledServices.some((scope) =>
+        Object.values(perServiceDays[scope] ?? {}).some((d) => d.enabled)
+      )
+    : Object.values(days).some((d) => d.enabled)
 
   const canContinue =
-    payload.length > 0 &&
+    hasActiveDay &&
     Object.keys(timeErrors).length === 0 &&
     !isContinuing
 
