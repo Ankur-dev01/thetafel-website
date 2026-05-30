@@ -756,6 +756,7 @@ function DayRow({
         >
           <input
             type="time"
+            lang="nl-NL"
             value={config.openTime}
             onChange={(e) => onOpenChange(e.target.value)}
             disabled={!config.enabled}
@@ -773,6 +774,7 @@ function DayRow({
           </span>
           <input
             type="time"
+            lang="nl-NL"
             value={config.closeTime}
             onChange={(e) => onCloseChange(e.target.value)}
             disabled={!config.enabled}
