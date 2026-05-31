@@ -37,6 +37,13 @@ const KITCHEN_OPTIONS = ['0', '15', '30', '45', '60']
 // times are skipped before send to avoid validation_failed on .strict() schema.
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/
 
+// Postgres time columns return "HH:MM:SS" or "HH:MM:SS.fff". Strip to "HH:MM"
+// so TIME_RE passes for server-hydrated values.
+function normalizeTime(t: string): string {
+  const m = t.match(/^(\d{2}:\d{2})/)
+  return m ? m[1]! : DEFAULT_OPEN
+}
+
 function makeDefaultDays(): Record<number, DayConfig> {
   return Object.fromEntries(
     DAY_NUMS.map((d) => [
@@ -85,12 +92,14 @@ function buildAvailabilityPayload(
       // Skip rows whose times don't satisfy the server's time24 regex so we
       // never send a payload that fails availabilitySchema's .strict() check.
       if (!TIME_RE.test(day.openTime) || !TIME_RE.test(day.closeTime)) continue
+      const openN = normalizeTime(day.openTime)
+      const closeN = normalizeTime(day.closeTime)
       rows.push({
         day_of_week: d,
         service_scope: 'all',
-        open_time: day.openTime,
-        close_time: day.closeTime,
-        closes_next_day: closesNextDay(day.openTime, day.closeTime),
+        open_time: openN,
+        close_time: closeN,
+        closes_next_day: closesNextDay(openN, closeN),
         is_active: true,
         tag_brunch: day.tagBrunch,
         tag_lunch: day.tagLunch,
@@ -104,12 +113,14 @@ function buildAvailabilityPayload(
         const day = scopeDays[d]!
         if (!day.enabled) continue
         if (!TIME_RE.test(day.openTime) || !TIME_RE.test(day.closeTime)) continue
+        const openN = normalizeTime(day.openTime)
+        const closeN = normalizeTime(day.closeTime)
         rows.push({
           day_of_week: d,
           service_scope: scope,
-          open_time: day.openTime,
-          close_time: day.closeTime,
-          closes_next_day: closesNextDay(day.openTime, day.closeTime),
+          open_time: openN,
+          close_time: closeN,
+          closes_next_day: closesNextDay(openN, closeN),
           is_active: true,
           tag_brunch: day.tagBrunch,
           tag_lunch: day.tagLunch,
@@ -248,8 +259,8 @@ export default function HoursPage() {
 
           const cfg: DayConfig = {
             enabled: true,
-            openTime: String(row.open_time ?? DEFAULT_OPEN),
-            closeTime: String(row.close_time ?? DEFAULT_CLOSE),
+            openTime: normalizeTime(String(row.open_time ?? DEFAULT_OPEN)),
+            closeTime: normalizeTime(String(row.close_time ?? DEFAULT_CLOSE)),
             tagBrunch: row.tag_brunch === true,
             tagLunch: row.tag_lunch === true,
             tagDinner: row.tag_dinner === true,
