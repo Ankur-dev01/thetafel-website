@@ -297,6 +297,48 @@
         "closeEqualsOpen": "Closing time must differ from opening time."
       }
     },
+    "rules": {
+      "serviceTag": "Reservations",
+      "heading": "Booking rules",
+      "sub": "Set the rules the booking engine enforces for you.",
+      "continue": "Continue",
+      "saveFailed": "Save failed. Please try again.",
+
+      "leadTimeLabel": "Minimum lead time",
+      "leadTimeHint": "How far in advance guests can still book.",
+      "leadTimeOff": "No wait time",
+      "leadTime30": "30 minutes",
+      "leadTime60": "1 hour",
+      "leadTime120": "2 hours",
+      "leadTime240": "4 hours",
+      "leadTime1440": "24 hours",
+
+      "partySizeLabel": "Maximum party size",
+      "partySizeHint": "Larger parties contact you directly.",
+
+      "windowLabel": "Booking window",
+      "windowHint": "How far ahead guests can book.",
+      "window7": "7 days",
+      "window14": "14 days",
+      "window30": "30 days",
+      "window60": "60 days",
+      "window90": "90 days",
+      "window180": "180 days",
+      "window365": "365 days",
+
+      "maxGuestsLabel": "Maximum guests per slot",
+      "maxGuestsHint": "Optional cap on total guests in any single slot.",
+      "noLimit": "No limit",
+      "custom": "Custom",
+      "customGuestsPlaceholder": "e.g. 35",
+      "customGuestsErrorRange": "Enter a number between 2 and 500.",
+
+      "waitlistLabel": "Allow waitlist",
+      "waitlistDescription": "When all tables are full, guests can join the waitlist.",
+
+      "zonePreferenceLabel": "Guest zone preference",
+      "zonePreferenceDescription": "Guests see available zones (e.g. terrace or indoors) and can express a preference."
+    },
     "floorPlan": {
       "serviceTag": "Step 2 — Reservations",
       "heading": "Floor plan",

@@ -7,7 +7,7 @@ import {
   useRef,
   useMemo,
 } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import StepFrame from '@/components/onboarding/shell/StepFrame'
 import {
@@ -106,6 +106,7 @@ export default function BusinessVerificationPage() {
   const params = useParams()
   const locale = (params?.locale as string) === 'en' ? 'en' : 'nl'
   const router = useRouter()
+  const pathname = usePathname()
   const { state: saveState, saveNow } = useDraftSave()
 
   // ---- Hydration state ----------------------------------------------------
@@ -221,7 +222,7 @@ export default function BusinessVerificationPage() {
     return () => {
       cancelled = true
     }
-  }, [t])
+  }, [t, pathname])
 
   // ---- Debounced typeahead ------------------------------------------------
   useEffect(() => {

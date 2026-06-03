@@ -297,6 +297,48 @@
         "closeEqualsOpen": "Sluitingstijd moet afwijken van openingstijd."
       }
     },
+    "rules": {
+      "serviceTag": "Reserveringen",
+      "heading": "Reserveringsregels",
+      "sub": "Bepaal de regels die het reserveringssysteem voor je toepast.",
+      "continue": "Doorgaan",
+      "saveFailed": "Opslaan mislukt. Probeer het opnieuw.",
+
+      "leadTimeLabel": "Minimale wachttijd",
+      "leadTimeHint": "Hoe ver van tevoren gasten nog kunnen reserveren.",
+      "leadTimeOff": "Geen wachttijd",
+      "leadTime30": "30 minuten",
+      "leadTime60": "1 uur",
+      "leadTime120": "2 uur",
+      "leadTime240": "4 uur",
+      "leadTime1440": "24 uur",
+
+      "partySizeLabel": "Maximale groepsgrootte",
+      "partySizeHint": "Grotere groepen nemen rechtstreeks contact met je op.",
+
+      "windowLabel": "Reserveringsperiode",
+      "windowHint": "Hoe ver vooruit gasten kunnen reserveren.",
+      "window7": "7 dagen",
+      "window14": "14 dagen",
+      "window30": "30 dagen",
+      "window60": "60 dagen",
+      "window90": "90 dagen",
+      "window180": "180 dagen",
+      "window365": "365 dagen",
+
+      "maxGuestsLabel": "Maximaal aantal gasten per tijdslot",
+      "maxGuestsHint": "Optionele bovengrens voor het totaal aantal gasten in één tijdslot.",
+      "noLimit": "Geen limiet",
+      "custom": "Aangepast",
+      "customGuestsPlaceholder": "Bijv. 35",
+      "customGuestsErrorRange": "Vul een aantal tussen 2 en 500 in.",
+
+      "waitlistLabel": "Wachtlijst toestaan",
+      "waitlistDescription": "Wanneer alle tafels bezet zijn, kunnen gasten zich aanmelden voor de wachtlijst.",
+
+      "zonePreferenceLabel": "Zonevoorkeur van gast",
+      "zonePreferenceDescription": "Gasten zien beschikbare zones (bijv. terras of binnenzaal) en kunnen een voorkeur aangeven."
+    },
     "floorPlan": {
       "serviceTag": "Stap 2 — Reserveringen",
       "heading": "Plattegrond",

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useRouter, useParams } from 'next/navigation'
+import { useRouter, useParams, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import StepFrame from '@/components/onboarding/shell/StepFrame'
 import CardChoice from '@/components/onboarding/fields/CardChoice'
@@ -27,6 +27,7 @@ export default function ServicePickerPage() {
   const router = useRouter()
   const params = useParams()
   const locale = ((params?.locale as string) || 'nl') as Locale
+  const pathname = usePathname()
 
   const [flags, setFlags] = useState<ServiceFlags>({
     service_reservations_enabled: false,
@@ -75,7 +76,7 @@ export default function ServicePickerPage() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [pathname])
 
   // ─── Card toggle handler ─────────────────────────────────────────────────
   const handleToggle = useCallback(

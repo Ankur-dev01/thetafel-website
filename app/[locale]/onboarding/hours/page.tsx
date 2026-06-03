@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import StepFrame from '@/components/onboarding/shell/StepFrame'
 import SavedIndicator from '@/components/onboarding/shell/SavedIndicator'
@@ -172,6 +172,7 @@ export default function HoursPage() {
   const locale: 'nl' | 'en' =
     (params?.locale as string) === 'en' ? 'en' : 'nl'
   const router = useRouter()
+  const pathname = usePathname()
   const { state: saveState, save, saveNow } = useDraftSave()
 
   // Wizard meta
@@ -302,7 +303,7 @@ export default function HoursPage() {
     return () => {
       cancelled = true
     }
-  }, [t])
+  }, [t, pathname])
 
   // ---- Shared day handlers -------------------------------------------------
 
