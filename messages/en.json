@@ -339,6 +339,47 @@
       "zonePreferenceLabel": "Guest zone preference",
       "zonePreferenceDescription": "Guests see available zones (e.g. terrace or indoors) and can express a preference."
     },
+    "noShows": {
+      "serviceTag": "Reservations",
+      "heading": "No more no-shows",
+      "sub": "Pick which protections your booking engine runs. Everything is optional — you can change this any time later.",
+      "continue": "Continue",
+      "saveFailed": "Save failed. Please try again.",
+      "costNote": "Reminders are free on all plans. WhatsApp reminders require Premium and use your monthly WhatsApp allowance — overage is € 0.05 per message.",
+
+      "comingSoonBadge": "Coming soon",
+
+      "reminders": {
+        "title": "Reminders",
+        "description": "Automatic message 24 hours and 2 hours before the booking.",
+        "emailLabel": "Email — always included",
+        "whatsappLabel": "WhatsApp — requires Premium"
+      },
+
+      "reconfirmation": {
+        "title": "Reconfirmation",
+        "description": "Guest confirms 24 hours before via a link. No confirmation? Booking lapses."
+      },
+
+      "prepaid": {
+        "title": "Prepaid deposit",
+        "description": "Guest pays a deposit at booking. Refunded on attendance, kept on no-show.",
+        "lockedBadge": "Available after Step 11",
+        "amountLabel": "Deposit per guest (€)",
+        "amountPlaceholder": "e.g. 7.50",
+        "amountErrorRange": "Enter an amount between € 1.00 and € 500.00."
+      },
+
+      "ccGuarantee": {
+        "title": "Credit-card guarantee",
+        "description": "Guest provides credit-card details; you charge only on no-show."
+      },
+
+      "aiPredictor": {
+        "title": "AI no-show predictor",
+        "description": "Models predict which bookings are at risk of being a no-show."
+      }
+    },
     "floorPlan": {
       "serviceTag": "Step 2 — Reservations",
       "heading": "Floor plan",

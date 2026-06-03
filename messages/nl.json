@@ -339,6 +339,47 @@
       "zonePreferenceLabel": "Zonevoorkeur van gast",
       "zonePreferenceDescription": "Gasten zien beschikbare zones (bijv. terras of binnenzaal) en kunnen een voorkeur aangeven."
     },
+    "noShows": {
+      "serviceTag": "Reserveringen",
+      "heading": "Geen no-shows meer",
+      "sub": "Kies welke beschermingen je booking engine actief gebruikt. Alles is optioneel — je kunt later altijd aanpassen.",
+      "continue": "Doorgaan",
+      "saveFailed": "Opslaan mislukt. Probeer het opnieuw.",
+      "costNote": "Herinneringen zijn gratis op alle abonnementen. WhatsApp-herinneringen vereisen Premium en verbruiken je maandelijkse WhatsApp-bundel — daarna is het € 0,05 per bericht.",
+
+      "comingSoonBadge": "Binnenkort",
+
+      "reminders": {
+        "title": "Herinneringen",
+        "description": "Automatisch bericht 24 uur en 2 uur voor de reservering.",
+        "emailLabel": "E-mail — altijd inbegrepen",
+        "whatsappLabel": "WhatsApp — vereist Premium"
+      },
+
+      "reconfirmation": {
+        "title": "Bevestiging vooraf",
+        "description": "Gast bevestigt 24 uur van tevoren via een link. Geen bevestiging? Reservering vervalt."
+      },
+
+      "prepaid": {
+        "title": "Aanbetaling",
+        "description": "Gast betaalt vooraf een aanbetaling. Bij no-show houd je het bedrag.",
+        "lockedBadge": "Beschikbaar na Stap 11",
+        "amountLabel": "Aanbetaling per gast (€)",
+        "amountPlaceholder": "Bijv. 7,50",
+        "amountErrorRange": "Vul een bedrag tussen € 1,00 en € 500,00 in."
+      },
+
+      "ccGuarantee": {
+        "title": "Creditcard-garantie",
+        "description": "Gast geeft creditcardgegevens; je belast deze alleen bij no-show."
+      },
+
+      "aiPredictor": {
+        "title": "AI no-show voorspeller",
+        "description": "Modellen voorspellen welke reserveringen risico lopen op een no-show."
+      }
+    },
     "floorPlan": {
       "serviceTag": "Stap 2 — Reserveringen",
       "heading": "Plattegrond",
