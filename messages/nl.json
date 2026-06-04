@@ -446,6 +446,128 @@
         "min60": "60 minuten"
       }
     },
+    "menu": {
+      "serviceTagTakeaway": "Afhalen",
+      "serviceTagQr": "QR",
+      "serviceTagBoth": "Afhalen + QR",
+      "heading": "Menu",
+      "sub": "Lever ons de basis aan — wij maken er binnen 2 werkdagen een gepolijste menukaart van. Uploaden mag later ook.",
+      "continue": "Doorgaan",
+      "saveFailed": "Opslaan mislukt. Probeer het opnieuw.",
+
+      "sameMenu": {
+        "heading": "Eén menu of twee?",
+        "sub": "Bepaal of je dezelfde kaart wilt gebruiken voor afhalen en QR-bestellen aan tafel.",
+        "label": "Eén menu voor Afhalen en QR",
+        "description": "Het meeste werk bespaar je door dezelfde menukaart voor beide te gebruiken. Uit zetten als je verschillende kaarten voor afhalen en QR-bestellen wilt."
+      },
+
+      "menuFiles": {
+        "heading": "Menukaart uploaden",
+        "sub": "Stuur ons je bestaande menukaart in PDF, JPG, PNG of WebP. Onze ontwerpers bouwen er een merk-vriendelijke versie van.",
+        "dropLabel": "Sleep bestanden hierheen of klik om te kiezen",
+        "acceptText": "PDF, JPG, PNG of WebP — maximaal 20 MB per bestand, tot 5 bestanden.",
+        "takeawayHeading": "Afhaalmenu",
+        "qrHeading": "QR-menu",
+        "placeholderSingle": "Het upload-veld wordt in de volgende build toegevoegd.",
+        "placeholderTakeaway": "Afhaal-menu: het upload-veld wordt in de volgende build toegevoegd.",
+        "placeholderQr": "QR-menu: het upload-veld wordt in de volgende build toegevoegd."
+      },
+
+      "cuisine": {
+        "heading": "Vertel over je keuken",
+        "sub": "Een paar zinnen helpen ons designteam de juiste sfeer te vinden.",
+        "label": "Wat moet de menukaart uitstralen?",
+        "hint": "Korte beschrijving van je keuken en sfeer — italiaans-rustiek, japans-strak, etc. Helpt ons designteam.",
+        "placeholder": "Bijv. Italiaans rustiek met focus op pasta en wijn…"
+      },
+
+      "photos": {
+        "heading": "Foto's (optioneel)",
+        "sub": "Eigen foto's van je interieur of gerechten. Optioneel — niet vereist.",
+        "dropLabel": "Sleep foto's hierheen of klik om te kiezen",
+        "acceptText": "JPG, PNG of WebP — maximaal 20 MB per bestand, tot 10 foto's.",
+        "placeholder": "Het upload-veld wordt in de volgende build toegevoegd."
+      },
+
+      "design": {
+        "heading": "Ontwerpvoorkeuren (optioneel)",
+        "sub": "Specifieke wensen voor kleuren, fonts, of voorbeeldkaarten die je mooi vindt.",
+        "label": "Specifieke wensen voor het ontwerp",
+        "hint": "Kleuren, lettertypes, voorbeelden van menukaarten die je mooi vindt — alles wat ons helpt om in jouw stijl te ontwerpen.",
+        "placeholder": "Bijv. donkere kleuren, klassiek serif lettertype…"
+      },
+
+      "uploadErrorNoRestaurant": "Restaurant niet gevonden. Vernieuw de pagina.",
+      "uploadErrorTooManyMenu": "Maximaal {max} menubestanden toegestaan.",
+      "uploadErrorTooManyPhotos": "Maximaal {max} foto's toegestaan.",
+      "uploadErrorMime": "{name}: bestandstype niet toegestaan.",
+      "uploadErrorSize": "{name}: bestand groter dan 20 MB.",
+      "uploadErrorStorage": "{name}: uploaden naar opslag mislukt.",
+      "uploadErrorMetadata": "{name}: opslaan van metadata mislukt.",
+      "deleteErrorMenu": "Verwijderen mislukt. Probeer het opnieuw.",
+      "deleteErrorPhoto": "Verwijderen mislukt. Probeer het opnieuw."
+    },
+    "qrSetup": {
+      "serviceTag": "QR",
+      "heading": "QR-instellingen en abonnement",
+      "sub": "Kies hoe je QR-bestellen aan tafel werkt en welk abonnement bij je past.",
+      "continue": "Doorgaan",
+      "saveFailed": "Opslaan mislukt. Probeer het opnieuw.",
+
+      "plansHeading": "Kies een abonnement",
+      "plansSub": "Eenmalige setup-kosten. Het maandabonnement kies je in stap 12.",
+      "premiumLocked": "Premium-abonnement vereist",
+      "oneTime": "eenmalig",
+
+      "plans": {
+        "basic": {
+          "title": "QR Basic",
+          "price": "€ 119",
+          "bullet1": "Basis menukaartontwerp + tafelstickers",
+          "bullet2": "Tot 20 tafels inbegrepen",
+          "bullet3": "Extra tafels € 11 per stuk"
+        },
+        "premium": {
+          "title": "QR Premium",
+          "price": "€ 269",
+          "bullet1": "Volledig op maat ontworpen menukaart",
+          "bullet2": "Mooi afgewerkte kunststof QR-kaarten",
+          "bullet3": "1 jaar vervangingsgarantie",
+          "bullet4": "Tot 20 tafels inbegrepen",
+          "bullet5": "Extra tafels € 11 per stuk"
+        }
+      },
+
+      "autoAccept": {
+        "heading": "Bestellingen accepteren",
+        "label": "QR-bestellingen automatisch accepteren",
+        "description": "Aan: bestellingen gaan direct naar de keuken. Uit: personeel moet elke bestelling handmatig goedkeuren."
+      },
+
+      "itemNotes": {
+        "heading": "Notities per gerecht",
+        "label": "Notities per gerecht toestaan",
+        "description": "Gasten kunnen extra opmerkingen toevoegen, zoals 'geen ui'."
+      },
+
+      "language": {
+        "heading": "Menu-taal",
+        "sub": "De talen die gasten zien wanneer ze het QR-menu openen.",
+        "label": "Talen tonen op QR-menu",
+        "nl_en": "NL + EN (aanbevolen)",
+        "nl": "Alleen NL",
+        "en": "Alleen EN"
+      },
+
+      "accentColor": {
+        "heading": "Accentkleur",
+        "sub": "Kleur van de 'Bestellen' knop op het QR-menu. Standaard is The Tafel-amber.",
+        "label": "Accentkleur",
+        "reset": "Reset naar standaard",
+        "errorInvalid": "Vul een geldige hex-kleur in, bijvoorbeeld #d4820a."
+      }
+    },
     "floorPlan": {
       "serviceTag": "Stap 2 — Reserveringen",
       "heading": "Plattegrond",

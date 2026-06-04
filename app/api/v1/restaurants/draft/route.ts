@@ -479,13 +479,24 @@ export async function PATCH(req: NextRequest) {
     })
 
     // ---- 7. Return refreshed state -----------------------------------------
-    const { data: refreshed } = await supabase
-      .from('restaurants')
-      .select('*')
-      .eq('id', restaurantId)
-      .single()
+    const [{ data: refreshed }, { data: refreshedUploads }] = await Promise.all([
+      supabase
+        .from('restaurants')
+        .select('*')
+        .eq('id', restaurantId)
+        .single(),
+      supabase
+        .from('menu_source_uploads')
+        .select('*')
+        .eq('restaurant_id', restaurantId)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true }),
+    ])
 
-    return NextResponse.json({ restaurant: refreshed }, { status: 200 })
+    return NextResponse.json(
+      { restaurant: refreshed, menu_uploads: refreshedUploads ?? [] },
+      { status: 200 }
+    )
   } catch (e) {
     const message = e instanceof Error ? e.message : 'internal_error'
     return NextResponse.json(

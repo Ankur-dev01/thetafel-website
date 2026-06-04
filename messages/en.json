@@ -446,6 +446,128 @@
         "min60": "60 minutes"
       }
     },
+    "menu": {
+      "serviceTagTakeaway": "Takeaway",
+      "serviceTagQr": "QR",
+      "serviceTagBoth": "Takeaway + QR",
+      "heading": "Menu",
+      "sub": "Give us the basics — we'll turn them into a polished menu within 2 working days. You can also upload later.",
+      "continue": "Continue",
+      "saveFailed": "Save failed. Please try again.",
+
+      "sameMenu": {
+        "heading": "One menu or two?",
+        "sub": "Decide whether you want the same menu for takeaway and QR ordering.",
+        "label": "One menu for Takeaway and QR",
+        "description": "Most restaurants save work by using the same menu for both. Switch off if you want separate menus for takeaway and QR ordering."
+      },
+
+      "menuFiles": {
+        "heading": "Upload menu",
+        "sub": "Send us your existing menu in PDF, JPG, PNG, or WebP. Our designers turn it into a brand-aligned version.",
+        "dropLabel": "Drag files here or click to choose",
+        "acceptText": "PDF, JPG, PNG, or WebP — max 20 MB per file, up to 5 files.",
+        "takeawayHeading": "Takeaway menu",
+        "qrHeading": "QR menu",
+        "placeholderSingle": "The upload field is added in the next build.",
+        "placeholderTakeaway": "Takeaway menu: the upload field is added in the next build.",
+        "placeholderQr": "QR menu: the upload field is added in the next build."
+      },
+
+      "cuisine": {
+        "heading": "Tell us about your food",
+        "sub": "A few sentences help our design team capture the right atmosphere.",
+        "label": "What should the menu feel like?",
+        "hint": "Short description of your food and atmosphere — Italian-rustic, Japanese-minimal, etc. Helps our design team.",
+        "placeholder": "e.g. Italian rustic with a focus on pasta and wine…"
+      },
+
+      "photos": {
+        "heading": "Photos (optional)",
+        "sub": "Your own photos of interior or food. Optional — not required.",
+        "dropLabel": "Drag photos here or click to choose",
+        "acceptText": "JPG, PNG, or WebP — max 20 MB per file, up to 10 photos.",
+        "placeholder": "The upload field is added in the next build."
+      },
+
+      "design": {
+        "heading": "Design preferences (optional)",
+        "sub": "Specific wishes for colours, fonts, or example menus you like.",
+        "label": "Specific design wishes",
+        "hint": "Colours, fonts, examples of menus you like — anything that helps us design in your style.",
+        "placeholder": "e.g. dark colours, classic serif font…"
+      },
+
+      "uploadErrorNoRestaurant": "Restaurant not found. Refresh the page.",
+      "uploadErrorTooManyMenu": "Maximum {max} menu files allowed.",
+      "uploadErrorTooManyPhotos": "Maximum {max} photos allowed.",
+      "uploadErrorMime": "{name}: file type not allowed.",
+      "uploadErrorSize": "{name}: file is over 20 MB.",
+      "uploadErrorStorage": "{name}: upload to storage failed.",
+      "uploadErrorMetadata": "{name}: saving metadata failed.",
+      "deleteErrorMenu": "Delete failed. Please try again.",
+      "deleteErrorPhoto": "Delete failed. Please try again."
+    },
+    "qrSetup": {
+      "serviceTag": "QR",
+      "heading": "QR setup & plan",
+      "sub": "Choose how QR ordering at the table works and which plan suits you.",
+      "continue": "Continue",
+      "saveFailed": "Save failed. Please try again.",
+
+      "plansHeading": "Choose a plan",
+      "plansSub": "One-time setup fee. Your monthly subscription is chosen in step 12.",
+      "premiumLocked": "Requires Premium subscription",
+      "oneTime": "one-time",
+
+      "plans": {
+        "basic": {
+          "title": "QR Basic",
+          "price": "€ 119",
+          "bullet1": "Basic menu design + table stickers",
+          "bullet2": "Up to 20 tables included",
+          "bullet3": "Extra tables € 11 each"
+        },
+        "premium": {
+          "title": "QR Premium",
+          "price": "€ 269",
+          "bullet1": "Fully custom menu design",
+          "bullet2": "Beautifully finished plastic QR cards",
+          "bullet3": "1-year replacement warranty",
+          "bullet4": "Up to 20 tables included",
+          "bullet5": "Extra tables € 11 each"
+        }
+      },
+
+      "autoAccept": {
+        "heading": "Accepting orders",
+        "label": "Auto-accept QR orders",
+        "description": "On: orders go straight to the kitchen. Off: staff must approve each order manually."
+      },
+
+      "itemNotes": {
+        "heading": "Item notes",
+        "label": "Allow item notes",
+        "description": "Guests can add notes per item, like 'no onions'."
+      },
+
+      "language": {
+        "heading": "Menu language",
+        "sub": "The languages guests see when they open the QR menu.",
+        "label": "Languages shown on the QR menu",
+        "nl_en": "NL + EN (recommended)",
+        "nl": "NL only",
+        "en": "EN only"
+      },
+
+      "accentColor": {
+        "heading": "Accent colour",
+        "sub": "Colour of the 'Order' button on the QR menu. Default is The Tafel amber.",
+        "label": "Accent colour",
+        "reset": "Reset to default",
+        "errorInvalid": "Enter a valid hex colour, e.g. #d4820a."
+      }
+    },
     "floorPlan": {
       "serviceTag": "Step 2 — Reservations",
       "heading": "Floor plan",
