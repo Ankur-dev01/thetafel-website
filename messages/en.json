@@ -380,6 +380,72 @@
         "description": "Models predict which bookings are at risk of being a no-show."
       }
     },
+    "guests": {
+      "serviceTag": "Reservations",
+      "heading": "Guest experience",
+      "sub": "Set the confirmation message guests receive and the information you collect at booking.",
+      "continue": "Continue",
+      "saveFailed": "Save failed. Please try again.",
+
+      "templateHeading": "Confirmation message",
+      "templateSub": "This message goes out to every guest after a confirmed booking.",
+      "templatePlaceholder": "Dear '{naam}', thanks for booking with '{restaurant}'…",
+      "tabNl": "NL",
+      "tabEn": "EN",
+      "variablesHint": "Click a variable to insert it at the cursor.",
+      "charCount": "{count} / 5000",
+
+      "previewHeading": "Preview",
+      "previewEmpty": "Start typing to see your preview.",
+
+      "questionsHeading": "Questions during booking",
+      "questionsSub": "What do you want to collect from guests at booking?",
+
+      "questionAllergiesLabel": "Allergies and diet",
+      "questionAllergiesDescription": "Guest indicates allergies or dietary requirements.",
+
+      "questionOccasionLabel": "Special occasion",
+      "questionOccasionDescription": "Birthday, anniversary, or other reason for the visit.",
+
+      "questionRequestsLabel": "Special requests",
+      "questionRequestsDescription": "Free text for requests like table preference or accessibility."
+    },
+    "ordering": {
+      "serviceTag": "Takeaway",
+      "heading": "Online ordering settings",
+      "sub": "Set how guests order online for takeaway.",
+      "continue": "Continue",
+      "saveFailed": "Save failed. Please try again.",
+
+      "prepTimeLabel": "Prep time",
+      "prepTimeHint": "How long the kitchen needs from order to ready.",
+
+      "minOrderLabel": "Minimum order",
+      "minOrderHint": "Leave at 0 to require no minimum.",
+      "minOrderError": "Enter an amount between € 0 and € 500.",
+
+      "slotIntervalLabel": "Pickup slot interval",
+      "slotIntervalHint": "How often a new pickup slot becomes available.",
+
+      "acceptingLabel": "Accept online orders",
+      "acceptingDescription": "Switch off to pause takeaway temporarily — for example during a rush.",
+
+      "itemNotesLabel": "Allow item notes",
+      "itemNotesDescription": "Guests can add notes per item, like 'no onions'.",
+
+      "scheduledLabel": "Scheduled orders",
+      "scheduledDescription": "Guests can choose a pickup time later in the day or in the future.",
+
+      "options": {
+        "min10": "10 minutes",
+        "min15": "15 minutes",
+        "min20": "20 minutes",
+        "min25": "25 minutes",
+        "min30": "30 minutes",
+        "min45": "45 minutes",
+        "min60": "60 minutes"
+      }
+    },
     "floorPlan": {
       "serviceTag": "Step 2 — Reservations",
       "heading": "Floor plan",

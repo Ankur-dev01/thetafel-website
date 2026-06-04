@@ -380,6 +380,72 @@
         "description": "Modellen voorspellen welke reserveringen risico lopen op een no-show."
       }
     },
+    "guests": {
+      "serviceTag": "Reserveringen",
+      "heading": "Gastbeleving",
+      "sub": "Stel in welke bevestiging gasten ontvangen en welke informatie je tijdens reservering vraagt.",
+      "continue": "Doorgaan",
+      "saveFailed": "Opslaan mislukt. Probeer het opnieuw.",
+
+      "templateHeading": "Bevestigingsbericht",
+      "templateSub": "Dit bericht ontvangt elke gast na een bevestigde reservering.",
+      "templatePlaceholder": "Beste '{naam}', bedankt voor je reservering bij '{restaurant}'…",
+      "tabNl": "NL",
+      "tabEn": "EN",
+      "variablesHint": "Klik op een variabele om in te voegen op de cursorpositie.",
+      "charCount": "{count} / 5000",
+
+      "previewHeading": "Voorbeeld",
+      "previewEmpty": "Begin met typen om je voorbeeld te zien.",
+
+      "questionsHeading": "Vragen tijdens reservering",
+      "questionsSub": "Welke informatie willen jullie van gasten verzamelen tijdens een reservering?",
+
+      "questionAllergiesLabel": "Allergieën en dieetwensen",
+      "questionAllergiesDescription": "Gast geeft aan of er allergieën of speciale dieetwensen zijn.",
+
+      "questionOccasionLabel": "Speciale gelegenheid",
+      "questionOccasionDescription": "Verjaardag, jubileum of andere reden voor het bezoek.",
+
+      "questionRequestsLabel": "Aanvullende wensen",
+      "questionRequestsDescription": "Vrije tekst voor wensen zoals tafelvoorkeur of toegankelijkheid."
+    },
+    "ordering": {
+      "serviceTag": "Afhalen",
+      "heading": "Online bestelinstellingen",
+      "sub": "Bepaal hoe gasten online bij je bestellen voor afhalen.",
+      "continue": "Doorgaan",
+      "saveFailed": "Opslaan mislukt. Probeer het opnieuw.",
+
+      "prepTimeLabel": "Voorbereidingstijd",
+      "prepTimeHint": "Hoe lang de keuken nodig heeft van bestelling tot klaar.",
+
+      "minOrderLabel": "Minimum bestelbedrag",
+      "minOrderHint": "Laat op 0 staan om geen minimum te eisen.",
+      "minOrderError": "Vul een bedrag tussen € 0 en € 500 in.",
+
+      "slotIntervalLabel": "Ophalingsinterval",
+      "slotIntervalHint": "Hoe vaak een nieuw afhaalmoment beschikbaar komt.",
+
+      "acceptingLabel": "Online bestellingen accepteren",
+      "acceptingDescription": "Zet uit om afhalen tijdelijk te pauzeren — bijvoorbeeld bij drukte.",
+
+      "itemNotesLabel": "Notities per gerecht toestaan",
+      "itemNotesDescription": "Gasten kunnen extra opmerkingen toevoegen, zoals 'geen ui'.",
+
+      "scheduledLabel": "Vooruit bestellen",
+      "scheduledDescription": "Gasten kunnen een afhaalmoment later op de dag of in de toekomst kiezen.",
+
+      "options": {
+        "min10": "10 minuten",
+        "min15": "15 minuten",
+        "min20": "20 minuten",
+        "min25": "25 minuten",
+        "min30": "30 minuten",
+        "min45": "45 minuten",
+        "min60": "60 minuten"
+      }
+    },
     "floorPlan": {
       "serviceTag": "Stap 2 — Reserveringen",
       "heading": "Plattegrond",
