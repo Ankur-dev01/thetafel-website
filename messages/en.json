@@ -568,6 +568,30 @@
         "errorInvalid": "Enter a valid hex colour, e.g. #d4820a."
       }
     },
+    "qrCodes": {
+      "serviceTag": "QR",
+      "heading": "QR codes per table",
+      "sub": "For each table, choose whether it gets a QR code. The actual code generation lands in the next build.",
+      "continue": "Continue",
+      "saveFailed": "Save failed. Please try again.",
+      "tablesHeading": "Your tables",
+      "seats": "seats",
+      "qrEnabledLabel": "QR code on this table",
+      "toggleError": "Updating the table failed. Please try again.",
+      "generateButton": "Generate QR codes ({count} tables)",
+      "regenerateAllButton": "Regenerate all QR codes",
+      "generating": "Generating…",
+      "generateError": "Generating QR codes failed. Please try again.",
+      "downloadAllButton": "Download all (ZIP)",
+      "downloadingAll": "Downloading…",
+      "downloadError": "Download failed. Please try again.",
+      "download": "Download",
+      "regenerate": "Regenerate",
+      "regenerating": "…",
+      "regenerateError": "Regenerate failed. Please try again.",
+      "emptyStateTitle": "No tables found",
+      "emptyStateBody": "Tables are created in step 3 (Floor plan). If you don't use Reservations, please reach out — we'll help you get set up."
+    },
     "floorPlan": {
       "serviceTag": "Step 2 — Reservations",
       "heading": "Floor plan",

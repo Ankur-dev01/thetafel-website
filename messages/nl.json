@@ -568,6 +568,30 @@
         "errorInvalid": "Vul een geldige hex-kleur in, bijvoorbeeld #d4820a."
       }
     },
+    "qrCodes": {
+      "serviceTag": "QR",
+      "heading": "QR-codes per tafel",
+      "sub": "Per tafel kun je instellen of er een QR-code voor moet komen. Het genereren van de codes komt in de volgende build.",
+      "continue": "Doorgaan",
+      "saveFailed": "Opslaan mislukt. Probeer het opnieuw.",
+      "tablesHeading": "Jouw tafels",
+      "seats": "stoelen",
+      "qrEnabledLabel": "QR-code aan deze tafel",
+      "toggleError": "Bijwerken van tafel mislukt. Probeer het opnieuw.",
+      "generateButton": "QR-codes genereren ({count} tafels)",
+      "regenerateAllButton": "Alle QR-codes opnieuw genereren",
+      "generating": "Bezig met genereren…",
+      "generateError": "QR-codes genereren mislukt. Probeer het opnieuw.",
+      "downloadAllButton": "Alles downloaden (ZIP)",
+      "downloadingAll": "Downloaden…",
+      "downloadError": "Downloaden mislukt. Probeer het opnieuw.",
+      "download": "Download",
+      "regenerate": "Opnieuw genereren",
+      "regenerating": "…",
+      "regenerateError": "Opnieuw genereren mislukt. Probeer het opnieuw.",
+      "emptyStateTitle": "Geen tafels gevonden",
+      "emptyStateBody": "Tafels worden in stap 3 (Plattegrond) aangemaakt. Als je Reserveringen niet gebruikt, neem dan even contact op — we helpen je verder."
+    },
     "floorPlan": {
       "serviceTag": "Stap 2 — Reserveringen",
       "heading": "Plattegrond",
