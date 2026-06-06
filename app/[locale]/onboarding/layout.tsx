@@ -11,7 +11,7 @@
 
 import { headers } from 'next/headers'
 import OnboardingShell from '@/components/onboarding/shell/OnboardingShell'
-
+export const dynamic = 'force-dynamic'
 type Params = { locale: string }
 
 export default async function OnboardingLayout({
