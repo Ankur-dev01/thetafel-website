@@ -177,3 +177,22 @@ export function formatMollieAmount(cents: number): string {
   const remainder = Math.abs(cents % 100).toString().padStart(2, '0');
   return `${euros}.${remainder}`;
 }
+
+/**
+ * Build a Mollie customerSubscription description for the recurring billing line.
+ * Shown on the customer's bank statement for every monthly SEPA/card debit.
+ *
+ * Examples:
+ * - Plus tier, NL: "The Tafel — Plus maandabonnement"
+ * - Premium tier, EN: "The Tafel — Premium monthly subscription"
+ */
+export function buildRecurringDescription(input: {
+  locale: 'nl' | 'en';
+  tier: SubscriptionTier;
+}): string {
+  const { locale, tier } = input;
+  const tierName = tier.charAt(0).toUpperCase() + tier.slice(1);
+  return locale === 'nl'
+    ? `The Tafel — ${tierName} maandabonnement`
+    : `The Tafel — ${tierName} monthly subscription`;
+}

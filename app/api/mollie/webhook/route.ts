@@ -1,13 +1,23 @@
 import { NextResponse, type NextRequest } from 'next/server'
+import { PaymentStatus } from '@mollie/api-client'
 import { createSupabaseServerClientAdmin } from '@/lib/supabase/server'
+import { getMolliePlatformClient } from '@/lib/mollie/client'
 import {
   verifyMollieSignature,
   getMollieSignatureHeaderName,
   mapOnboardingStatus,
   fetchOnboardingStatus,
   getValidAccessTokenForRestaurant,
+  fetchLatestValidMandate,
+  refundPayment,
+  createRecurringSubscription,
   type MollieStatus,
 } from '@/lib/mollie/webhook'
+import {
+  buildRecurringDescription,
+  formatMollieAmount,
+  type SubscriptionTier,
+} from '@/lib/pricing/subscription'
 
 // Force Node.js runtime — crypto.createHmac and Buffer aren't available on Edge.
 export const runtime = 'nodejs'
@@ -117,9 +127,15 @@ export async function POST(req: NextRequest) {
         restaurantId = await handleOrganizationUpdated(admin, payload)
         break
       }
-      // Accepted, persisted, acked — handlers land with booking engine / subscription unit.
-      case 'payment.paid':
-      case 'payment.failed':
+      case 'payment.paid': {
+        restaurantId = await handlePaymentPaid(admin, eventId)
+        break
+      }
+      case 'payment.failed': {
+        restaurantId = await handlePaymentFailed(admin, eventId)
+        break
+      }
+      // Accepted, persisted, acked — handlers land with future units.
       case 'subscription.charged':
       case 'subscription.cancelled':
       case 'mandate.revoked':
@@ -166,6 +182,236 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ ok: true }, { status: 200 })
 }
+
+// ── payment.paid ─────────────────────────────────────────────────────────────
+
+async function handlePaymentPaid(
+  admin: Awaited<ReturnType<typeof createSupabaseServerClientAdmin>>,
+  paymentId: string
+): Promise<string | null> {
+  const mollie = getMolliePlatformClient()
+
+  // 1. Fetch payment from Mollie to confirm status and read metadata.
+  const molliePayment = await mollie.payments.get(paymentId)
+
+  // 2. Only act when Mollie itself reports 'paid'.
+  if (molliePayment.status !== PaymentStatus.paid) {
+    void admin.from('audit_logs').insert({
+      event_type: 'mollie.payment.paid.skipped_not_paid',
+      event_data: { mollie_payment_id: paymentId, current_status: molliePayment.status },
+    }).then(() => {}, () => {})
+    return null
+  }
+
+  // 3. Look up our payment row.
+  const { data: ourPayment } = await admin
+    .from('payments')
+    .select('id, restaurant_id, subscription_id, kind, status, amount_cents')
+    .eq('mollie_payment_id', paymentId)
+    .maybeSingle()
+
+  if (!ourPayment) {
+    void admin.from('audit_logs').insert({
+      event_type: 'mollie.payment.paid.unknown_payment',
+      event_data: { mollie_payment_id: paymentId },
+    }).then(() => {}, () => {})
+    return null
+  }
+
+  // 4. Business-logic idempotency.
+  if (ourPayment.status === 'paid') {
+    return ourPayment.restaurant_id as string
+  }
+
+  // 5. Mark our payment row paid.
+  await admin.from('payments').update({
+    status: 'paid',
+    paid_at: new Date().toISOString(),
+  }).eq('id', ourPayment.id)
+
+  void admin.from('audit_logs').insert({
+    restaurant_id: ourPayment.restaurant_id,
+    event_type: 'subscription.payment_marked_paid',
+    event_data: {
+      mollie_payment_id: paymentId,
+      our_payment_id: ourPayment.id,
+      amount_cents: ourPayment.amount_cents,
+      kind: ourPayment.kind,
+    },
+  }).then(() => {}, () => {})
+
+  // 6. If this was the €0,01 verification, refund it.
+  const metadata = molliePayment.metadata as Record<string, unknown> | null
+  const isVerification =
+    metadata?.is_verification === true ||
+    (ourPayment.amount_cents === 1 && ourPayment.kind === 'subscription_charge')
+
+  if (isVerification) {
+    try {
+      const refundId = await refundPayment({
+        paymentId,
+        amountValue: '0.01',
+        description: 'The Tafel — Machtigingsverificatie terugbetaling',
+      })
+      void admin.from('audit_logs').insert({
+        restaurant_id: ourPayment.restaurant_id,
+        event_type: 'subscription.verification_refunded',
+        event_data: { mollie_payment_id: paymentId, refund_id: refundId },
+      }).then(() => {}, () => {})
+    } catch (refundErr) {
+      console.error('[webhook] verification refund failed:', refundErr)
+      void admin.from('audit_logs').insert({
+        restaurant_id: ourPayment.restaurant_id,
+        event_type: 'subscription.verification_refund_failed',
+        event_data: { mollie_payment_id: paymentId, error: String(refundErr) },
+      }).then(() => {}, () => {})
+    }
+  }
+
+  // 7. Load the subscription row.
+  const { data: subscription } = await admin
+    .from('subscriptions')
+    .select('id, restaurant_id, tier, monthly_amount_cents, mollie_customer_id, mollie_mandate_id, mollie_subscription_id, trial_ends_at')
+    .eq('id', ourPayment.subscription_id as string)
+    .maybeSingle()
+
+  if (!subscription) {
+    console.error('[webhook] payment.paid: no subscription row found for our payment', ourPayment.id)
+    return ourPayment.restaurant_id as string
+  }
+
+  // 8. Idempotency: if both mandate and Mollie subscription are already set, advance step and exit.
+  if (subscription.mollie_mandate_id && subscription.mollie_subscription_id) {
+    await admin.from('restaurants')
+      .update({ current_onboarding_step: 13 })
+      .eq('id', subscription.restaurant_id as string)
+      .lt('current_onboarding_step', 13)
+    return subscription.restaurant_id as string
+  }
+
+  // 9. Fetch the mandate that was just registered.
+  let mandateId = subscription.mollie_mandate_id as string | null
+  if (!mandateId) {
+    mandateId = await fetchLatestValidMandate(subscription.mollie_customer_id as string)
+    if (!mandateId) {
+      console.error('[webhook] payment paid but no valid mandate found for customer', subscription.mollie_customer_id)
+      void admin.from('audit_logs').insert({
+        restaurant_id: subscription.restaurant_id,
+        event_type: 'subscription.mandate_not_found',
+        event_data: {
+          mollie_customer_id: subscription.mollie_customer_id,
+          mollie_payment_id: paymentId,
+        },
+      }).then(() => {}, () => {})
+      throw new Error('mandate_not_yet_available')
+    }
+    await admin.from('subscriptions')
+      .update({ mollie_mandate_id: mandateId })
+      .eq('id', subscription.id)
+  }
+
+  // 10. Create the Mollie recurring subscription.
+  let mollieSubscriptionId = subscription.mollie_subscription_id as string | null
+  if (!mollieSubscriptionId) {
+    const startDateIsoDate = (subscription.trial_ends_at as string).slice(0, 10)
+    const grossAmountValue = formatMollieAmount(subscription.monthly_amount_cents as number)
+    const description = buildRecurringDescription({
+      locale: 'nl',
+      tier: subscription.tier as SubscriptionTier,
+    })
+    const webhookUrl = `${process.env.QR_BASE_URL || 'https://thetafel.nl'}/api/mollie/webhook`
+
+    try {
+      mollieSubscriptionId = await createRecurringSubscription({
+        customerId: subscription.mollie_customer_id as string,
+        mandateId,
+        amountValue: grossAmountValue,
+        description,
+        startDateIsoDate,
+        webhookUrl,
+      })
+      await admin.from('subscriptions')
+        .update({ mollie_subscription_id: mollieSubscriptionId })
+        .eq('id', subscription.id)
+      void admin.from('audit_logs').insert({
+        restaurant_id: subscription.restaurant_id,
+        event_type: 'subscription.recurring_created',
+        event_data: {
+          mollie_subscription_id: mollieSubscriptionId,
+          mollie_mandate_id: mandateId,
+          start_date: startDateIsoDate,
+          gross_monthly_cents: subscription.monthly_amount_cents,
+        },
+      }).then(() => {}, () => {})
+    } catch (createErr) {
+      console.error('[webhook] failed to create Mollie subscription:', createErr)
+      void admin.from('audit_logs').insert({
+        restaurant_id: subscription.restaurant_id,
+        event_type: 'subscription.recurring_create_failed',
+        event_data: { error: String(createErr), mollie_mandate_id: mandateId },
+      }).then(() => {}, () => {})
+      throw new Error(`subscription_create_failed: ${String(createErr)}`)
+    }
+  }
+
+  // 11. Advance the restaurant's onboarding step.
+  await admin.from('restaurants')
+    .update({ current_onboarding_step: 13 })
+    .eq('id', subscription.restaurant_id as string)
+    .lt('current_onboarding_step', 13)
+
+  void admin.from('audit_logs').insert({
+    restaurant_id: subscription.restaurant_id,
+    event_type: 'subscription.onboarding_advanced_to_13',
+    event_data: { mollie_subscription_id: mollieSubscriptionId },
+  }).then(() => {}, () => {})
+
+  return subscription.restaurant_id as string
+}
+
+// ── payment.failed ────────────────────────────────────────────────────────────
+
+async function handlePaymentFailed(
+  admin: Awaited<ReturnType<typeof createSupabaseServerClientAdmin>>,
+  paymentId: string
+): Promise<string | null> {
+  const mollie = getMolliePlatformClient()
+  const molliePayment = await mollie.payments.get(paymentId)
+
+  const { data: ourPayment } = await admin
+    .from('payments')
+    .select('id, restaurant_id, status')
+    .eq('mollie_payment_id', paymentId)
+    .maybeSingle()
+
+  if (!ourPayment) {
+    return null
+  }
+
+  if (ourPayment.status === 'failed') {
+    return ourPayment.restaurant_id as string
+  }
+
+  await admin.from('payments').update({
+    status: 'failed',
+    failed_at: new Date().toISOString(),
+    failure_reason: `mollie_status_${molliePayment.status}`,
+  }).eq('id', ourPayment.id)
+
+  void admin.from('audit_logs').insert({
+    restaurant_id: ourPayment.restaurant_id,
+    event_type: 'subscription.payment_failed',
+    event_data: {
+      mollie_payment_id: paymentId,
+      mollie_status: molliePayment.status,
+      our_payment_id: ourPayment.id,
+    },
+  }).then(() => {}, () => {})
+
+  return ourPayment.restaurant_id as string
+}
+
+// ── organization.updated ──────────────────────────────────────────────────────
 
 async function handleOrganizationUpdated(
   admin: Awaited<ReturnType<typeof createSupabaseServerClientAdmin>>,

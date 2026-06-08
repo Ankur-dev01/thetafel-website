@@ -1,8 +1,10 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { MandateStatus } from '@mollie/api-client'
 import {
   getMollieOAuthClient,
   getMollieOAuthConfig,
+  getMolliePlatformClient,
 } from './client'
 import { refreshAccessToken } from './oauth'
 
@@ -145,3 +147,65 @@ export async function fetchOnboardingStatus(accessToken: string): Promise<string
 
 // Silence unused warning until programmatic webhook registration lands
 void getMollieOAuthConfig
+
+/**
+ * Fetch the most recent VALID mandate for a Mollie customer.
+ *
+ * After a sequenceType=first payment, Mollie registers a mandate on the customer.
+ * Returns the mandate id, or null if no valid mandate exists yet.
+ */
+export async function fetchLatestValidMandate(customerId: string): Promise<string | null> {
+  const mollie = getMolliePlatformClient()
+  const mandatePage = await mollie.customerMandates.page({ customerId, limit: 50 })
+  const validMandates = mandatePage
+    .filter((m) => m.status === MandateStatus.valid)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  return validMandates[0]?.id ?? null
+}
+
+/**
+ * Refund a Mollie payment in full. Used to immediately refund the €0,01
+ * mandate-verification payment after it succeeds.
+ *
+ * Returns the Mollie refund id on success. Throws on failure.
+ */
+export async function refundPayment(input: {
+  paymentId: string
+  amountValue: string
+  description: string
+}): Promise<string> {
+  const mollie = getMolliePlatformClient()
+  const refund = await mollie.paymentRefunds.create({
+    paymentId: input.paymentId,
+    amount: { currency: 'EUR', value: input.amountValue },
+    description: input.description,
+  })
+  return refund.id
+}
+
+/**
+ * Create a Mollie recurring subscription on the customer, starting on the
+ * given startDate (day 85, end of trial). Mollie auto-charges each month.
+ *
+ * Returns the Mollie subscription id.
+ */
+export async function createRecurringSubscription(input: {
+  customerId: string
+  mandateId: string
+  amountValue: string
+  description: string
+  startDateIsoDate: string
+  webhookUrl: string
+}): Promise<string> {
+  const mollie = getMolliePlatformClient()
+  const sub = await mollie.customerSubscriptions.create({
+    customerId: input.customerId,
+    amount: { currency: 'EUR', value: input.amountValue },
+    interval: '1 month',
+    startDate: input.startDateIsoDate,
+    mandateId: input.mandateId,
+    description: input.description,
+    webhookUrl: input.webhookUrl,
+  })
+  return sub.id
+}
