@@ -592,6 +592,117 @@
       "emptyStateTitle": "Geen tafels gevonden",
       "emptyStateBody": "Tafels worden in stap 3 (Plattegrond) aangemaakt. Als je Reserveringen niet gebruikt, neem dan even contact op — we helpen je verder."
     },
+    "payments": {
+      "serviceTag": "Betalingen",
+      "heading": "Koppel je betalingen",
+      "sub": "We gebruiken Mollie om betalingen te verwerken. Koppel je Mollie-account om uitbetalingen te ontvangen van afhaalbestellingen en aanbetaalde reserveringen.",
+      "continue": "Doorgaan",
+      "saveFailed": "Opslaan mislukt — probeer het opnieuw.",
+      "statusCard": {
+        "notConnected": {
+          "title": "Mollie koppelen",
+          "body": "Je wordt naar Mollie geleid om je zakelijke gegevens in te vullen. Daarna kom je terug naar deze pagina."
+        },
+        "startedNotFinished": {
+          "title": "Je hebt het koppelen nog niet afgerond",
+          "body": "Het lijkt erop dat je de Mollie-flow hebt gestart maar niet hebt voltooid. Klik hieronder om verder te gaan."
+        },
+        "pendingKyc": {
+          "title": "Gekoppeld — verificatie loopt",
+          "body": "Mollie controleert je gegevens. Dit duurt meestal minder dan een uur. Je kunt al verder met de volgende stap."
+        },
+        "verified": {
+          "title": "Geverifieerd",
+          "body": "Je kunt nu uitbetalingen ontvangen via Mollie."
+        },
+        "needsAttention": {
+          "title": "Actie vereist",
+          "body": "Mollie heeft extra gegevens nodig of kon je gegevens niet verifiëren. Klik hieronder om de koppeling opnieuw te doorlopen."
+        }
+      },
+      "cta": {
+        "setUp": "Betalingen instellen met Mollie",
+        "continueSetup": "Mollie-koppeling afronden",
+        "relink": "Opnieuw koppelen met Mollie",
+        "opening": "Mollie wordt geopend...",
+        "failedToStart": "Kon Mollie niet openen. Probeer het opnieuw."
+      },
+      "info": {
+        "title": "Wat we met Mollie delen",
+        "bullet1": "Je KVK-gegevens en bedrijfsadres voor de verificatie van Mollie.",
+        "bullet2": "Geen klantgegevens — Mollie ziet alleen betalingsgegevens die voor de transactie nodig zijn.",
+        "bullet3": "Je IBAN en bankgegevens blijven bij Mollie — wij slaan ze nooit op."
+      },
+      "errorBanner": {
+        "dismiss": "Sluiten",
+        "reasons": {
+          "missing_params": "Er ging iets mis met de Mollie-redirect. Probeer opnieuw te koppelen.",
+          "state_mismatch": "Veiligheidscontrole mislukt — start het koppelen opnieuw.",
+          "unauthorized": "Je sessie is verlopen. Meld je opnieuw aan en probeer het nog eens.",
+          "restaurant_not_found": "Restaurant niet gevonden. Neem contact op met support als dit blijft gebeuren.",
+          "token_exchange_failed": "Kon de Mollie-koppeling niet voltooien. Probeer het zo opnieuw.",
+          "organization_fetch_failed": "Gekoppeld met Mollie, maar je organisatiegegevens konden niet worden opgehaald. Probeer het opnieuw.",
+          "persist_failed": "Gekoppeld met Mollie, maar de koppeling kon niet lokaal worden opgeslagen. Neem contact op met support.",
+          "unknown": "Er ging iets mis. Probeer het opnieuw."
+        }
+      }
+    },
+    "subscription": {
+      "title": "Kies je abonnement",
+      "description": "Kies het pakket dat bij je past. Je betaalt pas vanaf dag 85 — de eerste 84 dagen zijn gratis.",
+      "continue": "Doorgaan",
+      "saveError": "Opslaan mislukt. Probeer het opnieuw.",
+      "perMonth": "per maand",
+      "trialInfo": "84 dagen gratis proberen — daarna {monthly} per maand vanaf dag 85.",
+      "recommended": "Aanbevolen",
+      "features": {
+        "reservations": "Reserveringen",
+        "unlimitedBookings": "Onbeperkt reserveringen",
+        "takeaway": "Afhalen",
+        "qrOrdering": "QR ordering",
+        "emailConfirmations": "E-mailbevestigingen",
+        "whatsappReminders": "WhatsApp-herinneringen",
+        "prioritySupport": "Voorrang bij ondersteuning"
+      },
+      "tiers": {
+        "starter": {
+          "name": "Starter",
+          "tagline": "Max 30 reserveringen per maand"
+        },
+        "plus": {
+          "name": "Plus",
+          "tagline": "Voor groeiende restaurants"
+        },
+        "premium": {
+          "name": "Premium",
+          "tagline": "Alles inbegrepen"
+        }
+      },
+      "qrPlanPicker": {
+        "label": "QR-pakket",
+        "hint": "Beschikbaar met Premium-abonnement",
+        "basic": {
+          "name": "QR Basic",
+          "description": "20 QR-codes inbegrepen, standaard ontwerp"
+        },
+        "premium": {
+          "name": "QR Premium",
+          "description": "20 QR-codes inbegrepen, op maat ontworpen in jouw huisstijl"
+        },
+        "downgradeNotice": "Je QR-pakket is teruggezet naar QR Basic — QR Premium is alleen beschikbaar met een Premium-abonnement.",
+        "dismiss": "Sluiten"
+      },
+      "vatNotice": "Tarieven voor ondernemers — BTW is aftrekbaar via je btw-aangifte.",
+      "oneTimeFees": {
+        "heading": "Eenmalige kosten",
+        "qrSetupBasic": "QR Basic — installatie",
+        "qrSetupPremium": "QR Premium — installatie",
+        "extraTables": "{count, plural, one {# extra QR-tafel boven 20 inbegrepen} other {# extra QR-tafels boven 20 inbegrepen}}",
+        "subtotal": "Subtotaal",
+        "totalDueToday": "Totaal vandaag (incl. BTW)",
+        "noFees": "Geen eenmalige kosten — je hebt geen QR-pakket gekozen."
+      }
+    },
     "floorPlan": {
       "serviceTag": "Stap 2 — Reserveringen",
       "heading": "Plattegrond",

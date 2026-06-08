@@ -592,6 +592,117 @@
       "emptyStateTitle": "No tables found",
       "emptyStateBody": "Tables are created in step 3 (Floor plan). If you don't use Reservations, please reach out — we'll help you get set up."
     },
+    "payments": {
+      "serviceTag": "Payments",
+      "heading": "Connect payments",
+      "sub": "We use Mollie to process payments. Connect your Mollie account so you can receive payouts from takeaway orders and prepaid bookings.",
+      "continue": "Continue",
+      "saveFailed": "Couldn't save — please try again.",
+      "statusCard": {
+        "notConnected": {
+          "title": "Connect Mollie",
+          "body": "You'll be sent to Mollie to fill in your business details. You'll be returned to this page when done."
+        },
+        "startedNotFinished": {
+          "title": "You haven't finished connecting yet",
+          "body": "It looks like you started the Mollie flow but didn't complete it. Click below to continue."
+        },
+        "pendingKyc": {
+          "title": "Connected — verification in progress",
+          "body": "Mollie is reviewing your details. This usually takes less than an hour. You can move on to the next step while you wait."
+        },
+        "verified": {
+          "title": "Verified",
+          "body": "You're ready to receive payouts from Mollie."
+        },
+        "needsAttention": {
+          "title": "Action needed",
+          "body": "Mollie needs more information or couldn't verify your details. Click below to go through the connection again."
+        }
+      },
+      "cta": {
+        "setUp": "Set up payments with Mollie",
+        "continueSetup": "Finish Mollie connection",
+        "relink": "Re-link with Mollie",
+        "opening": "Opening Mollie...",
+        "failedToStart": "Couldn't open Mollie. Please try again."
+      },
+      "info": {
+        "title": "What we share with Mollie",
+        "bullet1": "Your KVK details and business address for Mollie's verification.",
+        "bullet2": "No customer data — Mollie only sees the payment information needed for each transaction.",
+        "bullet3": "Your IBAN and bank details stay with Mollie — we never store them."
+      },
+      "errorBanner": {
+        "dismiss": "Dismiss",
+        "reasons": {
+          "missing_params": "Something went wrong with the Mollie redirect. Please try connecting again.",
+          "state_mismatch": "Security check failed — please start the connection over.",
+          "unauthorized": "Your session expired. Sign in and try again.",
+          "restaurant_not_found": "Restaurant not found. Contact support if this persists.",
+          "token_exchange_failed": "Couldn't complete the Mollie connection. Try again in a moment.",
+          "organization_fetch_failed": "Connected to Mollie but couldn't read your organization. Try again.",
+          "persist_failed": "Connected to Mollie but couldn't save the connection locally. Contact support.",
+          "unknown": "Something went wrong. Please try again."
+        }
+      }
+    },
+    "subscription": {
+      "title": "Choose your plan",
+      "description": "Pick the plan that fits you. You're not charged until day 85 — the first 84 days are free.",
+      "continue": "Continue",
+      "saveError": "Save failed. Please try again.",
+      "perMonth": "per month",
+      "trialInfo": "84-day free trial — then {monthly} per month from day 85.",
+      "recommended": "Recommended",
+      "features": {
+        "reservations": "Reservations",
+        "unlimitedBookings": "Unlimited bookings",
+        "takeaway": "Takeaway",
+        "qrOrdering": "QR ordering",
+        "emailConfirmations": "Email confirmations",
+        "whatsappReminders": "WhatsApp reminders",
+        "prioritySupport": "Priority support"
+      },
+      "tiers": {
+        "starter": {
+          "name": "Starter",
+          "tagline": "Up to 30 bookings per month"
+        },
+        "plus": {
+          "name": "Plus",
+          "tagline": "For growing restaurants"
+        },
+        "premium": {
+          "name": "Premium",
+          "tagline": "Everything included"
+        }
+      },
+      "qrPlanPicker": {
+        "label": "QR plan",
+        "hint": "Available with Premium subscription",
+        "basic": {
+          "name": "QR Basic",
+          "description": "20 QR codes included, standard design"
+        },
+        "premium": {
+          "name": "QR Premium",
+          "description": "20 QR codes included, custom-designed in your brand style"
+        },
+        "downgradeNotice": "Your QR plan has been reset to QR Basic — QR Premium is only available with a Premium subscription.",
+        "dismiss": "Dismiss"
+      },
+      "vatNotice": "Tariffs for businesses — VAT is deductible via your VAT return.",
+      "oneTimeFees": {
+        "heading": "One-time costs",
+        "qrSetupBasic": "QR Basic — setup",
+        "qrSetupPremium": "QR Premium — setup",
+        "extraTables": "{count, plural, one {# extra QR table beyond 20 included} other {# extra QR tables beyond 20 included}}",
+        "subtotal": "Subtotal",
+        "totalDueToday": "Total today (incl. VAT)",
+        "noFees": "No one-time costs — you haven't selected a QR plan."
+      }
+    },
     "floorPlan": {
       "serviceTag": "Step 2 — Reservations",
       "heading": "Floor plan",
