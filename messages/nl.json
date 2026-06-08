@@ -701,6 +701,16 @@
         "subtotal": "Subtotaal",
         "totalDueToday": "Totaal vandaag (incl. BTW)",
         "noFees": "Geen eenmalige kosten — je hebt geen QR-pakket gekozen."
+      },
+      "checkout": {
+        "errors": {
+          "unauthorized": "Je sessie is verlopen. Log opnieuw in en probeer het nogmaals.",
+          "tier_not_selected": "Kies eerst een abonnement.",
+          "restaurant_not_found": "Restaurantgegevens niet gevonden. Neem contact op met support.",
+          "step_out_of_order": "Eerdere stappen zijn nog niet afgerond.",
+          "checkout_failed": "We konden de betaling niet voorbereiden. Probeer het over een minuut opnieuw.",
+          "network": "Geen verbinding. Controleer je internet en probeer het opnieuw."
+        }
       }
     },
     "floorPlan": {

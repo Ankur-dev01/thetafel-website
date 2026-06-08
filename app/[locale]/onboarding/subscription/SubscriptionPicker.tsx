@@ -6,7 +6,6 @@ import { useTranslations } from 'next-intl';
 import StepFrame from '@/components/onboarding/shell/StepFrame';
 import SavedIndicator from '@/components/onboarding/shell/SavedIndicator';
 import { useDraftSave } from '@/lib/onboarding/useDraftSave';
-import { nextStepPath } from '@/lib/onboarding/routes';
 import {
   calculatePricing,
   formatEuros,
@@ -138,7 +137,7 @@ export default function SubscriptionPicker({
   const t = useTranslations('onboarding.subscription');
   const router = useRouter();
   const pathname = usePathname();
-  const { state: saveState, save, saveNow } = useDraftSave();
+  const { state: saveState, save } = useDraftSave();
 
   const [selectedTier, setSelectedTier] = useState<SubscriptionTier | null>(initialTier);
   const [qrPlan, setQrPlan] = useState<QrPlan | null>(initialQrPlan);
@@ -188,18 +187,47 @@ export default function SubscriptionPicker({
     save({ restaurant: { qr_plan: nextPlan } });
   }
 
-  // Continue only advances the step — tier is already persisted from click
   async function handleContinue() {
-    if (!selectedTier || isSaving) return;
+    if (!selectedTier) return;
     setIsSaving(true);
     setSaveError(null);
     try {
-      await saveNow({ restaurant: { current_onboarding_step: 13 } });
-      const next = nextStepPath(12, visibleStepIds, locale);
-      if (next) router.push(next);
+      const res = await fetch(
+        `/api/v1/restaurants/subscription/checkout?locale=${locale}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        }
+      );
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        const code = (body as { error?: string })?.error || 'checkout_failed';
+        setSaveError(t(`checkout.errors.${code}`));
+        setIsSaving(false);
+        return;
+      }
+
+      const data = (await res.json()) as {
+        skipped?: boolean;
+        nextStepUrl?: string;
+        checkoutUrl?: string;
+      };
+
+      if (data.skipped && data.nextStepUrl) {
+        router.push(data.nextStepUrl);
+        return;
+      }
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+        return;
+      }
+
+      setSaveError(t('checkout.errors.checkout_failed'));
+      setIsSaving(false);
     } catch {
-      setSaveError(t('saveError'));
-    } finally {
+      setSaveError(t('checkout.errors.network'));
       setIsSaving(false);
     }
   }

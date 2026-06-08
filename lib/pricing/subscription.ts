@@ -126,3 +126,54 @@ export function applyVat(netCents: number): VatBreakdown {
     vatRateBps: VAT_RATE_BPS,
   };
 }
+
+/** Net monthly recurring amount in cents for a given tier. */
+export function getMonthlyNetCents(tier: SubscriptionTier): number {
+  return TIER_MONTHLY_CENTS[tier];
+}
+
+/**
+ * Build a Mollie payment description (max 255 chars, shown on the customer's
+ * bank statement and in the Mollie dashboard).
+ *
+ * Three shapes:
+ * - QR setup: "The Tafel — QR Basic installatie + machtiging"
+ * - Verification (no one-time fees, Plus/Premium without QR): "The Tafel — Machtigingsverificatie (wordt direct teruggestort)"
+ * - Starter: throws — no Mollie payment for free tier.
+ */
+export function buildMollieDescription(input: {
+  locale: 'nl' | 'en';
+  tier: SubscriptionTier;
+  qrPlan: QrPlan | null;
+  isVerification: boolean;
+}): string {
+  const { locale, tier, qrPlan, isVerification } = input;
+  if (tier === 'starter') {
+    throw new Error('buildMollieDescription should not be called for Starter tier');
+  }
+  if (isVerification) {
+    return locale === 'nl'
+      ? 'The Tafel — Machtigingsverificatie (wordt direct teruggestort)'
+      : 'The Tafel — Mandate verification (refunded immediately)';
+  }
+  const qrLabel = qrPlan === 'premium' ? 'QR Premium' : 'QR Basic';
+  return locale === 'nl'
+    ? `The Tafel — ${qrLabel} installatie + machtiging`
+    : `The Tafel — ${qrLabel} setup + mandate`;
+}
+
+/**
+ * Format a cents amount as a Mollie API string ("47.00", "143.99").
+ * Mollie requires exactly two decimal places, period separator, no currency symbol.
+ * Use for the `amount.value` field on Mollie create() calls.
+ *
+ * @example
+ *   formatMollieAmount(4700)  // "47.00"
+ *   formatMollieAmount(14399) // "143.99"
+ *   formatMollieAmount(1)     // "0.01"
+ */
+export function formatMollieAmount(cents: number): string {
+  const euros = Math.floor(cents / 100);
+  const remainder = Math.abs(cents % 100).toString().padStart(2, '0');
+  return `${euros}.${remainder}`;
+}

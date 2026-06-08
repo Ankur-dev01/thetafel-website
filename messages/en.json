@@ -701,6 +701,16 @@
         "subtotal": "Subtotal",
         "totalDueToday": "Total today (incl. VAT)",
         "noFees": "No one-time costs — you haven't selected a QR plan."
+      },
+      "checkout": {
+        "errors": {
+          "unauthorized": "Your session has expired. Please log in again and retry.",
+          "tier_not_selected": "Please select a plan first.",
+          "restaurant_not_found": "Restaurant details not found. Please contact support.",
+          "step_out_of_order": "Earlier steps haven't been completed yet.",
+          "checkout_failed": "We couldn't prepare the payment. Please try again in a minute.",
+          "network": "No connection. Check your internet and try again."
+        }
       }
     },
     "floorPlan": {
