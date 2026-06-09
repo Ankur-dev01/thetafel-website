@@ -286,10 +286,6 @@ export default function PaymentsPage() {
     if (!hydrated || isConnecting) return
     setActionError(null)
     setIsConnecting(true)
-
-    // Open blank popup synchronously so browsers don't treat it as non-user-initiated
-    const popup = typeof window !== 'undefined' ? window.open('about:blank', '_blank') : null
-
     try {
       const res = await fetch('/api/v1/restaurants/mollie/init', {
         method: 'POST',
@@ -300,18 +296,9 @@ export default function PaymentsPage() {
       const data = await res.json()
       const url = data?.authorize_url
       if (typeof url !== 'string' || url.length === 0) throw new Error('no_url')
-
-      if (popup && !popup.closed) {
-        popup.location.href = url
-      } else {
-        // Popup blocked — fall back to same-tab navigation
-        window.location.href = url
-        return
-      }
+      window.location.href = url
     } catch {
-      if (popup && !popup.closed) popup.close()
-      setActionError(t('cta.failedToStart'))
-    } finally {
+      setActionError(t('cta.connectFailed'))
       setIsConnecting(false)
     }
   }

@@ -6,6 +6,7 @@ import type { Database } from '@/packages/db/types';
 import {
   getVisibleSteps,
   getStepStatus,
+  getEffectiveCurrentStep,
   resolveStepIdFromPath,
   type StepDescriptor,
 } from '@/lib/onboarding/steps';
@@ -32,7 +33,10 @@ export default function OnboardingSidebar({
   const liveStepId = resolveStepIdFromPath(pathname) ?? currentRouteStepId;
 
   const visibleSteps = getVisibleSteps(restaurant);
-  const currentOnboardingStep = restaurant?.current_onboarding_step ?? 0;
+  const effectiveCurrentStep = getEffectiveCurrentStep(
+    restaurant?.current_onboarding_step ?? 0,
+    liveStepId
+  );
 
   const t = {
     nl: {
@@ -115,7 +119,7 @@ export default function OnboardingSidebar({
           {visibleSteps.map((step, index) => {
             const status = getStepStatus(
               step.id,
-              currentOnboardingStep,
+              effectiveCurrentStep,
               liveStepId
             );
             return (

@@ -625,7 +625,7 @@
         "continueSetup": "Finish Mollie connection",
         "relink": "Re-link with Mollie",
         "opening": "Opening Mollie...",
-        "failedToStart": "Couldn't open Mollie. Please try again."
+        "connectFailed": "Couldn't connect to Mollie. Please try again."
       },
       "info": {
         "title": "What we share with Mollie",

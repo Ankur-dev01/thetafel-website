@@ -625,7 +625,7 @@
         "continueSetup": "Mollie-koppeling afronden",
         "relink": "Opnieuw koppelen met Mollie",
         "opening": "Mollie wordt geopend...",
-        "failedToStart": "Kon Mollie niet openen. Probeer het opnieuw."
+        "connectFailed": "Verbinden met Mollie lukte niet. Probeer het opnieuw."
       },
       "info": {
         "title": "Wat we met Mollie delen",

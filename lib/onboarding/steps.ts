@@ -209,6 +209,20 @@ export function resolveStepIdFromPath(pathname: string): number | null {
   return prefixMatches[0]!.id
 }
 
+/**
+ * Returns the effective "how far has the user progressed" value for sidebar
+ * rendering. If the URL is ahead of the DB (e.g. webhook fired but DB hasn't
+ * caught up yet), treat the URL step as the progress floor so previously-
+ * completed steps still render as completed rather than muted/unreachable.
+ */
+export function getEffectiveCurrentStep(
+  currentOnboardingStep: number,
+  liveStepId: number | null
+): number {
+  if (liveStepId === null) return currentOnboardingStep
+  return Math.max(currentOnboardingStep, liveStepId)
+}
+
 export function getStepStatus(
   stepId: number,
   currentOnboardingStep: number,

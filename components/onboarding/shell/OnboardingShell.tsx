@@ -15,7 +15,7 @@
 
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient, createSupabaseServerClientAdmin } from '@/lib/supabase/server';
 import { ALL_STEPS, resolveStepIdFromPath } from '@/lib/onboarding/steps';
 import MobileShellWrapper from './MobileShellWrapper';
 import OnboardingSidebar from './OnboardingSidebar';
@@ -82,6 +82,23 @@ export default async function OnboardingShell({
   }
 
   const currentRouteStepId = resolveStepIdFromPath(pathname);
+
+  // If the URL step is ahead of the DB (e.g. webhook fired but DB hasn't
+  // updated yet), backfill race-safely so the sidebar renders correctly on
+  // the next request without waiting for the next full webhook cycle.
+  if (
+    restaurant &&
+    currentRouteStepId !== null &&
+    currentRouteStepId > (restaurant.current_onboarding_step ?? 0)
+  ) {
+    const admin = await createSupabaseServerClientAdmin()
+    void admin
+      .from('restaurants')
+      .update({ current_onboarding_step: currentRouteStepId })
+      .eq('id', restaurant.id)
+      .lt('current_onboarding_step', currentRouteStepId)
+      .then(() => {}, () => {})
+  }
 
   return (
     <MobileShellWrapper
