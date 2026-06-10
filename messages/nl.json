@@ -711,6 +711,26 @@
           "checkout_failed": "We konden de betaling niet voorbereiden. Probeer het over een minuut opnieuw.",
           "network": "Geen verbinding. Controleer je internet en probeer het opnieuw."
         }
+      },
+      "return": {
+        "confirming": {
+          "title": "Even bevestigen",
+          "subtitle": "Mollie verwerkt je betaling. Dit duurt meestal maar een paar seconden."
+        },
+        "success": {
+          "title": "Betaling bevestigd",
+          "subtitle": "We brengen je naar de volgende stap."
+        },
+        "failed": {
+          "title": "Betaling niet gelukt",
+          "subtitle": "Kies je abonnement opnieuw of neem contact op met support.",
+          "cta": "Terug naar abonnementen"
+        },
+        "timeout": {
+          "title": "Nog aan het verwerken",
+          "subtitle": "Mollie heeft je betaling nog niet bevestigd. Probeer over een minuut nogmaals te verversen.",
+          "cta": "Vernieuwen"
+        }
       }
     },
     "floorPlan": {

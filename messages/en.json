@@ -711,6 +711,26 @@
           "checkout_failed": "We couldn't prepare the payment. Please try again in a minute.",
           "network": "No connection. Check your internet and try again."
         }
+      },
+      "return": {
+        "confirming": {
+          "title": "Confirming your payment",
+          "subtitle": "Mollie is processing this. It usually takes a few seconds."
+        },
+        "success": {
+          "title": "Payment confirmed",
+          "subtitle": "Taking you to the next step."
+        },
+        "failed": {
+          "title": "Payment didn't go through",
+          "subtitle": "Pick your plan again, or contact support.",
+          "cta": "Back to plans"
+        },
+        "timeout": {
+          "title": "Still processing",
+          "subtitle": "Mollie hasn't confirmed yet. Try refreshing in a minute.",
+          "cta": "Refresh"
+        }
       }
     },
     "floorPlan": {

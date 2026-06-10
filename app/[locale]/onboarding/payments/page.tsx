@@ -269,6 +269,46 @@ export default function PaymentsPage() {
     }
   }, [hydrated, mollieStatus, hasOrganization, pollOnce])
 
+  // Active KYC poll — calls Mollie's onboarding API every 30 s while non-terminal
+  useEffect(() => {
+    if (mollieStatus === 'verified' || mollieStatus === 'rejected') return
+    if (!hasOrganization) return
+
+    let cancelled = false
+
+    async function pollKyc() {
+      if (cancelled) return
+      try {
+        const res = await fetch('/api/v1/restaurants/mollie/kyc-status', { cache: 'no-store' })
+        if (res.ok) {
+          const data = (await res.json()) as { status?: string }
+          if (
+            data.status &&
+            (data.status === 'not_started' ||
+              data.status === 'pending' ||
+              data.status === 'verified' ||
+              data.status === 'rejected' ||
+              data.status === 'needs_action') &&
+            data.status !== mollieStatus
+          ) {
+            setMollieStatus(data.status as MollieStatus)
+          }
+        }
+      } catch {
+        // ignore transient failures
+      }
+      if (!cancelled) {
+        window.setTimeout(pollKyc, 30_000)
+      }
+    }
+
+    void pollKyc()
+
+    return () => {
+      cancelled = true
+    }
+  }, [hasOrganization, mollieStatus])
+
   // ---- Derived UI state ----------------------------------------------------
 
   function deriveUiState(): UiState {

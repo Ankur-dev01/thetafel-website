@@ -83,7 +83,19 @@ export async function POST(req: NextRequest) {
 
   // 7. Build the URL and return it. The frontend opens this in a new
   //    tab (per PRD §8 D6.2.3) or full-page redirects — its choice.
-  const authorize_url = buildAuthorizeUrl({ state })
+  let authorize_url: string
+  try {
+    authorize_url = buildAuthorizeUrl({ state })
+  } catch (err) {
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.error('[mollie/init] authorize URL build failed:', err instanceof Error ? err.message : err)
+    }
+    return NextResponse.json(
+      { error: 'mollie_config_missing', detail: err instanceof Error ? err.message : 'unknown_config_error' },
+      { status: 500 }
+    )
+  }
 
   return NextResponse.json({ authorize_url }, { status: 200 })
 }
