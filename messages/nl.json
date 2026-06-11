@@ -794,6 +794,27 @@
           "description": "Eigen bezorgflow met gekoppelde koerier-partners."
         }
       }
+    },
+    "contract": {
+      "eyebrow": "Stap 13 van 14",
+      "heading": "Opdrachtbevestiging & ondertekening",
+      "subheading": "Lees de opdrachtbevestiging hieronder, bevestig dat je de voorwaarden aanvaardt, en onderteken.",
+      "languageToggleLabel": "Taal",
+      "languageNl": "Nederlands",
+      "languageEn": "English",
+      "sectionTitle": "Ondertekenen",
+      "nameLabel": "Volledige naam",
+      "namePlaceholder": "Bijv. Anna de Vries",
+      "signatureLabel": "Teken hier je handtekening",
+      "signaturePlaceholder": "Gebruik je muis of vinger om te tekenen",
+      "signatureClear": "Wissen",
+      "authorityLabel": "Ik bevestig dat ik bevoegd ben om namens {restaurantName} te tekenen.",
+      "backButton": "Terug",
+      "submitButton": "Ondertekenen & doorgaan",
+      "submitting": "Bezig met ondertekenen…",
+      "errorGeneric": "Er ging iets mis. Probeer het opnieuw.",
+      "errorContractChanged": "Het contract is gewijzigd sinds je deze pagina laadde. Vernieuw de pagina om de nieuwste versie te zien.",
+      "refresh": "Pagina vernieuwen"
     }
   },
   "modal": {

@@ -794,6 +794,27 @@
           "description": "Own-delivery flow with connected courier partners."
         }
       }
+    },
+    "contract": {
+      "eyebrow": "Step 13 of 14",
+      "heading": "Order form & signing",
+      "subheading": "Review the order form below, confirm you accept our terms, and sign.",
+      "languageToggleLabel": "Language",
+      "languageNl": "Nederlands",
+      "languageEn": "English",
+      "sectionTitle": "Sign",
+      "nameLabel": "Full name",
+      "namePlaceholder": "e.g. Anna de Vries",
+      "signatureLabel": "Draw your signature here",
+      "signaturePlaceholder": "Use your mouse or finger to draw",
+      "signatureClear": "Clear",
+      "authorityLabel": "I confirm I am authorised to sign on behalf of {restaurantName}.",
+      "backButton": "Back",
+      "submitButton": "Sign & continue",
+      "submitting": "Signing…",
+      "errorGeneric": "Something went wrong. Please try again.",
+      "errorContractChanged": "The contract changed since you loaded this page. Refresh to see the latest version.",
+      "refresh": "Refresh page"
     }
   },
  "modal": {
