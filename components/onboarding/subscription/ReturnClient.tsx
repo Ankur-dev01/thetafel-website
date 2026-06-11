@@ -14,12 +14,11 @@ interface Props {
 export default function ReturnClient({ locale, paymentId }: Props) {
   const router = useRouter()
   const t = useTranslations('onboarding.subscription.return')
-  const [state, setState] = useState<State>('confirming')
+  const [state, setState] = useState<State>(() => (paymentId ? 'confirming' : 'failed'))
   const cancelledRef = useRef(false)
 
   useEffect(() => {
     if (!paymentId) {
-      setState('failed')
       return
     }
 
