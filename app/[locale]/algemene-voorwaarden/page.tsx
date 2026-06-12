@@ -5,8 +5,6 @@ import Footer from '@/components/layout/Footer'
 import LegalDocument from '@/components/legal/LegalDocument'
 import { CURRENT_TERMS_VERSION } from '@/lib/legal/versions'
 
-export const dynamic = 'force-static'
-export const revalidate = 3600
 
 type Props = {
   params: Promise<{ locale: string }>
