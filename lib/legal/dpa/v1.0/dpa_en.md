@@ -4,7 +4,7 @@
 
 > **DRAFT — requires Dutch corporate-legal review before public launch.**
 
-This Data Processing Agreement applies to every processing of personal data by **Ontwikkeling Tech Services**, registered with the Dutch Chamber of Commerce (KVK) under number `[OTS_KVK]`, operating under the registered trade name **"The Tafel"** (hereafter: "The Tafel" or "processor"), on behalf of a Restaurant (hereafter: "Restaurant" or "controller"). This Agreement complies with Article 28(3) of Regulation (EU) 2016/679 (GDPR / AVG).
+This Data Processing Agreement applies to every processing of personal data by **Ontwikkeling Tech Services**, registered with the Dutch Chamber of Commerce (KVK) under number `42027611`, operating under the registered trade name **"The Tafel"** (hereafter: "The Tafel" or "processor"), on behalf of a Restaurant (hereafter: "Restaurant" or "controller"). This Agreement complies with Article 28(3) of Regulation (EU) 2016/679 (GDPR / AVG).
 
 ## 1. Roles
 

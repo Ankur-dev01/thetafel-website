@@ -804,7 +804,7 @@
       "languageEn": "English",
       "sectionTitle": "Sign",
       "nameLabel": "Full name",
-      "namePlaceholder": "e.g. Anna de Vries",
+      "namePlaceholder": "",
       "signatureLabel": "Draw your signature here",
       "signaturePlaceholder": "Use your mouse or finger to draw",
       "signatureClear": "Clear",

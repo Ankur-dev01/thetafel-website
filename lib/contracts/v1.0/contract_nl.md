@@ -9,7 +9,7 @@
 
 ## 1. Partijen
 
-**Aanbieder:** Ontwikkeling Tech Services, eenmanszaak ingeschreven bij de Kamer van Koophandel onder nummer `[OTS_KVK]`, BTW-nummer `[OTS_BTW]`, gevestigd te `[OTS_ADDRESS]`, handelend onder de geregistreerde handelsnaam **"The Tafel"** (hierna: **"The Tafel"**).
+**Aanbieder:** Ontwikkeling Tech Services, eenmanszaak ingeschreven bij de Kamer van Koophandel onder nummer `42027611`, BTW-nummer `NL005440779B20`, gevestigd te `[OTS_ADDRESS]`, handelend onder de geregistreerde handelsnaam **"The Tafel"** (hierna: **"The Tafel"**).
 
 **Restaurant:** {{restaurant_legal_name}}, ingeschreven bij de Kamer van Koophandel onder nummer {{restaurant_kvk}}, BTW-nummer {{restaurant_btw_or_dash}}, gevestigd te {{restaurant_address}} (hierna: **"Restaurant"**).
 
@@ -35,7 +35,7 @@ Betaling vindt plaats via SEPA Direct Debit door Mollie B.V. De eerste incasso v
 
 Op deze overeenkomst zijn van toepassing:
 
-- de **algemene voorwaarden** van The Tafel, versie {{terms_version}}, beschikbaar op https://thetafel.nl/voorwaarden
+- de **algemene voorwaarden** van The Tafel, versie {{terms_version}}, beschikbaar op https://thetafel.nl/algemene-voorwaarden
 - de **verwerkersovereenkomst** van The Tafel, versie {{dpa_version}}, beschikbaar op https://thetafel.nl/verwerkersovereenkomst
 
 Beide documenten maken integraal deel uit van deze overeenkomst. Het Restaurant verklaart bij ondertekening kennis te hebben genomen van beide documenten en de inhoud te aanvaarden.

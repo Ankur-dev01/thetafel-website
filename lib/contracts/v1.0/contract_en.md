@@ -9,7 +9,7 @@
 
 ## 1. Parties
 
-**Provider:** Ontwikkeling Tech Services, a sole proprietorship registered with the Dutch Chamber of Commerce (KVK) under number `[OTS_KVK]`, BTW number `[OTS_BTW]`, with registered address at `[OTS_ADDRESS]`, operating under the registered trade name **"The Tafel"** (hereafter: **"The Tafel"**).
+**Provider:** Ontwikkeling Tech Services, a sole proprietorship registered with the Dutch Chamber of Commerce (KVK) under number `42027611`, BTW number `NL005440779B20`, with registered address at `[OTS_ADDRESS]`, operating under the registered trade name **"The Tafel"** (hereafter: **"The Tafel"**).
 
 **Restaurant:** {{restaurant_legal_name}}, registered with the Chamber of Commerce (KVK) under number {{restaurant_kvk}}, BTW number {{restaurant_btw_or_dash}}, with registered address at {{restaurant_address}} (hereafter: **"Restaurant"**).
 
@@ -35,7 +35,7 @@ Payment is collected by SEPA Direct Debit through Mollie B.V. The first subscrip
 
 This Order Form is subject to:
 
-- The Tafel's **General Terms and Conditions** (algemene voorwaarden), version {{terms_version}}, available at https://thetafel.nl/voorwaarden
+- The Tafel's **General Terms and Conditions** (algemene voorwaarden), version {{terms_version}}, available at https://thetafel.nl/algemene-voorwaarden
 - The Tafel's **Data Processing Agreement** (verwerkersovereenkomst), version {{dpa_version}}, available at https://thetafel.nl/verwerkersovereenkomst
 
 Both documents form an integral part of this Agreement. By signing, the Restaurant confirms it has read and accepts both.

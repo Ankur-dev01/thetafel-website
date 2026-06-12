@@ -3,9 +3,11 @@ import React from 'react'
 type Token =
   | { t: 'h1'; text: string }
   | { t: 'h2'; text: string }
+  | { t: 'h3'; text: string }
   | { t: 'hr' }
   | { t: 'blockquote'; text: string }
   | { t: 'ul'; items: string[] }
+  | { t: 'ol'; items: string[] }
   | { t: 'table'; headers: string[]; rows: string[][] }
   | { t: 'p'; text: string }
 
@@ -24,6 +26,11 @@ function tokenize(md: string): Token[] {
     }
     if (line.startsWith('## ')) {
       tokens.push({ t: 'h2', text: line.slice(3) })
+      i++
+      continue
+    }
+    if (line.startsWith('### ')) {
+      tokens.push({ t: 'h3', text: line.slice(4) })
       i++
       continue
     }
@@ -66,6 +73,15 @@ function tokenize(md: string): Token[] {
       tokens.push({ t: 'ul', items })
       continue
     }
+    if (/^\d+\. /.test(line)) {
+      const items: string[] = []
+      while (i < lines.length && /^\d+\. /.test(lines[i]!)) {
+        items.push(lines[i]!.replace(/^\d+\. /, ''))
+        i++
+      }
+      tokens.push({ t: 'ol', items })
+      continue
+    }
     if (line.trim() === '') {
       i++
       continue
@@ -78,7 +94,9 @@ function tokenize(md: string): Token[] {
         next.trim() === '' ||
         next.startsWith('# ') ||
         next.startsWith('## ') ||
+        next.startsWith('### ') ||
         next.startsWith('- ') ||
+        /^\d+\. /.test(next) ||
         next.startsWith('|') ||
         next.startsWith('> ') ||
         /^-{3,}$/.test(next.trim())
@@ -94,14 +112,14 @@ function tokenize(md: string): Token[] {
 
 function renderInline(text: string): React.ReactNode[] {
   const nodes: React.ReactNode[] = []
-  const regex = /(\*\*([^*]+)\*\*)|(`([^`]+)`)/g
+  const regex = /(\*\*([^*]+)\*\*)|(`([^`]+)`)|(\[([^\]]+)\]\(([^)]+)\))/g
   let last = 0
   let m: RegExpExecArray | null
   while ((m = regex.exec(text)) !== null) {
     if (m.index > last) nodes.push(text.slice(last, m.index))
     if (m[1]) {
       nodes.push(
-        <strong key={m.index} style={{ fontWeight: 700 }}>
+        <strong key={m.index} style={{ color: 'var(--earth)', fontWeight: 500 }}>
           {m[2]}
         </strong>
       )
@@ -120,6 +138,16 @@ function renderInline(text: string): React.ReactNode[] {
           {m[4]}
         </code>
       )
+    } else if (m[5]) {
+      nodes.push(
+        <a
+          key={m.index}
+          href={m[7]}
+          style={{ color: 'var(--amber)', textDecoration: 'underline' }}
+        >
+          {m[6]}
+        </a>
+      )
     }
     last = regex.lastIndex
   }
@@ -127,19 +155,25 @@ function renderInline(text: string): React.ReactNode[] {
   return nodes
 }
 
-export default function LegalDocument({ content }: { content: string }) {
-  const tokens = tokenize(content)
+const listItemStyle: React.CSSProperties = {
+  marginBottom: '8px',
+  fontFamily: 'var(--font-jost), -apple-system, BlinkMacSystemFont, sans-serif',
+  fontWeight: 400,
+  fontSize: '15px',
+  lineHeight: 1.75,
+  color: 'var(--stone)',
+}
+
+export default function LegalDocument({ markdown }: { markdown: string; locale?: 'nl' | 'en' }) {
+  const tokens = tokenize(markdown)
 
   return (
     <div
+      className="legal-document"
       style={{
-        fontFamily: 'Georgia, serif',
-        fontSize: '16px',
-        lineHeight: '1.75',
-        color: '#1e1508',
-        maxWidth: '720px',
+        maxWidth: '800px',
         margin: '0 auto',
-        padding: '48px 24px 80px',
+        padding: 'clamp(80px, 10vw, 120px) clamp(24px, 5vw, 64px) 80px',
       }}
     >
       {tokens.map((tok, idx) => {
@@ -148,12 +182,13 @@ export default function LegalDocument({ content }: { content: string }) {
             <h1
               key={idx}
               style={{
-                fontFamily: 'Georgia, serif',
+                fontFamily: 'var(--font-raleway), Georgia, serif',
                 fontWeight: 900,
-                fontSize: '28px',
-                color: '#1e1508',
-                margin: '0 0 8px',
-                lineHeight: '1.3',
+                fontSize: '48px',
+                letterSpacing: '-0.03em',
+                color: 'var(--earth)',
+                marginBottom: '8px',
+                lineHeight: 1.2,
               }}
             >
               {renderInline(tok.text)}
@@ -165,15 +200,34 @@ export default function LegalDocument({ content }: { content: string }) {
             <h2
               key={idx}
               style={{
-                fontFamily: 'Georgia, serif',
-                fontWeight: 700,
-                fontSize: '18px',
-                color: '#1e1508',
-                margin: '32px 0 8px',
+                fontFamily: 'var(--font-raleway), Georgia, serif',
+                fontWeight: 900,
+                fontSize: '24px',
+                letterSpacing: '-0.02em',
+                color: 'var(--earth)',
+                marginTop: '40px',
+                marginBottom: '12px',
               }}
             >
               {renderInline(tok.text)}
             </h2>
+          )
+        }
+        if (tok.t === 'h3') {
+          return (
+            <h3
+              key={idx}
+              style={{
+                fontFamily: 'var(--font-raleway), Georgia, serif',
+                fontWeight: 900,
+                fontSize: '18px',
+                color: 'var(--earth)',
+                marginTop: '28px',
+                marginBottom: '10px',
+              }}
+            >
+              {renderInline(tok.text)}
+            </h3>
           )
         }
         if (tok.t === 'hr') {
@@ -182,7 +236,7 @@ export default function LegalDocument({ content }: { content: string }) {
               key={idx}
               style={{
                 border: 'none',
-                borderTop: '1px solid rgba(30,21,8,0.15)',
+                borderTop: '1px solid rgba(30,21,8,0.1)',
                 margin: '32px 0',
               }}
             />
@@ -190,19 +244,20 @@ export default function LegalDocument({ content }: { content: string }) {
         }
         if (tok.t === 'blockquote') {
           return (
-            <div
+            <blockquote
               key={idx}
               style={{
-                borderLeft: '3px solid #d4820a',
+                borderLeft: '3px solid var(--amber)',
                 paddingLeft: '16px',
-                margin: '16px 0',
-                color: '#9c8b6a',
+                margin: '24px 0',
                 fontStyle: 'italic',
+                color: 'var(--stone)',
                 fontSize: '14px',
+                lineHeight: 1.75,
               }}
             >
               {renderInline(tok.text)}
-            </div>
+            </blockquote>
           )
         }
         if (tok.t === 'ul') {
@@ -211,16 +266,33 @@ export default function LegalDocument({ content }: { content: string }) {
               key={idx}
               style={{
                 paddingLeft: '24px',
-                margin: '8px 0 16px',
+                margin: '0 0 16px',
                 listStyle: 'disc',
               }}
             >
               {tok.items.map((item, ii) => (
-                <li key={ii} style={{ marginBottom: '6px' }}>
+                <li key={ii} style={listItemStyle}>
                   {renderInline(item)}
                 </li>
               ))}
             </ul>
+          )
+        }
+        if (tok.t === 'ol') {
+          return (
+            <ol
+              key={idx}
+              style={{
+                paddingLeft: '24px',
+                margin: '0 0 16px',
+              }}
+            >
+              {tok.items.map((item, ii) => (
+                <li key={ii} style={listItemStyle}>
+                  {renderInline(item)}
+                </li>
+              ))}
+            </ol>
           )
         }
         if (tok.t === 'table') {
@@ -231,6 +303,7 @@ export default function LegalDocument({ content }: { content: string }) {
                   borderCollapse: 'collapse',
                   width: '100%',
                   fontSize: '14px',
+                  fontFamily: 'var(--font-jost), -apple-system, BlinkMacSystemFont, sans-serif',
                 }}
               >
                 <thead>
@@ -241,10 +314,10 @@ export default function LegalDocument({ content }: { content: string }) {
                         style={{
                           padding: '8px 12px',
                           textAlign: 'left',
-                          fontWeight: 700,
-                          borderBottom: '2px solid rgba(30,21,8,0.15)',
-                          color: '#1e1508',
-                          whiteSpace: 'nowrap',
+                          fontWeight: 500,
+                          border: '1px solid rgba(30,21,8,0.1)',
+                          background: 'var(--warm-surface, #f8f2e6)',
+                          color: 'var(--earth)',
                         }}
                       >
                         {h}
@@ -260,8 +333,8 @@ export default function LegalDocument({ content }: { content: string }) {
                           key={ci}
                           style={{
                             padding: '8px 12px',
-                            borderBottom: '1px solid rgba(30,21,8,0.08)',
-                            color: ci === 0 ? '#1e1508' : '#9c8b6a',
+                            border: '1px solid rgba(30,21,8,0.1)',
+                            color: 'var(--stone)',
                             verticalAlign: 'top',
                           }}
                         >
@@ -276,11 +349,29 @@ export default function LegalDocument({ content }: { content: string }) {
           )
         }
         return (
-          <p key={idx} style={{ margin: '0 0 12px' }}>
+          <p
+            key={idx}
+            style={{
+              fontFamily: 'var(--font-jost), -apple-system, BlinkMacSystemFont, sans-serif',
+              fontWeight: 400,
+              fontSize: '15px',
+              lineHeight: 1.75,
+              color: 'var(--stone)',
+              marginBottom: '16px',
+            }}
+          >
             {renderInline(tok.text)}
           </p>
         )
       })}
+
+      <style>{`
+        @media (max-width: 768px) {
+          .legal-document {
+            padding: 100px 24px 60px !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }

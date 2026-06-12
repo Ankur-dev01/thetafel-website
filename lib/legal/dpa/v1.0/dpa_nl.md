@@ -4,7 +4,7 @@
 
 > **CONCEPT — vereist juridische controle door een Nederlandse advocaat vóór publieke lancering.**
 
-Deze verwerkersovereenkomst is van toepassing op elke verwerking van persoonsgegevens door **Ontwikkeling Tech Services**, ingeschreven bij de Kamer van Koophandel onder nummer `[OTS_KVK]`, handelend onder de naam **"The Tafel"** (hierna: "The Tafel" of "verwerker"), namens een Restaurant (hierna: "Restaurant" of "verwerkingsverantwoordelijke"). Deze overeenkomst voldoet aan artikel 28 lid 3 van Verordening (EU) 2016/679 (AVG / GDPR).
+Deze verwerkersovereenkomst is van toepassing op elke verwerking van persoonsgegevens door **Ontwikkeling Tech Services**, ingeschreven bij de Kamer van Koophandel onder nummer `42027611`, handelend onder de naam **"The Tafel"** (hierna: "The Tafel" of "verwerker"), namens een Restaurant (hierna: "Restaurant" of "verwerkingsverantwoordelijke"). Deze overeenkomst voldoet aan artikel 28 lid 3 van Verordening (EU) 2016/679 (AVG / GDPR).
 
 ## 1. Rollen
 

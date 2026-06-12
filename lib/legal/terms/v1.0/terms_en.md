@@ -4,7 +4,7 @@
 
 > **DRAFT — requires Dutch corporate-legal review before public launch.**
 
-These General Terms and Conditions apply to all use of the software platform of **Ontwikkeling Tech Services**, registered with the Dutch Chamber of Commerce (KVK) under number `[OTS_KVK]`, operating under the registered trade name **"The Tafel"** (hereafter: "The Tafel"), by a restaurant or hospitality business (hereafter: "Restaurant").
+These General Terms and Conditions apply to all use of the software platform of **Ontwikkeling Tech Services**, registered with the Dutch Chamber of Commerce (KVK) under number `42027611`, operating under the registered trade name **"The Tafel"** (hereafter: "The Tafel"), by a restaurant or hospitality business (hereafter: "Restaurant").
 
 ## 1. Definitions
 

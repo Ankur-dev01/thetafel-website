@@ -6,7 +6,7 @@ import {
 } from '@/lib/supabase/server'
 import { renderContract } from '@/lib/contracts/render'
 import { sendContractSignedEmail } from '@/lib/email/contract-signed'
-import { CURRENT_TERMS_VERSION, CURRENT_DPA_VERSION } from '@/lib/legal/versions'
+import { CURRENT_CONTRACT_VERSION, CURRENT_TERMS_VERSION, CURRENT_DPA_VERSION } from '@/lib/legal/versions'
 
 const Body = z.object({
   full_name: z.string().trim().min(2).max(120),
@@ -166,13 +166,11 @@ export async function POST(
     const contractPayload = {
       restaurant_id: restaurantId,
       version: '1.0',
-      locale: body.locale_signed,
       signed_at: signedAt,
       signed_name: body.full_name,
       signed_ip: signedIp,
       signed_user_agent: signedUserAgent,
       signature_image_path: storagePath,
-      pdf_path: '',
       locale_signed: body.locale_signed,
       document_hash: body.document_hash,
       authority_confirmed: true,
@@ -243,6 +241,9 @@ export async function POST(
           documentHash: body.document_hash,
           signatureImageBase64: b64,
           locale: body.locale_signed,
+          contractVersion: CURRENT_CONTRACT_VERSION,
+          termsVersion: CURRENT_TERMS_VERSION,
+          dpaVersion: CURRENT_DPA_VERSION,
         })
 
         await Promise.race([

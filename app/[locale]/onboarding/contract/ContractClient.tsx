@@ -297,84 +297,87 @@ function SignatureCanvas({
   locked: boolean
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const drawing = useRef(false)
-  const hasDrawn = useRef(false)
-
-  function getPos(
-    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
-  ): { x: number; y: number } {
-    const canvas = canvasRef.current!
-    const rect = canvas.getBoundingClientRect()
-    const scaleX = canvas.width / rect.width
-    const scaleY = canvas.height / rect.height
-    if ('touches' in e) {
-      const touch = e.touches[0]!
-      return {
-        x: (touch.clientX - rect.left) * scaleX,
-        y: (touch.clientY - rect.top) * scaleY,
-      }
-    }
-    return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY,
-    }
-  }
-
-  function startDraw(
-    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
-  ) {
-    if (locked) return
-    e.preventDefault()
-    drawing.current = true
-    const { x, y } = getPos(e)
-    const ctx = canvasRef.current!.getContext('2d')!
-    ctx.beginPath()
-    ctx.moveTo(x, y)
-  }
-
-  function draw(
-    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
-  ) {
-    if (!drawing.current || locked) return
-    e.preventDefault()
-    const { x, y } = getPos(e)
-    const ctx = canvasRef.current!.getContext('2d')!
-    ctx.lineTo(x, y)
-    ctx.strokeStyle = '#1e1508'
-    ctx.lineWidth = 2
-    ctx.lineCap = 'round'
-    ctx.lineJoin = 'round'
-    ctx.stroke()
-    if (!hasDrawn.current) {
-      hasDrawn.current = true
-    }
-  }
-
-  function endDraw() {
-    if (!drawing.current) return
-    drawing.current = false
-    if (hasDrawn.current) {
-      onSign(canvasRef.current!.toDataURL('image/png'))
-    }
-  }
-
-  function handleClear() {
-    const canvas = canvasRef.current!
-    const ctx = canvas.getContext('2d')!
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    hasDrawn.current = false
-    onClear()
-  }
+  const isDrawingRef = useRef(false)
+  const hasDrawnRef = useRef(false)
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const w = canvas.offsetWidth
-    canvas.width = w * 2
-    canvas.height = 110 * 2
-    const ctx = canvas.getContext('2d')!
-    ctx.scale(2, 2)
+
+    const setupCanvas = () => {
+      const rect = canvas.getBoundingClientRect()
+      const dpr = window.devicePixelRatio || 1
+      canvas.width = Math.round(rect.width * dpr)
+      canvas.height = Math.round(rect.height * dpr)
+      canvas.style.width = `${rect.width}px`
+      canvas.style.height = `${rect.height}px`
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+      ctx.scale(dpr, dpr)
+      ctx.lineWidth = 1.5
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+      ctx.strokeStyle = '#1e1508'
+    }
+
+    setupCanvas()
+    window.addEventListener('resize', setupCanvas)
+    return () => window.removeEventListener('resize', setupCanvas)
   }, [])
+
+  const getPointerPos = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current
+    if (!canvas) return { x: 0, y: 0 }
+    const rect = canvas.getBoundingClientRect()
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top }
+  }
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (locked) return
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    canvas.setPointerCapture(e.pointerId)
+    isDrawingRef.current = true
+    const { x, y } = getPointerPos(e)
+    ctx.beginPath()
+    ctx.moveTo(x, y)
+  }
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!isDrawingRef.current || locked) return
+    const ctx = canvasRef.current?.getContext('2d')
+    if (!ctx) return
+    const { x, y } = getPointerPos(e)
+    ctx.lineTo(x, y)
+    ctx.stroke()
+    hasDrawnRef.current = true
+  }
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!isDrawingRef.current) return
+    isDrawingRef.current = false
+    const canvas = canvasRef.current
+    if (!canvas) return
+    if (canvas.hasPointerCapture(e.pointerId)) {
+      canvas.releasePointerCapture(e.pointerId)
+    }
+    if (hasDrawnRef.current) {
+      onSign(canvas.toDataURL('image/png'))
+    }
+  }
+
+  const handleClear = () => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    const rect = canvas.getBoundingClientRect()
+    ctx.clearRect(0, 0, rect.width, rect.height)
+    hasDrawnRef.current = false
+    onClear()
+  }
 
   return (
     <div style={{ position: 'relative' }}>
@@ -401,10 +404,15 @@ function SignatureCanvas({
       </button>
       <canvas
         ref={canvasRef}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        onPointerLeave={handlePointerUp}
         style={{
           display: 'block',
           width: '100%',
-          height: '110px',
+          height: '160px',
           borderRadius: '8px',
           border: locked
             ? '1.5px dashed rgba(30,21,8,0.2)'
@@ -413,13 +421,6 @@ function SignatureCanvas({
           cursor: locked ? 'not-allowed' : 'crosshair',
           touchAction: 'none',
         }}
-        onMouseDown={startDraw}
-        onMouseMove={draw}
-        onMouseUp={endDraw}
-        onMouseLeave={endDraw}
-        onTouchStart={startDraw}
-        onTouchMove={draw}
-        onTouchEnd={endDraw}
       />
     </div>
   )
@@ -529,8 +530,8 @@ export default function ContractClient({
   const activeContract = activeLocale === 'nl' ? contractNl : contractEn
   const activeHash = activeLocale === 'nl' ? hashNl : hashEn
 
-  const termsHref = activeLocale === 'en' ? '/en/legal/voorwaarden' : '/legal/voorwaarden'
-  const dpaHref = activeLocale === 'en' ? '/en/legal/verwerkersovereenkomst' : '/legal/verwerkersovereenkomst'
+  const termsHref = activeLocale === 'en' ? '/en/algemene-voorwaarden' : '/algemene-voorwaarden'
+  const dpaHref = activeLocale === 'en' ? '/en/verwerkersovereenkomst' : '/verwerkersovereenkomst'
 
   function handleLocaleSwitch(locale: ContractLocale) {
     if (locale === activeLocale) return

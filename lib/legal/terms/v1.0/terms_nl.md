@@ -4,7 +4,7 @@
 
 > **CONCEPT — vereist juridische controle door een Nederlandse advocaat vóór publieke lancering.**
 
-Deze algemene voorwaarden gelden voor elk gebruik van het softwareplatform van **Ontwikkeling Tech Services**, ingeschreven bij de Kamer van Koophandel onder nummer `[OTS_KVK]`, handelend onder de naam **"The Tafel"** (hierna: "The Tafel"), door een restaurant of horecaonderneming (hierna: "Restaurant").
+Deze algemene voorwaarden gelden voor elk gebruik van het softwareplatform van **Ontwikkeling Tech Services**, ingeschreven bij de Kamer van Koophandel onder nummer `42027611`, handelend onder de naam **"The Tafel"** (hierna: "The Tafel"), door een restaurant of horecaonderneming (hierna: "Restaurant").
 
 ## 1. Definities
 
