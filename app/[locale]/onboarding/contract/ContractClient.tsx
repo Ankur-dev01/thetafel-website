@@ -318,6 +318,8 @@ const SignatureCanvas = forwardRef<
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
       ctx.strokeStyle = '#1e1508'
+      ctx.fillStyle = '#ffffff'
+      ctx.fillRect(0, 0, rect.width, rect.height)
     }
 
     setupCanvas()
@@ -332,6 +334,8 @@ const SignatureCanvas = forwardRef<
     if (!ctx) return
     const rect = canvas.getBoundingClientRect()
     ctx.clearRect(0, 0, rect.width, rect.height)
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, rect.width, rect.height)
     hasDrawnRef.current = false
     onClear()
   }
