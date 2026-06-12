@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import StepFrame from '@/components/onboarding/shell/StepFrame'
@@ -287,15 +287,15 @@ function MinimalMarkdown({ content }: { content: string }) {
 
 // ── Signature canvas ──────────────────────────────────────────────────────
 
-function SignatureCanvas({
-  onSign,
-  onClear,
-  locked,
-}: {
-  onSign: (dataUrl: string) => void
-  onClear: () => void
-  locked: boolean
-}) {
+interface SignatureCanvasHandle {
+  clear: () => void
+  restore: (url: string) => void
+}
+
+const SignatureCanvas = forwardRef<
+  SignatureCanvasHandle,
+  { onSign: (dataUrl: string) => void; onClear: () => void; locked: boolean }
+>(function SignatureCanvas({ onSign, onClear, locked }, ref) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const isDrawingRef = useRef(false)
   const hasDrawnRef = useRef(false)
@@ -324,6 +324,34 @@ function SignatureCanvas({
     window.addEventListener('resize', setupCanvas)
     return () => window.removeEventListener('resize', setupCanvas)
   }, [])
+
+  const handleClear = () => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    const rect = canvas.getBoundingClientRect()
+    ctx.clearRect(0, 0, rect.width, rect.height)
+    hasDrawnRef.current = false
+    onClear()
+  }
+
+  useImperativeHandle(ref, () => ({
+    clear: handleClear,
+    restore(url: string) {
+      const canvas = canvasRef.current
+      if (!canvas) return
+      const img = new window.Image()
+      img.onload = () => {
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return
+        const rect = canvas.getBoundingClientRect()
+        ctx.drawImage(img, 0, 0, rect.width, rect.height)
+        hasDrawnRef.current = true
+      }
+      img.src = url
+    },
+  }))
 
   const getPointerPos = (e: React.PointerEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current
@@ -366,17 +394,6 @@ function SignatureCanvas({
     if (hasDrawnRef.current) {
       onSign(canvas.toDataURL('image/png'))
     }
-  }
-
-  const handleClear = () => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    const rect = canvas.getBoundingClientRect()
-    ctx.clearRect(0, 0, rect.width, rect.height)
-    hasDrawnRef.current = false
-    onClear()
   }
 
   return (
@@ -424,7 +441,7 @@ function SignatureCanvas({
       />
     </div>
   )
-}
+})
 
 // ── Checkbox ──────────────────────────────────────────────────────────────
 
@@ -527,6 +544,48 @@ export default function ContractClient({
   const [error, setError] = useState<string | null>(null)
   const [contractChanged, setContractChanged] = useState(false)
 
+  const signatureCanvasRef = useRef<SignatureCanvasHandle>(null)
+  const STORAGE_KEY = `tafel-contract-draft-${restaurantId}-v1`
+
+  // Restore draft from localStorage on mount
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY)
+      if (!raw) return
+      const data = JSON.parse(raw) as {
+        fullName?: string
+        signatureDataUrl?: string
+        termsAccepted?: boolean
+        authorityConfirmed?: boolean
+      }
+      if (typeof data.fullName === 'string') setFullName(data.fullName)
+      if (typeof data.termsAccepted === 'boolean') setTermsAccepted(data.termsAccepted)
+      if (typeof data.authorityConfirmed === 'boolean') setAuthorityConfirmed(data.authorityConfirmed)
+      if (
+        typeof data.signatureDataUrl === 'string' &&
+        data.signatureDataUrl.startsWith('data:image/png;base64,')
+      ) {
+        setSignatureDataUrl(data.signatureDataUrl)
+        signatureCanvasRef.current?.restore(data.signatureDataUrl)
+      }
+    } catch {
+      // localStorage unavailable or corrupted — ignore
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Persist draft to localStorage on every field change
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ fullName, signatureDataUrl, termsAccepted, authorityConfirmed })
+      )
+    } catch {
+      // quota or unavailable — ignore
+    }
+  }, [fullName, signatureDataUrl, termsAccepted, authorityConfirmed, STORAGE_KEY])
+
   const activeContract = activeLocale === 'nl' ? contractNl : contractEn
   const activeHash = activeLocale === 'nl' ? hashNl : hashEn
 
@@ -573,6 +632,7 @@ export default function ContractClient({
         return
       }
 
+      try { window.localStorage.removeItem(STORAGE_KEY) } catch {}
       router.push(nextStepUrl)
     } catch {
       setError(t('errorGeneric'))
@@ -736,6 +796,7 @@ export default function ContractClient({
               {t('signatureLabel')}
             </label>
             <SignatureCanvas
+              ref={signatureCanvasRef}
               onSign={(dataUrl) => setSignatureDataUrl(dataUrl)}
               onClear={() => setSignatureDataUrl(null)}
               locked={false}
@@ -749,7 +810,7 @@ export default function ContractClient({
             >
               <button
                 type="button"
-                onClick={() => setSignatureDataUrl(null)}
+                onClick={() => signatureCanvasRef.current?.clear()}
                 style={{
                   background: 'transparent',
                   border: 'none',

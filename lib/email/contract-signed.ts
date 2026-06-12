@@ -25,7 +25,17 @@ function mdToHtml(md: string): string {
     if (inTable) { out.push('</tbody></table>'); inTable = false }
   }
 
-  for (const line of lines) {
+  for (const rawLine of lines) {
+    const line = rawLine.trimEnd()
+
+    // Stop at the signing-placeholder block — evidence block has the real data
+    if (
+      line.startsWith('## Signature') ||
+      line.startsWith('## Ondertekening') ||
+      /^\*\*On behalf of/i.test(line) ||
+      /^\*\*Namens /i.test(line)
+    ) break
+
     // Strip draft/blockquote warning lines
     if (line.startsWith('> ') || line === '>') {
       closeUl(); closeTable()
