@@ -87,12 +87,16 @@ export async function POST(
     const admin = await createSupabaseServerClientAdmin()
     const submittedAt = new Date().toISOString()
 
-    // ── Step G — Update restaurant: status + submitted_at ──────────────────
+    // ── Step G — Update restaurant: status + submitted_at + step ───────────
+    // Bump step to 15 (one past the last sidebar step) so the sidebar marks
+    // step 14 as completed rather than 'reachable' (which renders a number
+    // badge instead of a checkmark). See lib/onboarding/steps.ts → getStepStatus.
     const { error: updateErr } = await admin
       .from('restaurants')
       .update({
         status: 'pending_review',
         submitted_at: submittedAt,
+        current_onboarding_step: 15,
         updated_at: submittedAt,
       })
       .eq('id', restaurantId)

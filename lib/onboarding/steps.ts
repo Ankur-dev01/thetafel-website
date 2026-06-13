@@ -198,6 +198,13 @@ export function resolveStepIdFromPath(pathname: string): number | null {
     stripped = stripped.slice(0, -1)
   }
 
+  // Post-onboarding status pages are not steps. Without this guard the
+  // prefix matcher below greedily matches them to step 0 (path '/onboarding')
+  // and the sidebar wrongly highlights Choose services as the current step.
+  if (stripped === '/onboarding/submitted' || stripped === '/onboarding/live') {
+    return null
+  }
+
   const exact = ALL_STEPS.find((s) => s.path === stripped)
   if (exact) return exact.id
 
