@@ -815,6 +815,14 @@
       "errorGeneric": "Er ging iets mis. Probeer het opnieuw.",
       "errorContractChanged": "Het contract is gewijzigd sinds je deze pagina laadde. Vernieuw de pagina om de nieuwste versie te zien.",
       "refresh": "Pagina vernieuwen"
+    },
+    "review": {
+      "serviceTag": "Review",
+      "heading": "Controleer en stuur in voor review",
+      "sub": "Hieronder zie je een samenvatting van wat je hebt opgezet. Klopt alles? Stuur in en ons team gaat aan de slag.",
+      "checklistTitle": "Wat je hebt opgezet",
+      "submit": "Insturen voor review",
+      "submitting": "Bezig met insturen…"
     }
   },
   "modal": {

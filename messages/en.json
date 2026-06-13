@@ -815,6 +815,14 @@
       "errorGeneric": "Something went wrong. Please try again.",
       "errorContractChanged": "The contract changed since you loaded this page. Refresh to see the latest version.",
       "refresh": "Refresh page"
+    },
+    "review": {
+      "serviceTag": "Review",
+      "heading": "Review and submit for go-live",
+      "sub": "Here is a summary of what you have set up. If it all looks right, submit and our team will take it from here.",
+      "checklistTitle": "What you have set up",
+      "submit": "Submit for review",
+      "submitting": "Submitting…"
     }
   },
  "modal": {
