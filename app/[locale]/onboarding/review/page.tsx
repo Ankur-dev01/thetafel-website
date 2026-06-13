@@ -29,8 +29,7 @@ export default async function ReviewPage({ params }: PageProps) {
        service_reservations_enabled, service_takeaway_enabled,
        service_qr_enabled, qr_plan,
        subscription_tier, mollie_status,
-       legal_address_city, legal_address_street, legal_address_house_number,
-       submitted_at`
+       legal_address_city, legal_address_street, legal_address_house_number`
     )
     .eq('user_id', user.id)
     .is('deleted_at', null)
@@ -209,18 +208,11 @@ export default async function ReviewPage({ params }: PageProps) {
     })
   }
 
-  const initialSubmitted = restaurant.status === 'pending_review'
-
   return (
     <ReviewClient
       locale={locale}
       restaurantId={restaurant.id}
-      restaurantDisplayName={
-        restaurant.display_name ?? restaurant.trade_name ?? restaurant.legal_name ?? ''
-      }
       rows={rows}
-      initialSubmitted={initialSubmitted}
-      submittedAtIso={restaurant.submitted_at}
     />
   )
 }
