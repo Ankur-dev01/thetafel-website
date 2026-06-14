@@ -10,6 +10,7 @@ type StepFrameProps = {
   currentStepDisplayNumber: number;
   totalSteps: number;
   serviceTag?: string;
+  eyebrowLabel?: string;
   heading: string;
   subHeading?: string;
   error?: string | null;
@@ -31,6 +32,7 @@ export default function StepFrame({
   currentStepDisplayNumber,
   totalSteps,
   serviceTag,
+  eyebrowLabel,
   heading,
   subHeading,
   error,
@@ -61,8 +63,9 @@ export default function StepFrame({
   }[locale];
 
   const eyebrow =
-    `${t.stepOf(currentStepDisplayNumber, totalSteps)}` +
-    (serviceTag ? ` — ${serviceTag}` : '');
+    eyebrowLabel ??
+    (`${t.stepOf(currentStepDisplayNumber, totalSteps)}` +
+      (serviceTag ? ` — ${serviceTag}` : ''));
 
   const finalContinueLabel = continueLabel ?? t.continue;
   const finalSubmittingLabel = submittingLabel ?? t.submitting;

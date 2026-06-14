@@ -172,7 +172,7 @@ export default function ServicePickerPage() {
       locale={locale}
       currentStepDisplayNumber={1}
       totalSteps={2}
-      serviceTag={t('serviceTag')}
+      eyebrowLabel={t('serviceTag')}
       heading={t('heading')}
       subHeading={t('sub')}
       backHref={null}
