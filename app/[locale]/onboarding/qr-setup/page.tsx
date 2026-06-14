@@ -470,28 +470,43 @@ export default function QrSetupPage() {
           <h2 style={sectionHeadingStyle}>{t('accentColor.heading')}</h2>
           <p style={sectionSubStyle}>{t('accentColor.sub')}</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <div style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '8px',
-              background: accentColor,
-              flexShrink: 0,
-              border: '1px solid rgba(0,0,0,0.06)',
-            }} />
-            <input
-              type="color"
-              value={accentColor}
-              onChange={(e) => handleAccentColorChange(e.target.value)}
+            <label
+              htmlFor="qr-accent-color"
               style={{
-                width: '64px',
-                height: '40px',
-                border: 'none',
-                borderRadius: '8px',
-                padding: 0,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 12,
                 cursor: 'pointer',
-                flexShrink: 0,
+                position: 'relative',
               }}
-            />
+            >
+              <span
+                aria-hidden
+                style={{
+                  display: 'inline-block',
+                  width: 44,
+                  height: 44,
+                  borderRadius: 10,
+                  backgroundColor: accentColor,
+                  border: '1px solid #f0e8d8',
+                  boxShadow: 'inset 0 0 0 2px #ffffff',
+                  flexShrink: 0,
+                }}
+              />
+              <input
+                id="qr-accent-color"
+                type="color"
+                value={accentColor}
+                onChange={(e) => handleAccentColorChange(e.target.value)}
+                style={{
+                  position: 'absolute',
+                  width: 1,
+                  height: 1,
+                  opacity: 0,
+                  pointerEvents: 'none',
+                }}
+              />
+            </label>
             <input
               type="text"
               value={accentHexInput}
