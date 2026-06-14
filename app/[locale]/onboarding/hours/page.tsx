@@ -349,6 +349,42 @@ export default function HoursPage() {
     [days, perServiceDays, useOverride, enabledServices, save]
   )
 
+  // ---- Copy-to-all handlers ------------------------------------------------
+
+  const handleCopyToAll = useCallback(
+    (dayNum: number) => {
+      const nextDays = applyDayToAllDays(dayNum, days)
+      setDays(nextDays)
+      save({
+        availability: buildAvailabilityPayload(
+          nextDays,
+          perServiceDays,
+          useOverride,
+          enabledServices
+        ),
+      })
+    },
+    [days, perServiceDays, useOverride, enabledServices, save]
+  )
+
+  const handleServiceCopyToAll = useCallback(
+    (scope: string, dayNum: number) => {
+      const existing = perServiceDays[scope] ?? makeDefaultDays()
+      const nextScope = applyDayToAllDays(dayNum, existing)
+      const nextPerService = { ...perServiceDays, [scope]: nextScope }
+      setPerServiceDays(nextPerService)
+      save({
+        availability: buildAvailabilityPayload(
+          days,
+          nextPerService,
+          useOverride,
+          enabledServices
+        ),
+      })
+    },
+    [days, perServiceDays, useOverride, enabledServices, save]
+  )
+
   // ---- Restaurant settings handlers ----------------------------------------
 
   const handleSlotChange = useCallback(
@@ -536,8 +572,10 @@ export default function HoursPage() {
             dayLabels={dayLabels}
             errorPrefix=""
             timeErrors={timeErrors}
+            locale={locale}
             t={t}
             onChange={(dayNum, changes) => handleDayChange(dayNum, changes)}
+            onCopyToAll={handleCopyToAll}
           />
         )}
 
@@ -554,9 +592,13 @@ export default function HoursPage() {
                 dayLabels={dayLabels}
                 errorPrefix={`${scope}:`}
                 timeErrors={timeErrors}
+                locale={locale}
                 t={t}
                 onChange={(dayNum, changes) =>
                   handleServiceDayChange(scope, dayNum, changes)
+                }
+                onCopyToAll={(dayNum) =>
+                  handleServiceCopyToAll(scope, dayNum)
                 }
               />
             ))}
@@ -594,6 +636,40 @@ export default function HoursPage() {
   )
 }
 
+// ---- CopyDownIcon -----------------------------------------------------------
+
+function CopyDownIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
+      <rect x="2.5" y="1.5" width="9" height="5" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+      <rect x="2.5" y="9.5" width="9" height="5" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M7 6.8V9.2M5.5 8L7 9.5L8.5 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+// ---- applyDayToAllDays helper -----------------------------------------------
+
+function applyDayToAllDays(
+  sourceDayNum: number,
+  days: Record<number, DayConfig>
+): Record<number, DayConfig> {
+  const source = days[sourceDayNum]!
+  const next = { ...days }
+  for (const key of DAY_NUMS) {
+    if (key === sourceDayNum) continue
+    next[key] = JSON.parse(JSON.stringify(source)) as DayConfig
+  }
+  return next
+}
+
 // ---- DayBlock sub-component ------------------------------------------------
 
 type DayBlockProps = {
@@ -602,8 +678,10 @@ type DayBlockProps = {
   dayLabels: Record<number, string>
   errorPrefix: string
   timeErrors: Record<string, string>
+  locale: 'nl' | 'en'
   t: ReturnType<typeof useTranslations<'onboarding.hours'>>
   onChange: (dayNum: number, changes: Partial<DayConfig>) => void
+  onCopyToAll: (dayNum: number) => void
 }
 
 function DayBlock({
@@ -612,8 +690,10 @@ function DayBlock({
   dayLabels,
   errorPrefix,
   timeErrors,
+  locale,
   t,
   onChange,
+  onCopyToAll,
 }: DayBlockProps) {
   return (
     <div
@@ -654,6 +734,7 @@ function DayBlock({
             dayLabel={dayLabels[dayNum] ?? String(dayNum)}
             config={cfg}
             error={err}
+            locale={locale}
             t={t}
             borderBottom={!isLast}
             onToggle={(enabled) =>
@@ -676,6 +757,7 @@ function DayBlock({
               if (tag === 'lunch') onChange(dayNum, { tagLunch: !cfg.tagLunch })
               if (tag === 'dinner') onChange(dayNum, { tagDinner: !cfg.tagDinner })
             }}
+            onCopyToAll={() => onCopyToAll(dayNum)}
           />
         )
       })}
@@ -689,24 +771,28 @@ type DayRowProps = {
   dayLabel: string
   config: DayConfig
   error?: string
+  locale: 'nl' | 'en'
   t: ReturnType<typeof useTranslations<'onboarding.hours'>>
   borderBottom: boolean
   onToggle: (enabled: boolean) => void
   onOpenChange: (time: string) => void
   onCloseChange: (time: string) => void
   onTagToggle: (tag: 'brunch' | 'lunch' | 'dinner') => void
+  onCopyToAll: () => void
 }
 
 function DayRow({
   dayLabel,
   config,
   error,
+  locale,
   t,
   borderBottom,
   onToggle,
   onOpenChange,
   onCloseChange,
   onTagToggle,
+  onCopyToAll,
 }: DayRowProps) {
   const showNextDay =
     config.enabled && closesNextDay(config.openTime, config.closeTime)
@@ -829,6 +915,45 @@ function DayRow({
             onClick={() => onTagToggle('dinner')}
           />
         </div>
+
+        {/* Copy to all days */}
+        <button
+          type="button"
+          onClick={onCopyToAll}
+          aria-label={
+            locale === 'en'
+              ? `Copy ${dayLabel} to all days`
+              : `Kopieer ${dayLabel} naar alle dagen`
+          }
+          title={
+            locale === 'en'
+              ? `Copy ${dayLabel} to all days`
+              : `Kopieer ${dayLabel} naar alle dagen`
+          }
+          style={{
+            background: 'transparent',
+            border: 'none',
+            padding: 6,
+            borderRadius: 6,
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#9c8b6a',
+            transition: 'color 120ms ease, background-color 120ms ease',
+            flexShrink: 0,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = '#d4820a'
+            e.currentTarget.style.backgroundColor = 'rgba(212, 130, 10, 0.08)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = '#9c8b6a'
+            e.currentTarget.style.backgroundColor = 'transparent'
+          }}
+        >
+          <CopyDownIcon />
+        </button>
       </div>
 
       {/* Inline error for this row */}
