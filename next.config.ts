@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
   images: {
     formats: ['image/webp'],
   },
+  outputFileTracingIncludes: {
+    '/api/v1/restaurants/qr/generate': ['./lib/qr/fonts/**'],
+  },
   experimental: {
     staleTimes: {
       dynamic: 0,
