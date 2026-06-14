@@ -63,15 +63,6 @@ type SearchStatus =
 const CLIENT_MIN_QUERY_LENGTH = 3
 const DEBOUNCE_MS = 400
 
-const SBI_RESTAURANT_RE = /^56/
-
-function sbiEligible(sbi: string): boolean {
-  return SBI_RESTAURANT_RE.test(sbi.trim())
-}
-
-// DEV ONLY — must be unset/false in production. Bypasses SBI restaurant-eligibility guard.
-const DEV_BYPASS_SBI = process.env.NEXT_PUBLIC_DEV_BYPASS_SBI === 'true'
-
 function isValidDutchPhone(p: string): boolean {
   if (!p.trim()) return true
   return /^(\+31|0)[0-9\s\-.()]{7,14}$/.test(p.trim())
@@ -533,7 +524,6 @@ export default function BusinessVerificationPage() {
   // ---- Continue handler ---------------------------------------------------
   const handleContinue = useCallback(async () => {
     if (!profile) return
-    if (!DEV_BYPASS_SBI && !sbiEligible(profile.sbiCode)) return
     if (!displayName.trim() || !cuisine) return
     if (displayNameError || phoneError || emailError || cuisineError || websiteError) return
     if (isContinuing) return
@@ -584,14 +574,9 @@ export default function BusinessVerificationPage() {
 
   // ---- Derived helpers ----------------------------------------------------
   const inPhase2 = profile !== null
-  // hasSbiError is false when DEV_BYPASS_SBI is on, suppressing the banner and
-  // enabling Continue. The pill is driven by sbiEligible() directly so it always
-  // shows the honest state regardless of the override.
-  const hasSbiError = !DEV_BYPASS_SBI && profile !== null && !sbiEligible(profile.sbiCode)
 
   const canContinue =
     inPhase2 &&
-    !hasSbiError &&
     displayName.trim().length > 0 &&
     cuisine.length > 0 &&
     !displayNameError &&
@@ -790,23 +775,6 @@ export default function BusinessVerificationPage() {
     textTransform: 'uppercase',
   }
 
-  // Neutral pill for SBI-ineligible businesses (found in KVK but not a restaurant).
-  // Shown regardless of DEV_BYPASS_SBI so the UI is always honest about SBI state.
-  const foundPillStyle: React.CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '6px',
-    padding: '6px 12px',
-    backgroundColor: 'rgba(156,139,106,0.12)',
-    color: 'var(--stone)',
-    borderRadius: '999px',
-    fontFamily: 'var(--font-jost), sans-serif',
-    fontSize: '11px',
-    fontWeight: 700,
-    letterSpacing: '0.12em',
-    textTransform: 'uppercase',
-  }
-
   const changeBusinessLinkStyle: React.CSSProperties = {
     background: 'none',
     border: 'none',
@@ -823,17 +791,6 @@ export default function BusinessVerificationPage() {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
     gap: '16px',
-  }
-
-  const sbiBannerStyle: React.CSSProperties = {
-    padding: '14px 16px',
-    backgroundColor: '#fef2f2',
-    border: '1px solid #fecaca',
-    borderRadius: '12px',
-    fontFamily: 'var(--font-jost), sans-serif',
-    fontSize: '14px',
-    color: '#dc2626',
-    lineHeight: 1.5,
   }
 
   const formSectionStyle: React.CSSProperties = {
@@ -987,28 +944,22 @@ export default function BusinessVerificationPage() {
             {/* KVK identity card */}
             <div style={cardStyle}>
               <div style={cardHeaderStyle}>
-                {sbiEligible(profile!.sbiCode) ? (
-                  <span style={verifiedPillStyle}>
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                    {t('phase2.verifiedPill')}
-                  </span>
-                ) : (
-                  <span style={foundPillStyle}>
-                    {t('phase2.kvkFoundPill')}
-                  </span>
-                )}
+                <span style={verifiedPillStyle}>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  {t('phase2.verifiedPill')}
+                </span>
                 <button
                   type="button"
                   onClick={handleChangeBusiness}
@@ -1066,13 +1017,6 @@ export default function BusinessVerificationPage() {
                 )}
               </div>
             </div>
-
-            {/* SBI guard — shown when SBI code is not 56.x */}
-            {hasSbiError && (
-              <div style={sbiBannerStyle}>
-                {t('phase2.sbiError')}
-              </div>
-            )}
 
             {/* Editable public details form */}
             <div style={formSectionStyle}>

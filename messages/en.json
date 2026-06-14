@@ -201,9 +201,7 @@
         "heading": "Check your details.",
         "sub": "We found your business in the KVK register. Does everything look right?",
         "verifiedPill": "KVK verified",
-        "kvkFoundPill": "KVK found",
         "changeBusiness": "Change business",
-        "sbiError": "This KVK number isn't registered as a restaurant or food-service business. Contact support if you think this is a mistake.",
         "kvkAlreadyLinked": "This KVK number is already linked to another account.",
         "fields": {
           "legalName": "Legal name",

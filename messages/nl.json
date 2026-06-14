@@ -201,9 +201,7 @@
         "heading": "Controleer je gegevens.",
         "sub": "We hebben je bedrijf gevonden in het KVK-register. Klopt alles?",
         "verifiedPill": "KVK geverifieerd",
-        "kvkFoundPill": "KVK gevonden",
         "changeBusiness": "Wijzig bedrijf",
-        "sbiError": "Dit KVK-nummer staat niet geregistreerd als horecabedrijf. Neem contact op met support als dit niet klopt.",
         "kvkAlreadyLinked": "Dit KVK-nummer is al gekoppeld aan een ander account.",
         "fields": {
           "legalName": "Bedrijfsnaam",
