@@ -562,6 +562,76 @@ export default function PaymentsPage() {
           )}
         </section>
 
+        {/* Deposit nudge — shown whenever Mollie is connected (pending or verified) */}
+        {hasOrganization && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 14,
+              padding: '16px 18px',
+              backgroundColor: 'rgba(212, 130, 10, 0.08)',
+              border: '1px solid rgba(212, 130, 10, 0.25)',
+              borderRadius: 12,
+            }}
+          >
+            <span
+              aria-hidden
+              style={{
+                flexShrink: 0,
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                backgroundColor: '#d4820a',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: 2,
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                <path
+                  d="M7 3.5V7.5M7 9.5V9.6"
+                  stroke="#fdfaf5"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: 1 }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontFamily: 'var(--font-jost), Jost, sans-serif',
+                  fontSize: 14,
+                  color: '#1e1508',
+                  lineHeight: 1.55,
+                }}
+              >
+                {t('paymentsConnected.depositNudge')}
+              </p>
+              <a
+                href={locale === 'en' ? '/en/onboarding/no-shows' : '/onboarding/no-shows'}
+                style={{
+                  alignSelf: 'flex-start',
+                  fontFamily: 'var(--font-jost), Jost, sans-serif',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  color: '#1e1508',
+                  padding: '8px 14px',
+                  border: '1px solid #1e1508',
+                  borderRadius: 999,
+                  textDecoration: 'none',
+                }}
+              >
+                {t('paymentsConnected.depositNudgeCta')}
+              </a>
+            </div>
+          </div>
+        )}
+
         {/* Info card — what's shared with Mollie */}
         <section style={{
           padding: '20px',

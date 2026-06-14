@@ -28,7 +28,8 @@ export default async function ReviewPage({ params }: PageProps) {
        legal_name, trade_name, display_name, slug, kvk_number,
        service_reservations_enabled, service_takeaway_enabled,
        service_qr_enabled, qr_plan,
-       subscription_tier, mollie_status,
+       subscription_tier, mollie_status, mollie_organization_id,
+       noshow_prepaid_enabled,
        legal_address_city, legal_address_street, legal_address_house_number`
     )
     .eq('user_id', user.id)
@@ -208,11 +209,21 @@ export default async function ReviewPage({ params }: PageProps) {
     })
   }
 
+  const noShowPath = '/onboarding/no-shows'
+  const optionalNudge =
+    restaurant.mollie_organization_id && !restaurant.noshow_prepaid_enabled
+      ? {
+          kind: 'prepaid_deposit' as const,
+          href: locale === 'en' ? `/en${noShowPath}` : noShowPath,
+        }
+      : null
+
   return (
     <ReviewClient
       locale={locale}
       restaurantId={restaurant.id}
       rows={rows}
+      optionalNudge={optionalNudge}
     />
   )
 }

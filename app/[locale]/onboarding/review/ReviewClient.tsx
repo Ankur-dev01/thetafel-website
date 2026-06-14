@@ -10,10 +10,13 @@ export type ChecklistRow = {
   summary: string
 }
 
+type OptionalNudge = { kind: 'prepaid_deposit'; href: string }
+
 type Props = {
   locale: 'nl' | 'en'
   restaurantId: string
   rows: ChecklistRow[]
+  optionalNudge?: OptionalNudge | null
 }
 
 const COPY = {
@@ -25,6 +28,10 @@ const COPY = {
     submit: 'Insturen voor review',
     submitting: 'Bezig met insturen…',
     errorGeneric: 'Insturen is niet gelukt. Probeer het opnieuw.',
+    optionalTitle: 'Voordat je live gaat — optioneel',
+    depositOptionalLabel: 'Aanbetaling',
+    depositOptionalSummary: 'Vraag gasten een terugbetaalbare aanbetaling bij de boeking om no-shows te voorkomen. Je hebt Mollie gekoppeld maar aanbetalingen nog niet ingeschakeld.',
+    depositOptionalCta: 'Instellen',
   },
   en: {
     serviceTag: 'Review',
@@ -34,10 +41,14 @@ const COPY = {
     submit: 'Submit for review',
     submitting: 'Submitting…',
     errorGeneric: 'Submission failed. Please try again.',
+    optionalTitle: 'Before you go live — optional',
+    depositOptionalLabel: 'Prepaid deposit',
+    depositOptionalSummary: 'Charge guests a refundable deposit at booking to discourage no-shows. You connected Mollie but haven\'t enabled deposits yet.',
+    depositOptionalCta: 'Set it up',
   },
 } as const
 
-export default function ReviewClient({ locale, restaurantId, rows }: Props) {
+export default function ReviewClient({ locale, restaurantId, rows, optionalNudge }: Props) {
   const router = useRouter()
   const t = COPY[locale]
 
@@ -98,6 +109,77 @@ export default function ReviewClient({ locale, restaurantId, rows }: Props) {
       isSubmitting={submitting}
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {optionalNudge?.kind === 'prepaid_deposit' && (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12,
+              padding: '18px 20px',
+              backgroundColor: 'rgba(212, 130, 10, 0.06)',
+              border: '1px solid rgba(212, 130, 10, 0.22)',
+              borderRadius: 14,
+            }}
+          >
+            <h2
+              style={{
+                margin: 0,
+                fontFamily: 'var(--font-jost), Jost, sans-serif',
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
+                color: '#9c8b6a',
+              }}
+            >
+              {t.optionalTitle}
+            </h2>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-jost), Jost, sans-serif',
+                    fontSize: 14,
+                    fontWeight: 500,
+                    color: '#1e1508',
+                  }}
+                >
+                  {t.depositOptionalLabel}
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-jost), Jost, sans-serif',
+                    fontSize: 13,
+                    color: '#6b5b3f',
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {t.depositOptionalSummary}
+                </span>
+              </div>
+              <a
+                href={optionalNudge.href}
+                style={{
+                  flexShrink: 0,
+                  fontFamily: 'var(--font-jost), Jost, sans-serif',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  color: '#1e1508',
+                  padding: '8px 14px',
+                  border: '1px solid #1e1508',
+                  borderRadius: 999,
+                  textDecoration: 'none',
+                  alignSelf: 'flex-start',
+                }}
+              >
+                {t.depositOptionalCta}
+              </a>
+            </div>
+          </div>
+        )}
+
         <h2
           style={{
             margin: '0 0 4px',

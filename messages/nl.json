@@ -632,6 +632,10 @@
         "bullet2": "Geen klantgegevens — Mollie ziet alleen betalingsgegevens die voor de transactie nodig zijn.",
         "bullet3": "Je IBAN en bankgegevens blijven bij Mollie — wij slaan ze nooit op."
       },
+      "paymentsConnected": {
+        "depositNudge": "Aanbetalingen zijn nu beschikbaar op de no-show protectie stap. Je kunt ze nu instellen om gasten een terugbetaalbare aanbetaling bij de boeking te laten doen, of overslaan en later toevoegen vanuit het dashboard.",
+        "depositNudgeCta": "Aanbetaling instellen"
+      },
       "errorBanner": {
         "dismiss": "Sluiten",
         "reasons": {

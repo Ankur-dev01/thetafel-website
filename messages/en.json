@@ -632,6 +632,10 @@
         "bullet2": "No customer data — Mollie only sees the payment information needed for each transaction.",
         "bullet3": "Your IBAN and bank details stay with Mollie — we never store them."
       },
+      "paymentsConnected": {
+        "depositNudge": "Prepaid deposits are now available on the no-show protection step. You can configure them now to charge guests a refundable deposit at booking, or skip and add later from the dashboard.",
+        "depositNudgeCta": "Configure prepaid deposit"
+      },
       "errorBanner": {
         "dismiss": "Dismiss",
         "reasons": {
