@@ -14,11 +14,6 @@ import { stepPath, previousStepPath } from '@/lib/onboarding/routes'
 import { useDraftSave } from '@/lib/onboarding/useDraftSave'
 import type { ReactNode } from 'react'
 
-// Mollie connection is wired up in D6 (Payments). Until then, Prepaid is always
-// locked at this step. Once D6 lands, replace this with a check against the
-// restaurant's Mollie account state from the draft GET response.
-const mollieConnected = false
-
 // ---- Helpers -----------------------------------------------------------------
 
 function parseBool(v: unknown, fallback: boolean): boolean {
@@ -152,6 +147,7 @@ export default function NoShowsPage() {
   const [currentDisplayNum, setCurrentDisplayNum] = useState(5)
 
   // Field state
+  const [mollieConnected, setMollieConnected] = useState(false)
   const [remindersEmailEnabled, setRemindersEmailEnabled] = useState(true)
   const [reconfirmationEnabled, setReconfirmationEnabled] = useState(false)
   const [prepaidEnabled, setPrepaidEnabled] = useState(false)
@@ -194,6 +190,10 @@ export default function NoShowsPage() {
           // leave defaults
         }
 
+        setMollieConnected(
+          typeof r.mollie_organization_id === 'string' &&
+            r.mollie_organization_id.length > 0
+        )
         setRemindersEmailEnabled(parseBool(r.noshow_reminders_email_enabled, true))
         setReconfirmationEnabled(parseBool(r.noshow_reconfirmation_enabled, false))
         setPrepaidEnabled(parseBool(r.noshow_prepaid_enabled, false))
@@ -531,6 +531,16 @@ export default function NoShowsPage() {
                 {prepaidAmountError}
               </p>
             )}
+            <p style={{
+              margin: '10px 2px 0',
+              fontFamily: 'var(--font-jost), Jost, sans-serif',
+              fontSize: '13px',
+              fontWeight: 400,
+              color: '#6b5b3f',
+              lineHeight: 1.5,
+            }}>
+              {t('prepaid.depositDisclosureNote')}
+            </p>
           </div>
         )}
       </div>

@@ -362,10 +362,11 @@
       "prepaid": {
         "title": "Aanbetaling",
         "description": "Gast betaalt vooraf een aanbetaling. Bij no-show houd je het bedrag.",
-        "lockedBadge": "Beschikbaar na Stap 11",
+        "lockedBadge": "Koppel Mollie in stap 11",
         "amountLabel": "Aanbetaling per gast (€)",
         "amountPlaceholder": "Bijv. 7,50",
-        "amountErrorRange": "Vul een bedrag tussen € 1,00 en € 500,00 in."
+        "amountErrorRange": "Vul een bedrag tussen € 1,00 en € 500,00 in.",
+        "depositDisclosureNote": "Aanbetalingen worden bij gasten in rekening gebracht zodra Mollie je bedrijf heeft geverifieerd — meestal 2–5 werkdagen na het koppelen. Je instelling wordt bewaard, maar tot die tijd worden er geen aanbetalingen afgeschreven."
       },
 
       "ccGuarantee": {

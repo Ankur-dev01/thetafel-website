@@ -362,10 +362,11 @@
       "prepaid": {
         "title": "Prepaid deposit",
         "description": "Guest pays a deposit at booking. Refunded on attendance, kept on no-show.",
-        "lockedBadge": "Available after Step 11",
+        "lockedBadge": "Connect Mollie in Step 11",
         "amountLabel": "Deposit per guest (€)",
         "amountPlaceholder": "e.g. 7.50",
-        "amountErrorRange": "Enter an amount between € 1.00 and € 500.00."
+        "amountErrorRange": "Enter an amount between € 1.00 and € 500.00.",
+        "depositDisclosureNote": "Deposits will start charging guests once Mollie verifies your business — usually 2–5 business days after connecting. Until then your setting is saved but no deposits are taken."
       },
 
       "ccGuarantee": {
