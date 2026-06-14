@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { assertOnboardingMutationForUser } from '@/lib/onboarding/guards'
 
 export async function DELETE(
   _req: NextRequest,
@@ -11,13 +12,8 @@ export async function DELETE(
   }
 
   const supabase = await createSupabaseServerClient()
-  const {
-    data: { user },
-    error: authErr,
-  } = await supabase.auth.getUser()
-  if (authErr || !user) {
-    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
-  }
+  const guard = await assertOnboardingMutationForUser(supabase)
+  if (!guard.ok) return guard.response
 
   // Fetch the row — RLS ensures only the owner sees it.
   const { data: row, error: fetchErr } = await supabase

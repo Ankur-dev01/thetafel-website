@@ -32,6 +32,7 @@ import {
   draftPatchBodySchema,
   type DraftPatchBody,
 } from '@/lib/onboarding/draftSchema'
+import { assertOnboardingMutationForUser } from '@/lib/onboarding/guards'
 
 // ---- Types ------------------------------------------------------------------
 
@@ -189,14 +190,9 @@ export async function GET() {
 export async function PATCH(req: NextRequest) {
   const supabase = await createSupabaseServerClient()
 
-  const {
-    data: { user },
-    error: authErr,
-  } = await supabase.auth.getUser()
-
-  if (authErr || !user) {
-    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
-  }
+  const guard = await assertOnboardingMutationForUser(supabase)
+  if (!guard.ok) return guard.response
+  const { restaurant, user } = guard
 
   // Rate limit by user id.
   try {
@@ -237,8 +233,6 @@ export async function PATCH(req: NextRequest) {
     !body.menu_uploads
 
   try {
-    const restaurant = await getOrCreateDraftRestaurant(supabase, user.id)
-
     if (isEmpty) {
       return NextResponse.json({ restaurant }, { status: 200 })
     }

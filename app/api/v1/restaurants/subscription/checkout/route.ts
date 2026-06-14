@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Locale, PaymentMethod, PaymentStatus, SequenceType } from '@mollie/api-client';
 import { createSupabaseServerClient, createSupabaseServerClientAdmin } from '@/lib/supabase/server';
+import { assertOnboardingMutationForUser } from '@/lib/onboarding/guards';
 import { getMolliePlatformClient } from '@/lib/mollie/client';
 import {
   applyVat,
@@ -24,22 +25,9 @@ export async function POST(req: NextRequest) {
     const locale: 'nl' | 'en' = localeParam === 'en' ? 'en' : 'nl';
 
     const supabase = await createSupabaseServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-    }
-
-    const { data: restaurant, error: restError } = await supabase
-      .from('restaurants')
-      .select('id, name, contact_email, current_onboarding_step, subscription_tier, qr_plan')
-      .eq('user_id', user.id)
-      .maybeSingle();
-
-    if (restError || !restaurant) {
-      return NextResponse.json({ error: 'restaurant_not_found' }, { status: 404 });
-    }
+    const guard = await assertOnboardingMutationForUser(supabase);
+    if (!guard.ok) return guard.response;
+    const { restaurant, user } = guard;
 
     if (!restaurant.subscription_tier) {
       return NextResponse.json({ error: 'tier_not_selected' }, { status: 400 });

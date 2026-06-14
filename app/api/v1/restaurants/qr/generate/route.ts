@@ -6,6 +6,7 @@ import {
   createSupabaseServerClientAdmin,
 } from '@/lib/supabase/server'
 import { renderQrPng } from '@/lib/qr/render'
+import { assertOnboardingMutationForUser } from '@/lib/onboarding/guards'
 
 const QR_BASE_URL =
   process.env.QR_BASE_URL ||
@@ -46,24 +47,9 @@ export async function POST(req: NextRequest) {
   const { table_ids: requestedTableIds, regenerate } = parsed.data
 
   const supabase = await createSupabaseServerClient()
-  const {
-    data: { user },
-    error: authErr,
-  } = await supabase.auth.getUser()
-  if (authErr || !user) {
-    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
-  }
-
-  // Load the restaurant (RLS scopes to owner)
-  const { data: restaurant, error: restErr } = await supabase
-    .from('restaurants')
-    .select('id, qr_widget_accent_color')
-    .eq('user_id', user.id)
-    .maybeSingle()
-
-  if (restErr || !restaurant) {
-    return NextResponse.json({ error: 'restaurant_not_found' }, { status: 404 })
-  }
+  const guard = await assertOnboardingMutationForUser(supabase)
+  if (!guard.ok) return guard.response
+  const { restaurant } = guard
 
   const accentColor =
     typeof restaurant.qr_widget_accent_color === 'string' &&

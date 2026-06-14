@@ -4,6 +4,7 @@ import { cookies } from 'next/headers'
 import { z } from 'zod'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { buildAuthorizeUrl } from '@/lib/mollie/oauth'
+import { assertOnboardingMutationForUser } from '@/lib/onboarding/guards'
 
 const STATE_COOKIE_NAME = 'mollie_oauth_state'
 const STATE_COOKIE_MAX_AGE_SECONDS = 600 // 10 minutes — covers the OAuth round-trip
@@ -25,27 +26,13 @@ export async function POST(req: NextRequest) {
     // Empty body or non-JSON — default locale, fall through.
   }
 
-  // 2. Auth
+  // 2. Auth + onboarding status guard
   const supabase = await createSupabaseServerClient()
-  const {
-    data: { user },
-    error: authErr,
-  } = await supabase.auth.getUser()
-  if (authErr || !user) {
-    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
-  }
+  const guard = await assertOnboardingMutationForUser(supabase)
+  if (!guard.ok) return guard.response
+  const { restaurant } = guard
 
-  // 3. Restaurant lookup
-  const { data: restaurant, error: restErr } = await supabase
-    .from('restaurants')
-    .select('id, mollie_status, mollie_initiated_at')
-    .eq('user_id', user.id)
-    .maybeSingle()
-  if (restErr || !restaurant) {
-    return NextResponse.json({ error: 'restaurant_not_found' }, { status: 404 })
-  }
-
-  // 4. Generate CSRF state and encode the locale so the callback can
+  // 3. Generate CSRF state and encode the locale so the callback can
   //    redirect to the right /<locale>/ path.
   const nonce = randomBytes(32).toString('hex')
   const state = `${nonce}.${parsedBody.locale}`

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { assertOnboardingMutationForUser } from '@/lib/onboarding/guards'
 
 const patchBodySchema = z
   .object({
@@ -33,13 +34,8 @@ export async function PATCH(
   }
 
   const supabase = await createSupabaseServerClient()
-  const {
-    data: { user },
-    error: authErr,
-  } = await supabase.auth.getUser()
-  if (authErr || !user) {
-    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
-  }
+  const guard = await assertOnboardingMutationForUser(supabase)
+  if (!guard.ok) return guard.response
 
   // RLS scopes the fetch to the user's own restaurant tables.
   const { data: tableRow, error: fetchErr } = await supabase

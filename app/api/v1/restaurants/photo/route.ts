@@ -30,6 +30,7 @@ import {
   createSupabaseServerClient,
   createSupabaseServerClientAdmin,
 } from '@/lib/supabase/server'
+import { assertOnboardingMutationForUser } from '@/lib/onboarding/guards'
 
 const BUCKET = 'restaurant-assets'
 const MAX_BYTES = 5 * 1024 * 1024 // 5MB — matches the bucket's limit
@@ -42,46 +43,13 @@ const ALLOWED: Record<string, string> = {
 
 export async function POST(request: NextRequest) {
   try {
-    // 1. Auth
+    // 1. Auth + onboarding status guard
     const supabase = await createSupabaseServerClient()
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser()
+    const guard = await assertOnboardingMutationForUser(supabase)
+    if (!guard.ok) return guard.response
+    const { restaurant, user } = guard
 
-    if (userError || !user) {
-      return NextResponse.json(
-        { ok: false, error: 'Not authenticated.' },
-        { status: 401 }
-      )
-    }
-
-    // 2. Find the user's draft restaurant row
-    const { data: restaurant, error: lookupError } = await supabase
-      .from('restaurants')
-      .select('id')
-      .eq('user_id', user.id)
-      .maybeSingle()
-
-    if (lookupError) {
-      console.error('photo route lookup error:', lookupError)
-      return NextResponse.json(
-        { ok: false, error: 'Could not load your restaurant.' },
-        { status: 500 }
-      )
-    }
-
-    if (!restaurant) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: 'Complete the earlier steps before uploading a photo.',
-        },
-        { status: 400 }
-      )
-    }
-
-    // 3. Read and validate the uploaded file
+    // 2. Read and validate the uploaded file
     let formData: FormData
     try {
       formData = await request.formData()

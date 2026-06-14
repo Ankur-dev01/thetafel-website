@@ -60,6 +60,19 @@ export default function ServicePickerPage() {
           data?.draft?.restaurant ??
           data
         if (!cancelled && r) {
+          // Defence-in-depth: the shell should have already redirected non-onboarding
+          // users, but guard here too in case of stale tab or prefetch race.
+          if (r.status && r.status !== 'onboarding') {
+            const prefix = locale === 'en' ? '/en' : ''
+            if (r.status === 'pending_review') {
+              router.replace(`${prefix}/onboarding/submitted`)
+            } else if (r.status === 'live') {
+              router.replace(`${prefix}/onboarding/live`)
+            } else {
+              router.replace(locale === 'en' ? '/en/login' : '/login')
+            }
+            return
+          }
           setFlags({
             service_reservations_enabled: Boolean(r.service_reservations_enabled),
             service_takeaway_enabled: Boolean(r.service_takeaway_enabled),
