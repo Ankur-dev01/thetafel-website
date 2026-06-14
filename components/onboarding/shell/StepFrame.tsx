@@ -127,57 +127,59 @@ export default function StepFrame({
         </div>
       </div>
 
-      {/* Sticky footer */}
-      <div className="sticky bottom-0 bg-[#fdfaf5] border-t border-[#f0e8d8]">
-        <div className="w-full max-w-[720px] mx-auto px-6 md:px-12 lg:px-16 py-4 flex items-center justify-between gap-4">
-          <div className="flex-shrink-0 min-w-[80px]">
-            {backHref ? (
-              <Link
-                href={backHref}
-                className="inline-flex items-center gap-1.5 text-[13px] text-[#9c8b6a] hover:text-[#1e1508] transition-colors"
-                style={{
-                  fontFamily: 'var(--font-jost), Jost, sans-serif',
-                  fontWeight: 500,
-                }}
-              >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
+      {/* Sticky footer — hidden on terminal pages (no back, no continue) */}
+      {(backHref || onContinue) && (
+        <div className="sticky bottom-0 bg-[#fdfaf5] border-t border-[#f0e8d8]">
+          <div className="w-full max-w-[720px] mx-auto px-6 md:px-12 lg:px-16 py-4 flex items-center justify-between gap-4">
+            <div className="flex-shrink-0 min-w-[80px]">
+              {backHref ? (
+                <Link
+                  href={backHref}
+                  className="inline-flex items-center gap-1.5 text-[13px] text-[#9c8b6a] hover:text-[#1e1508] transition-colors"
+                  style={{
+                    fontFamily: 'var(--font-jost), Jost, sans-serif',
+                    fontWeight: 500,
+                  }}
                 >
-                  <line x1="19" y1="12" x2="5" y2="12" />
-                  <polyline points="12 19 5 12 12 5" />
-                </svg>
-                {t.back}
-              </Link>
-            ) : (
-              <span className="block" aria-hidden="true">&nbsp;</span>
-            )}
-          </div>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <line x1="19" y1="12" x2="5" y2="12" />
+                    <polyline points="12 19 5 12 12 5" />
+                  </svg>
+                  {t.back}
+                </Link>
+              ) : (
+                <span className="block" aria-hidden="true">&nbsp;</span>
+              )}
+            </div>
 
-          {/* Saved indicator slot — filled by D1.5 */}
-          <div className="flex-1 flex justify-center min-h-[24px]">
-            {savedIndicator ?? null}
-          </div>
+            {/* Saved indicator slot — filled by D1.5 */}
+            <div className="flex-1 flex justify-center min-h-[24px]">
+              {savedIndicator ?? null}
+            </div>
 
-          <div className="flex-shrink-0">
-            <ContinueButton
-              href={continueHref}
-              onClick={handleContinueClick}
-              enabled={canContinue && !isSubmitting}
-              isSubmitting={isSubmitting}
-              label={finalContinueLabel}
-              submittingLabel={finalSubmittingLabel}
-            />
+            <div className="flex-shrink-0">
+              <ContinueButton
+                href={continueHref}
+                onClick={handleContinueClick}
+                enabled={canContinue && !isSubmitting}
+                isSubmitting={isSubmitting}
+                label={finalContinueLabel}
+                submittingLabel={finalSubmittingLabel}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
