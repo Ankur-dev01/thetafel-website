@@ -18,10 +18,14 @@ export async function renderQrPng(
   const moduleSize = sizePx / totalModules
   const cornerRadius = moduleSize * 0.35
 
+  const hasLabel = typeof label === 'string' && label.length > 0
+  const labelStripHeight = hasLabel ? Math.round(sizePx * 0.08) : 0
+  const totalHeight = sizePx + labelStripHeight
+
   const parts: string[] = []
   parts.push(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${sizePx}" height="${sizePx}" viewBox="0 0 ${sizePx} ${sizePx}">`,
-    `<rect width="${sizePx}" height="${sizePx}" fill="#ffffff"/>`
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${sizePx}" height="${totalHeight}" viewBox="0 0 ${sizePx} ${totalHeight}">`,
+    `<rect width="${sizePx}" height="${totalHeight}" fill="#ffffff"/>`
   )
 
   function isInEye(x: number, y: number): boolean {
@@ -64,14 +68,12 @@ export async function renderQrPng(
     )
   }
 
-  if (label && label.length > 0 && label.length <= 4) {
+  if (hasLabel) {
+    const fontSize = Math.round(labelStripHeight * 0.55)
     const cx = sizePx / 2
-    const cy = sizePx / 2
-    const labelRadius = sizePx * 0.085
-    const fontSize = labelRadius * 1.1
+    const cy = sizePx + labelStripHeight / 2
     parts.push(
-      `<circle cx="${cx}" cy="${cy}" r="${labelRadius.toFixed(2)}" fill="#ffffff"/>`,
-      `<text x="${cx}" y="${cy}" font-family="Jost, Helvetica, Arial, sans-serif" font-weight="700" font-size="${fontSize.toFixed(2)}" text-anchor="middle" dominant-baseline="central" fill="${accentColor}">${escapeXml(label)}</text>`
+      `<text x="${cx}" y="${cy}" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="${fontSize}" text-anchor="middle" dominant-baseline="middle" fill="#1e1508">${escapeXml(label!)}</text>`
     )
   }
 

@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
       const qrUrl = `${QR_BASE_URL}/q/${token}`
       const pngBuffer = await renderQrPng(qrUrl, {
         accentColor,
-        label: table.label,
+        label: `Tafel ${table.label}`,
       })
 
       const storagePath = `${restaurant.id}/${table.id}.png`
