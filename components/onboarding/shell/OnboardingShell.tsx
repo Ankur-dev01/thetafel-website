@@ -16,7 +16,7 @@
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { createSupabaseServerClient, createSupabaseServerClientAdmin } from '@/lib/supabase/server';
-import { ALL_STEPS, resolveStepIdFromPath } from '@/lib/onboarding/steps';
+import { ALL_STEPS, getVisibleSteps, resolveStepIdFromPath } from '@/lib/onboarding/steps';
 import MobileShellWrapper from './MobileShellWrapper';
 import OnboardingSidebar from './OnboardingSidebar';
 
@@ -71,6 +71,8 @@ export default async function OnboardingShell({
       redirect(locale === 'en' ? '/en/login' : '/login');
     }
 
+    const visibleSteps = getVisibleSteps(restaurant);
+
     // Resume flow: only fires when the user lands on the bare /onboarding URL.
     // Deep links to specific step pages are left alone so owners can revisit
     // earlier steps freely via the sidebar (PRD §3.3).
@@ -78,9 +80,28 @@ export default async function OnboardingShell({
       strippedPath === '/onboarding' || strippedPath === '/onboarding/';
     const step = restaurant.current_onboarding_step ?? 0;
     if (isBareOnboardingPath && step >= 1) {
-      const stepEntry = ALL_STEPS.find((s) => s.id === step);
-      if (stepEntry && stepEntry.path !== '/onboarding') {
-        redirect(`${localePrefix}${stepEntry.path}`);
+      // Use visible steps so we never resume into a step for a disabled service.
+      // If the saved step is now hidden, fall back to the last visible step before it.
+      let resumeStep = visibleSteps.find((s) => s.id === step);
+      if (!resumeStep) {
+        resumeStep = [...visibleSteps]
+          .filter((s) => s.id > 0 && s.id < step)
+          .pop();
+      }
+      if (resumeStep && resumeStep.path !== '/onboarding') {
+        redirect(`${localePrefix}${resumeStep.path}`);
+      }
+    }
+
+    // Guard: if navigating directly to a step whose service is disabled, bounce
+    // to the service picker. This handles typed URLs and stale sidebar links.
+    const currentRouteStep = strippedPath !== '/onboarding' && strippedPath !== '/onboarding/'
+      ? ALL_STEPS.find((s) => s.path === strippedPath)
+      : null;
+    if (currentRouteStep && currentRouteStep.services.length > 0) {
+      const isVisible = visibleSteps.some((s) => s.id === currentRouteStep.id);
+      if (!isVisible) {
+        redirect(`${localePrefix}/onboarding`);
       }
     }
   }

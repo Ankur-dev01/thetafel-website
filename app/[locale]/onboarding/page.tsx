@@ -121,6 +121,9 @@ export default function ServicePickerPage() {
     try {
       await saveNow({ restaurant: { current_onboarding_step: 1 } })
       const nextPath = stepPath(1, locale)
+      // Invalidate the layout cache so the sidebar re-fetches the restaurant
+      // row with the updated service flags before rendering the next page.
+      router.refresh()
       if (nextPath) router.push(nextPath)
     } catch {
       setPageError(t('errorAdvance'))
