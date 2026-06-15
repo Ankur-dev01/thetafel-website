@@ -33,6 +33,7 @@ import {
   type DraftPatchBody,
 } from '@/lib/onboarding/draftSchema'
 import { assertOnboardingMutationForUser } from '@/lib/onboarding/guards'
+import { invalidateOnboardingLayout } from '@/lib/onboarding/cache'
 
 // ---- Types ------------------------------------------------------------------
 
@@ -272,6 +273,7 @@ export async function PATCH(req: NextRequest) {
           { status: 400 }
         )
       }
+      invalidateOnboardingLayout()
     }
 
     // ---- 2. Zones: replace-all by name -------------------------------------

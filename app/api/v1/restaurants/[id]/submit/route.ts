@@ -4,6 +4,7 @@ import {
   createSupabaseServerClientAdmin,
 } from '@/lib/supabase/server'
 import { sendRestaurantSubmittedEmail } from '@/lib/email/restaurant-submitted'
+import { invalidateOnboardingLayout } from '@/lib/onboarding/cache'
 
 export const runtime = 'nodejs'
 
@@ -109,6 +110,7 @@ export async function POST(
         { status: 500 }
       )
     }
+    invalidateOnboardingLayout()
 
     // ── Step H — Create review_tasks row (idempotent under retries) ────────
     const { data: existingTask } = await admin

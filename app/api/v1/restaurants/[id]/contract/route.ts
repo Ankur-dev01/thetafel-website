@@ -7,6 +7,7 @@ import {
 import { renderContract } from '@/lib/contracts/render'
 import { sendContractSignedEmail } from '@/lib/email/contract-signed'
 import { CURRENT_CONTRACT_VERSION, CURRENT_TERMS_VERSION, CURRENT_DPA_VERSION } from '@/lib/legal/versions'
+import { invalidateOnboardingLayout } from '@/lib/onboarding/cache'
 
 const Body = z.object({
   full_name: z.string().trim().min(2).max(120),
@@ -203,6 +204,7 @@ export async function POST(
         .update({ current_onboarding_step: 14, updated_at: new Date().toISOString() })
         .eq('id', restaurantId)
         .lt('current_onboarding_step', 14)
+      invalidateOnboardingLayout()
     }
 
     // ── Step J — Audit log ────────────────────────────────────────────────

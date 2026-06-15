@@ -216,6 +216,7 @@ export default function SubscriptionPicker({
       };
 
       if (data.skipped && data.nextStepUrl) {
+        router.refresh();
         router.push(data.nextStepUrl);
         return;
       }

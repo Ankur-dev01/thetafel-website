@@ -13,6 +13,7 @@ import {
   type SubscriptionTier,
   type QrPlan,
 } from '@/lib/pricing/subscription';
+import { invalidateOnboardingLayout } from '@/lib/onboarding/cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -83,6 +84,8 @@ export async function POST(req: NextRequest) {
         .update({ current_onboarding_step: 13 })
         .eq('id', restaurant.id)
         .lt('current_onboarding_step', 13);
+
+      invalidateOnboardingLayout();
 
       try {
         await admin.from('audit_logs').insert({

@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { buildAuthorizeUrl } from '@/lib/mollie/oauth'
 import { assertOnboardingMutationForUser } from '@/lib/onboarding/guards'
+import { invalidateOnboardingLayout } from '@/lib/onboarding/cache'
 
 const STATE_COOKIE_NAME = 'mollie_oauth_state'
 const STATE_COOKIE_MAX_AGE_SECONDS = 600 // 10 minutes — covers the OAuth round-trip
@@ -67,6 +68,7 @@ export async function POST(req: NextRequest) {
   if (updateErr) {
     return NextResponse.json({ error: 'restaurant_update_failed' }, { status: 500 })
   }
+  invalidateOnboardingLayout()
 
   // 7. Build the URL and return it. The frontend opens this in a new
   //    tab (per PRD §8 D6.2.3) or full-page redirects — its choice.

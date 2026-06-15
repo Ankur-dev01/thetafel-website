@@ -357,7 +357,7 @@ export default function PaymentsPage() {
         restaurant: { current_onboarding_step: nextStepId },
       })
       const nextPath = stepPath(nextStepId, locale)
-      if (nextPath) router.push(nextPath)
+      if (nextPath) { router.refresh(); router.push(nextPath) }
     } catch {
       setSubmitError(t('saveFailed'))
     } finally {

@@ -637,6 +637,7 @@ export default function ContractClient({
       }
 
       try { window.localStorage.removeItem(STORAGE_KEY) } catch {}
+      router.refresh()
       router.push(nextStepUrl)
     } catch {
       setError(t('errorGeneric'))

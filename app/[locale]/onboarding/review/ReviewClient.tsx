@@ -80,6 +80,7 @@ export default function ReviewClient({ locale, restaurantId, rows, optionalNudge
       }
       // Navigate to the dedicated submitted page. The shell also catches any
       // future /onboarding/* visit and routes there while status = pending_review.
+      router.refresh()
       router.replace(submittedHref)
     } catch (e) {
       console.error('[review] submit failed:', e)

@@ -5,6 +5,7 @@ import {
   exchangeCodeForTokens,
   fetchConnectedOrganizationId,
 } from '@/lib/mollie/oauth'
+import { invalidateOnboardingLayout } from '@/lib/onboarding/cache'
 
 const STATE_COOKIE_NAME = 'mollie_oauth_state'
 
@@ -130,6 +131,8 @@ export async function GET(req: NextRequest) {
     }
     return redirectToPayments(req, locale, { mollie: 'error', reason: 'persist_failed' })
   }
+
+  invalidateOnboardingLayout()
 
   return redirectToPayments(req, locale, { mollie: 'connected' })
 }
