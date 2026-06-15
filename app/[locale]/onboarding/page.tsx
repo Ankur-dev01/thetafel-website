@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useTransition } from 'react'
 import { useRouter, useParams, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import StepFrame from '@/components/onboarding/shell/StepFrame'
@@ -39,6 +39,7 @@ export default function ServicePickerPage() {
   const [advancing, setAdvancing] = useState(false)
 
   const { saveNow, state: saveState } = useDraftSave()
+  const [, startTransition] = useTransition()
 
   // ─── Hydrate from the existing draft ─────────────────────────────────────
   useEffect(() => {
@@ -100,15 +101,17 @@ export default function ServicePickerPage() {
       setPageError(null)
       try {
         await saveNow({ restaurant: { [key]: next } })
-        // Invalidate layout cache so sidebar reflects the new flag immediately
-        // (covers Path 1: no Continue, and Path 2: sidebar navigate away)
-        router.refresh()
+        // Keep current UI visible while the layout re-fetches; without this
+        // React treats refresh() as urgent and discards the rendered page.
+        startTransition(() => {
+          router.refresh()
+        })
       } catch {
         setFlags((prev) => ({ ...prev, [key]: previous }))
         setPageError(t('errorSave'))
       }
     },
-    [flags, saveNow, t, router]
+    [flags, saveNow, t, router, startTransition]
   )
 
   // ─── Continue handler ────────────────────────────────────────────────────
