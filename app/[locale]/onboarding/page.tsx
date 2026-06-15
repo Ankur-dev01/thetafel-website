@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useRouter, useParams, usePathname } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
 import { useTranslations } from 'next-intl'
 import StepFrame from '@/components/onboarding/shell/StepFrame'
 import CardChoice from '@/components/onboarding/fields/CardChoice'
@@ -100,12 +101,15 @@ export default function ServicePickerPage() {
       setPageError(null)
       try {
         await saveNow({ restaurant: { [key]: next } })
+        // Invalidate layout cache so sidebar reflects the new flag immediately
+        // (covers Path 1: no Continue, and Path 2: sidebar navigate away)
+        router.refresh()
       } catch {
         setFlags((prev) => ({ ...prev, [key]: previous }))
         setPageError(t('errorSave'))
       }
     },
-    [flags, saveNow, t]
+    [flags, saveNow, t, router]
   )
 
   // ─── Continue handler ────────────────────────────────────────────────────
