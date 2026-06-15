@@ -241,9 +241,19 @@ export async function PATCH(req: NextRequest) {
 
     // ---- 1. Restaurant fields: merge update --------------------------------
     if (body.restaurant && Object.keys(body.restaurant).length > 0) {
+      // current_onboarding_step is monotonic — it can only go up, never down.
+      // A user navigating back to an earlier step and clicking Continue would
+      // otherwise lower the counter and erase sidebar checkmarks for later steps.
+      const restaurantPatch = { ...body.restaurant }
+      if (typeof restaurantPatch.current_onboarding_step === 'number') {
+        restaurantPatch.current_onboarding_step = Math.max(
+          (restaurant.current_onboarding_step as number) ?? 0,
+          restaurantPatch.current_onboarding_step
+        )
+      }
       const { error } = await supabase
         .from('restaurants')
-        .update(body.restaurant)
+        .update(restaurantPatch)
         .eq('id', restaurantId)
       if (error) {
         // Postgres unique_violation (SQLSTATE 23505). The only UNIQUE constraint

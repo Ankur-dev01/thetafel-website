@@ -81,7 +81,8 @@ export async function POST(req: NextRequest) {
       await admin
         .from('restaurants')
         .update({ current_onboarding_step: 13 })
-        .eq('id', restaurant.id);
+        .eq('id', restaurant.id)
+        .lt('current_onboarding_step', 13);
 
       try {
         await admin.from('audit_logs').insert({
