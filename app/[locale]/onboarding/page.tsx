@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, usePathname } from 'next/navigation'
-import { useRouter } from '@/i18n/routing'
+import { useRouter, useParams, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import StepFrame from '@/components/onboarding/shell/StepFrame'
 import CardChoice from '@/components/onboarding/fields/CardChoice'
