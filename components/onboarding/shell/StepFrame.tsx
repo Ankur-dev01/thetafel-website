@@ -135,6 +135,7 @@ export default function StepFrame({
               {backHref ? (
                 <Link
                   href={backHref}
+                  prefetch={false}
                   className="inline-flex items-center gap-1.5 text-[13px] text-[#9c8b6a] hover:text-[#1e1508] transition-colors"
                   style={{
                     fontFamily: 'var(--font-jost), Jost, sans-serif',
@@ -212,7 +213,7 @@ function ContinueButton({
 
   if (href && enabled) {
     return (
-      <Link href={href} className={className} style={style}>
+      <Link href={href} prefetch={false} className={className} style={style}>
         {label}
       </Link>
     );

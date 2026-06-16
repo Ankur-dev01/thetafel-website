@@ -265,7 +265,7 @@ function StepListItem({
   }
 
   return (
-    <Link href={href} aria-current={status === 'current' ? 'step' : undefined}>
+    <Link href={href} prefetch={false} aria-current={status === 'current' ? 'step' : undefined}>
       {row}
     </Link>
   );
