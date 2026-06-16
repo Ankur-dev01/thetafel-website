@@ -27,18 +27,16 @@ type FeatureItem = {
 const TIER_FEATURE_LISTS: Record<SubscriptionTier, FeatureItem[]> = {
   starter: [
     { key: 'reservationsLimited' },
+    { key: 'qrOrdering' },
+    { key: 'takeaway' },
     { key: 'widget' },
-    { key: 'realtimeAvailability' },
     { key: 'emailConfirmations' },
     { key: 'multiLanguage' },
-    { key: 'uptime' },
     { key: 'standardSupport' },
-    { key: 'regularUpdates' },
   ],
   plus: [
     { key: 'everythingInStarter', isUpgradeHeader: true },
     { key: 'unlimitedReservations' },
-    { key: 'takeaway' },
     { key: 'brandColors' },
     { key: 'analytics' },
     { key: 'customerDatabase' },
@@ -47,8 +45,8 @@ const TIER_FEATURE_LISTS: Record<SubscriptionTier, FeatureItem[]> = {
   ],
   premium: [
     { key: 'everythingInPlus', isUpgradeHeader: true },
-    { key: 'qrOrdering' },
     { key: 'whatsapp' },
+    { key: 'premiumQrDesign' },
     { key: 'advancedAnalytics' },
     { key: 'vipGuests' },
     { key: 'customEmail' },
@@ -353,8 +351,8 @@ export default function SubscriptionPicker({
                 onMouseLeave={() => setHoveredTier(null)}
                 style={cardStyle}
               >
-                {/* Recommended badge — Plus only */}
-                {tier === 'plus' && (
+                {/* Recommended badge — Premium only */}
+                {tier === 'premium' && (
                   <div style={{
                     position: 'absolute',
                     top: '-14px',
@@ -526,6 +524,59 @@ export default function SubscriptionPicker({
               </div>
             );
           })}
+        </div>
+
+        {/* ---- Universal truths footer ------------------------------------ */}
+        <div style={{
+          marginTop: '8px',
+          padding: '20px 24px',
+          background: 'rgba(15, 13, 8, 0.04)',
+          borderRadius: '14px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+        }}>
+          <div style={{
+            fontFamily: 'var(--font-jost), Jost, sans-serif',
+            fontWeight: 600,
+            fontSize: '11px',
+            letterSpacing: '0.22em',
+            textTransform: 'uppercase',
+            color: 'rgba(15, 13, 8, 0.55)',
+          }}>
+            {t('allPlansInclude')}
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px 28px' }}>
+            {(['uptime', 'updates', 'gdpr', 'mobile'] as const).map((key) => (
+              <div
+                key={key}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontFamily: 'var(--font-jost), Jost, sans-serif',
+                  fontWeight: 500,
+                  fontSize: '13.5px',
+                  color: 'rgba(15, 13, 8, 0.75)',
+                }}
+              >
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '18px',
+                  height: '18px',
+                  borderRadius: '999px',
+                  background: 'rgba(212, 130, 10, 0.14)',
+                  color: '#d4820a',
+                  flexShrink: 0,
+                }}>
+                  <CheckIcon />
+                </span>
+                {t(`universal.${key}`)}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* ---- QR-pakket sub-picker (Premium tier + QR ordering enabled) --- */}
