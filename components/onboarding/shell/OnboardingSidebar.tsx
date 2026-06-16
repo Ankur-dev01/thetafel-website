@@ -1,6 +1,7 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { useState, useEffect, useTransition, useCallback } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { Database } from '@/packages/db/types';
 import {
@@ -26,16 +27,41 @@ export default function OnboardingSidebar({
   currentRouteStepId,
 }: OnboardingSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [pendingStepId, setPendingStepId] = useState<number | null>(null);
+
+  // Once navigation settles, clear the optimistic highlight
+  useEffect(() => {
+    if (!isPending) setPendingStepId(null);
+  }, [isPending]);
+
   // Derive the active step from the live client pathname so the highlight
   // updates immediately on soft (client-side) navigation without waiting
   // for the server layout to re-render. Fall back to the server-provided
   // value for the initial SSR pass (avoids a highlight flash).
   const liveStepId = resolveStepIdFromPath(pathname) ?? currentRouteStepId;
+  // Optimistic: show the clicked step as active immediately, even before
+  // the URL changes. Clears when the transition (navigation) settles.
+  const displayedActiveStep = pendingStepId ?? liveStepId;
 
   const visibleSteps = getVisibleSteps(restaurant);
   const effectiveCurrentStep = getEffectiveCurrentStep(
     restaurant?.current_onboarding_step ?? 0,
     liveStepId
+  );
+
+  const handlePrefetch = useCallback(
+    (href: string) => { router.prefetch(href); },
+    [router]
+  );
+
+  const handleNavigate = useCallback(
+    (href: string, stepId: number) => {
+      setPendingStepId(stepId);
+      startTransition(() => { router.push(href); });
+    },
+    [router, startTransition]
   );
 
   const t = {
@@ -120,7 +146,7 @@ export default function OnboardingSidebar({
             const status = getStepStatus(
               step.id,
               effectiveCurrentStep,
-              liveStepId
+              displayedActiveStep  // optimistic highlight
             );
             return (
               <li key={step.key}>
@@ -130,6 +156,8 @@ export default function OnboardingSidebar({
                   status={status}
                   displayNumber={index}
                   localePrefix={localePrefix}
+                  onPrefetch={handlePrefetch}
+                  onNavigate={handleNavigate}
                 />
               </li>
             );
@@ -220,12 +248,16 @@ function StepListItem({
   status,
   displayNumber,
   localePrefix,
+  onPrefetch,
+  onNavigate,
 }: {
   step: StepDescriptor;
   locale: 'nl' | 'en';
   status: 'completed' | 'current' | 'reachable' | 'unreachable';
   displayNumber: number;
   localePrefix: string;
+  onPrefetch: (href: string) => void;
+  onNavigate: (href: string, stepId: number) => void;
 }) {
   const label = locale === 'nl' ? step.label_nl : step.label_en;
   const href = `${localePrefix}${step.path}`;
@@ -265,7 +297,18 @@ function StepListItem({
   }
 
   return (
-    <Link href={href} prefetch={false} aria-current={status === 'current' ? 'step' : undefined}>
+    <Link
+      href={href}
+      prefetch={false}
+      aria-current={status === 'current' ? 'step' : undefined}
+      onMouseEnter={() => onPrefetch(href)}
+      onFocus={() => onPrefetch(href)}
+      onTouchStart={() => onPrefetch(href)}
+      onClick={(e) => {
+        e.preventDefault();
+        onNavigate(href, step.id);
+      }}
+    >
       {row}
     </Link>
   );
