@@ -17,55 +17,45 @@ import {
   type PricingBreakdown,
 } from '@/lib/pricing/subscription';
 
-// ---- Feature matrix ---------------------------------------------------------
+// ---- Per-tier feature lists -------------------------------------------------
 
-type FeatureKey =
-  | 'reservations'
-  | 'unlimitedBookings'
-  | 'takeaway'
-  | 'qrOrdering'
-  | 'emailConfirmations'
-  | 'whatsappReminders'
-  | 'prioritySupport';
+type FeatureItem = {
+  key: string;
+  isUpgradeHeader?: boolean;
+};
 
-const FEATURE_ORDER: FeatureKey[] = [
-  'reservations',
-  'unlimitedBookings',
-  'takeaway',
-  'qrOrdering',
-  'emailConfirmations',
-  'whatsappReminders',
-  'prioritySupport',
-];
-
-const TIER_FEATURES: Record<SubscriptionTier, Record<FeatureKey, boolean>> = {
-  starter: {
-    reservations: true,
-    unlimitedBookings: false,
-    takeaway: false,
-    qrOrdering: false,
-    emailConfirmations: true,
-    whatsappReminders: false,
-    prioritySupport: false,
-  },
-  plus: {
-    reservations: true,
-    unlimitedBookings: true,
-    takeaway: true,
-    qrOrdering: false,
-    emailConfirmations: true,
-    whatsappReminders: false,
-    prioritySupport: false,
-  },
-  premium: {
-    reservations: true,
-    unlimitedBookings: true,
-    takeaway: true,
-    qrOrdering: true,
-    emailConfirmations: true,
-    whatsappReminders: true,
-    prioritySupport: true,
-  },
+const TIER_FEATURE_LISTS: Record<SubscriptionTier, FeatureItem[]> = {
+  starter: [
+    { key: 'reservationsLimited' },
+    { key: 'widget' },
+    { key: 'realtimeAvailability' },
+    { key: 'emailConfirmations' },
+    { key: 'multiLanguage' },
+    { key: 'uptime' },
+    { key: 'standardSupport' },
+    { key: 'regularUpdates' },
+  ],
+  plus: [
+    { key: 'everythingInStarter', isUpgradeHeader: true },
+    { key: 'unlimitedReservations' },
+    { key: 'takeaway' },
+    { key: 'brandColors' },
+    { key: 'analytics' },
+    { key: 'customerDatabase' },
+    { key: 'prioritySupport' },
+    { key: 'setupCall' },
+  ],
+  premium: [
+    { key: 'everythingInPlus', isUpgradeHeader: true },
+    { key: 'qrOrdering' },
+    { key: 'whatsapp' },
+    { key: 'advancedAnalytics' },
+    { key: 'vipGuests' },
+    { key: 'customEmail' },
+    { key: 'marketplaceBoost' },
+    { key: 'dedicatedChannel' },
+    { key: 'earlyAccess' },
+  ],
 };
 
 const TIERS: SubscriptionTier[] = ['starter', 'plus', 'premium'];
@@ -89,8 +79,12 @@ const srOnlyStyle: React.CSSProperties = {
 
 function CheckIcon() {
   return (
-    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-      <path d="M2 5.2l2 2L8 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <path d="M3 7.2l2.6 2.6L11 4.4"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round" />
     </svg>
   );
 }
@@ -225,17 +219,6 @@ export default function SubscriptionPicker({
     }
   }
 
-  // Pre-computed label lookups (explicit keys — no template literal casting needed)
-  const featureLabel: Record<FeatureKey, string> = {
-    reservations: t('features.reservations'),
-    unlimitedBookings: t('features.unlimitedBookings'),
-    takeaway: t('features.takeaway'),
-    qrOrdering: t('features.qrOrdering'),
-    emailConfirmations: t('features.emailConfirmations'),
-    whatsappReminders: t('features.whatsappReminders'),
-    prioritySupport: t('features.prioritySupport'),
-  };
-
   const tierName: Record<SubscriptionTier, string> = {
     starter: t('tiers.starter.name'),
     plus: t('tiers.plus.name'),
@@ -346,7 +329,7 @@ export default function SubscriptionPicker({
               cursor: 'pointer',
               outline: 'none',
               userSelect: 'none',
-              minHeight: '460px',
+              minHeight: '380px',
               display: 'flex',
               flexDirection: 'column',
             };
@@ -449,63 +432,92 @@ export default function SubscriptionPicker({
                 }} />
 
                 {/* Feature rows */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-                  {FEATURE_ORDER.map((featureKey) => {
-                    const included = TIER_FEATURES[tier][featureKey];
-
-                    const srText = included
-                      ? (locale === 'nl' ? 'Inbegrepen' : 'Included')
-                      : (locale === 'nl' ? 'Niet inbegrepen' : 'Not included');
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
+                  {TIER_FEATURE_LISTS[tier].map((feature) => {
+                    if (feature.isUpgradeHeader) {
+                      return (
+                        <div
+                          key={feature.key}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            padding: '12px 14px',
+                            background: isPremium
+                              ? 'rgba(212, 130, 10, 0.16)'
+                              : 'rgba(212, 130, 10, 0.1)',
+                            border: `1px solid ${isPremium
+                              ? 'rgba(212, 130, 10, 0.32)'
+                              : 'rgba(212, 130, 10, 0.2)'}`,
+                            borderRadius: '12px',
+                            marginBottom: '8px',
+                          }}
+                        >
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '22px',
+                            height: '22px',
+                            borderRadius: '999px',
+                            background: '#d4820a',
+                            color: '#fdfaf5',
+                            flexShrink: 0,
+                          }}>
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                              <path d="M6 2v8M2 6h8"
+                                    stroke="currentColor"
+                                    strokeWidth="2.2"
+                                    strokeLinecap="round" />
+                            </svg>
+                          </span>
+                          <span style={{
+                            fontFamily: 'var(--font-jost), Jost, sans-serif',
+                            fontWeight: 600,
+                            fontSize: '13px',
+                            letterSpacing: '0.04em',
+                            color: isPremium ? '#fdfaf5' : '#0f0d08',
+                            textTransform: 'uppercase',
+                          }}>
+                            {t(`features.${feature.key}`)}
+                          </span>
+                        </div>
+                      );
+                    }
 
                     return (
                       <div
-                        key={featureKey}
+                        key={feature.key}
                         style={{
                           display: 'flex',
-                          alignItems: 'center',
+                          alignItems: 'flex-start',
                           gap: '12px',
                           fontFamily: 'var(--font-jost), Jost, sans-serif',
                           fontSize: '14.5px',
                         }}
                       >
-                        <span style={srOnlyStyle}>{srText} —</span>
-                        {included ? (
-                          <span style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '18px',
-                            height: '18px',
-                            borderRadius: '999px',
-                            background: isPremium ? 'rgba(212, 130, 10, 0.18)' : 'rgba(212, 130, 10, 0.14)',
-                            color: '#d4820a',
-                            flexShrink: 0,
-                          }}>
-                            <CheckIcon />
-                          </span>
-                        ) : (
-                          <span style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '18px',
-                            height: '18px',
-                            color: isPremium ? 'rgba(253, 250, 245, 0.25)' : 'rgba(15, 13, 8, 0.2)',
-                            fontSize: '16px',
-                            lineHeight: 1,
-                            flexShrink: 0,
-                          }}>
-                            —
-                          </span>
-                        )}
                         <span style={{
-                          fontWeight: included ? 500 : 400,
-                          color: included
-                            ? (isPremium ? '#fdfaf5' : '#0f0d08')
-                            : (isPremium ? 'rgba(253, 250, 245, 0.4)' : 'rgba(15, 13, 8, 0.4)'),
-                          textDecoration: 'none',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '20px',
+                          height: '20px',
+                          borderRadius: '999px',
+                          background: isPremium
+                            ? 'rgba(212, 130, 10, 0.18)'
+                            : 'rgba(212, 130, 10, 0.14)',
+                          color: '#d4820a',
+                          flexShrink: 0,
+                          marginTop: '2px',
                         }}>
-                          {featureLabel[featureKey]}
+                          <CheckIcon />
+                        </span>
+                        <span style={{
+                          fontWeight: 500,
+                          color: isPremium ? '#fdfaf5' : '#0f0d08',
+                          lineHeight: 1.5,
+                        }}>
+                          {t(`features.${feature.key}`)}
                         </span>
                       </div>
                     );
