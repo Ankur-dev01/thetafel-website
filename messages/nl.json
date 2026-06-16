@@ -656,8 +656,10 @@
       "continue": "Doorgaan",
       "saveError": "Opslaan mislukt. Probeer het opnieuw.",
       "perMonth": "per maand",
+      "perMonthShort": "maand",
       "trialInfo": "84 dagen gratis proberen — daarna {monthly} per maand vanaf dag 85.",
       "recommended": "Aanbevolen",
+      "recommendedBadge": "Aanbevolen",
       "features": {
         "reservations": "Reserveringen",
         "unlimitedBookings": "Onbeperkt reserveringen",

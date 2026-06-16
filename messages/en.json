@@ -656,8 +656,10 @@
       "continue": "Continue",
       "saveError": "Save failed. Please try again.",
       "perMonth": "per month",
+      "perMonthShort": "month",
       "trialInfo": "84-day free trial — then {monthly} per month from day 85.",
       "recommended": "Recommended",
+      "recommendedBadge": "Recommended",
       "features": {
         "reservations": "Reservations",
         "unlimitedBookings": "Unlimited bookings",

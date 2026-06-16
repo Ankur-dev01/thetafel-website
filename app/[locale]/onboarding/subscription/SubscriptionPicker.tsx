@@ -89,16 +89,8 @@ const srOnlyStyle: React.CSSProperties = {
 
 function CheckIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-      <path d="M3 7.2l2.6 2.6L11 4.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function XIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 14 14" fill="none" aria-hidden="true">
-      <path d="M4 4l6 6M10 4l-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+      <path d="M2 5.2l2 2L8 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -319,7 +311,7 @@ export default function SubscriptionPicker({
             const isHovered = hoveredTier === tier && !isSelected;
             const isPremium = tier === 'premium';
 
-            // ---- Card style -----------------------------------------------
+            // ---- Transform (Premium sits higher by default) ----------------
 
             let transform = 'translateY(0)';
             if (!prefersReducedMotion) {
@@ -330,51 +322,34 @@ export default function SubscriptionPicker({
               }
             }
 
-            let boxShadow: string;
-            if (isPremium) {
-              if (isSelected) {
-                boxShadow =
-                  '0 0 0 4px rgba(253, 250, 245, 0.55), 0 0 0 7px rgba(212, 130, 10, 0.45), 0 22px 48px -18px rgba(212, 130, 10, 0.55)';
-              } else if (isHovered) {
-                boxShadow =
-                  '0 22px 48px -18px rgba(212, 130, 10, 0.55), 0 8px 16px -8px rgba(30, 21, 8, 0.22)';
-              } else {
-                boxShadow =
-                  '0 18px 40px -16px rgba(212, 130, 10, 0.45), 0 6px 12px -6px rgba(30, 21, 8, 0.18)';
-              }
-            } else {
-              if (isSelected) {
-                boxShadow =
-                  '0 0 0 4px rgba(212, 130, 10, 0.12), 0 14px 32px -14px rgba(212, 130, 10, 0.30)';
-              } else if (isHovered) {
-                boxShadow =
-                  '0 12px 28px -12px rgba(30, 21, 8, 0.18), 0 4px 8px -4px rgba(30, 21, 8, 0.08)';
-              } else {
-                boxShadow = '0 1px 2px rgba(30, 21, 8, 0.04)';
-              }
-            }
+            // ---- Card style -----------------------------------------------
 
-            const border = isPremium
-              ? '1px solid #b86d00'
-              : isSelected
-              ? '2px solid #d4820a'
-              : isHovered
-              ? '1px solid rgba(30, 21, 8, 0.20)'
-              : '1px solid rgba(30, 21, 8, 0.10)';
-
-            const background = isPremium
-              ? '#d4820a'
-              : isSelected
-              ? '#fdf4e6'
-              : '#f8f2e6';
-
-            const nameColor = isPremium ? '#fdfaf5' : '#1e1508';
-            const taglineColor = isPremium ? 'rgba(253, 250, 245, 0.80)' : '#9c8b6a';
-            const dividerColor = isPremium
-              ? 'rgba(253, 250, 245, 0.20)'
-              : 'rgba(30, 21, 8, 0.08)';
-            const pillBg = isPremium ? '#fdfaf5' : '#d4820a';
-            const pillTextColor = isPremium ? '#d4820a' : '#fdfaf5';
+            const cardStyle: React.CSSProperties = {
+              position: 'relative',
+              padding: '36px 28px 32px',
+              borderRadius: '20px',
+              background: isPremium ? '#1a1610' : '#fdfaf5',
+              border: isSelected
+                ? '2px solid #d4820a'
+                : isHovered
+                ? `2px solid ${isPremium ? 'rgba(212, 130, 10, 0.5)' : 'rgba(212, 130, 10, 0.35)'}`
+                : `2px solid ${isPremium ? 'rgba(253, 250, 245, 0.08)' : 'rgba(15, 13, 8, 0.08)'}`,
+              boxShadow: isSelected
+                ? '0 24px 48px -16px rgba(212, 130, 10, 0.35), 0 4px 12px rgba(15, 13, 8, 0.08)'
+                : isHovered
+                ? '0 20px 40px -16px rgba(15, 13, 8, 0.18)'
+                : isPremium
+                ? '0 12px 32px -12px rgba(15, 13, 8, 0.35)'
+                : '0 4px 12px rgba(15, 13, 8, 0.06)',
+              transform,
+              transition: prefersReducedMotion ? reducedTransition : fullTransition,
+              cursor: 'pointer',
+              outline: 'none',
+              userSelect: 'none',
+              minHeight: '460px',
+              display: 'flex',
+              flexDirection: 'column',
+            };
 
             return (
               <div
@@ -393,124 +368,90 @@ export default function SubscriptionPicker({
                 }}
                 onMouseEnter={() => setHoveredTier(tier)}
                 onMouseLeave={() => setHoveredTier(null)}
-                style={{
-                  position: 'relative',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  padding: '28px 24px 24px',
-                  borderRadius: '16px',
-                  border,
-                  background,
-                  boxShadow,
-                  transform,
-                  transition: prefersReducedMotion ? reducedTransition : fullTransition,
-                  cursor: 'pointer',
-                  outline: 'none',
-                  userSelect: 'none',
-                }}
+                style={cardStyle}
               >
-                {/* Recommended badge (Premium only) */}
-                {isPremium && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '-14px',
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      background: '#1e1508',
-                      color: '#d4820a',
-                      padding: '6px 14px',
-                      borderRadius: '999px',
-                      fontFamily: 'var(--font-jost), Jost, sans-serif',
-                      fontWeight: 700,
-                      fontSize: '11px',
-                      letterSpacing: '0.08em',
-                      textTransform: 'uppercase',
-                      whiteSpace: 'nowrap',
-                      boxShadow: '0 4px 12px -4px rgba(30, 21, 8, 0.30)',
-                    }}
-                  >
-                    {t('recommended')}
+                {/* Recommended badge — Plus only */}
+                {tier === 'plus' && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '-14px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: '#d4820a',
+                    color: '#fdfaf5',
+                    padding: '6px 16px',
+                    borderRadius: '999px',
+                    fontFamily: 'var(--font-jost), Jost, sans-serif',
+                    fontWeight: 600,
+                    fontSize: '11px',
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                    boxShadow: '0 4px 10px rgba(212, 130, 10, 0.35)',
+                    whiteSpace: 'nowrap',
+                  }}>
+                    {t('recommendedBadge')}
                   </div>
                 )}
 
-                {/* Header: name + tagline LEFT | price pill RIGHT */}
+                {/* Tier name eyebrow */}
                 <div style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  justifyContent: 'space-between',
-                  gap: '12px',
+                  fontFamily: 'var(--font-jost), Jost, sans-serif',
+                  fontWeight: 600,
+                  fontSize: '11px',
+                  letterSpacing: '0.22em',
+                  textTransform: 'uppercase',
+                  color: isPremium ? 'rgba(253, 250, 245, 0.55)' : 'rgba(15, 13, 8, 0.5)',
                   marginBottom: '20px',
                 }}>
-                  <div>
-                    <div style={{
-                      fontFamily: 'var(--font-raleway), Raleway, sans-serif',
-                      fontWeight: 900,
-                      fontSize: '26px',
-                      color: nameColor,
-                      lineHeight: 1.15,
-                      marginBottom: '4px',
-                    }}>
-                      {tierName[tier]}
-                    </div>
-                    <div style={{
-                      fontFamily: 'var(--font-jost), Jost, sans-serif',
-                      fontWeight: 400,
-                      fontSize: '13px',
-                      color: taglineColor,
-                      lineHeight: 1.4,
-                    }}>
-                      {tierTagline[tier]}
-                    </div>
-                  </div>
+                  {tierName[tier]}
+                </div>
 
-                  {/* Price pill */}
-                  <div style={{
-                    background: pillBg,
-                    borderRadius: '999px',
-                    padding: '10px 14px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    flexShrink: 0,
+                {/* Price anchor */}
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '4px' }}>
+                  <span style={{
+                    fontFamily: 'var(--font-raleway), Raleway, sans-serif',
+                    fontWeight: 900,
+                    fontSize: '56px',
+                    lineHeight: 1,
+                    color: isPremium ? '#d4820a' : '#0f0d08',
+                    letterSpacing: '-0.02em',
                   }}>
-                    <span style={{
-                      fontFamily: 'var(--font-raleway), Raleway, sans-serif',
-                      fontWeight: 900,
-                      fontSize: '22px',
-                      color: pillTextColor,
-                      lineHeight: 1.1,
-                    }}>
-                      {formatEuros(TIER_MONTHLY_CENTS[tier], locale)}
-                    </span>
-                    <span style={{
-                      fontFamily: 'var(--font-jost), Jost, sans-serif',
-                      fontWeight: 500,
-                      fontSize: '10px',
-                      color: pillTextColor,
-                      opacity: 0.85,
-                      lineHeight: 1.2,
-                    }}>
-                      {t('perMonth')}
-                    </span>
-                  </div>
+                    {formatEuros(TIER_MONTHLY_CENTS[tier], locale)}
+                  </span>
+                  <span style={{
+                    fontFamily: 'var(--font-jost), Jost, sans-serif',
+                    fontWeight: 500,
+                    fontSize: '13px',
+                    color: isPremium ? 'rgba(253, 250, 245, 0.6)' : 'rgba(15, 13, 8, 0.55)',
+                  }}>
+                    / {t('perMonthShort')}
+                  </span>
+                </div>
+
+                {/* Tagline */}
+                <div style={{
+                  fontFamily: 'var(--font-jost), Jost, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '14px',
+                  lineHeight: 1.5,
+                  color: isPremium ? 'rgba(253, 250, 245, 0.7)' : 'rgba(15, 13, 8, 0.65)',
+                  marginTop: '12px',
+                  marginBottom: '24px',
+                }}>
+                  {tierTagline[tier]}
                 </div>
 
                 {/* Divider */}
-                <div style={{ height: '1px', background: dividerColor, margin: '0 0 16px' }} />
+                <div style={{
+                  height: '1px',
+                  background: isPremium ? 'rgba(253, 250, 245, 0.12)' : 'rgba(15, 13, 8, 0.1)',
+                  marginBottom: '20px',
+                }} />
 
                 {/* Feature rows */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
                   {FEATURE_ORDER.map((featureKey) => {
                     const included = TIER_FEATURES[tier][featureKey];
-
-                    const iconColor = isPremium
-                      ? included ? '#fdfaf5' : 'rgba(253, 250, 245, 0.45)'
-                      : included ? '#d4820a' : '#c9b896';
-
-                    const labelColor = isPremium
-                      ? included ? '#fdfaf5' : 'rgba(253, 250, 245, 0.55)'
-                      : included ? '#1e1508' : '#9c8b6a';
 
                     const srText = included
                       ? (locale === 'nl' ? 'Inbegrepen' : 'Included')
@@ -519,26 +460,50 @@ export default function SubscriptionPicker({
                     return (
                       <div
                         key={featureKey}
-                        style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
-                      >
-                        <div style={{
-                          width: '18px',
-                          height: '18px',
+                        style={{
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0,
-                          color: iconColor,
-                        }}>
-                          {included ? <CheckIcon /> : <XIcon />}
-                        </div>
-                        <span style={srOnlyStyle}>{srText} —</span>
-                        <span style={{
+                          gap: '12px',
                           fontFamily: 'var(--font-jost), Jost, sans-serif',
-                          fontSize: '14px',
-                          color: labelColor,
-                          textDecoration: included ? 'none' : 'line-through',
-                          lineHeight: 1.4,
+                          fontSize: '14.5px',
+                        }}
+                      >
+                        <span style={srOnlyStyle}>{srText} —</span>
+                        {included ? (
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '18px',
+                            height: '18px',
+                            borderRadius: '999px',
+                            background: isPremium ? 'rgba(212, 130, 10, 0.18)' : 'rgba(212, 130, 10, 0.14)',
+                            color: '#d4820a',
+                            flexShrink: 0,
+                          }}>
+                            <CheckIcon />
+                          </span>
+                        ) : (
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '18px',
+                            height: '18px',
+                            color: isPremium ? 'rgba(253, 250, 245, 0.25)' : 'rgba(15, 13, 8, 0.2)',
+                            fontSize: '16px',
+                            lineHeight: 1,
+                            flexShrink: 0,
+                          }}>
+                            —
+                          </span>
+                        )}
+                        <span style={{
+                          fontWeight: included ? 500 : 400,
+                          color: included
+                            ? (isPremium ? '#fdfaf5' : '#0f0d08')
+                            : (isPremium ? 'rgba(253, 250, 245, 0.4)' : 'rgba(15, 13, 8, 0.4)'),
+                          textDecoration: 'none',
                         }}>
                           {featureLabel[featureKey]}
                         </span>
@@ -710,36 +675,67 @@ export default function SubscriptionPicker({
                 display: 'flex',
                 alignItems: 'center',
                 flexShrink: 0,
+                fontSize: '16px',
+                lineHeight: 1,
               }}
             >
-              <XIcon size={12} />
+              ×
             </button>
           </div>
         )}
 
-        {/* ---- Trial info ------------------------------------------------- */}
-        {selectedTier && selectedTier !== 'starter' && (
-          <div style={{
-            fontFamily: 'var(--font-jost), Jost, sans-serif',
-            fontSize: '14px',
-            color: '#9c8b6a',
+        {/* ---- Trial info banner ------------------------------------------ */}
+        <div style={{
+          background: 'rgba(212, 130, 10, 0.08)',
+          border: '1px solid rgba(212, 130, 10, 0.2)',
+          borderRadius: '14px',
+          padding: '16px 20px',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '12px',
+          marginBottom: '4px',
+        }}>
+          <span style={{
+            display: 'inline-flex',
+            width: '20px',
+            height: '20px',
+            borderRadius: '999px',
+            background: '#d4820a',
+            color: '#fdfaf5',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+            marginTop: '2px',
           }}>
-            {t('trialInfo', { monthly: formatEuros(pricing.monthlyCents, locale) })}
-          </div>
-        )}
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M6 1.5L7.4 4.5L10.5 5L8.25 7.25L8.8 10.4L6 9L3.2 10.4L3.75 7.25L1.5 5L4.6 4.5L6 1.5Z"
+                    fill="currentColor"/>
+            </svg>
+          </span>
+          <span style={{
+            fontFamily: 'var(--font-jost), Jost, sans-serif',
+            fontWeight: 500,
+            fontSize: '14px',
+            color: '#0f0d08',
+            lineHeight: 1.5,
+          }}>
+            {t('trialInfo', { monthly: selectedTier ? formatEuros(TIER_MONTHLY_CENTS[selectedTier], locale) : '—' })}
+          </span>
+        </div>
 
         {/* ---- One-time fees breakdown ------------------------------------ */}
         {qrPlan !== null ? (
           <div style={{
+            background: '#fdfaf5',
+            border: '1px solid rgba(15, 13, 8, 0.08)',
+            borderRadius: '16px',
             padding: '24px',
-            borderRadius: '12px',
-            background: '#f8f2e6',
           }}>
             <h3 style={{
-              fontFamily: 'var(--font-jost), Jost, sans-serif',
-              fontWeight: 600,
-              fontSize: '16px',
-              color: '#1e1508',
+              fontFamily: 'var(--font-raleway), Raleway, sans-serif',
+              fontWeight: 900,
+              fontSize: '20px',
+              color: '#0f0d08',
               margin: '0 0 16px',
             }}>
               {t('oneTimeFees.heading')}
@@ -785,7 +781,7 @@ export default function SubscriptionPicker({
               )}
             </div>
 
-            <div style={{ borderTop: '1px solid rgba(30, 21, 8, 0.10)', margin: '12px 0' }} />
+            <div style={{ borderTop: '1px solid rgba(15, 13, 8, 0.1)', margin: '16px 0' }} />
 
             {/* Subtotaal (net) */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
@@ -807,19 +803,26 @@ export default function SubscriptionPicker({
             </div>
 
             {/* Total incl. VAT */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{
+              marginTop: '16px',
+              paddingTop: '16px',
+              borderTop: '1px solid rgba(15, 13, 8, 0.1)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
               <span style={{
                 fontFamily: 'var(--font-jost), Jost, sans-serif',
-                fontSize: '15px',
                 fontWeight: 600,
-                color: '#1e1508',
+                fontSize: '15px',
+                color: '#0f0d08',
               }}>
                 {t('oneTimeFees.totalDueToday')}
               </span>
               <span style={{
-                fontFamily: 'var(--font-jost), Jost, sans-serif',
-                fontSize: '18px',
-                fontWeight: 700,
+                fontFamily: 'var(--font-raleway), Raleway, sans-serif',
+                fontWeight: 900,
+                fontSize: '28px',
                 color: '#d4820a',
               }}>
                 {formatEuros(applyVat(pricing.totalDueTodayCents).grossCents, locale)}
@@ -837,19 +840,16 @@ export default function SubscriptionPicker({
         )}
 
         {/* ---- VAT disclaimer --------------------------------------------- */}
-        <div style={{
-          marginTop: '28px',
-          marginBottom: '4px',
-          textAlign: 'center',
+        <p style={{
           fontFamily: 'var(--font-jost), Jost, sans-serif',
           fontWeight: 400,
-          fontSize: '11px',
-          letterSpacing: '0.01em',
-          color: '#9c8b6a',
-          lineHeight: 1.5,
+          fontSize: '12.5px',
+          color: 'rgba(15, 13, 8, 0.55)',
+          marginTop: '12px',
+          textAlign: 'center',
         }}>
           {t('vatNotice')}
-        </div>
+        </p>
 
       </div>
     </StepFrame>
