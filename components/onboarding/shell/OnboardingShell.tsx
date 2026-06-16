@@ -8,8 +8,6 @@
  *   - Redirect unauthenticated users to /login.
  *   - Resolve the user's restaurant row (or null if they haven't started).
  *   - Redirect already-submitted / already-live restaurants to their status page.
- *   - Resume flow: if the user hits bare /onboarding but has progressed past
- *     Step 0, redirect to the step they left off on.
  *   - Render the two-pane layout: dark sidebar + cream main pane.
  */
 
@@ -72,26 +70,6 @@ export default async function OnboardingShell({
     }
 
     const visibleSteps = getVisibleSteps(restaurant);
-
-    // Resume flow: only fires when the user lands on the bare /onboarding URL.
-    // Deep links to specific step pages are left alone so owners can revisit
-    // earlier steps freely via the sidebar (PRD §3.3).
-    const isBareOnboardingPath =
-      strippedPath === '/onboarding' || strippedPath === '/onboarding/';
-    const step = restaurant.current_onboarding_step ?? 0;
-    if (isBareOnboardingPath && step >= 1) {
-      // Use visible steps so we never resume into a step for a disabled service.
-      // If the saved step is now hidden, fall back to the last visible step before it.
-      let resumeStep = visibleSteps.find((s) => s.id === step);
-      if (!resumeStep) {
-        resumeStep = [...visibleSteps]
-          .filter((s) => s.id > 0 && s.id < step)
-          .pop();
-      }
-      if (resumeStep && resumeStep.path !== '/onboarding') {
-        redirect(`${localePrefix}${resumeStep.path}`);
-      }
-    }
 
     // Guard: if navigating directly to a step whose service is disabled, bounce
     // to the service picker. This handles typed URLs and stale sidebar links.
