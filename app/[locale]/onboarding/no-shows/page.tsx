@@ -50,17 +50,9 @@ function Tile({ icon, title, description, status, badge, onClick, children }: Ti
 
   const cardShadow = isDisabled
     ? 'none'
-    : isSelected
-      ? hovered
-        ? '0 2px 4px rgba(30, 21, 8, 0.04), 0 20px 44px rgba(212, 130, 10, 0.17)'
-        : '0 1px 2px rgba(30, 21, 8, 0.04), 0 16px 36px rgba(212, 130, 10, 0.13)'
-      : hovered
-        ? '0 2px 8px rgba(30, 21, 8, 0.04), 0 12px 32px rgba(30, 21, 8, 0.05)'
-        : 'none'
-
-  const iconBg = isDisabled ? '#ede5d5' : isSelected ? '#d4820a' : '#f0e8d8'
-  const iconColor = isDisabled ? '#c9b896' : isSelected ? '#fdfaf5' : '#d4820a'
-  const iconShadow = isSelected && !isDisabled ? '0 6px 18px rgba(212, 130, 10, 0.24)' : 'none'
+    : hovered
+      ? '0 2px 4px rgba(30, 21, 8, 0.04), 0 22px 48px rgba(212, 130, 10, 0.16)'
+      : '0 1px 2px rgba(30, 21, 8, 0.04), 0 16px 38px rgba(212, 130, 10, 0.12)'
 
   return (
     <div
@@ -71,30 +63,50 @@ function Tile({ icon, title, description, status, badge, onClick, children }: Ti
         position: 'relative',
         backgroundColor: isDisabled ? '#f5f0e3' : '#fbf6ec',
         borderRadius: '18px',
-        padding: '28px',
+        padding: '28px 26px',
         display: 'flex',
         flexDirection: 'column',
         cursor: isDisabled ? 'not-allowed' : 'pointer',
-        opacity: isDisabled ? 0.72 : 1,
-        transition: 'box-shadow 280ms ease, transform 220ms ease, background-color 220ms ease',
+        opacity: isDisabled ? 0.74 : 1,
+        transition: 'box-shadow 280ms ease, transform 220ms ease',
         boxShadow: cardShadow,
-        transform: hovered && isInteractive ? 'translateY(-1px)' : 'translateY(0)',
+        transform: hovered && isInteractive ? 'translateY(-2px)' : 'translateY(0)',
         boxSizing: 'border-box',
       }}
     >
-      {/* Badge (coming-soon / locked pill) */}
+      {/* Check chip — selected only */}
+      {isSelected && (
+        <div style={{
+          position: 'absolute',
+          top: '22px',
+          right: '22px',
+          width: '22px',
+          height: '22px',
+          borderRadius: '50%',
+          backgroundColor: '#d4820a',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+            <path d="M2 5.5l2.5 2.5 4.5-5" stroke="#fdfaf5" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+      )}
+
+      {/* Coming-soon / locked pill */}
       {badge && (
         <div style={{
           position: 'absolute',
-          top: '16px',
-          right: '16px',
+          top: '22px',
+          right: '22px',
           backgroundColor: '#d4820a',
           color: '#fdfaf5',
           fontFamily: 'var(--font-jost), Jost, sans-serif',
           fontWeight: 600,
           fontSize: '10px',
           textTransform: 'uppercase' as const,
-          letterSpacing: '0.08em',
+          letterSpacing: '0.1em',
           padding: '5px 10px',
           borderRadius: '9999px',
         }}>
@@ -102,42 +114,30 @@ function Tile({ icon, title, description, status, badge, onClick, children }: Ti
         </div>
       )}
 
-      {/* Icon block — sole state indicator */}
-      <div style={{
-        width: '52px',
-        height: '52px',
-        backgroundColor: iconBg,
-        borderRadius: '13px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-        color: iconColor,
-        boxShadow: iconShadow,
-        transition: 'background-color 220ms ease, box-shadow 220ms ease',
-        marginBottom: '22px',
-      }}>
+      {/* Identity icon — bare, no container */}
+      <div style={{ color: isDisabled ? '#b8a585' : '#d4820a', lineHeight: 0 }}>
         {icon}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
         <div style={{
-          fontFamily: 'var(--font-jost), Jost, sans-serif',
-          fontWeight: 700,
-          fontSize: '19px',
-          color: '#1e1508',
-          lineHeight: 1.3,
-          letterSpacing: '-0.01em',
-          marginBottom: '10px',
+          fontFamily: 'var(--font-raleway), sans-serif',
+          fontWeight: 900,
+          fontSize: '28px',
+          color: isDisabled ? '#6f6353' : '#1e1508',
+          lineHeight: 1.02,
+          letterSpacing: '-0.025em',
+          marginTop: '32px',
         }}>
           {title}
         </div>
         <div style={{
           fontFamily: 'var(--font-jost), Jost, sans-serif',
           fontWeight: 400,
-          fontSize: '14px',
+          fontSize: '13.5px',
           color: '#9c8b6a',
           lineHeight: 1.55,
+          marginTop: '14px',
         }}>
           {description}
         </div>
@@ -372,7 +372,7 @@ export default function NoShowsPage() {
           <Tile
             status={remindersEmailEnabled ? 'active-selected' : 'active-unselected'}
             icon={
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
               </svg>
@@ -381,16 +381,23 @@ export default function NoShowsPage() {
             description={t('reminders.description')}
             onClick={handleRemindersToggle}
           >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '18px' }}>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '11px',
+              marginTop: '20px',
+              paddingTop: '18px',
+              borderTop: '1px solid rgba(212, 130, 10, 0.14)',
+            }}>
               {/* Email sub-row */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'nowrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 {remindersEmailEnabled ? (
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
                     <rect width="16" height="16" rx="3" fill="#d4820a" />
                     <path d="M4 8l3 3 5-5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 ) : (
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
                     <rect x="0.5" y="0.5" width="15" height="15" rx="2.5" stroke="#9c8b6a" />
                   </svg>
                 )}
@@ -399,15 +406,14 @@ export default function NoShowsPage() {
                   fontSize: '13px',
                   fontWeight: 500,
                   color: '#1e1508',
-                  whiteSpace: 'nowrap',
                 }}>
                   {t('reminders.emailLabel')}
                 </span>
               </div>
 
               {/* WhatsApp sub-row — lock icon, not clickable */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'nowrap' }}>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#9c8b6a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#b8a585" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                   <rect x="3" y="7" width="10" height="7" rx="1" />
                   <path d="M5 7V5a3 3 0 0 1 6 0v2" />
                 </svg>
@@ -416,7 +422,6 @@ export default function NoShowsPage() {
                   fontSize: '13px',
                   fontWeight: 500,
                   color: '#9c8b6a',
-                  whiteSpace: 'nowrap',
                 }}>
                   {t('reminders.whatsappLabel')}
                 </span>
@@ -428,7 +433,7 @@ export default function NoShowsPage() {
           <Tile
             status={reconfirmationEnabled ? 'active-selected' : 'active-unselected'}
             icon={
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 <path d="m9 12 2 2 4-4" />
               </svg>
@@ -442,7 +447,7 @@ export default function NoShowsPage() {
           <Tile
             status={prepaidStatus}
             icon={
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M14.5 8a4 4 0 1 0 0 8" />
                 <path d="M7 11h6" />
@@ -459,7 +464,7 @@ export default function NoShowsPage() {
           <Tile
             status="coming-soon"
             icon={
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect width="20" height="14" x="2" y="5" rx="2" />
                 <line x1="2" x2="22" y1="10" y2="10" />
               </svg>
@@ -473,7 +478,7 @@ export default function NoShowsPage() {
           <Tile
             status="coming-soon"
             icon={
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 3v18" />
                 <path d="M3 12h18" />
                 <path d="m5.5 5.5 13 13" />
