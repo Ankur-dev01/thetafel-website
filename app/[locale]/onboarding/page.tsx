@@ -149,23 +149,23 @@ export default function ServicePickerPage() {
 
   const hintBannerStyle = {
     display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    padding: '14px 18px',
-    backgroundColor: 'rgba(212,130,10,0.08)',
-    border: '1px solid rgba(212,130,10,0.25)',
-    borderRadius: '12px',
+    alignItems: 'flex-start',
+    gap: '14px',
+    padding: '16px 22px',
+    backgroundColor: '#f7ead2',
+    borderRadius: '14px',
     fontFamily: 'var(--font-jost), sans-serif',
     fontSize: '14px',
-    fontWeight: 400,
-    color: '#5c4b2a',
-    lineHeight: 1.5,
+    fontWeight: 500,
+    color: '#1e1508',
+    lineHeight: 1.55,
   }
 
   const hintIconStyle = {
     flexShrink: 0,
-    width: '20px',
-    height: '20px',
+    width: '22px',
+    height: '22px',
+    marginTop: '2px',
     color: '#d4820a',
   }
 
