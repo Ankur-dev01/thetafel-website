@@ -61,46 +61,42 @@ function PlanCard({
   lockedBadge: string
   onSelect: () => void
 }) {
+  const [hovered, setHovered] = useState(false)
+
+  const cardShadow = locked
+    ? 'none'
+    : hovered
+      ? '0 2px 4px rgba(30, 21, 8, 0.04), 0 22px 48px rgba(212, 130, 10, 0.16)'
+      : '0 1px 2px rgba(30, 21, 8, 0.04), 0 16px 38px rgba(212, 130, 10, 0.12)'
+
   return (
     <div
       onClick={() => !locked && onSelect()}
+      onMouseEnter={() => { if (!locked) setHovered(true) }}
+      onMouseLeave={() => { if (!locked) setHovered(false) }}
       style={{
         position: 'relative',
-        padding: '24px',
-        borderRadius: '12px',
-        background: selected ? 'rgba(212,130,10,0.06)' : '#f8f2e6',
-        border: `2px solid ${selected ? '#d4820a' : 'transparent'}`,
+        padding: '30px 28px',
+        borderRadius: '18px',
+        backgroundColor: locked ? '#f5f0e3' : '#fbf6ec',
         cursor: locked ? 'not-allowed' : 'pointer',
-        opacity: locked ? 0.55 : 1,
-        transition: 'background 120ms ease, border-color 120ms ease',
+        opacity: locked ? 0.74 : 1,
+        transition: 'box-shadow 280ms ease, transform 220ms ease',
+        boxShadow: cardShadow,
+        transform: hovered && !locked ? 'translateY(-2px)' : 'translateY(0)',
+        display: 'flex',
+        flexDirection: 'column',
+        boxSizing: 'border-box' as const,
       }}
     >
-      {locked && (
-        <span style={{
-          position: 'absolute',
-          top: '12px',
-          right: '12px',
-          backgroundColor: '#d4820a',
-          color: '#fff',
-          fontFamily: 'var(--font-jost), Jost, sans-serif',
-          fontWeight: 600,
-          fontSize: '10px',
-          textTransform: 'uppercase' as const,
-          letterSpacing: '0.04em',
-          padding: '4px 10px',
-          borderRadius: '999px',
-        }}>
-          {lockedBadge}
-        </span>
-      )}
-
+      {/* Check chip — selected only */}
       {selected && (
         <div
           aria-hidden="true"
           style={{
             position: 'absolute',
-            top: '14px',
-            right: '14px',
+            top: '22px',
+            right: '22px',
             width: '22px',
             height: '22px',
             borderRadius: '50%',
@@ -110,50 +106,86 @@ function PlanCard({
             justifyContent: 'center',
           }}
         >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fdfaf5" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="20 6 9 17 4 12" />
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+            <path d="M2 5.5l2.5 2.5 4.5-5" stroke="#fdfaf5" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
       )}
 
+      {/* Locked pill */}
+      {locked && lockedBadge && (
+        <span style={{
+          position: 'absolute',
+          top: '22px',
+          right: '22px',
+          backgroundColor: '#d4820a',
+          color: '#fdfaf5',
+          fontFamily: 'var(--font-jost), Jost, sans-serif',
+          fontWeight: 600,
+          fontSize: '10px',
+          textTransform: 'uppercase' as const,
+          letterSpacing: '0.1em',
+          padding: '5px 10px',
+          borderRadius: '9999px',
+        }}>
+          {lockedBadge}
+        </span>
+      )}
+
+      {/* Title */}
       <div style={{
-        fontFamily: 'var(--font-jost), Jost, sans-serif',
-        fontWeight: 600,
-        fontSize: '18px',
+        fontFamily: 'var(--font-raleway), sans-serif',
+        fontWeight: 900,
+        fontSize: '28px',
         color: '#1e1508',
+        lineHeight: 1.02,
+        letterSpacing: '-0.025em',
       }}>
         {title}
       </div>
 
-      <div style={{ marginTop: '8px', display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+      {/* Price block */}
+      <div style={{ marginTop: '14px', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
         <span style={{
           fontFamily: 'var(--font-jost), Jost, sans-serif',
-          fontWeight: 600,
-          fontSize: '16px',
+          fontWeight: 700,
+          fontSize: '32px',
+          lineHeight: 1,
+          letterSpacing: '-0.01em',
           color: '#d4820a',
         }}>
           {price}
         </span>
         <span style={{
           fontFamily: 'var(--font-jost), Jost, sans-serif',
-          fontSize: '13px',
+          fontWeight: 400,
+          fontSize: '14px',
+          lineHeight: 1,
           color: '#9c8b6a',
         }}>
           {oneTimeLabel}
         </span>
       </div>
 
-      <ul style={{
-        marginTop: '16px',
-        marginBottom: 0,
-        paddingLeft: '18px',
-        color: '#1e1508',
-        fontFamily: 'var(--font-jost), Jost, sans-serif',
-        fontSize: '14px',
-        lineHeight: 1.6,
-      }}>
-        {bullets.map((b, i) => <li key={i}>{b}</li>)}
-      </ul>
+      {/* Features list */}
+      <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '11px' }}>
+        {bullets.map((b, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+              <path d="M2 7l3.5 3.5 6.5-7" stroke="#d4820a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span style={{
+              fontFamily: 'var(--font-jost), Jost, sans-serif',
+              fontWeight: 500,
+              fontSize: '13.5px',
+              lineHeight: 1.4,
+              color: '#1e1508',
+            }}>
+              {b}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -392,7 +424,7 @@ export default function QrSetupPage() {
         .qr-plan-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 16px;
+          gap: 20px;
         }
         @media (max-width: 720px) {
           .qr-plan-grid {
