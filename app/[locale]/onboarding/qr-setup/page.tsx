@@ -5,8 +5,7 @@ import { useParams, useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import StepFrame from '@/components/onboarding/shell/StepFrame'
 import SavedIndicator from '@/components/onboarding/shell/SavedIndicator'
-import ToggleField from '@/components/onboarding/fields/ToggleField'
-import SelectField from '@/components/onboarding/fields/SelectField'
+import type { ReactNode } from 'react'
 import {
   getVisibleSteps,
   getTotalWizardSteps,
@@ -38,6 +37,168 @@ const sectionSubStyle: React.CSSProperties = {
   fontWeight: 400,
   fontSize: '14px',
   color: '#9c8b6a',
+}
+
+// ---- TogglePill (inline) -----------------------------------------------------
+
+function TogglePill({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={value}
+      onClick={(e) => { e.stopPropagation(); onChange(!value) }}
+      style={{
+        position: 'relative',
+        width: '46px',
+        height: '26px',
+        borderRadius: '9999px',
+        backgroundColor: value ? '#d4820a' : '#dccdb1',
+        border: 'none',
+        cursor: 'pointer',
+        transition: 'background-color 220ms ease',
+        flexShrink: 0,
+        padding: 0,
+      }}
+    >
+      <span
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          top: '3px',
+          left: value ? '23px' : '3px',
+          width: '20px',
+          height: '20px',
+          borderRadius: '50%',
+          backgroundColor: '#fffefb',
+          boxShadow: '0 2px 5px rgba(30, 21, 8, 0.15)',
+          transition: 'left 220ms ease',
+        }}
+      />
+    </button>
+  )
+}
+
+// ---- LangDropdown (inline) ---------------------------------------------------
+
+function LangDropdown({
+  value,
+  options,
+  onChange,
+}: {
+  value: string
+  options: { value: string; label: string }[]
+  onChange: (v: string) => void
+}) {
+  const [hovered, setHovered] = useState(false)
+  const selectedLabel = options.find((o) => o.value === value)?.label ?? value
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: 'relative',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '9px 14px 9px 16px',
+        borderRadius: '11px',
+        backgroundColor: hovered ? '#f5ede0' : '#fdfaf5',
+        transition: 'background-color 220ms ease',
+        cursor: 'pointer',
+        flexShrink: 0,
+      }}
+    >
+      <span style={{
+        fontFamily: 'var(--font-jost), Jost, sans-serif',
+        fontWeight: 500,
+        fontSize: '13.5px',
+        color: '#1e1508',
+        pointerEvents: 'none',
+        whiteSpace: 'nowrap',
+      }}>
+        {selectedLabel}
+      </span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9c8b6a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, pointerEvents: 'none' }}>
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          opacity: 0,
+          cursor: 'pointer',
+        }}
+      >
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>{o.label}</option>
+        ))}
+      </select>
+    </div>
+  )
+}
+
+// ---- SettingRow (inline) -----------------------------------------------------
+
+function SettingRow({
+  title,
+  description,
+  control,
+  divider = false,
+  children,
+}: {
+  title: string
+  description?: string
+  control: ReactNode
+  divider?: boolean
+  children?: ReactNode
+}) {
+  return (
+    <div style={{
+      padding: '22px 26px',
+      borderTop: divider ? '1px solid rgba(30, 21, 8, 0.05)' : 'none',
+    }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '22px',
+      }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{
+            fontFamily: 'var(--font-jost), Jost, sans-serif',
+            fontWeight: 600,
+            fontSize: '15.5px',
+            lineHeight: 1.3,
+            letterSpacing: '-0.005em',
+            color: '#1e1508',
+            margin: 0,
+          }}>
+            {title}
+          </div>
+          {description && (
+            <div style={{
+              fontFamily: 'var(--font-jost), Jost, sans-serif',
+              fontWeight: 400,
+              fontSize: '13px',
+              lineHeight: 1.5,
+              color: '#9c8b6a',
+              margin: '5px 0 0 0',
+            }}>
+              {description}
+            </div>
+          )}
+        </div>
+        <div style={{ flexShrink: 0 }}>{control}</div>
+      </div>
+      {children}
+    </div>
+  )
 }
 
 // ---- PlanCard (inline) -------------------------------------------------------
@@ -463,128 +624,136 @@ export default function QrSetupPage() {
           </div>
         </section>
 
-        {/* Section 2 — Auto-accept */}
-        <section>
-          <h2 style={sectionHeadingStyle}>{t('autoAccept.heading')}</h2>
-          <ToggleField
-            label={t('autoAccept.label')}
+        {/* Combined settings card */}
+        <div style={{
+          backgroundColor: '#fbf6ec',
+          borderRadius: '18px',
+          boxShadow: '0 1px 2px rgba(30, 21, 8, 0.04), 0 16px 38px rgba(212, 130, 10, 0.12)',
+          overflow: 'hidden',
+        }}>
+          <SettingRow
+            title={t('autoAccept.label')}
             description={t('autoAccept.description')}
-            value={autoAccept}
-            onChange={handleAutoAcceptChange}
+            control={<TogglePill value={autoAccept} onChange={handleAutoAcceptChange} />}
           />
-        </section>
-
-        {/* Section 3 — Item notes */}
-        <section>
-          <h2 style={sectionHeadingStyle}>{t('itemNotes.heading')}</h2>
-          <ToggleField
-            label={t('itemNotes.label')}
+          <SettingRow
+            title={t('itemNotes.label')}
             description={t('itemNotes.description')}
-            value={itemNotesAllowed}
-            onChange={handleItemNotesChange}
+            divider
+            control={<TogglePill value={itemNotesAllowed} onChange={handleItemNotesChange} />}
           />
-        </section>
-
-        {/* Section 4 — Menu language */}
-        <section>
-          <h2 style={sectionHeadingStyle}>{t('language.heading')}</h2>
-          <p style={sectionSubStyle}>{t('language.sub')}</p>
-          <SelectField
-            label={t('language.label')}
-            value={menuLanguage}
-            onChange={handleMenuLanguageChange}
-            options={menuLanguageOptions}
-          />
-        </section>
-
-        {/* Section 5 — Accent colour */}
-        <section>
-          <h2 style={sectionHeadingStyle}>{t('accentColor.heading')}</h2>
-          <p style={sectionSubStyle}>{t('accentColor.sub')}</p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <label
-              htmlFor="qr-accent-color"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 12,
-                cursor: 'pointer',
-                position: 'relative',
-              }}
-            >
-              <span
-                aria-hidden
-                style={{
-                  display: 'inline-block',
-                  width: 44,
-                  height: 44,
-                  borderRadius: 10,
-                  backgroundColor: accentColor,
-                  border: '1px solid #f0e8d8',
-                  boxShadow: 'inset 0 0 0 2px #ffffff',
-                  flexShrink: 0,
-                }}
+          <SettingRow
+            title={t('language.heading')}
+            description={t('language.sub')}
+            divider
+            control={
+              <LangDropdown
+                value={menuLanguage}
+                options={menuLanguageOptions}
+                onChange={handleMenuLanguageChange}
               />
+            }
+          />
+          {/* Accent colour row — custom layout to fit the colour picker */}
+          <div style={{ padding: '22px 26px', borderTop: '1px solid rgba(30, 21, 8, 0.05)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '22px' }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{
+                  fontFamily: 'var(--font-jost), Jost, sans-serif',
+                  fontWeight: 600,
+                  fontSize: '15.5px',
+                  lineHeight: 1.3,
+                  letterSpacing: '-0.005em',
+                  color: '#1e1508',
+                  margin: 0,
+                }}>
+                  {t('accentColor.heading')}
+                </div>
+                <div style={{
+                  fontFamily: 'var(--font-jost), Jost, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '13px',
+                  lineHeight: 1.5,
+                  color: '#9c8b6a',
+                  margin: '5px 0 0 0',
+                }}>
+                  {t('accentColor.sub')}
+                </div>
+              </div>
+              {/* Colour swatch — clickable to open native colour picker */}
+              <label
+                htmlFor="qr-accent-color"
+                style={{ cursor: 'pointer', flexShrink: 0, position: 'relative' }}
+              >
+                <span
+                  aria-hidden
+                  style={{
+                    display: 'block',
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    backgroundColor: accentColor,
+                    border: '1px solid rgba(30, 21, 8, 0.08)',
+                    boxShadow: 'inset 0 0 0 2px #fffefb',
+                  }}
+                />
+                <input
+                  id="qr-accent-color"
+                  type="color"
+                  value={accentColor}
+                  onChange={(e) => handleAccentColorChange(e.target.value)}
+                  style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
+                />
+              </label>
+            </div>
+            {/* Hex input + reset */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px', flexWrap: 'wrap' }}>
               <input
-                id="qr-accent-color"
-                type="color"
-                value={accentColor}
-                onChange={(e) => handleAccentColorChange(e.target.value)}
+                type="text"
+                value={accentHexInput}
+                onChange={(e) => handleAccentHexInputChange(e.target.value)}
+                placeholder="#d4820a"
+                maxLength={7}
                 style={{
-                  position: 'absolute',
-                  width: 1,
-                  height: 1,
-                  opacity: 0,
-                  pointerEvents: 'none',
+                  width: '110px',
+                  padding: '9px 12px',
+                  backgroundColor: '#fdfaf5',
+                  borderRadius: '8px',
+                  border: accentColorError ? '1.5px solid #ef4444' : '1.5px solid rgba(30, 21, 8, 0.08)',
+                  fontFamily: "'Jost', monospace, sans-serif",
+                  fontSize: '13.5px',
+                  color: '#1e1508',
+                  outline: 'none',
                 }}
               />
-            </label>
-            <input
-              type="text"
-              value={accentHexInput}
-              onChange={(e) => handleAccentHexInputChange(e.target.value)}
-              placeholder="#d4820a"
-              maxLength={7}
-              style={{
-                width: '110px',
-                padding: '10px 12px',
-                background: '#f8f2e6',
-                borderRadius: '8px',
-                border: accentColorError ? '1.5px solid #ef4444' : '1.5px solid transparent',
-                fontFamily: "'Jost', monospace, sans-serif",
-                fontSize: '14px',
-                color: '#1e1508',
-                outline: 'none',
-              }}
-            />
-            <button
-              type="button"
-              onClick={() => handleAccentColorChange('#d4820a')}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#9c8b6a',
-                fontFamily: 'var(--font-jost), Jost, sans-serif',
-                fontSize: '13px',
-                cursor: 'pointer',
-                textDecoration: 'underline',
-                padding: 0,
-              }}
-            >
-              {t('accentColor.reset')}
-            </button>
+              <button
+                type="button"
+                onClick={() => handleAccentColorChange('#d4820a')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#9c8b6a',
+                  fontFamily: 'var(--font-jost), Jost, sans-serif',
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  padding: 0,
+                }}
+              >
+                {t('accentColor.reset')}
+              </button>
+              {accentColorError && (
+                <span style={{
+                  color: '#c64a4a',
+                  fontFamily: 'var(--font-jost), Jost, sans-serif',
+                  fontSize: '13px',
+                }}>
+                  {accentColorError}
+                </span>
+              )}
+            </div>
           </div>
-          {accentColorError && (
-            <p style={{
-              color: '#c64a4a',
-              fontFamily: 'var(--font-jost), Jost, sans-serif',
-              fontSize: '13px',
-              marginTop: '6px',
-            }}>
-              {accentColorError}
-            </p>
-          )}
-        </section>
+        </div>
 
       </div>
     </StepFrame>
