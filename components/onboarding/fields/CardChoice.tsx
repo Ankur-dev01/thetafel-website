@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 
 export type CardChoiceProps = {
@@ -27,101 +28,51 @@ export default function CardChoice({
   disabledReason,
   className,
 }: CardChoiceProps) {
+  const [hovered, setHovered] = useState(false);
   const isClickable = !disabled;
 
-  const cardStyle: React.CSSProperties = {
-    position: 'relative',
-    width: '100%',
-    padding: '20px 22px',
-    backgroundColor: selected ? '#fdfaf5' : '#f8f2e6',
-    border: '2px solid',
-    borderColor: selected ? accentColor : 'transparent',
-    borderRadius: '16px',
-    cursor: isClickable ? 'pointer' : 'not-allowed',
-    transition: 'all 0.2s',
-    textAlign: 'left',
-    fontFamily: 'var(--font-jost), Jost, sans-serif',
-    opacity: disabled ? 0.55 : 1,
-    boxShadow: selected ? `0 0 0 4px ${accentColor}1a` : 'none',
-  };
+  const cardShadow = disabled
+    ? 'none'
+    : hovered
+      ? '0 2px 4px rgba(30, 21, 8, 0.04), 0 22px 48px rgba(212, 130, 10, 0.16)'
+      : '0 1px 2px rgba(30, 21, 8, 0.04), 0 16px 38px rgba(212, 130, 10, 0.12)';
 
   return (
     <button
       type="button"
       className={className}
       onClick={isClickable ? onClick : undefined}
+      onMouseEnter={() => { if (isClickable) setHovered(true); }}
+      onMouseLeave={() => { if (isClickable) setHovered(false); }}
       aria-pressed={selected}
       aria-disabled={disabled || undefined}
       disabled={disabled}
-      style={cardStyle}
+      style={{
+        position: 'relative',
+        width: '100%',
+        padding: '28px 26px',
+        backgroundColor: disabled ? '#f5f0e3' : '#fbf6ec',
+        border: 'none',
+        outline: 'none',
+        borderRadius: '18px',
+        cursor: isClickable ? 'pointer' : 'not-allowed',
+        transition: 'box-shadow 280ms ease, transform 220ms ease',
+        textAlign: 'left',
+        opacity: disabled ? 0.74 : 1,
+        boxShadow: cardShadow,
+        transform: hovered && isClickable ? 'translateY(-2px)' : 'translateY(0)',
+        display: 'flex',
+        flexDirection: 'column',
+        boxSizing: 'border-box',
+      }}
     >
-      {icon && (
-        <div
-          style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: '12px',
-            backgroundColor: `${accentColor}1a`,
-            color: accentColor,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '12px',
-          }}
-        >
-          {icon}
-        </div>
-      )}
-
-      <div
-        style={{
-          fontSize: '17px',
-          fontWeight: 600,
-          color: '#1e1508',
-          lineHeight: 1.3,
-          marginBottom: description ? '6px' : 0,
-        }}
-      >
-        {title}
-      </div>
-
-      {description && (
-        <p
-          style={{
-            margin: 0,
-            fontSize: '13px',
-            fontWeight: 400,
-            color: '#9c8b6a',
-            lineHeight: 1.5,
-          }}
-        >
-          {description}
-        </p>
-      )}
-
-      {(badge || (disabled && disabledReason)) && (
-        <div
-          style={{
-            marginTop: '14px',
-            paddingTop: '14px',
-            borderTop: '1px solid rgba(156, 139, 106, 0.18)',
-            fontSize: '12px',
-            fontWeight: 600,
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            color: disabled ? '#9c8b6a' : accentColor,
-          }}
-        >
-          {disabled ? disabledReason : badge}
-        </div>
-      )}
-
+      {/* Check chip — selected only */}
       {selected && (
         <div
           style={{
             position: 'absolute',
-            top: '14px',
-            right: '14px',
+            top: '22px',
+            right: '22px',
             width: '22px',
             height: '22px',
             borderRadius: '50%',
@@ -132,19 +83,91 @@ export default function CardChoice({
           }}
           aria-hidden="true"
         >
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#fdfaf5"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="20 6 9 17 4 12" />
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+            <path d="M2 5.5l2.5 2.5 4.5-5" stroke="#fdfaf5" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
+      )}
+
+      {/* Coming-soon / disabled pill */}
+      {disabled && disabledReason && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '22px',
+            right: '22px',
+            backgroundColor: accentColor,
+            color: '#fdfaf5',
+            fontFamily: 'var(--font-jost), Jost, sans-serif',
+            fontWeight: 600,
+            fontSize: '10px',
+            textTransform: 'uppercase' as const,
+            letterSpacing: '0.1em',
+            padding: '5px 10px',
+            borderRadius: '9999px',
+          }}
+        >
+          {disabledReason}
+        </div>
+      )}
+
+      {/* Badge (non-disabled) */}
+      {badge && !disabled && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '22px',
+            right: '22px',
+            backgroundColor: accentColor,
+            color: '#fdfaf5',
+            fontFamily: 'var(--font-jost), Jost, sans-serif',
+            fontWeight: 600,
+            fontSize: '10px',
+            textTransform: 'uppercase' as const,
+            letterSpacing: '0.1em',
+            padding: '5px 10px',
+            borderRadius: '9999px',
+          }}
+        >
+          {badge}
+        </div>
+      )}
+
+      {/* Identity icon — bare, no container */}
+      {icon && (
+        <div style={{ color: disabled ? '#b8a585' : accentColor, lineHeight: 0 }}>
+          {icon}
+        </div>
+      )}
+
+      {/* Title */}
+      <div
+        style={{
+          fontFamily: 'var(--font-raleway), sans-serif',
+          fontWeight: 900,
+          fontSize: '28px',
+          color: disabled ? '#6f6353' : '#1e1508',
+          lineHeight: 1.02,
+          letterSpacing: '-0.025em',
+          marginTop: icon ? '32px' : 0,
+        }}
+      >
+        {title}
+      </div>
+
+      {/* Description */}
+      {description && (
+        <p
+          style={{
+            margin: '14px 0 0 0',
+            fontSize: '13.5px',
+            fontWeight: 400,
+            color: '#9c8b6a',
+            lineHeight: 1.55,
+          }}
+        >
+          {description}
+        </p>
       )}
     </button>
   );

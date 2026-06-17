@@ -172,7 +172,7 @@ export default function ServicePickerPage() {
   const gridStyle = {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-    gap: '16px',
+    gap: '20px',
   }
 
   // ─── Render ──────────────────────────────────────────────────────────────
@@ -219,18 +219,41 @@ export default function ServicePickerPage() {
             description={t('cards.reservations.description')}
             selected={flags.service_reservations_enabled}
             onClick={() => handleToggle('service_reservations_enabled')}
+            icon={
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+            }
           />
           <CardChoice
             title={t('cards.takeaway.title')}
             description={t('cards.takeaway.description')}
             selected={flags.service_takeaway_enabled}
             onClick={() => handleToggle('service_takeaway_enabled')}
+            icon={
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+              </svg>
+            }
           />
           <CardChoice
             title={t('cards.qr.title')}
             description={t('cards.qr.description')}
             selected={flags.service_qr_enabled}
             onClick={() => handleToggle('service_qr_enabled')}
+            icon={
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+                <path d="M14 14h3v3h-3zM17 17h3v3h-3zM14 20h3" />
+              </svg>
+            }
           />
           <CardChoice
             title={t('cards.delivery.title')}
@@ -239,6 +262,14 @@ export default function ServicePickerPage() {
             onClick={() => {}}
             disabled
             disabledReason={t('comingSoon')}
+            icon={
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="1" y="3" width="15" height="13" />
+                <path d="M16 8h4l3 3v5h-7V8z" />
+                <circle cx="5.5" cy="18.5" r="2.5" />
+                <circle cx="18.5" cy="18.5" r="2.5" />
+              </svg>
+            }
           />
         </div>
       </div>
