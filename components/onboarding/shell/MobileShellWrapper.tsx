@@ -151,7 +151,7 @@ export default function MobileShellWrapper({
       </aside>
 
       {/* Main content pane — pushed right by 280px on desktop to clear the fixed sidebar */}
-      <main className="md:pl-70 min-h-screen">
+      <main className="md:pl-70 min-h-screen onboarding-canvas">
         {children}
       </main>
     </div>

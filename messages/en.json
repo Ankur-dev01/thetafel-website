@@ -510,6 +510,9 @@
     "qrSetup": {
       "serviceTag": "QR",
       "heading": "QR setup & plan",
+      "headingBefore": "QR setup",
+      "headingConnector": "&",
+      "headingAfter": "plan",
       "sub": "Choose how QR ordering at the table works and which plan suits you.",
       "continue": "Continue",
       "saveFailed": "Save failed. Please try again.",

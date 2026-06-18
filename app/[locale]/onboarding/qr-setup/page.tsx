@@ -21,25 +21,7 @@ function parseBool(v: unknown, fallback: boolean): boolean {
   return fallback
 }
 
-// ---- Shared styles -----------------------------------------------------------
-
-const sectionHeadingStyle: React.CSSProperties = {
-  margin: '0 0 8px',
-  fontFamily: 'var(--font-jost), Jost, sans-serif',
-  fontWeight: 600,
-  fontSize: '18px',
-  color: '#1e1508',
-}
-
-const sectionSubStyle: React.CSSProperties = {
-  margin: '0 0 20px',
-  fontFamily: 'var(--font-jost), Jost, sans-serif',
-  fontWeight: 400,
-  fontSize: '14px',
-  color: '#9c8b6a',
-}
-
-// ---- TogglePill (inline) -----------------------------------------------------
+// ---- TogglePill (sage when on) -----------------------------------------------
 
 function TogglePill({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -50,10 +32,10 @@ function TogglePill({ value, onChange }: { value: boolean; onChange: (v: boolean
       onClick={(e) => { e.stopPropagation(); onChange(!value) }}
       style={{
         position: 'relative',
-        width: '46px',
-        height: '26px',
+        width: '44px',
+        height: '25px',
         borderRadius: '9999px',
-        backgroundColor: value ? '#d4820a' : '#dccdb1',
+        backgroundColor: value ? 'var(--sage)' : '#dccdb1',
         border: 'none',
         cursor: 'pointer',
         transition: 'background-color 220ms ease',
@@ -66,12 +48,12 @@ function TogglePill({ value, onChange }: { value: boolean; onChange: (v: boolean
         style={{
           position: 'absolute',
           top: '3px',
-          left: value ? '23px' : '3px',
-          width: '20px',
-          height: '20px',
+          left: value ? '22px' : '3px',
+          width: '19px',
+          height: '19px',
           borderRadius: '50%',
           backgroundColor: '#fffefb',
-          boxShadow: '0 2px 5px rgba(30, 21, 8, 0.15)',
+          boxShadow: '0 1.5px 4px rgba(30, 21, 8, 0.18)',
           transition: 'left 220ms ease',
         }}
       />
@@ -79,7 +61,7 @@ function TogglePill({ value, onChange }: { value: boolean; onChange: (v: boolean
   )
 }
 
-// ---- LangDropdown (inline) ---------------------------------------------------
+// ---- LangDropdown (chip style with native select) ----------------------------
 
 function LangDropdown({
   value,
@@ -91,7 +73,6 @@ function LangDropdown({
   onChange: (v: string) => void
 }) {
   const [hovered, setHovered] = useState(false)
-  const selectedLabel = options.find((o) => o.value === value)?.label ?? value
 
   return (
     <div
@@ -101,26 +82,38 @@ function LangDropdown({
         position: 'relative',
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '10px',
-        padding: '9px 14px 9px 16px',
+        padding: '8px 32px 8px 14px',
         borderRadius: '11px',
-        backgroundColor: hovered ? '#f5ede0' : '#fdfaf5',
-        transition: 'background-color 220ms ease',
+        backgroundColor: 'var(--cream)',
+        border: hovered ? '1.5px solid var(--amber)' : '1.5px solid var(--cream-border)',
+        fontFamily: 'var(--font-jost), Jost, sans-serif',
+        fontWeight: 600,
+        fontSize: '12.5px',
+        color: 'var(--earth)',
         cursor: 'pointer',
         flexShrink: 0,
+        transition: 'border-color 200ms ease',
+        whiteSpace: 'nowrap',
       }}
     >
-      <span style={{
-        fontFamily: 'var(--font-jost), Jost, sans-serif',
-        fontWeight: 500,
-        fontSize: '13.5px',
-        color: '#1e1508',
-        pointerEvents: 'none',
-        whiteSpace: 'nowrap',
-      }}>
-        {selectedLabel}
-      </span>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9c8b6a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, pointerEvents: 'none' }}>
+      {options.find((o) => o.value === value)?.label ?? value}
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="var(--stone)"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{
+          position: 'absolute',
+          right: '10px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          pointerEvents: 'none',
+        }}
+      >
         <polyline points="6 9 12 15 18 9" />
       </svg>
       <select
@@ -133,7 +126,9 @@ function LangDropdown({
           height: '100%',
           opacity: 0,
           cursor: 'pointer',
-        }}
+          appearance: 'none',
+          WebkitAppearance: 'none',
+        } as React.CSSProperties}
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>{o.label}</option>
@@ -143,67 +138,97 @@ function LangDropdown({
   )
 }
 
-// ---- SettingRow (inline) -----------------------------------------------------
+// ---- IconTile ----------------------------------------------------------------
 
-function SettingRow({
-  title,
-  description,
-  control,
-  divider = false,
-  children,
-}: {
-  title: string
-  description?: string
-  control: ReactNode
-  divider?: boolean
-  children?: ReactNode
-}) {
+function IconTile({ bg, color, children }: { bg: string; color: string; children: ReactNode }) {
   return (
     <div style={{
-      padding: '22px 26px',
-      borderTop: divider ? '1px solid rgba(30, 21, 8, 0.05)' : 'none',
+      width: 40,
+      height: 40,
+      borderRadius: 11,
+      backgroundColor: bg,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexShrink: 0,
     }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '22px',
-      }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{
-            fontFamily: 'var(--font-jost), Jost, sans-serif',
-            fontWeight: 600,
-            fontSize: '15.5px',
-            lineHeight: 1.3,
-            letterSpacing: '-0.005em',
-            color: '#1e1508',
-            margin: 0,
-          }}>
-            {title}
-          </div>
-          {description && (
-            <div style={{
-              fontFamily: 'var(--font-jost), Jost, sans-serif',
-              fontWeight: 400,
-              fontSize: '13px',
-              lineHeight: 1.5,
-              color: '#9c8b6a',
-              margin: '5px 0 0 0',
-            }}>
-              {description}
-            </div>
-          )}
-        </div>
-        <div style={{ flexShrink: 0 }}>{control}</div>
+      <div style={{ color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {children}
       </div>
-      {children}
     </div>
   )
 }
 
-// ---- PlanCard (inline) -------------------------------------------------------
+// ---- SettingCard (standalone lifted card per row) ----------------------------
 
-function PlanCard({
+function SettingCard({
+  iconTile,
+  title,
+  description,
+  control,
+  extra,
+}: {
+  iconTile: ReactNode
+  title: string
+  description?: string
+  control: ReactNode
+  extra?: ReactNode
+}) {
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: extra ? 'flex-start' : 'center',
+        gap: '14px',
+        backgroundColor: 'var(--cream-card)',
+        borderRadius: '14px',
+        padding: '16px 18px',
+        boxShadow: hovered
+          ? '0 2px 6px rgba(30, 21, 8, 0.05), 0 8px 20px rgba(212, 130, 10, 0.06)'
+          : '0 1px 2px rgba(30, 21, 8, 0.04)',
+        transition: 'box-shadow 220ms ease',
+      }}
+    >
+      <div style={{ paddingTop: extra ? '2px' : 0 }}>{iconTile}</div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          fontFamily: 'var(--font-jost), Jost, sans-serif',
+          fontWeight: 700,
+          fontSize: '14px',
+          lineHeight: 1.25,
+          letterSpacing: '-0.005em',
+          color: 'var(--earth)',
+          margin: 0,
+        }}>
+          {title}
+        </div>
+        {description && (
+          <div style={{
+            fontFamily: 'var(--font-jost), Jost, sans-serif',
+            fontWeight: 400,
+            fontSize: '12px',
+            lineHeight: 1.45,
+            color: 'var(--stone)',
+            margin: '3px 0 0 0',
+          }}>
+            {description}
+          </div>
+        )}
+        {extra && <div style={{ marginTop: '12px' }}>{extra}</div>}
+      </div>
+      <div style={{ flexShrink: 0, paddingTop: extra ? '2px' : 0 }}>{control}</div>
+    </div>
+  )
+}
+
+// ---- TicketCard (ticket-style plan card) ------------------------------------
+
+function TicketCard({
+  variant,
   title,
   price,
   oneTimeLabel,
@@ -213,6 +238,7 @@ function PlanCard({
   lockedBadge,
   onSelect,
 }: {
+  variant: 'basic' | 'premium'
   title: string
   price: string
   oneTimeLabel: string
@@ -224,11 +250,28 @@ function PlanCard({
 }) {
   const [hovered, setHovered] = useState(false)
 
+  const isBasic = variant === 'basic'
+
   const cardShadow = locked
     ? 'none'
     : hovered
-      ? '0 2px 4px rgba(30, 21, 8, 0.04), 0 22px 48px rgba(212, 130, 10, 0.16)'
-      : '0 1px 2px rgba(30, 21, 8, 0.04), 0 16px 38px rgba(212, 130, 10, 0.12)'
+      ? isBasic
+        ? '0 1px 2px rgba(30, 21, 8, 0.04), 0 18px 42px rgba(212, 130, 10, 0.14)'
+        : '0 1px 2px rgba(30, 21, 8, 0.04), 0 18px 42px rgba(212, 130, 10, 0.24)'
+      : isBasic
+        ? '0 1px 2px rgba(30, 21, 8, 0.04), 0 14px 32px rgba(212, 130, 10, 0.10)'
+        : '0 1px 2px rgba(30, 21, 8, 0.04), 0 14px 32px rgba(212, 130, 10, 0.18)'
+
+  const bandBg = isBasic ? 'var(--sage)' : 'var(--amber)'
+  const bandTextColor = isBasic ? 'var(--sage-bg)' : 'var(--earth)'
+  const bandLabel = locked ? lockedBadge : isBasic ? 'BASIC' : 'PREMIUM · POPULAR'
+  const bandCheckStroke = isBasic ? '#eef3e0' : '#1e1508'
+
+  const perfBorder = isBasic ? 'rgba(212, 130, 10, 0.22)' : 'rgba(212, 130, 10, 0.32)'
+
+  const checkBg = isBasic ? 'var(--sage-bg)' : 'rgba(212, 130, 10, 0.18)'
+  const checkStroke = isBasic ? 'var(--sage)' : 'var(--amber)'
+  const featureColor = isBasic ? '#6f6353' : 'var(--stone-dim)'
 
   return (
     <div
@@ -237,115 +280,152 @@ function PlanCard({
       onMouseLeave={() => { if (!locked) setHovered(false) }}
       style={{
         position: 'relative',
-        padding: '30px 28px',
-        borderRadius: '18px',
-        backgroundColor: locked ? '#f5f0e3' : '#fbf6ec',
+        borderRadius: '16px',
+        overflow: 'hidden',
         cursor: locked ? 'not-allowed' : 'pointer',
         opacity: locked ? 0.74 : 1,
-        transition: 'box-shadow 280ms ease, transform 220ms ease',
+        transition: 'transform 220ms ease, box-shadow 220ms ease',
+        transform: hovered && !locked ? 'translateY(-3px)' : 'translateY(0)',
         boxShadow: cardShadow,
-        transform: hovered && !locked ? 'translateY(-2px)' : 'translateY(0)',
-        display: 'flex',
-        flexDirection: 'column',
+        backgroundColor: isBasic ? 'var(--cream-card)' : 'var(--earth)',
         boxSizing: 'border-box' as const,
       }}
     >
-      {/* Check chip — selected only */}
-      {selected && (
-        <div
-          aria-hidden="true"
-          style={{
-            position: 'absolute',
-            top: '22px',
-            right: '22px',
-            width: '22px',
-            height: '22px',
-            borderRadius: '50%',
-            backgroundColor: '#d4820a',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-            <path d="M2 5.5l2.5 2.5 4.5-5" stroke="#fdfaf5" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
-      )}
-
-      {/* Locked pill */}
-      {locked && lockedBadge && (
-        <span style={{
-          position: 'absolute',
-          top: '22px',
-          right: '22px',
-          backgroundColor: '#d4820a',
-          color: '#fdfaf5',
-          fontFamily: 'var(--font-jost), Jost, sans-serif',
-          fontWeight: 600,
-          fontSize: '10px',
-          textTransform: 'uppercase' as const,
-          letterSpacing: '0.1em',
-          padding: '5px 10px',
-          borderRadius: '9999px',
-        }}>
-          {lockedBadge}
-        </span>
-      )}
-
-      {/* Title */}
+      {/* Top band */}
       <div style={{
-        fontFamily: 'var(--font-raleway), sans-serif',
-        fontWeight: 900,
-        fontSize: '28px',
-        color: '#1e1508',
-        lineHeight: 1.02,
-        letterSpacing: '-0.025em',
+        padding: '9px 18px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: bandBg,
       }}>
-        {title}
-      </div>
-
-      {/* Price block */}
-      <div style={{ marginTop: '14px', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
         <span style={{
           fontFamily: 'var(--font-jost), Jost, sans-serif',
           fontWeight: 700,
-          fontSize: '32px',
-          lineHeight: 1,
-          letterSpacing: '-0.01em',
-          color: '#d4820a',
+          fontSize: '9.5px',
+          letterSpacing: '0.16em',
+          textTransform: 'uppercase' as const,
+          color: bandTextColor,
         }}>
-          {price}
+          {bandLabel}
         </span>
-        <span style={{
-          fontFamily: 'var(--font-jost), Jost, sans-serif',
-          fontWeight: 400,
-          fontSize: '14px',
-          lineHeight: 1,
-          color: '#9c8b6a',
-        }}>
-          {oneTimeLabel}
-        </span>
+        {selected ? (
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '4px',
+            fontFamily: 'var(--font-jost), Jost, sans-serif',
+            fontWeight: 700,
+            fontSize: '9.5px',
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase' as const,
+            color: bandTextColor,
+          }}>
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+              <path d="M2 5.5l2.5 2.5 4.5-5" stroke={bandCheckStroke} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            SELECTED
+          </span>
+        ) : (
+          <span aria-hidden="true" style={{ display: 'inline-block', height: '11px' }} />
+        )}
       </div>
 
-      {/* Features list */}
-      <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '11px' }}>
-        {bullets.map((b, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
-              <path d="M2 7l3.5 3.5 6.5-7" stroke="#d4820a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <span style={{
-              fontFamily: 'var(--font-jost), Jost, sans-serif',
-              fontWeight: 500,
-              fontSize: '13.5px',
-              lineHeight: 1.4,
-              color: '#1e1508',
-            }}>
-              {b}
-            </span>
-          </div>
-        ))}
+      {/* Card body */}
+      <div style={{ padding: '20px 20px 22px' }}>
+        {/* Title */}
+        <div style={{
+          fontFamily: 'var(--font-raleway), sans-serif',
+          fontWeight: 900,
+          fontSize: '22px',
+          letterSpacing: '-0.025em',
+          lineHeight: 1,
+          margin: '0 0 11px 0',
+          color: isBasic ? 'var(--earth)' : 'var(--cream-card)',
+        }}>
+          {title}
+        </div>
+
+        {/* Price block */}
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+          <span style={{
+            fontFamily: 'var(--font-jost), Jost, sans-serif',
+            fontWeight: 700,
+            fontSize: '28px',
+            letterSpacing: '-0.015em',
+            lineHeight: 1,
+            color: 'var(--amber)',
+          }}>
+            {price}
+          </span>
+          <span style={{
+            fontFamily: 'var(--font-jost), Jost, sans-serif',
+            fontWeight: 400,
+            fontSize: '11.5px',
+            color: 'var(--stone)',
+          }}>
+            {oneTimeLabel}
+          </span>
+        </div>
+
+        {/* Perforation — dashed line with punched-out notch circles */}
+        <div style={{ position: 'relative', margin: '18px -20px' }}>
+          <div style={{ borderTop: `1.5px dashed ${perfBorder}` }} />
+          <div
+            className="notch-canvas"
+            style={{
+              position: 'absolute',
+              width: 18,
+              height: 18,
+              borderRadius: '50%',
+              top: -9,
+              left: -9,
+            }}
+          />
+          <div
+            className="notch-canvas"
+            style={{
+              position: 'absolute',
+              width: 18,
+              height: 18,
+              borderRadius: '50%',
+              top: -9,
+              right: -9,
+            }}
+          />
+        </div>
+
+        {/* Feature list */}
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '9px' }}>
+          {bullets.map((b, i) => (
+            <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '9px' }}>
+              <div style={{
+                width: 17,
+                height: 17,
+                borderRadius: '50%',
+                backgroundColor: checkBg,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: '1px',
+                flexShrink: 0,
+              }}>
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none">
+                  <polyline points="20 6 9 17 4 12" stroke={checkStroke} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <span style={{
+                fontFamily: 'var(--font-jost), Jost, sans-serif',
+                fontWeight: 400,
+                fontSize: '12.5px',
+                lineHeight: 1.4,
+                color: featureColor,
+              }}>
+                {b}
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   )
@@ -567,12 +647,11 @@ export default function QrSetupPage() {
   return (
     <StepFrame
       locale={locale}
-      showProgress
+      showProgress={false}
+      hideDefaultHeader
       currentStepDisplayNumber={currentDisplayNum}
       totalSteps={totalSteps}
-      serviceTag={t('serviceTag')}
       heading={t('heading')}
-      subHeading={t('sub')}
       backHref={backHref}
       canContinue={qrPlan !== null}
       continueLabel={t('continue')}
@@ -585,129 +664,277 @@ export default function QrSetupPage() {
         .qr-plan-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 20px;
+          gap: 14px;
+          margin-bottom: 24px;
         }
-        @media (max-width: 720px) {
+        @media (max-width: 600px) {
           .qr-plan-grid {
             grid-template-columns: 1fr;
           }
         }
       `}</style>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-
-        {/* Section 1 — Plan selection */}
-        <section>
-          <h2 style={sectionHeadingStyle}>{t('plansHeading')}</h2>
-          <p style={sectionSubStyle}>{t('plansSub')}</p>
-          <div className="qr-plan-grid">
-            <PlanCard
-              title={t('plans.basic.title')}
-              price={t('plans.basic.price')}
-              oneTimeLabel={t('oneTime')}
-              bullets={basicBullets}
-              selected={qrPlan === 'basic'}
-              locked={false}
-              lockedBadge=""
-              onSelect={() => handlePlanSelect('basic')}
-            />
-            <PlanCard
-              title={t('plans.premium.title')}
-              price={t('plans.premium.price')}
-              oneTimeLabel={t('oneTime')}
-              bullets={premiumBullets}
-              selected={qrPlan === 'premium'}
-              locked={premiumLocked}
-              lockedBadge={t('premiumLocked')}
-              onSelect={() => handlePlanSelect('premium')}
-            />
+      {/* ── Header band ──────────────────────────────────────────────────── */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        marginBottom: '36px',
+        gap: '16px',
+      }}>
+        {/* Left: pill + title + description */}
+        <div>
+          {/* Step pill */}
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '7px',
+            backgroundColor: 'var(--earth)',
+            color: 'var(--amber)',
+            fontFamily: 'var(--font-jost), Jost, sans-serif',
+            fontWeight: 700,
+            fontSize: '9.5px',
+            letterSpacing: '0.16em',
+            textTransform: 'uppercase',
+            padding: '6px 12px',
+            borderRadius: '9999px',
+            marginBottom: '14px',
+          }}>
+            <span style={{ width: 6, height: 6, borderRadius: '9999px', backgroundColor: 'var(--amber)', flexShrink: 0 }} />
+            {locale === 'en'
+              ? `Step ${currentDisplayNum} of ${totalSteps} — QR`
+              : `Stap ${currentDisplayNum} van ${totalSteps} — QR`}
           </div>
-        </section>
 
-        {/* Combined settings card */}
-        <div style={{
-          backgroundColor: '#fbf6ec',
-          borderRadius: '18px',
-          boxShadow: '0 1px 2px rgba(30, 21, 8, 0.04), 0 16px 38px rgba(212, 130, 10, 0.12)',
-          overflow: 'hidden',
-        }}>
-          <SettingRow
-            title={t('autoAccept.label')}
-            description={t('autoAccept.description')}
-            control={<TogglePill value={autoAccept} onChange={handleAutoAcceptChange} />}
-          />
-          <SettingRow
-            title={t('itemNotes.label')}
-            description={t('itemNotes.description')}
-            divider
-            control={<TogglePill value={itemNotesAllowed} onChange={handleItemNotesChange} />}
-          />
-          <SettingRow
-            title={t('language.heading')}
-            description={t('language.sub')}
-            divider
-            control={
-              <LangDropdown
-                value={menuLanguage}
-                options={menuLanguageOptions}
-                onChange={handleMenuLanguageChange}
-              />
-            }
-          />
-          {/* Accent colour row — custom layout to fit the colour picker */}
-          <div style={{ padding: '22px 26px', borderTop: '1px solid rgba(30, 21, 8, 0.05)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '22px' }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{
-                  fontFamily: 'var(--font-jost), Jost, sans-serif',
-                  fontWeight: 600,
-                  fontSize: '15.5px',
-                  lineHeight: 1.3,
-                  letterSpacing: '-0.005em',
-                  color: '#1e1508',
-                  margin: 0,
-                }}>
-                  {t('accentColor.heading')}
-                </div>
-                <div style={{
-                  fontFamily: 'var(--font-jost), Jost, sans-serif',
-                  fontWeight: 400,
-                  fontSize: '13px',
-                  lineHeight: 1.5,
-                  color: '#9c8b6a',
-                  margin: '5px 0 0 0',
-                }}>
-                  {t('accentColor.sub')}
-                </div>
-              </div>
-              {/* Colour swatch — clickable to open native colour picker */}
-              <label
-                htmlFor="qr-accent-color"
-                style={{ cursor: 'pointer', flexShrink: 0, position: 'relative' }}
-              >
-                <span
-                  aria-hidden
+          {/* Title */}
+          <h1 style={{
+            fontFamily: 'var(--font-raleway), Raleway, sans-serif',
+            fontWeight: 900,
+            fontSize: '42px',
+            lineHeight: 0.96,
+            letterSpacing: '-0.035em',
+            color: 'var(--earth)',
+            margin: '0 0 10px 0',
+          }}>
+            {t('headingBefore')}{' '}
+            <span style={{ color: 'var(--amber)' }}>{t('headingConnector')}</span>
+            {' '}{t('headingAfter')}
+          </h1>
+
+          {/* Description */}
+          <p style={{
+            fontFamily: 'var(--font-jost), Jost, sans-serif',
+            fontWeight: 400,
+            fontSize: '13px',
+            lineHeight: 1.55,
+            color: 'var(--stone)',
+            maxWidth: '300px',
+            margin: 0,
+          }}>
+            {t('sub')}
+          </p>
+        </div>
+
+        {/* Right: step counter + progress dots */}
+        <div style={{ flexShrink: 0, textAlign: 'right' }}>
+          <div style={{
+            fontFamily: 'var(--font-raleway), Raleway, sans-serif',
+            fontWeight: 900,
+            fontSize: '32px',
+            letterSpacing: '-0.02em',
+            lineHeight: 1,
+            color: 'var(--earth)',
+          }}>
+            {String(currentDisplayNum).padStart(2, '0')}
+            <span style={{
+              fontSize: '17px',
+              color: 'var(--stone-dim)',
+              letterSpacing: '-0.01em',
+            }}>
+              /{String(totalSteps).padStart(2, '0')}
+            </span>
+          </div>
+
+          {/* Progress segments */}
+          <div style={{
+            display: 'flex',
+            gap: '3px',
+            justifyContent: 'flex-end',
+            marginTop: '10px',
+          }}>
+            {Array.from({ length: totalSteps }, (_, i) => {
+              const n = i + 1
+              const isCurrent = n === currentDisplayNum
+              const isDone = n < currentDisplayNum
+              return (
+                <div
+                  key={i}
                   style={{
-                    display: 'block',
-                    width: 40,
-                    height: 40,
-                    borderRadius: 10,
-                    backgroundColor: accentColor,
-                    border: '1px solid rgba(30, 21, 8, 0.08)',
-                    boxShadow: 'inset 0 0 0 2px #fffefb',
+                    width: 7,
+                    height: 7,
+                    borderRadius: 2,
+                    backgroundColor: isCurrent
+                      ? 'var(--sage)'
+                      : isDone
+                        ? 'var(--amber)'
+                        : 'var(--cream-border)',
                   }}
                 />
-                <input
-                  id="qr-accent-color"
-                  type="color"
-                  value={accentColor}
-                  onChange={(e) => handleAccentColorChange(e.target.value)}
-                  style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
-                />
-              </label>
-            </div>
-            {/* Hex input + reset */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px', flexWrap: 'wrap' }}>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Plan section label ───────────────────────────────────────────── */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'baseline',
+        gap: '10px',
+        marginBottom: '14px',
+      }}>
+        <span style={{
+          fontFamily: 'var(--font-raleway), Raleway, sans-serif',
+          fontWeight: 900,
+          fontSize: '18px',
+          letterSpacing: '-0.02em',
+          color: 'var(--earth)',
+        }}>
+          {t('plansHeading')}
+        </span>
+        <span style={{
+          fontFamily: 'var(--font-jost), Jost, sans-serif',
+          fontWeight: 400,
+          fontSize: '11.5px',
+          color: 'var(--stone)',
+        }}>
+          {t('plansSub')}
+        </span>
+      </div>
+
+      {/* ── Ticket plan cards ────────────────────────────────────────────── */}
+      <div className="qr-plan-grid">
+        <TicketCard
+          variant="basic"
+          title={t('plans.basic.title')}
+          price={t('plans.basic.price')}
+          oneTimeLabel={t('oneTime')}
+          bullets={basicBullets}
+          selected={qrPlan === 'basic'}
+          locked={false}
+          lockedBadge=""
+          onSelect={() => handlePlanSelect('basic')}
+        />
+        <TicketCard
+          variant="premium"
+          title={t('plans.premium.title')}
+          price={t('plans.premium.price')}
+          oneTimeLabel={t('oneTime')}
+          bullets={premiumBullets}
+          selected={qrPlan === 'premium'}
+          locked={premiumLocked}
+          lockedBadge={t('premiumLocked')}
+          onSelect={() => handlePlanSelect('premium')}
+        />
+      </div>
+
+      {/* ── Settings rows (icon-tiled standalone cards) ───────────────────── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+
+        {/* Auto-accept — sage tile (confirmed action) */}
+        <SettingCard
+          iconTile={
+            <IconTile bg="var(--sage-bg)" color="var(--sage)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </IconTile>
+          }
+          title={t('autoAccept.label')}
+          description={t('autoAccept.description')}
+          control={<TogglePill value={autoAccept} onChange={handleAutoAcceptChange} />}
+        />
+
+        {/* Item notes — burgundy tile (input / customization) */}
+        <SettingCard
+          iconTile={
+            <IconTile bg="var(--burgundy-bg)" color="var(--burgundy)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+              </svg>
+            </IconTile>
+          }
+          title={t('itemNotes.label')}
+          description={t('itemNotes.description')}
+          control={<TogglePill value={itemNotesAllowed} onChange={handleItemNotesChange} />}
+        />
+
+        {/* Menu language — amber tile (global / configuration) */}
+        <SettingCard
+          iconTile={
+            <IconTile bg="var(--amber-bg)" color="var(--amber-deep)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+              </svg>
+            </IconTile>
+          }
+          title={t('language.heading')}
+          description={t('language.sub')}
+          control={
+            <LangDropdown
+              value={menuLanguage}
+              options={menuLanguageOptions}
+              onChange={handleMenuLanguageChange}
+            />
+          }
+        />
+
+        {/* Accent colour — amber tile (visual / brand config) */}
+        <SettingCard
+          iconTile={
+            <IconTile bg="var(--amber-bg)" color="var(--amber-deep)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="13.5" cy="6.5" r="0.5" fill="currentColor" />
+                <circle cx="17.5" cy="10.5" r="0.5" fill="currentColor" />
+                <circle cx="8.5" cy="7.5" r="0.5" fill="currentColor" />
+                <circle cx="6.5" cy="12.5" r="0.5" fill="currentColor" />
+                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+              </svg>
+            </IconTile>
+          }
+          title={t('accentColor.heading')}
+          description={t('accentColor.sub')}
+          control={
+            <label
+              htmlFor="qr-accent-color"
+              style={{ cursor: 'pointer', flexShrink: 0, position: 'relative' }}
+            >
+              <span
+                aria-hidden
+                style={{
+                  display: 'block',
+                  width: 40,
+                  height: 40,
+                  borderRadius: 10,
+                  backgroundColor: accentColor,
+                  border: '1px solid rgba(30, 21, 8, 0.08)',
+                  boxShadow: 'inset 0 0 0 2px #fffefb',
+                }}
+              />
+              <input
+                id="qr-accent-color"
+                type="color"
+                value={accentColor}
+                onChange={(e) => handleAccentColorChange(e.target.value)}
+                style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
+              />
+            </label>
+          }
+          extra={
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
               <input
                 type="text"
                 value={accentHexInput}
@@ -717,12 +944,12 @@ export default function QrSetupPage() {
                 style={{
                   width: '110px',
                   padding: '9px 12px',
-                  backgroundColor: '#fdfaf5',
+                  backgroundColor: 'var(--cream)',
                   borderRadius: '8px',
                   border: accentColorError ? '1.5px solid #ef4444' : '1.5px solid rgba(30, 21, 8, 0.08)',
                   fontFamily: "'Jost', monospace, sans-serif",
                   fontSize: '13.5px',
-                  color: '#1e1508',
+                  color: 'var(--earth)',
                   outline: 'none',
                 }}
               />
@@ -732,7 +959,7 @@ export default function QrSetupPage() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#9c8b6a',
+                  color: 'var(--stone)',
                   fontFamily: 'var(--font-jost), Jost, sans-serif',
                   fontSize: '13px',
                   cursor: 'pointer',
@@ -752,9 +979,8 @@ export default function QrSetupPage() {
                 </span>
               )}
             </div>
-          </div>
-        </div>
-
+          }
+        />
       </div>
     </StepFrame>
   )

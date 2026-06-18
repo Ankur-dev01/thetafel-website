@@ -510,6 +510,9 @@
     "qrSetup": {
       "serviceTag": "QR",
       "heading": "QR-instellingen en abonnement",
+      "headingBefore": "QR-instellingen",
+      "headingConnector": "en",
+      "headingAfter": "abonnement",
       "sub": "Kies hoe je QR-bestellen aan tafel werkt en welk abonnement bij je past.",
       "continue": "Doorgaan",
       "saveFailed": "Opslaan mislukt. Probeer het opnieuw.",

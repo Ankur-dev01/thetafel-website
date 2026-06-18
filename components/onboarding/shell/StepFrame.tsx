@@ -7,6 +7,7 @@ import ErrorBanner from './ErrorBanner';
 type StepFrameProps = {
   locale: 'nl' | 'en';
   showProgress?: boolean;
+  hideDefaultHeader?: boolean;
   currentStepDisplayNumber: number;
   totalSteps: number;
   serviceTag?: string;
@@ -29,6 +30,7 @@ type StepFrameProps = {
 export default function StepFrame({
   locale,
   showProgress = true,
+  hideDefaultHeader = false,
   currentStepDisplayNumber,
   totalSteps,
   serviceTag,
@@ -76,7 +78,7 @@ export default function StepFrame({
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#fdfaf5]">
+    <div className="flex flex-col min-h-screen bg-transparent">
       {showProgress && (
         <ProgressBar
           currentStep={currentStepDisplayNumber}
@@ -87,39 +89,41 @@ export default function StepFrame({
 
       <div className="flex-1 flex flex-col px-6 md:px-12 lg:px-16 py-10">
         <div className="w-full max-w-[720px] mx-auto flex-1 flex flex-col gap-8">
-          <div className="flex flex-col gap-3">
-            {showProgress && (
-              <div
-                className="text-[10px] uppercase tracking-[0.22em] text-[#d4820a]"
+          {!hideDefaultHeader && (
+            <div className="flex flex-col gap-3">
+              {showProgress && (
+                <div
+                  className="text-[10px] uppercase tracking-[0.22em] text-[#d4820a]"
+                  style={{
+                    fontFamily: 'var(--font-jost), Jost, sans-serif',
+                    fontWeight: 600,
+                  }}
+                >
+                  {eyebrow}
+                </div>
+              )}
+              <h1
+                className="text-[32px] md:text-[36px] leading-tight text-[#1e1508]"
                 style={{
-                  fontFamily: 'var(--font-jost), Jost, sans-serif',
-                  fontWeight: 600,
+                  fontFamily: 'var(--font-raleway), Raleway, sans-serif',
+                  fontWeight: 900,
                 }}
               >
-                {eyebrow}
-              </div>
-            )}
-            <h1
-              className="text-[32px] md:text-[36px] leading-tight text-[#1e1508]"
-              style={{
-                fontFamily: 'var(--font-raleway), Raleway, sans-serif',
-                fontWeight: 900,
-              }}
-            >
-              {heading}
-            </h1>
-            {subHeading && (
-              <p
-                className="text-[15px] md:text-[16px] text-[#9c8b6a] leading-relaxed max-w-[600px]"
-                style={{
-                  fontFamily: 'var(--font-jost), Jost, sans-serif',
-                  fontWeight: 300,
-                }}
-              >
-                {subHeading}
-              </p>
-            )}
-          </div>
+                {heading}
+              </h1>
+              {subHeading && (
+                <p
+                  className="text-[15px] md:text-[16px] text-[#9c8b6a] leading-relaxed max-w-150"
+                  style={{
+                    fontFamily: 'var(--font-jost), Jost, sans-serif',
+                    fontWeight: 300,
+                  }}
+                >
+                  {subHeading}
+                </p>
+              )}
+            </div>
+          )}
 
           {error && <ErrorBanner message={error} onDismiss={onDismissError} />}
 

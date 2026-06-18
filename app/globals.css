@@ -4,7 +4,9 @@
 @source "../lib/**/*.{js,ts,jsx,tsx,mdx}";
 
 :root {
+  /* Core palette — existing */
   --cream: #fdfaf5;
+  --cream-card: #fbf6ec;
   --warm: #f8f2e6;
   --warm2: #f0e8d8;
   --amber: #d4820a;
@@ -17,6 +19,44 @@
   --night: #0f0d08;
   --border: rgba(156, 139, 106, 0.18);
   --green: #25d366;
+
+  /* Brand v2 — cream ramp */
+  --cream-hover: #f5ede0;
+  --cream-border: #ebdcbc;
+
+  /* Brand v2 — amber ramp */
+  --amber-bg: #fcf0d8;
+  --amber-hover: #e8932a;
+  --amber-deep: #8a5208;
+
+  /* Brand v2 — neutrals */
+  --stone-dim: #c2b594;
+  --stone-body: #6f6353;
+
+  /* Brand v2 — semantic sage (verified / confirmed action) */
+  --sage: #5d8a3a;
+  --sage-bg: #eef3e0;
+
+  /* Brand v2 — semantic burgundy (input / notes / destructive) */
+  --burgundy: #a13434;
+  --burgundy-bg: #f7e8e6;
+
+  /* Dotted backdrop dot colour */
+  --dot-pattern: #ead9b6;
+}
+
+/* Onboarding canvas — dotted cream texture (radial-gradient used as 1px dot grid texture, not a colour fade) */
+.onboarding-canvas {
+  background-color: var(--cream);
+  background-image: radial-gradient(var(--dot-pattern) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* Notch cutout — matches canvas exactly so perforations look punched-through */
+.notch-canvas {
+  background-color: var(--cream);
+  background-image: radial-gradient(var(--dot-pattern) 1px, transparent 1px);
+  background-size: 18px 18px;
 }
 
 @layer base {
