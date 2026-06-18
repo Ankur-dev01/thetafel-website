@@ -296,6 +296,11 @@ export default function QrCodesPage() {
               qr_token: tbl.qr_token ?? null,
               qr_image_path: tbl.qr_image_path ?? null,
             }))
+            .sort((a: TableRow, b: TableRow) => {
+              const an = parseInt(a.label.replace(/\D/g, ''), 10) || 0
+              const bn = parseInt(b.label.replace(/\D/g, ''), 10) || 0
+              return an !== bn ? an - bn : a.label.localeCompare(b.label)
+            })
         )
         if (!cancelled) setHydrated(true)
       } catch {

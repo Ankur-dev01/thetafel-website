@@ -40,8 +40,13 @@ const TURNOVER_OPTIONS_MINS = [0, 10, 15, 20, 30] as const
 const DEFAULT_OCCUPANCY = 90
 const DEFAULT_TURNOVER = 15
 const DEFAULT_COLOR = '#d4820a'
-const DEFAULT_ZONE_NL = 'Binnenzaal'
 const PARTY_SIZES = ['2', '4', '6', '8', '10'] as const
+
+function numericLabelSort<T extends { label: string }>(a: T, b: T): number {
+  const an = parseInt(a.label.replace(/\D/g, ''), 10) || 0
+  const bn = parseInt(b.label.replace(/\D/g, ''), 10) || 0
+  return an !== bn ? an - bn : a.label.localeCompare(b.label)
+}
 
 function extractTableNumber(label: string): number {
   const m = /^T(\d+)$/.exec(label)
@@ -622,11 +627,14 @@ export default function FloorPlanPage() {
             tempId: t.id, zone_id: t.zone_id, label: t.label, seats: t.seats,
             is_bookable: t.is_bookable, is_qr_enabled: t.is_qr_enabled,
           }))
+          .sort(numericLabelSort)
+
+        const defaultZoneName = locale === 'en' ? 'Main hall' : 'Binnenzaal'
 
         if (loadedZones.length === 0) {
           try {
             const refreshed = await patchZonesAndRefresh([
-              { name: DEFAULT_ZONE_NL, display_order: 0, color: DEFAULT_COLOR },
+              { name: defaultZoneName, display_order: 0, color: DEFAULT_COLOR },
             ])
             loadedZones = refreshed.zones.filter((z) => !z.deleted_at).map((z) => ({
               id: z.id, name: z.name, display_order: z.display_order, color: z.color, saving: false,
