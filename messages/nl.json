@@ -802,6 +802,10 @@
       "heading": "Welke diensten wil je instellen?",
       "sub": "Je kunt er één kiezen of alle drie combineren. Je kunt later altijd uitbreiden.",
       "hintBanner": "Stel alle drie de diensten in — aanbevolen. Restaurants die alle diensten gebruiken zien gemiddeld de hoogste omzet.",
+      "hintBannerTitle": "Stel alle drie in — aanbevolen",
+      "hintBannerSub": "Restaurants die alle diensten gebruiken zien gemiddeld de hoogste omzet.",
+      "hintBannerSelectAll": "Selecteer alles",
+      "hintBannerSelected": "Geselecteerd",
       "comingSoon": "Binnenkort",
       "continueLabel": "Diensten instellen",
       "continueSubmitting": "Bezig met opslaan…",
@@ -810,19 +814,38 @@
       "cards": {
         "reservations": {
           "title": "Reserveringen",
-          "description": "Online reserveringen, plattegrond, openingstijden en no-show bescherming."
+          "description": "Online reserveringen, plattegrond, openingstijden en no-show bescherming.",
+          "features": {
+            "onlineBooking": "Online reserveren",
+            "floorPlan": "Plattegrond",
+            "noShow": "No-show bescherming"
+          }
         },
         "takeaway": {
           "title": "Afhalen",
-          "description": "Online afhaalbestellingen met directe betaling via iDEAL of kaart."
+          "description": "Online afhaalbestellingen met directe betaling via iDEAL of kaart.",
+          "features": {
+            "onlineOrders": "Online bestellingen",
+            "payment": "iDEAL & kaart",
+            "instantPayment": "Directe betaling"
+          }
         },
         "qr": {
           "title": "QR-bestellen",
-          "description": "Gasten bestellen direct vanaf hun tafel via een QR-code op hun telefoon."
+          "description": "Gasten bestellen direct vanaf hun tafel via een QR-code op hun telefoon.",
+          "features": {
+            "tableQr": "QR-codes op tafel",
+            "mobileMenu": "Mobiel menu",
+            "directOrdering": "Direct bestellen"
+          }
         },
         "delivery": {
           "title": "Bezorging",
-          "description": "Eigen bezorgflow met gekoppelde koerier-partners."
+          "description": "Eigen bezorgflow met gekoppelde koerier-partners.",
+          "features": {
+            "courierPartners": "Bezorgpartners",
+            "ownDelivery": "Eigen bezorging"
+          }
         }
       }
     },

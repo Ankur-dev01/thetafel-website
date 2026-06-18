@@ -802,6 +802,10 @@
       "heading": "Which services would you like to set up?",
       "sub": "Pick one or combine all three. You can always add more later.",
       "hintBanner": "Set up all three services — recommended. Restaurants that use all services see the highest combined revenue.",
+      "hintBannerTitle": "Set up all three — recommended",
+      "hintBannerSub": "Restaurants that use all services see the highest combined revenue.",
+      "hintBannerSelectAll": "Select all",
+      "hintBannerSelected": "Selected",
       "comingSoon": "Coming soon",
       "continueLabel": "Set up services",
       "continueSubmitting": "Saving…",
@@ -810,19 +814,38 @@
       "cards": {
         "reservations": {
           "title": "Reservations",
-          "description": "Online reservations, floor plan, opening hours, and no-show protection."
+          "description": "Online reservations, floor plan, opening hours, and no-show protection.",
+          "features": {
+            "onlineBooking": "Online booking",
+            "floorPlan": "Floor plan",
+            "noShow": "No-show protection"
+          }
         },
         "takeaway": {
           "title": "Takeaway",
-          "description": "Online takeaway orders with instant payment via iDEAL or card."
+          "description": "Online takeaway orders with instant payment via iDEAL or card.",
+          "features": {
+            "onlineOrders": "Online orders",
+            "payment": "iDEAL & card",
+            "instantPayment": "Instant payment"
+          }
         },
         "qr": {
           "title": "QR ordering",
-          "description": "Guests order directly from their table by scanning a QR code on their phone."
+          "description": "Guests order directly from their table by scanning a QR code on their phone.",
+          "features": {
+            "tableQr": "Table QR codes",
+            "mobileMenu": "Mobile menu",
+            "directOrdering": "Direct ordering"
+          }
         },
         "delivery": {
           "title": "Delivery",
-          "description": "Own-delivery flow with connected courier partners."
+          "description": "Own-delivery flow with connected courier partners.",
+          "features": {
+            "courierPartners": "Courier partners",
+            "ownDelivery": "Own delivery"
+          }
         }
       }
     },
