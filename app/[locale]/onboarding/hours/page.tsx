@@ -5,8 +5,6 @@ import { useParams, useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import StepFrame from '@/components/onboarding/shell/StepFrame'
 import SavedIndicator from '@/components/onboarding/shell/SavedIndicator'
-import SelectField from '@/components/onboarding/fields/SelectField'
-import ToggleField from '@/components/onboarding/fields/ToggleField'
 import {
   getVisibleSteps,
   getTotalWizardSteps,
@@ -33,12 +31,10 @@ const DEFAULT_OPEN = '12:00'
 const DEFAULT_CLOSE = '22:00'
 const SLOT_OPTIONS = ['15', '30', '45', '60']
 const KITCHEN_OPTIONS = ['0', '15', '30', '45', '60']
-// Must match availabilitySchema's time24 regex exactly — rows with invalid
-// times are skipped before send to avoid validation_failed on .strict() schema.
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/
+const MIN_OPEN_MINS = 360   // 06:00
+const MAX_CLOSE_MINS = 1410 // 23:30
 
-// Postgres time columns return "HH:MM:SS" or "HH:MM:SS.fff". Strip to "HH:MM"
-// so TIME_RE passes for server-hydrated values.
 function normalizeTime(t: string): string {
   const m = t.match(/^(\d{2}:\d{2})/)
   return m ? m[1]! : DEFAULT_OPEN
@@ -60,7 +56,6 @@ function makeDefaultDays(): Record<number, DayConfig> {
   )
 }
 
-// close < open means the closing time is on the next calendar day
 function closesNextDay(open: string, close: string): boolean {
   return open !== '' && close !== '' && close < open
 }
@@ -89,8 +84,6 @@ function buildAvailabilityPayload(
     for (const d of DAY_NUMS) {
       const day = days[d]!
       if (!day.enabled) continue
-      // Skip rows whose times don't satisfy the server's time24 regex so we
-      // never send a payload that fails availabilitySchema's .strict() check.
       if (!TIME_RE.test(day.openTime) || !TIME_RE.test(day.closeTime)) continue
       const openN = normalizeTime(day.openTime)
       const closeN = normalizeTime(day.closeTime)
@@ -133,8 +126,6 @@ function buildAvailabilityPayload(
   return rows
 }
 
-// Returns a map of errorKey → errorCode ('invalidTime' | 'closeEqualsOpen')
-// Key format: '${dayNum}' for shared, '${scope}:${dayNum}' for per-service.
 function collectTimeErrors(
   days: Record<number, DayConfig>,
   perServiceDays: Record<string, Record<number, DayConfig>>,
@@ -162,6 +153,37 @@ function collectTimeErrors(
   }
 
   return errors
+}
+
+function applyDayToAllDays(
+  sourceDayNum: number,
+  days: Record<number, DayConfig>
+): Record<number, DayConfig> {
+  const source = days[sourceDayNum]!
+  const next = { ...days }
+  for (const key of DAY_NUMS) {
+    if (key === sourceDayNum) continue
+    next[key] = JSON.parse(JSON.stringify(source)) as DayConfig
+  }
+  return next
+}
+
+// ---- Time helpers -----------------------------------------------------------
+
+function timeToMin(t: string): number {
+  const parts = t.split(':')
+  return parseInt(parts[0] ?? '0', 10) * 60 + parseInt(parts[1] ?? '0', 10)
+}
+
+function minToTime(m: number): string {
+  const h = Math.floor(m / 60)
+  const min = m % 60
+  return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`
+}
+
+// Track domain: 6am (360) → 2am next day (1560) = 1200 min span
+function trackPct(minutes: number): number {
+  return Math.max(0, Math.min(100, ((minutes - 360) / 1200) * 100))
 }
 
 // ---- Page component --------------------------------------------------------
@@ -214,7 +236,6 @@ export default function HoursPage() {
         const r = data?.restaurant ?? {}
         const rows: Array<Record<string, unknown>> = data?.availability ?? []
 
-        // Wizard meta
         try {
           const visibleSteps = getVisibleSteps(
             r as Parameters<typeof getVisibleSteps>[0]
@@ -226,30 +247,25 @@ export default function HoursPage() {
           // Leave defaults
         }
 
-        // Enabled services
         const svcs: string[] = []
         if (r.service_reservations_enabled) svcs.push('reservations')
         if (r.service_takeaway_enabled) svcs.push('takeaway')
         if (r.service_qr_enabled) svcs.push('qr')
         setEnabledServices(svcs)
 
-        // Restaurant settings
         if (typeof r.slot_interval_minutes === 'number') {
           setSlotInterval(String(r.slot_interval_minutes))
         }
         if (typeof r.kitchen_closes_offset_minutes === 'number') {
           setKitchenOffset(String(r.kitchen_closes_offset_minutes))
         }
-        // Derive override state from the actual rows, not the DB flag.
-        // A stale DB flag (e.g. set true then availability cleared) must not
-        // show per-service blocks on a fresh state.
+
         const hasPerServiceRows = rows.some(
           (row) => String(row.service_scope ?? 'all') !== 'all'
         )
         const override = hasPerServiceRows
         setUseOverride(override)
 
-        // Build day configs from availability rows
         const loadedDays = makeDefaultDays()
         const loadedPerService: Record<string, Record<number, DayConfig>> = {}
 
@@ -279,7 +295,6 @@ export default function HoursPage() {
 
         setDays(loadedDays)
 
-        // If override on but no per-service rows yet, copy shared days to each service
         if (override && Object.keys(loadedPerService).length === 0) {
           const init: Record<string, Record<number, DayConfig>> = {}
           for (const svc of svcs) {
@@ -305,7 +320,7 @@ export default function HoursPage() {
     }
   }, [t, pathname])
 
-  // ---- Shared day handlers -------------------------------------------------
+  // ---- Handlers ------------------------------------------------------------
 
   const handleDayChange = useCallback(
     (dayNum: number, changes: Partial<DayConfig>) => {
@@ -326,31 +341,6 @@ export default function HoursPage() {
     [days, perServiceDays, useOverride, enabledServices, save]
   )
 
-  // ---- Per-service day handlers -------------------------------------------
-
-  const handleServiceDayChange = useCallback(
-    (scope: string, dayNum: number, changes: Partial<DayConfig>) => {
-      const existing = perServiceDays[scope] ?? makeDefaultDays()
-      const nextScope = {
-        ...existing,
-        [dayNum]: { ...existing[dayNum]!, ...changes },
-      }
-      const nextPerService = { ...perServiceDays, [scope]: nextScope }
-      setPerServiceDays(nextPerService)
-      save({
-        availability: buildAvailabilityPayload(
-          days,
-          nextPerService,
-          useOverride,
-          enabledServices
-        ),
-      })
-    },
-    [days, perServiceDays, useOverride, enabledServices, save]
-  )
-
-  // ---- Copy-to-all handlers ------------------------------------------------
-
   const handleCopyToAll = useCallback(
     (dayNum: number) => {
       const nextDays = applyDayToAllDays(dayNum, days)
@@ -367,26 +357,6 @@ export default function HoursPage() {
     [days, perServiceDays, useOverride, enabledServices, save]
   )
 
-  const handleServiceCopyToAll = useCallback(
-    (scope: string, dayNum: number) => {
-      const existing = perServiceDays[scope] ?? makeDefaultDays()
-      const nextScope = applyDayToAllDays(dayNum, existing)
-      const nextPerService = { ...perServiceDays, [scope]: nextScope }
-      setPerServiceDays(nextPerService)
-      save({
-        availability: buildAvailabilityPayload(
-          days,
-          nextPerService,
-          useOverride,
-          enabledServices
-        ),
-      })
-    },
-    [days, perServiceDays, useOverride, enabledServices, save]
-  )
-
-  // ---- Restaurant settings handlers ----------------------------------------
-
   const handleSlotChange = useCallback(
     (val: string) => {
       setSlotInterval(val)
@@ -402,39 +372,6 @@ export default function HoursPage() {
     },
     [save]
   )
-
-  // ---- Override toggle -----------------------------------------------------
-
-  const handleOverrideToggle = useCallback(
-    (newValue: boolean) => {
-      setUseOverride(newValue)
-
-      let nextPerService = perServiceDays
-      if (newValue && Object.keys(perServiceDays).length === 0) {
-        // First activation: copy shared days into every service
-        nextPerService = {}
-        for (const svc of enabledServices) {
-          nextPerService[svc] = Object.fromEntries(
-            DAY_NUMS.map((d) => [d, { ...days[d]! }])
-          )
-        }
-        setPerServiceDays(nextPerService)
-      }
-
-      save({
-        availability: buildAvailabilityPayload(
-          days,
-          nextPerService,
-          newValue,
-          enabledServices
-        ),
-        restaurant: { hours_per_service_override: newValue },
-      })
-    },
-    [days, perServiceDays, enabledServices, save]
-  )
-
-  // ---- Continue ------------------------------------------------------------
 
   const handleContinue = useCallback(async () => {
     if (isContinuing) return
@@ -463,32 +400,30 @@ export default function HoursPage() {
     [days, perServiceDays, useOverride, enabledServices]
   )
 
-  // At least one day is active — no day is special, Mon is not required.
-  // Kept separate from buildAvailabilityPayload so the TIME_RE filter there
-  // can't accidentally make Continue think zero days are active.
-  const hasActiveDay = useOverride
-    ? enabledServices.some((scope) =>
-        Object.values(perServiceDays[scope] ?? {}).some((d) => d.enabled)
-      )
-    : Object.values(days).some((d) => d.enabled)
+  const { totalHoursOpen, openDaysCount } = useMemo(() => {
+    let totalMin = 0
+    let count = 0
+    for (const d of DAY_NUMS) {
+      const cfg = days[d]!
+      if (!cfg.enabled) continue
+      count++
+      const openMin = timeToMin(cfg.openTime)
+      const closeMin = timeToMin(cfg.closeTime)
+      if (closeMin > openMin) totalMin += closeMin - openMin
+    }
+    return { totalHoursOpen: Math.round(totalMin / 60), openDaysCount: count }
+  }, [days])
+
+  const hasActiveDay = Object.values(days).some((d) => d.enabled)
 
   const canContinue =
-    hasActiveDay &&
-    Object.keys(timeErrors).length === 0 &&
-    !isContinuing
+    hasActiveDay && Object.keys(timeErrors).length === 0 && !isContinuing
 
   const backHref =
     previousStepPath(3, visibleStepIds, locale) ?? stepPath(2, locale)
 
-  const slotOptions = SLOT_OPTIONS.map((v) => ({
-    value: v,
-    label: `${v} min.`,
-  }))
-
-  const kitchenOptions = KITCHEN_OPTIONS.map((v) => ({
-    value: v,
-    label: `${v} min.`,
-  }))
+  const slotOptions = SLOT_OPTIONS.map((v) => ({ value: v, label: `${v} min.` }))
+  const kitchenOptions = KITCHEN_OPTIONS.map((v) => ({ value: v, label: `${v} min.` }))
 
   const dayLabels: Record<number, string> = {
     1: t('days.mon'),
@@ -500,11 +435,93 @@ export default function HoursPage() {
     7: t('days.sun'),
   }
 
-  const serviceLabelMap: Record<string, string> = {
-    reservations: t('serviceReservations'),
-    takeaway: t('serviceTakeaway'),
-    qr: t('serviceQr'),
-  }
+  const heading = t('heading')
+
+  // ---- Header band shared render ------------------------------------------
+
+  const headerBand = (
+    <div style={{ marginBottom: 40 }}>
+      {/* Step pill */}
+      <div style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 8,
+        padding: '5px 14px',
+        borderRadius: 999,
+        background: 'var(--amber-bg)',
+        border: '1px solid rgba(212,130,10,0.2)',
+        marginBottom: 20,
+      }}>
+        <span style={{
+          fontFamily: 'var(--font-jost), sans-serif',
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          color: 'var(--amber-deep)',
+        }}>
+          Step {currentDisplayNum} of {totalSteps} — {heading.slice(0, -1)}
+        </span>
+      </div>
+
+      {/* Title */}
+      <h1 style={{
+        fontFamily: 'var(--font-raleway), Raleway, sans-serif',
+        fontSize: 'clamp(28px, 5vw, 38px)',
+        fontWeight: 900,
+        color: 'var(--earth)',
+        margin: '0 0 10px',
+        lineHeight: 1.1,
+        letterSpacing: '-0.02em',
+      }}>
+        {heading.slice(0, -1)}
+        <span style={{ color: 'var(--amber)' }}>{heading.slice(-1)}</span>
+      </h1>
+
+      {/* Description */}
+      <p style={{
+        fontFamily: 'var(--font-jost), sans-serif',
+        fontSize: 15,
+        color: 'var(--stone)',
+        margin: '0 0 20px',
+        lineHeight: 1.55,
+      }}>
+        {t('sub')}
+      </p>
+
+      {/* Progress segments + counter */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', gap: 4 }}>
+          {Array.from({ length: totalSteps }).map((_, i) => (
+            <div
+              key={i}
+              style={{
+                height: 4,
+                width: i + 1 < currentDisplayNum ? 16 : 8,
+                borderRadius: 2,
+                background:
+                  i + 1 < currentDisplayNum
+                    ? 'var(--amber)'
+                    : i + 1 === currentDisplayNum
+                      ? 'var(--sage)'
+                      : '#e8dcc8',
+                transition: 'width 300ms, background 300ms',
+              }}
+            />
+          ))}
+        </div>
+        <span style={{
+          fontFamily: 'var(--font-jost), sans-serif',
+          fontSize: 12,
+          fontWeight: 600,
+          color: 'var(--stone-dim)',
+          letterSpacing: '0.04em',
+        }}>
+          {currentDisplayNum} / {totalSteps}
+        </span>
+      </div>
+    </div>
+  )
 
   // ---- Loading state -------------------------------------------------------
 
@@ -512,24 +529,23 @@ export default function HoursPage() {
     return (
       <StepFrame
         locale={locale}
+        hideDefaultHeader
+        showProgress={false}
+        heading={heading}
         currentStepDisplayNumber={currentDisplayNum}
         totalSteps={totalSteps}
-        serviceTag={t('serviceTag')}
-        heading={t('heading')}
-        subHeading={t('sub')}
         backHref={backHref}
         canContinue={false}
         continueLabel={t('continueLabel')}
         onContinue={() => {}}
         error={hydrationError}
       >
-        <div
-          style={{
-            color: 'var(--stone)',
-            fontFamily: 'var(--font-jost), sans-serif',
-            fontSize: '14px',
-          }}
-        >
+        {headerBand}
+        <div style={{
+          color: 'var(--stone)',
+          fontFamily: 'var(--font-jost), sans-serif',
+          fontSize: 14,
+        }}>
           {t('loading')}
         </div>
       </StepFrame>
@@ -541,11 +557,11 @@ export default function HoursPage() {
   return (
     <StepFrame
       locale={locale}
+      hideDefaultHeader
+      showProgress={false}
+      heading={heading}
       currentStepDisplayNumber={currentDisplayNum}
       totalSteps={totalSteps}
-      serviceTag={t('serviceTag')}
-      heading={t('heading')}
-      subHeading={t('sub')}
       backHref={backHref}
       canContinue={canContinue}
       isSubmitting={isContinuing}
@@ -554,428 +570,139 @@ export default function HoursPage() {
       error={null}
       savedIndicator={<SavedIndicator state={saveState} locale={locale} />}
     >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '32px',
-          maxWidth: '720px',
-          margin: '0 auto',
-          width: '100%',
-        }}
-      >
-        {/* Shared day-rows (override off) */}
-        {!useOverride && (
-          <DayBlock
-            title={null}
-            days={days}
-            dayLabels={dayLabels}
-            errorPrefix=""
-            timeErrors={timeErrors}
-            locale={locale}
-            t={t}
-            onChange={(dayNum, changes) => handleDayChange(dayNum, changes)}
-            onCopyToAll={handleCopyToAll}
-          />
-        )}
+      <style>{`
+        @media (max-width: 520px) {
+          .hours-bottom-grid { grid-template-columns: 1fr !important; }
+          .hours-day-grid { grid-template-columns: 100px 72px 14px 72px 1fr 28px !important; gap: 8px !important; }
+        }
+      `}</style>
 
-        {/* Per-service day blocks (override on) */}
-        {useOverride && (
-          <div
-            style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}
-          >
-            {enabledServices.map((scope) => (
-              <DayBlock
-                key={scope}
-                title={serviceLabelMap[scope] ?? scope}
-                days={perServiceDays[scope] ?? makeDefaultDays()}
-                dayLabels={dayLabels}
-                errorPrefix={`${scope}:`}
-                timeErrors={timeErrors}
-                locale={locale}
-                t={t}
-                onChange={(dayNum, changes) =>
-                  handleServiceDayChange(scope, dayNum, changes)
-                }
-                onCopyToAll={(dayNum) =>
-                  handleServiceCopyToAll(scope, dayNum)
-                }
-              />
+      {headerBand}
+
+      {/* Summary strip */}
+      <div style={{
+        background: '#1e1508',
+        color: '#f3e8d2',
+        borderRadius: 18,
+        padding: '20px 24px',
+        marginBottom: 22,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+        <div>
+          <div style={{
+            fontFamily: 'var(--font-jost), sans-serif',
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: '0.13em',
+            textTransform: 'uppercase',
+            color: '#b79a5e',
+          }}>
+            Open this week
+          </div>
+          <div style={{
+            fontFamily: 'var(--font-raleway), Raleway, sans-serif',
+            fontWeight: 900,
+            fontSize: 34,
+            lineHeight: 1.05,
+            marginTop: 6,
+            color: '#f3e8d2',
+          }}>
+            {totalHoursOpen} hrs
+            <span style={{ color: '#7c6e55', fontSize: 18, fontWeight: 900 }}>
+              {' '}/ {openDaysCount} days
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Schedule canvas */}
+      <div style={{
+        background: 'var(--cream-card)',
+        border: '1px solid #ebe2cf',
+        borderRadius: 22,
+        padding: '8px 24px 18px',
+        boxShadow: '0 2px 8px rgba(40,30,10,0.05)',
+        marginBottom: 34,
+      }}>
+        {/* Hour ruler */}
+        <div
+          className="hours-day-grid"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '118px 86px 14px 86px 1fr 30px',
+            gap: 13,
+            padding: '16px 0 8px',
+          }}
+        >
+          <div /><div /><div /><div />
+          <div style={{ position: 'relative', height: 16 }}>
+            {([['6a', 0], ['9a', 15], ['12p', 30], ['3p', 45], ['6p', 60], ['9p', 75], ['12a', 90], ['2a', 100]] as [string, number][]).map(([label, pct]) => (
+              <span
+                key={label}
+                style={{
+                  position: 'absolute',
+                  left: `${pct}%`,
+                  transform: 'translateX(-50%)',
+                  fontFamily: 'var(--font-jost), sans-serif',
+                  fontSize: 10.5,
+                  fontWeight: 700,
+                  letterSpacing: '0.04em',
+                  color: '#b6a684',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {label}
+              </span>
             ))}
           </div>
-        )}
+          <div />
+        </div>
 
-        {/* Slot interval */}
-        <SelectField
+        {/* Day rows */}
+        {DAY_NUMS.map((dayNum) => (
+          <DayRowV2
+            key={dayNum}
+            dayLabel={dayLabels[dayNum] ?? String(dayNum)}
+            config={days[dayNum]!}
+            onChange={(changes) => handleDayChange(dayNum, changes)}
+            onCopyToAll={() => handleCopyToAll(dayNum)}
+          />
+        ))}
+      </div>
+
+      {/* Bottom settings */}
+      <div
+        className="hours-bottom-grid"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 22,
+          marginBottom: 22,
+        }}
+      >
+        <StyledSelect
           label={t('slotIntervalLabel')}
           value={slotInterval}
           onChange={handleSlotChange}
           options={slotOptions}
         />
-
-        {/* Kitchen closes */}
-        <SelectField
+        <StyledSelect
           label={t('kitchenClosesLabel')}
-          hint={t('kitchenClosesHint')}
           value={kitchenOffset}
           onChange={handleKitchenChange}
           options={kitchenOptions}
+          hint={t('kitchenClosesHint')}
         />
-
-        {/* Per-service override — only show when ≥2 services active */}
-        {enabledServices.length >= 2 && (
-          <ToggleField
-            label={t('perServiceLabel')}
-            description={t('perServiceHint')}
-            value={useOverride}
-            onChange={handleOverrideToggle}
-          />
-        )}
       </div>
     </StepFrame>
   )
 }
 
-// ---- CopyDownIcon -----------------------------------------------------------
+// ---- DayToggle --------------------------------------------------------------
 
-function CopyDownIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden
-    >
-      <rect x="2.5" y="1.5" width="9" height="5" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-      <rect x="2.5" y="9.5" width="9" height="5" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-      <path d="M7 6.8V9.2M5.5 8L7 9.5L8.5 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-// ---- applyDayToAllDays helper -----------------------------------------------
-
-function applyDayToAllDays(
-  sourceDayNum: number,
-  days: Record<number, DayConfig>
-): Record<number, DayConfig> {
-  const source = days[sourceDayNum]!
-  const next = { ...days }
-  for (const key of DAY_NUMS) {
-    if (key === sourceDayNum) continue
-    next[key] = JSON.parse(JSON.stringify(source)) as DayConfig
-  }
-  return next
-}
-
-// ---- DayBlock sub-component ------------------------------------------------
-
-type DayBlockProps = {
-  title: string | null
-  days: Record<number, DayConfig>
-  dayLabels: Record<number, string>
-  errorPrefix: string
-  timeErrors: Record<string, string>
-  locale: 'nl' | 'en'
-  t: ReturnType<typeof useTranslations<'onboarding.hours'>>
-  onChange: (dayNum: number, changes: Partial<DayConfig>) => void
-  onCopyToAll: (dayNum: number) => void
-}
-
-function DayBlock({
-  title,
-  days,
-  dayLabels,
-  errorPrefix,
-  timeErrors,
-  locale,
-  t,
-  onChange,
-  onCopyToAll,
-}: DayBlockProps) {
-  return (
-    <div
-      style={{
-        backgroundColor: 'var(--warm)',
-        borderRadius: '16px',
-        border: '1px solid rgba(156,139,106,0.2)',
-        overflow: 'hidden',
-      }}
-    >
-      {title && (
-        <div
-          style={{
-            padding: '12px 20px',
-            backgroundColor: 'rgba(212,130,10,0.07)',
-            borderBottom: '1px solid rgba(156,139,106,0.12)',
-            fontFamily: 'var(--font-jost), sans-serif',
-            fontSize: '12px',
-            fontWeight: 700,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            color: 'var(--amber)',
-          }}
-        >
-          {title}
-        </div>
-      )}
-
-      {DAY_NUMS.map((dayNum, i) => {
-        const cfg = days[dayNum]!
-        const errKey = `${errorPrefix}${dayNum}`
-        const err = timeErrors[errKey]
-        const isLast = i === DAY_NUMS.length - 1
-
-        return (
-          <DayRow
-            key={dayNum}
-            dayLabel={dayLabels[dayNum] ?? String(dayNum)}
-            config={cfg}
-            error={err}
-            locale={locale}
-            t={t}
-            borderBottom={!isLast}
-            onToggle={(enabled) =>
-              onChange(dayNum, {
-                enabled,
-                // When activating a row, guarantee valid HH:MM times so the
-                // time inputs never show the browser's current time.
-                ...(enabled
-                  ? {
-                      openTime: cfg.openTime || DEFAULT_OPEN,
-                      closeTime: cfg.closeTime || DEFAULT_CLOSE,
-                    }
-                  : {}),
-              })
-            }
-            onOpenChange={(openTime) => onChange(dayNum, { openTime })}
-            onCloseChange={(closeTime) => onChange(dayNum, { closeTime })}
-            onTagToggle={(tag) => {
-              if (tag === 'brunch') onChange(dayNum, { tagBrunch: !cfg.tagBrunch })
-              if (tag === 'lunch') onChange(dayNum, { tagLunch: !cfg.tagLunch })
-              if (tag === 'dinner') onChange(dayNum, { tagDinner: !cfg.tagDinner })
-            }}
-            onCopyToAll={() => onCopyToAll(dayNum)}
-          />
-        )
-      })}
-    </div>
-  )
-}
-
-// ---- DayRow sub-component --------------------------------------------------
-
-type DayRowProps = {
-  dayLabel: string
-  config: DayConfig
-  error?: string
-  locale: 'nl' | 'en'
-  t: ReturnType<typeof useTranslations<'onboarding.hours'>>
-  borderBottom: boolean
-  onToggle: (enabled: boolean) => void
-  onOpenChange: (time: string) => void
-  onCloseChange: (time: string) => void
-  onTagToggle: (tag: 'brunch' | 'lunch' | 'dinner') => void
-  onCopyToAll: () => void
-}
-
-function DayRow({
-  dayLabel,
-  config,
-  error,
-  locale,
-  t,
-  borderBottom,
-  onToggle,
-  onOpenChange,
-  onCloseChange,
-  onTagToggle,
-  onCopyToAll,
-}: DayRowProps) {
-  const showNextDay =
-    config.enabled && closesNextDay(config.openTime, config.closeTime)
-
-  const timeInputStyle = (hasErr: boolean): React.CSSProperties => ({
-    padding: '7px 10px',
-    borderRadius: '8px',
-    border: `1.5px solid ${hasErr ? '#ef4444' : 'rgba(156,139,106,0.3)'}`,
-    backgroundColor: config.enabled ? '#fdfaf5' : 'rgba(156,139,106,0.06)',
-    fontFamily: 'var(--font-jost), sans-serif',
-    fontSize: '14px',
-    color: config.enabled ? 'var(--earth)' : 'var(--stone)',
-    outline: 'none',
-    width: '96px',
-    cursor: config.enabled ? 'text' : 'not-allowed',
-    opacity: config.enabled ? 1 : 0.6,
-  })
-
-  return (
-    <div
-      style={{
-        padding: '12px 20px',
-        borderBottom: borderBottom ? '1px solid rgba(156,139,106,0.1)' : 'none',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          gap: '10px',
-        }}
-      >
-        {/* Day label */}
-        <span
-          style={{
-            width: '28px',
-            fontFamily: 'var(--font-jost), sans-serif',
-            fontSize: '13px',
-            fontWeight: 700,
-            color: config.enabled ? 'var(--earth)' : 'var(--stone)',
-            flexShrink: 0,
-          }}
-        >
-          {dayLabel}
-        </span>
-
-        {/* Inline toggle */}
-        <InlineToggle value={config.enabled} onChange={onToggle} />
-
-        {/* Time inputs */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            flexShrink: 0,
-          }}
-        >
-          <input
-            type="time"
-            lang="nl-NL"
-            value={config.openTime}
-            onChange={(e) => onOpenChange(e.target.value)}
-            disabled={!config.enabled}
-            aria-label={t('openLabel')}
-            style={timeInputStyle(!!error && config.enabled)}
-          />
-          <span
-            style={{
-              color: 'var(--stone)',
-              fontFamily: 'var(--font-jost), sans-serif',
-              fontSize: '14px',
-            }}
-          >
-            –
-          </span>
-          <input
-            type="time"
-            lang="nl-NL"
-            value={config.closeTime}
-            onChange={(e) => onCloseChange(e.target.value)}
-            disabled={!config.enabled}
-            aria-label={t('closeLabel')}
-            style={timeInputStyle(!!error && config.enabled)}
-          />
-          {showNextDay && (
-            <span
-              style={{
-                fontFamily: 'var(--font-jost), sans-serif',
-                fontSize: '11px',
-                fontWeight: 600,
-                color: 'var(--amber)',
-                letterSpacing: '0.05em',
-              }}
-            >
-              {t('closesNextDay')}
-            </span>
-          )}
-        </div>
-
-        {/* Service tag pills */}
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-          <TagPill
-            label={t('tagBrunch')}
-            active={config.tagBrunch}
-            disabled={!config.enabled}
-            onClick={() => onTagToggle('brunch')}
-          />
-          <TagPill
-            label={t('tagLunch')}
-            active={config.tagLunch}
-            disabled={!config.enabled}
-            onClick={() => onTagToggle('lunch')}
-          />
-          <TagPill
-            label={t('tagDinner')}
-            active={config.tagDinner}
-            disabled={!config.enabled}
-            onClick={() => onTagToggle('dinner')}
-          />
-        </div>
-
-        {/* Copy to all days */}
-        <button
-          type="button"
-          onClick={onCopyToAll}
-          aria-label={
-            locale === 'en'
-              ? `Copy ${dayLabel} to all days`
-              : `Kopieer ${dayLabel} naar alle dagen`
-          }
-          title={
-            locale === 'en'
-              ? `Copy ${dayLabel} to all days`
-              : `Kopieer ${dayLabel} naar alle dagen`
-          }
-          style={{
-            background: 'transparent',
-            border: 'none',
-            padding: 6,
-            borderRadius: 6,
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#9c8b6a',
-            transition: 'color 120ms ease, background-color 120ms ease',
-            flexShrink: 0,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = '#d4820a'
-            e.currentTarget.style.backgroundColor = 'rgba(212, 130, 10, 0.08)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = '#9c8b6a'
-            e.currentTarget.style.backgroundColor = 'transparent'
-          }}
-        >
-          <CopyDownIcon />
-        </button>
-      </div>
-
-      {/* Inline error for this row */}
-      {error && config.enabled && (
-        <div
-          style={{
-            marginTop: '6px',
-            fontFamily: 'var(--font-jost), sans-serif',
-            fontSize: '12px',
-            color: '#ef4444',
-          }}
-        >
-          {t(`errors.${error as 'invalidTime' | 'closeEqualsOpen'}`)}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ---- InlineToggle sub-component --------------------------------------------
-
-function InlineToggle({
+function DayToggle({
   value,
   onChange,
 }: {
@@ -990,74 +717,393 @@ function InlineToggle({
       onClick={() => onChange(!value)}
       style={{
         position: 'relative',
-        width: '40px',
-        height: '22px',
-        borderRadius: '999px',
-        background: value ? '#d4820a' : '#c8b89a',
+        width: 42,
+        height: 24,
+        borderRadius: 9999,
+        background: value ? 'var(--amber)' : '#d9cdb6',
         border: 'none',
         cursor: 'pointer',
-        transition: 'background 0.2s',
         flexShrink: 0,
         padding: 0,
+        transition: 'background 180ms',
       }}
     >
       <span
         aria-hidden="true"
         style={{
           position: 'absolute',
-          top: '2px',
-          left: value ? '20px' : '2px',
-          width: '18px',
-          height: '18px',
+          width: 18,
+          height: 18,
           borderRadius: '50%',
-          background: '#fdfaf5',
-          transition: 'left 0.2s',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
+          background: 'white',
+          top: 3,
+          left: value ? 21 : 3,
+          transition: 'left 180ms',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.25)',
         }}
       />
     </button>
   )
 }
 
-// ---- TagPill sub-component -------------------------------------------------
+// ---- TimeStepper ------------------------------------------------------------
 
-function TagPill({
-  label,
-  active,
+function TimeStepper({
+  value,
+  min,
+  max,
   disabled,
-  onClick,
+  onChange,
+}: {
+  value: string
+  min: number
+  max: number
+  disabled?: boolean
+  onChange: (value: string) => void
+}) {
+  const currentMin = timeToMin(value)
+  const borderColor = disabled ? '#e9e1d0' : 'var(--cream-border)'
+
+  const step = (delta: number) => {
+    const next = Math.min(max, Math.max(min, currentMin + delta))
+    onChange(minToTime(next))
+  }
+
+  const upDisabled = disabled || currentMin >= max
+  const downDisabled = disabled || currentMin <= min
+
+  const arrowStyle = (isDisabled: boolean): React.CSSProperties => ({
+    flex: 1,
+    border: 'none',
+    background: 'transparent',
+    color: '#a8997c',
+    cursor: isDisabled ? 'default' : 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 0,
+    opacity: isDisabled ? 0.35 : 1,
+    transition: 'background 120ms, color 120ms',
+  })
+
+  return (
+    <div style={{
+      height: 42,
+      display: 'flex',
+      alignItems: 'stretch',
+      border: `1.5px solid ${borderColor}`,
+      borderRadius: 12,
+      overflow: 'hidden',
+      background: disabled ? '#f2ecde' : '#fffdf8',
+      transition: 'background 180ms, border-color 180ms',
+    }}>
+      {/* Time display */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: 'var(--font-jost), sans-serif',
+        fontSize: 15,
+        fontWeight: 700,
+        letterSpacing: '0.02em',
+        color: disabled ? '#bcad8f' : 'var(--earth)',
+        userSelect: 'none',
+      }}>
+        {value}
+      </div>
+      {/* Arrow buttons */}
+      <div style={{
+        width: 22,
+        borderLeft: `1px solid ${borderColor}`,
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
+        <button
+          type="button"
+          disabled={upDisabled}
+          onClick={() => step(30)}
+          style={arrowStyle(upDisabled)}
+          onMouseEnter={(e) => { if (!upDisabled) { e.currentTarget.style.background = 'var(--cream-hover)'; e.currentTarget.style.color = 'var(--earth)' } }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#a8997c' }}
+        >
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <polyline points="6 15 12 9 18 15" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          disabled={downDisabled}
+          onClick={() => step(-30)}
+          style={{ ...arrowStyle(downDisabled), borderTop: `1px solid ${borderColor}` }}
+          onMouseEnter={(e) => { if (!downDisabled) { e.currentTarget.style.background = 'var(--cream-hover)'; e.currentTarget.style.color = 'var(--earth)' } }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#a8997c' }}
+        >
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <polyline points="6 9 12 15 18 9" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ---- DayRowV2 ---------------------------------------------------------------
+
+function DayRowV2({
+  dayLabel,
+  config,
+  onChange,
+  onCopyToAll,
+}: {
+  dayLabel: string
+  config: DayConfig
+  onChange: (changes: Partial<DayConfig>) => void
+  onCopyToAll: () => void
+}) {
+  const [hovered, setHovered] = useState(false)
+
+  const openMin = timeToMin(config.openTime)
+  const closeMin = timeToMin(config.closeTime)
+
+  const leftPct = trackPct(openMin)
+  const widthPct = Math.max(0, trackPct(closeMin) - leftPct)
+
+  const handleToggle = (enabled: boolean) => {
+    onChange({
+      enabled,
+      ...(enabled
+        ? {
+            openTime: config.openTime || DEFAULT_OPEN,
+            closeTime: config.closeTime || DEFAULT_CLOSE,
+          }
+        : {}),
+    })
+  }
+
+  return (
+    <div
+      className="hours-day-grid"
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '118px 86px 14px 86px 1fr 30px',
+        gap: 13,
+        padding: '11px 8px',
+        margin: '0 -8px',
+        borderRadius: 14,
+        borderTop: '1px solid #f0e8d8',
+        background: hovered ? '#f9f3e7' : 'transparent',
+        opacity: config.enabled ? 1 : 0.62,
+        transition: 'background 150ms, opacity 150ms',
+        alignItems: 'center',
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* Col 1: toggle + label */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
+        <DayToggle value={config.enabled} onChange={handleToggle} />
+        <span style={{
+          fontFamily: 'var(--font-jost), sans-serif',
+          fontSize: 15,
+          fontWeight: 700,
+          color: config.enabled ? 'var(--earth)' : '#a89a80',
+          whiteSpace: 'nowrap',
+        }}>
+          {dayLabel}
+        </span>
+      </div>
+
+      {/* Col 2: open time stepper */}
+      <TimeStepper
+        value={config.openTime}
+        min={MIN_OPEN_MINS}
+        max={Math.max(MIN_OPEN_MINS, closeMin - 30)}
+        disabled={!config.enabled}
+        onChange={(t) => onChange({ openTime: t })}
+      />
+
+      {/* Col 3: separator */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: 'var(--font-jost), sans-serif',
+        fontWeight: 700,
+        color: '#c2b69e',
+        fontSize: 15,
+      }}>
+        –
+      </div>
+
+      {/* Col 4: close time stepper */}
+      <TimeStepper
+        value={config.closeTime}
+        min={Math.min(MAX_CLOSE_MINS, openMin + 30)}
+        max={MAX_CLOSE_MINS}
+        disabled={!config.enabled}
+        onChange={(t) => onChange({ closeTime: t })}
+      />
+
+      {/* Col 5: timeline track */}
+      <div style={{
+        position: 'relative',
+        height: 34,
+        borderRadius: 10,
+        background: '#f1e9d9',
+        backgroundImage: 'repeating-linear-gradient(90deg, rgba(30,21,8,0.07) 0 1px, transparent 1px 15%)',
+        overflow: 'hidden',
+      }}>
+        {config.enabled ? (
+          <div style={{
+            position: 'absolute',
+            top: 3,
+            bottom: 3,
+            left: `${leftPct}%`,
+            width: `${widthPct}%`,
+            borderRadius: 8,
+            background: 'var(--amber)',
+          }} />
+        ) : (
+          <div style={{
+            position: 'absolute',
+            left: 14,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            fontFamily: 'var(--font-jost), sans-serif',
+            fontWeight: 700,
+            fontSize: 12,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            color: '#bbac8e',
+          }}>
+            CLOSED
+          </div>
+        )}
+      </div>
+
+      {/* Col 6: copy button */}
+      <button
+        type="button"
+        title="Copy this day to all"
+        onClick={onCopyToAll}
+        style={{
+          width: 30,
+          height: 30,
+          borderRadius: 9,
+          border: 'none',
+          background: hovered ? 'var(--cream-hover)' : 'transparent',
+          color: hovered ? 'var(--amber)' : '#a8997c',
+          opacity: hovered ? 1 : 0.35,
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'opacity 150ms, background 150ms, color 150ms',
+          flexShrink: 0,
+        }}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.9" fill="none" />
+          <path d="M5 15V6a2 2 0 012-2h9" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" fill="none" />
+        </svg>
+      </button>
+    </div>
+  )
+}
+
+// ---- StyledSelect -----------------------------------------------------------
+
+function StyledSelect({
+  label,
+  value,
+  onChange,
+  options,
+  hint,
 }: {
   label: string
-  active: boolean
-  disabled: boolean
-  onClick: () => void
+  value: string
+  onChange: (v: string) => void
+  options: { value: string; label: string }[]
+  hint?: string
 }) {
+  const [focused, setFocused] = useState(false)
+
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      style={{
-        padding: '4px 10px',
-        borderRadius: '999px',
-        border: '1px solid',
-        borderColor: active
-          ? 'var(--amber)'
-          : 'rgba(156,139,106,0.3)',
-        backgroundColor: active
-          ? 'rgba(212,130,10,0.12)'
-          : 'transparent',
-        color: active ? 'var(--amber)' : 'var(--stone)',
+    <div>
+      <div style={{
         fontFamily: 'var(--font-jost), sans-serif',
-        fontSize: '11px',
-        fontWeight: 600,
-        letterSpacing: '0.06em',
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        opacity: disabled ? 0.45 : 1,
-        transition: 'all 0.15s',
-      }}
-    >
-      {label}
-    </button>
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: '0.13em',
+        textTransform: 'uppercase',
+        color: 'var(--stone)',
+        marginBottom: 8,
+      }}>
+        {label}
+      </div>
+      <div style={{ position: 'relative' }}>
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={{
+            width: '100%',
+            padding: '17px 44px 17px 17px',
+            background: 'var(--cream-card)',
+            border: `1.5px solid ${focused ? 'rgba(212,130,10,0.6)' : 'var(--cream-border)'}`,
+            borderRadius: 14,
+            fontFamily: 'var(--font-jost), sans-serif',
+            fontSize: 15,
+            fontWeight: 500,
+            color: 'var(--earth)',
+            outline: 'none',
+            appearance: 'none',
+            WebkitAppearance: 'none',
+            cursor: 'pointer',
+            boxShadow: focused ? '0 0 0 3px rgba(212,130,10,0.12)' : 'none',
+            transition: 'border-color 150ms, box-shadow 150ms',
+          }}
+        >
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#9c8b6a"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: '50%',
+            right: 17,
+            transform: 'translateY(-50%)',
+            pointerEvents: 'none',
+          }}
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </div>
+      {hint && (
+        <p style={{
+          margin: '9px 2px 0',
+          fontFamily: 'var(--font-jost), sans-serif',
+          fontSize: 13,
+          color: '#9a8e7b',
+          lineHeight: 1.4,
+        }}>
+          {hint}
+        </p>
+      )}
+    </div>
   )
 }
