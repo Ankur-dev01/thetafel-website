@@ -228,6 +228,216 @@ export default function SubscriptionPicker({
     }
   }
 
+  const renderTierCard = (tier: SubscriptionTier) => {
+    const cfg = TIER_CONFIG[tier];
+    const isSelected = selectedTier === tier;
+    const isHovered = hoveredTier === tier && !isSelected;
+    const isPremium = tier === 'premium';
+
+    let transform = 'translateY(0)';
+    if (!prefersReducedMotion && (isSelected || isHovered)) {
+      transform = 'translateY(-3px)';
+    }
+
+    const cardBg = isPremium ? '#1e1508' : (isSelected ? '#fffdf6' : 'var(--color-cream-100,#fbf6ec)');
+    const cardBorder = isPremium
+      ? isSelected ? `2px solid ${cfg.accentColor}` : '1.5px solid #6e5836'
+      : isSelected ? `2px solid ${cfg.accentColor}` : '1.5px solid #e6d4ac';
+    const cardShadow = isPremium
+      ? isSelected
+        ? '0 20px 46px rgba(40,30,10,0.4), 0 0 0 5px rgba(232,178,80,0.14)'
+        : '0 10px 26px rgba(40,30,10,0.26)'
+      : isSelected
+        ? '0 14px 32px rgba(40,30,10,0.12)'
+        : '0 1px 2px rgba(40,30,10,0.04)';
+
+    const radioActiveBg = cfg.accentColor;
+    const featureTextColor = isPremium ? '#e5dac4' : '#4a4031';
+    const featureCheckColor = cfg.accentColor;
+    const planNameColor = isPremium ? '#f5ecd8' : '#1e1508';
+    const priceColor = isPremium ? '#e8b250' : '#1e1508';
+    const perMonthColor = isPremium ? '#a99877' : 'var(--color-stone-400,#b0a080)';
+    const taglineColor = isPremium ? '#b8a88f' : 'var(--color-stone-500,#9c8b6a)';
+    const dotLeaderColor = isPremium ? 'rgba(232,178,80,0.4)' : '#d8c49a';
+
+    return (
+      <div
+        key={tier}
+        role="radio"
+        aria-checked={isSelected}
+        tabIndex={0}
+        onClick={() => handleSelectTier(tier)}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSelectTier(tier); } }}
+        onMouseEnter={() => setHoveredTier(tier)}
+        onMouseLeave={() => setHoveredTier(null)}
+        style={{
+          position: 'relative',
+          background: cardBg,
+          border: cardBorder,
+          borderRadius: 14,
+          padding: '26px 22px',
+          cursor: 'pointer',
+          boxShadow: cardShadow,
+          transform,
+          transition: prefersReducedMotion ? 'box-shadow 120ms' : 'transform 200ms ease, box-shadow 200ms ease, border-color 160ms ease',
+          outline: 'none',
+          userSelect: 'none',
+          height: '100%',
+          boxSizing: 'border-box',
+        }}
+      >
+        {/* Chef's selection badge — Premium only */}
+        {isPremium && (
+          <div style={{
+            position: 'absolute',
+            top: -13,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            whiteSpace: 'nowrap',
+            padding: '6px 16px',
+            borderRadius: 9999,
+            background: 'var(--color-amber-500,#d4820a)',
+            border: '1px solid var(--color-amber-700,#8a5208)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25), 0 6px 16px rgba(212,130,10,0.4)',
+            fontFamily: 'var(--font-jost), Jost, sans-serif',
+            fontWeight: 800,
+            fontSize: 10.5,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase' as const,
+            color: '#3a2a0e',
+          }}>
+            {t('badge')}
+          </div>
+        )}
+
+        {/* Top row: course label + radio */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+          <span style={{
+            fontFamily: 'var(--font-jost), Jost, sans-serif',
+            fontWeight: 700,
+            fontSize: 11,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase' as const,
+            color: cfg.accentColor,
+          }}>
+            {tierCourseLabel[tier]}
+          </span>
+          <div style={{
+            width: 24,
+            height: 24,
+            borderRadius: 9999,
+            background: isSelected ? radioActiveBg : 'transparent',
+            border: isSelected ? `2px solid ${radioActiveBg}` : `2px solid ${isPremium ? '#6e5836' : '#d9cdb6'}`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.25s ease',
+            flexShrink: 0,
+          }}>
+            {isSelected && (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+                <path d="M5 13l4 4L19 7" stroke={isPremium ? '#1e1508' : 'white'} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            )}
+          </div>
+        </div>
+
+        {/* Plan name */}
+        <div style={{
+          fontFamily: 'var(--font-raleway), Raleway, sans-serif',
+          fontWeight: 900,
+          fontSize: 30,
+          letterSpacing: '-0.02em',
+          lineHeight: 1,
+          color: planNameColor,
+          marginBottom: 12,
+        }}>
+          {tierName[tier]}
+        </div>
+
+        {/* Price row */}
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
+          <span style={{
+            fontFamily: 'var(--font-raleway), Raleway, sans-serif',
+            fontWeight: 900,
+            fontSize: 38,
+            letterSpacing: '-0.025em',
+            lineHeight: 1,
+            color: priceColor,
+          }}>
+            {formatEuros(TIER_MONTHLY_CENTS[tier], locale)}
+          </span>
+          <div style={{ flex: 1, borderBottom: `1.5px dotted ${dotLeaderColor}`, transform: 'translateY(-5px)' }} />
+          <span style={{
+            fontFamily: 'var(--font-jost), Jost, sans-serif',
+            fontWeight: 600,
+            fontSize: 13,
+            color: perMonthColor,
+            whiteSpace: 'nowrap',
+          }}>
+            / {t('perMonthShort')}
+          </span>
+        </div>
+
+        {/* Tagline */}
+        <p style={{
+          fontFamily: 'var(--font-jost), Jost, sans-serif',
+          fontWeight: 400,
+          fontStyle: 'italic',
+          fontSize: 13.5,
+          lineHeight: 1.45,
+          color: taglineColor,
+          margin: '0 0 16px',
+        }}>
+          {tierTagline[tier]}
+        </p>
+
+        {/* Feature list */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+          {TIER_FEATURE_LISTS[tier].map((feature) => {
+            if (feature.isUpgradeHeader) {
+              return (
+                <div
+                  key={feature.key}
+                  style={{
+                    fontFamily: 'var(--font-jost), Jost, sans-serif',
+                    fontWeight: 700,
+                    fontSize: 12,
+                    color: isPremium ? '#e0b86a' : 'var(--color-amber-700,#8a5208)',
+                    marginBottom: 11,
+                    paddingBottom: 11,
+                    borderBottom: `1px solid ${isPremium ? '#4a3e2e' : '#eadbb8'}`,
+                  }}
+                >
+                  {t(`features.${feature.key}`)}, plus
+                </div>
+              );
+            }
+            return (
+              <div
+                key={feature.key}
+                style={{ display: 'flex', alignItems: 'flex-start', gap: 9 }}
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden style={{ flexShrink: 0, marginTop: 2, color: featureCheckColor }}>
+                  <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span style={{
+                  fontFamily: 'var(--font-jost), Jost, sans-serif',
+                  fontWeight: 400,
+                  fontSize: 13.5,
+                  lineHeight: 1.4,
+                  color: featureTextColor,
+                }}>
+                  {t(`features.${feature.key}`)}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <StepFrame
       locale={locale}
@@ -264,11 +474,13 @@ export default function SubscriptionPicker({
       }
     >
       <style>{`
-        .sub-plan-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-items: start; }
+        .sub-cards-outer { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; align-items: start; }
+        .sub-cards-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
         .sub-qr-cards   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .sub-compliments-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 28px; }
         @media (max-width: 768px) {
-          .sub-plan-cards { grid-template-columns: 1fr !important; }
+          .sub-cards-outer { grid-template-columns: 1fr !important; }
+          .sub-cards-inner { grid-template-columns: 1fr !important; }
           .sub-qr-cards   { grid-template-columns: 1fr !important; }
           .sub-menu-inner { padding: 28px 22px 32px !important; }
           .sub-title      { font-size: 42px !important; }
@@ -405,217 +617,15 @@ export default function SubscriptionPicker({
 
             {/* ── Plan cards ───────────────────────────────────────────────── */}
             <div
-              className="sub-plan-cards"
+              className="sub-cards-outer"
               role="radiogroup"
               aria-label={t('title')}
             >
-              {TIERS.map((tier) => {
-                const cfg = TIER_CONFIG[tier];
-                const isSelected = selectedTier === tier;
-                const isHovered = hoveredTier === tier && !isSelected;
-                const isPremium = tier === 'premium';
-
-                let transform = 'translateY(0)';
-                if (!prefersReducedMotion && (isSelected || isHovered)) {
-                  transform = 'translateY(-3px)';
-                }
-
-                const cardBg = isPremium ? '#1e1508' : (isSelected ? '#fffdf6' : 'var(--color-cream-100,#fbf6ec)');
-                const cardBorder = isPremium
-                  ? isSelected ? `2px solid ${cfg.accentColor}` : '1.5px solid #6e5836'
-                  : isSelected ? `2px solid ${cfg.accentColor}` : '1.5px solid #e6d4ac';
-                const cardShadow = isPremium
-                  ? isSelected
-                    ? '0 20px 46px rgba(40,30,10,0.4), 0 0 0 5px rgba(232,178,80,0.14)'
-                    : '0 10px 26px rgba(40,30,10,0.26)'
-                  : isSelected
-                    ? '0 14px 32px rgba(40,30,10,0.12)'
-                    : '0 1px 2px rgba(40,30,10,0.04)';
-
-                const radioActiveBg = isPremium ? cfg.accentColor : cfg.accentColor;
-                const featureTextColor = isPremium ? '#e5dac4' : '#4a4031';
-                const featureCheckColor = cfg.accentColor;
-                const planNameColor = isPremium ? '#f5ecd8' : '#1e1508';
-                const priceColor = isPremium ? '#e8b250' : '#1e1508';
-                const perMonthColor = isPremium ? '#a99877' : 'var(--color-stone-400,#b0a080)';
-                const taglineColor = isPremium ? '#b8a88f' : 'var(--color-stone-500,#9c8b6a)';
-                const dotLeaderColor = isPremium ? 'rgba(232,178,80,0.4)' : '#d8c49a';
-
-                return (
-                  <div
-                    key={tier}
-                    role="radio"
-                    aria-checked={isSelected}
-                    tabIndex={0}
-                    onClick={() => handleSelectTier(tier)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSelectTier(tier); } }}
-                    onMouseEnter={() => setHoveredTier(tier)}
-                    onMouseLeave={() => setHoveredTier(null)}
-                    style={{
-                      position: 'relative',
-                      background: cardBg,
-                      border: cardBorder,
-                      borderRadius: 14,
-                      padding: '26px 22px',
-                      cursor: 'pointer',
-                      boxShadow: cardShadow,
-                      transform,
-                      transition: prefersReducedMotion ? 'box-shadow 120ms' : 'transform 200ms ease, box-shadow 200ms ease, border-color 160ms ease',
-                      outline: 'none',
-                      userSelect: 'none',
-                    }}
-                  >
-                    {/* Chef's selection badge — Premium only */}
-                    {isPremium && (
-                      <div style={{
-                        position: 'absolute',
-                        top: -13,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        whiteSpace: 'nowrap',
-                        padding: '6px 16px',
-                        borderRadius: 9999,
-                        background: 'var(--color-amber-500,#d4820a)',
-                        border: '1px solid var(--color-amber-700,#8a5208)',
-                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25), 0 6px 16px rgba(212,130,10,0.4)',
-                        fontFamily: 'var(--font-jost), Jost, sans-serif',
-                        fontWeight: 800,
-                        fontSize: 10.5,
-                        letterSpacing: '0.14em',
-                        textTransform: 'uppercase',
-                        color: '#3a2a0e',
-                      }}>
-                        {t('badge')}
-                      </div>
-                    )}
-
-                    {/* Top row: course label + radio */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                      <span style={{
-                        fontFamily: 'var(--font-jost), Jost, sans-serif',
-                        fontWeight: 700,
-                        fontSize: 11,
-                        letterSpacing: '0.14em',
-                        textTransform: 'uppercase',
-                        color: cfg.accentColor,
-                      }}>
-                        {tierCourseLabel[tier]}
-                      </span>
-                      <div style={{
-                        width: 24,
-                        height: 24,
-                        borderRadius: 9999,
-                        background: isSelected ? radioActiveBg : 'transparent',
-                        border: isSelected ? `2px solid ${radioActiveBg}` : `2px solid ${isPremium ? '#6e5836' : '#d9cdb6'}`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'all 0.25s ease',
-                        flexShrink: 0,
-                      }}>
-                        {isSelected && (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-                            <path d="M5 13l4 4L19 7" stroke={isPremium ? '#1e1508' : 'white'} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Plan name */}
-                    <div style={{
-                      fontFamily: 'var(--font-raleway), Raleway, sans-serif',
-                      fontWeight: 900,
-                      fontSize: 30,
-                      letterSpacing: '-0.02em',
-                      lineHeight: 1,
-                      color: planNameColor,
-                      marginBottom: 12,
-                    }}>
-                      {tierName[tier]}
-                    </div>
-
-                    {/* Price row */}
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
-                      <span style={{
-                        fontFamily: 'var(--font-raleway), Raleway, sans-serif',
-                        fontWeight: 900,
-                        fontSize: 38,
-                        letterSpacing: '-0.025em',
-                        lineHeight: 1,
-                        color: priceColor,
-                      }}>
-                        {formatEuros(TIER_MONTHLY_CENTS[tier], locale)}
-                      </span>
-                      <div style={{ flex: 1, borderBottom: `1.5px dotted ${dotLeaderColor}`, transform: 'translateY(-5px)' }} />
-                      <span style={{
-                        fontFamily: 'var(--font-jost), Jost, sans-serif',
-                        fontWeight: 600,
-                        fontSize: 13,
-                        color: perMonthColor,
-                        whiteSpace: 'nowrap',
-                      }}>
-                        / {t('perMonthShort')}
-                      </span>
-                    </div>
-
-                    {/* Tagline */}
-                    <p style={{
-                      fontFamily: 'var(--font-jost), Jost, sans-serif',
-                      fontWeight: 400,
-                      fontStyle: 'italic',
-                      fontSize: 13.5,
-                      lineHeight: 1.45,
-                      color: taglineColor,
-                      margin: '0 0 16px',
-                    }}>
-                      {tierTagline[tier]}
-                    </p>
-
-                    {/* Feature list */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-                      {TIER_FEATURE_LISTS[tier].map((feature) => {
-                        if (feature.isUpgradeHeader) {
-                          return (
-                            <div
-                              key={feature.key}
-                              style={{
-                                fontFamily: 'var(--font-jost), Jost, sans-serif',
-                                fontWeight: 700,
-                                fontSize: 12,
-                                color: isPremium ? '#e0b86a' : 'var(--color-amber-700,#8a5208)',
-                                marginBottom: 11,
-                                paddingBottom: 11,
-                                borderBottom: `1px solid ${isPremium ? '#4a3e2e' : '#eadbb8'}`,
-                              }}
-                            >
-                              {t(`features.${feature.key}`)}, plus
-                            </div>
-                          );
-                        }
-                        return (
-                          <div
-                            key={feature.key}
-                            style={{ display: 'flex', alignItems: 'flex-start', gap: 9 }}
-                          >
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden style={{ flexShrink: 0, marginTop: 2, color: featureCheckColor }}>
-                              <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                            <span style={{
-                              fontFamily: 'var(--font-jost), Jost, sans-serif',
-                              fontWeight: 400,
-                              fontSize: 13.5,
-                              lineHeight: 1.4,
-                              color: featureTextColor,
-                            }}>
-                              {t(`features.${feature.key}`)}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
+              <div className="sub-cards-inner">
+                {renderTierCard('starter')}
+                {renderTierCard('plus')}
+              </div>
+              {renderTierCard('premium')}
             </div>
 
             {/* ── Compliments of the house ─────────────────────────────────── */}
