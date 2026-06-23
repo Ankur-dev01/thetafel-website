@@ -201,11 +201,6 @@ export default function SubscriptionPicker({
     plus:    t('tiers.plus.name'),
     premium: t('tiers.premium.name'),
   };
-  const tierCourseLabel: Record<SubscriptionTier, string> = {
-    starter: t('tiers.starter.courseLabel'),
-    plus:    t('tiers.plus.courseLabel'),
-    premium: t('tiers.premium.courseLabel'),
-  };
   const tierTagline: Record<SubscriptionTier, string> = {
     starter: t('tiers.starter.tagline'),
     plus:    t('tiers.plus.tagline'),
@@ -310,36 +305,26 @@ export default function SubscriptionPicker({
           </div>
         )}
 
-        {/* Top row: course label + radio */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <span style={{
-            fontFamily: 'var(--font-jost), Jost, sans-serif',
-            fontWeight: 700,
-            fontSize: 11,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase' as const,
-            color: cfg.accentColor,
-          }}>
-            {tierCourseLabel[tier]}
-          </span>
-          <div style={{
-            width: 24,
-            height: 24,
-            borderRadius: 9999,
-            background: isSelected ? radioActiveBg : 'transparent',
-            border: isSelected ? `2px solid ${radioActiveBg}` : `2px solid ${isPremium ? '#6e5836' : '#d9cdb6'}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.25s ease',
-            flexShrink: 0,
-          }}>
-            {isSelected && (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-                <path d="M5 13l4 4L19 7" stroke={isPremium ? '#1e1508' : 'white'} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            )}
-          </div>
+        {/* Radio — absolute top-right */}
+        <div style={{
+          position: 'absolute',
+          top: 22,
+          right: 22,
+          width: 24,
+          height: 24,
+          borderRadius: 9999,
+          background: isSelected ? radioActiveBg : 'transparent',
+          border: isSelected ? `2px solid ${radioActiveBg}` : `2px solid ${isPremium ? '#6e5836' : '#d9cdb6'}`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.25s ease',
+        }}>
+          {isSelected && (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path d="M5 13l4 4L19 7" stroke={isPremium ? '#1e1508' : 'white'} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          )}
         </div>
 
         {/* Plan name */}
@@ -351,6 +336,7 @@ export default function SubscriptionPicker({
           lineHeight: 1,
           color: planNameColor,
           marginBottom: 12,
+          paddingRight: 36,
         }}>
           {tierName[tier]}
         </div>

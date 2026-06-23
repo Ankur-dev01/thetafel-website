@@ -698,18 +698,15 @@
       "tiers": {
         "starter": {
           "name": "Starter",
-          "tagline": "Max 30 reserveringen per maand",
-          "courseLabel": "Apéritif"
+          "tagline": "Max 30 reserveringen per maand"
         },
         "plus": {
           "name": "Plus",
-          "tagline": "Voor groeiende restaurants",
-          "courseLabel": "Plat principal"
+          "tagline": "Voor groeiende restaurants"
         },
         "premium": {
           "name": "Premium",
-          "tagline": "Alles inbegrepen",
-          "courseLabel": "Menu dégustation"
+          "tagline": "Alles inbegrepen"
         }
       },
       "qrPlanPicker": {
@@ -726,26 +723,26 @@
         "downgradeNotice": "Je QR-pakket is teruggezet naar QR Basic — QR Premium is alleen beschikbaar met een Premium-abonnement.",
         "dismiss": "Sluiten"
       },
-      "menuEyebrow": "Le Menu · Reservations & QR",
-      "descriptionV2Prefix": "Kies het pakket dat bij je past. De eerste",
-      "descriptionV2Strong": "{trialDays} dagen zijn gratis",
-      "descriptionV2Suffix": "— je betaalt pas vanaf dag {chargeDay}.",
-      "lesPlats": "Les Plats — kies er één",
-      "complimentsLabel": "Compliments of the house",
-      "qrSectionLabel": "À la carte — QR-codes",
+      "menuEyebrow": "Het Menu · Reserveringen & QR",
+      "descriptionV2Prefix": "Kies het plan dat bij je past. De eerste",
+      "descriptionV2Strong": "{trialDays} dagen zijn van het huis",
+      "descriptionV2Suffix": "— je wordt pas op dag {chargeDay} gefactureerd.",
+      "lesPlats": "Jouw plan — kies er één",
+      "complimentsLabel": "Inbegrepen bij elk plan",
+      "qrSectionLabel": "Extra's — QR-codes",
       "qrLockedBadge": "Beschikbaar met Premium",
-      "qrUnlockedBadge": "Inbegrepen bij je Menu dégustation",
-      "qrLockCta": "Voeg Menu dégustation toe om QR-codes te ontgrendelen",
+      "qrUnlockedBadge": "Inbegrepen bij Premium",
+      "qrLockCta": "Schakel over naar Premium om QR-codes te ontgrendelen",
       "tablesLabel": "Tafels met een QR-code",
       "tablesHint": "20 inbegrepen · €11 per tafel daarboven",
-      "additionHeading": "L'addition",
-      "dueToday": "Verschuldigd vandaag",
+      "additionHeading": "Jouw rekening",
+      "dueToday": "Vandaag te betalen",
       "billSubscriptionLabel": "Abonnement — {planName}",
       "billTrialNote": "gratis voor {trialDays} dagen",
       "billOnTheHouse": "gratis",
       "vatLabel": "BTW (21%)",
       "billTotalToday": "Totaal vandaag",
-      "badge": "★ Chef's selectie",
+      "badge": "★ Keuze van de chef",
       "confirmContinue": "Bevestigen & doorgaan",
       "footerSummaryPremiumQr": "{planName} · {qrName} · {tables} tafels",
       "footerSummaryPremium": "{planName} · €0 vandaag",
