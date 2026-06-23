@@ -440,7 +440,7 @@ export default function HoursPage() {
   // ---- Header band shared render ------------------------------------------
 
   const headerBand = (
-    <div style={{ marginBottom: 40 }}>
+    <div className="hours-header-band" style={{ marginBottom: 40 }}>
       {/* Step pill */}
       <div style={{
         display: 'inline-flex',
@@ -571,9 +571,13 @@ export default function HoursPage() {
       savedIndicator={<SavedIndicator state={saveState} locale={locale} />}
     >
       <style>{`
-        @media (max-width: 520px) {
-          .hours-bottom-grid { grid-template-columns: 1fr !important; }
-          .hours-day-grid { grid-template-columns: 100px 72px 14px 72px 1fr 28px !important; gap: 8px !important; }
+        @media (max-width: 768px) {
+          .tf-hour-ruler { display: none !important; }
+          .hours-canvas { padding-top: 18px !important; }
+          .hours-day-grid { grid-template-columns: 96px 1fr 14px 1fr !important; gap: 8px !important; padding: 12px 4px !important; }
+          .timeline-track { display: none !important; }
+          .copy-to-all-button { display: none !important; }
+          .hours-bottom-grid { grid-template-columns: 1fr !important; gap: 18px !important; }
         }
       `}</style>
 
@@ -618,17 +622,20 @@ export default function HoursPage() {
       </div>
 
       {/* Schedule canvas */}
-      <div style={{
-        background: 'var(--cream-card)',
-        border: '1px solid #ebe2cf',
-        borderRadius: 22,
-        padding: '8px 24px 18px',
-        boxShadow: '0 2px 8px rgba(40,30,10,0.05)',
-        marginBottom: 34,
-      }}>
+      <div
+        className="hours-canvas"
+        style={{
+          background: 'var(--cream-card)',
+          border: '1px solid #ebe2cf',
+          borderRadius: 22,
+          padding: '8px 24px 18px',
+          boxShadow: '0 2px 8px rgba(40,30,10,0.05)',
+          marginBottom: 34,
+        }}
+      >
         {/* Hour ruler */}
         <div
-          className="hours-day-grid"
+          className="tf-hour-ruler hours-day-grid"
           style={{
             display: 'grid',
             gridTemplateColumns: '118px 86px 14px 86px 1fr 30px',
@@ -946,7 +953,7 @@ function DayRowV2({
       />
 
       {/* Col 5: timeline track */}
-      <div style={{
+      <div className="timeline-track" style={{
         position: 'relative',
         height: 34,
         borderRadius: 10,
@@ -985,6 +992,7 @@ function DayRowV2({
       {/* Col 6: copy button */}
       <button
         type="button"
+        className="copy-to-all-button"
         title="Copy this day to all"
         onClick={onCopyToAll}
         style={{
