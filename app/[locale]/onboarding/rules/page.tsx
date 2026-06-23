@@ -118,14 +118,19 @@ function CardHeader({
   title,
   description,
   right,
+  className,
+  controlsClassName,
 }: {
   iconTile: React.ReactNode
   title: string
   description: string
   right?: React.ReactNode
+  className?: string
+  controlsClassName?: string
 }) {
   return (
     <div
+      className={className}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -160,6 +165,7 @@ function CardHeader({
       </div>
       {right != null && (
         <div
+          className={controlsClassName}
           style={{
             flexShrink: 0,
             display: 'flex',
@@ -184,7 +190,7 @@ function ChipRow({
   onChange: (val: string) => void
 }) {
   return (
-    <div style={{ display: 'flex', gap: 9 }}>
+    <div style={{ display: 'flex', gap: 9, flexWrap: 'wrap' }}>
       {chips.map((chip) => {
         const selected = chip.val === value
         return (
@@ -194,6 +200,7 @@ function ChipRow({
             onClick={() => onChange(chip.val)}
             style={{
               flex: 1,
+              minWidth: 70,
               fontFamily: 'var(--font-jost), Jost, sans-serif',
               fontWeight: 700,
               fontSize: 14,
@@ -705,11 +712,18 @@ export default function RulesPage() {
         @media (max-width: 768px) {
           .rules-grid { grid-template-columns: 1fr !important; }
           .rules-preview-sticky { position: static !important; top: auto !important; }
+          .rules-header-band { flex-direction: column !important; align-items: flex-start !important; gap: 22px !important; }
+          .rules-header-counter { text-align: left !important; }
+          .rules-header-dots { justify-content: flex-start !important; }
+          .rules-party-header { flex-direction: column !important; align-items: stretch !important; gap: 16px !important; }
+          .rules-party-controls { justify-content: space-between !important; }
+          .rules-cap-header { flex-direction: column !important; align-items: stretch !important; gap: 14px !important; }
         }
       `}</style>
 
       {/* ── Header band ────────────────────────────────────────────────────── */}
       <div
+        className="rules-header-band"
         style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -787,7 +801,7 @@ export default function RulesPage() {
         </div>
 
         {/* Counter + progress dots */}
-        <div style={{ flexShrink: 0, textAlign: 'right' }}>
+        <div className="rules-header-counter" style={{ flexShrink: 0, textAlign: 'right' }}>
           <div
             style={{
               fontFamily: 'var(--font-raleway), Raleway, sans-serif',
@@ -810,6 +824,7 @@ export default function RulesPage() {
             </span>
           </div>
           <div
+            className="rules-header-dots"
             style={{
               display: 'flex',
               gap: 3,
@@ -906,6 +921,8 @@ export default function RulesPage() {
           {/* 3c. Maximum party size */}
           <RuleCard>
             <CardHeader
+              className="rules-party-header"
+              controlsClassName="rules-party-controls"
               iconTile={
                 <IconTile
                   bg="var(--sage-bg)"
@@ -940,6 +957,7 @@ export default function RulesPage() {
           {/* 3d. Maximum guests per slot */}
           <RuleCard>
             <CardHeader
+              className="rules-cap-header"
               iconTile={
                 <IconTile
                   bg="var(--amber-bg)"
