@@ -698,15 +698,18 @@
       "tiers": {
         "starter": {
           "name": "Starter",
-          "tagline": "Up to 30 bookings per month"
+          "tagline": "Up to 30 bookings per month",
+          "courseLabel": "Apéritif"
         },
         "plus": {
           "name": "Plus",
-          "tagline": "For growing restaurants"
+          "tagline": "For growing restaurants",
+          "courseLabel": "Plat principal"
         },
         "premium": {
           "name": "Premium",
-          "tagline": "Everything included"
+          "tagline": "Everything included",
+          "courseLabel": "Menu dégustation"
         }
       },
       "qrPlanPicker": {
@@ -723,6 +726,30 @@
         "downgradeNotice": "Your QR plan has been reset to QR Basic — QR Premium is only available with a Premium subscription.",
         "dismiss": "Dismiss"
       },
+      "menuEyebrow": "Le Menu · Reservations & QR",
+      "descriptionV2Prefix": "Pick the plate that suits your table. The first",
+      "descriptionV2Strong": "{trialDays} days are on the house",
+      "descriptionV2Suffix": "— you’re not charged until day {chargeDay}.",
+      "lesPlats": "Les Plats — choose one",
+      "complimentsLabel": "Compliments of the house",
+      "qrSectionLabel": "À la carte — QR codes",
+      "qrLockedBadge": "Available with Premium",
+      "qrUnlockedBadge": "Included with your Menu dégustation",
+      "qrLockCta": "Add the Menu dégustation to unlock QR codes",
+      "tablesLabel": "Tables needing a QR code",
+      "tablesHint": "20 included · €11 per table beyond that",
+      "additionHeading": "L’addition",
+      "dueToday": "Due today",
+      "billSubscriptionLabel": "Subscription — {planName}",
+      "billTrialNote": "free for {trialDays} days",
+      "billOnTheHouse": "on the house",
+      "vatLabel": "VAT (21%)",
+      "billTotalToday": "Total today",
+      "badge": "★ Chef’s selection",
+      "confirmContinue": "Confirm & continue",
+      "footerSummaryPremiumQr": "{planName} · {qrName} · {tables} tables",
+      "footerSummaryPremium": "{planName} · €0 today",
+      "footerSummaryDefault": "{planName} · nothing due today",
       "vatNotice": "Tariffs for businesses — VAT is deductible via your VAT return.",
       "oneTimeFees": {
         "heading": "One-time costs",

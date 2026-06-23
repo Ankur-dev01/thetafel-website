@@ -698,15 +698,18 @@
       "tiers": {
         "starter": {
           "name": "Starter",
-          "tagline": "Max 30 reserveringen per maand"
+          "tagline": "Max 30 reserveringen per maand",
+          "courseLabel": "Apéritif"
         },
         "plus": {
           "name": "Plus",
-          "tagline": "Voor groeiende restaurants"
+          "tagline": "Voor groeiende restaurants",
+          "courseLabel": "Plat principal"
         },
         "premium": {
           "name": "Premium",
-          "tagline": "Alles inbegrepen"
+          "tagline": "Alles inbegrepen",
+          "courseLabel": "Menu dégustation"
         }
       },
       "qrPlanPicker": {
@@ -723,6 +726,30 @@
         "downgradeNotice": "Je QR-pakket is teruggezet naar QR Basic — QR Premium is alleen beschikbaar met een Premium-abonnement.",
         "dismiss": "Sluiten"
       },
+      "menuEyebrow": "Le Menu · Reservations & QR",
+      "descriptionV2Prefix": "Kies het pakket dat bij je past. De eerste",
+      "descriptionV2Strong": "{trialDays} dagen zijn gratis",
+      "descriptionV2Suffix": "— je betaalt pas vanaf dag {chargeDay}.",
+      "lesPlats": "Les Plats — kies er één",
+      "complimentsLabel": "Compliments of the house",
+      "qrSectionLabel": "À la carte — QR-codes",
+      "qrLockedBadge": "Beschikbaar met Premium",
+      "qrUnlockedBadge": "Inbegrepen bij je Menu dégustation",
+      "qrLockCta": "Voeg Menu dégustation toe om QR-codes te ontgrendelen",
+      "tablesLabel": "Tafels met een QR-code",
+      "tablesHint": "20 inbegrepen · €11 per tafel daarboven",
+      "additionHeading": "L'addition",
+      "dueToday": "Verschuldigd vandaag",
+      "billSubscriptionLabel": "Abonnement — {planName}",
+      "billTrialNote": "gratis voor {trialDays} dagen",
+      "billOnTheHouse": "gratis",
+      "vatLabel": "BTW (21%)",
+      "billTotalToday": "Totaal vandaag",
+      "badge": "★ Chef's selectie",
+      "confirmContinue": "Bevestigen & doorgaan",
+      "footerSummaryPremiumQr": "{planName} · {qrName} · {tables} tafels",
+      "footerSummaryPremium": "{planName} · €0 vandaag",
+      "footerSummaryDefault": "{planName} · niets te betalen",
       "vatNotice": "Tarieven voor ondernemers — BTW is aftrekbaar via je btw-aangifte.",
       "oneTimeFees": {
         "heading": "Eenmalige kosten",
