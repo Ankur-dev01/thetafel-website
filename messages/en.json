@@ -382,23 +382,32 @@
     "guests": {
       "serviceTag": "Reservations",
       "heading": "Guest experience",
-      "sub": "Set the confirmation message guests receive and the information you collect at booking.",
+      "sub": "Write the welcome every guest receives, then choose what you'd like to know before they arrive.",
       "continue": "Continue",
       "saveFailed": "Save failed. Please try again.",
 
       "templateHeading": "Confirmation message",
-      "templateSub": "This message goes out to every guest after a confirmed booking.",
+      "templateSub": "This note goes out to every guest the moment a booking is confirmed.",
       "templatePlaceholder": "Dear '{naam}', thanks for booking with '{restaurant}'…",
       "tabNl": "NL",
       "tabEn": "EN",
-      "variablesHint": "Click a variable to insert it at the cursor.",
+      "variablesHint": "Click a variable to drop it in at the cursor.",
       "charCount": "{count} / 5000",
 
-      "previewHeading": "Preview",
+      "langLabel": "Language",
+      "varHelper": "Click a variable to drop it in at the cursor.",
+
+      "previewHeading": "Preview — how it arrives",
       "previewEmpty": "Start typing to see your preview.",
+      "tabEmail": "Email",
+      "tabWhatsApp": "WhatsApp",
+      "previewNoteEmail": "Sent by email the instant a booking is confirmed.",
+      "previewNoteWhatsApp": "Sent via WhatsApp — available on the Premium plan.",
 
       "questionsHeading": "Questions during booking",
-      "questionsSub": "What do you want to collect from guests at booking?",
+      "questionsSub": "What you ask each guest when they reserve. Turn one on to preview exactly what they'll see.",
+      "questionsCount": "{count} of 3 on",
+      "questionGuestSees": "What the guest sees",
 
       "questionAllergiesLabel": "Allergies and diet",
       "questionAllergiesDescription": "Guest indicates allergies or dietary requirements.",
