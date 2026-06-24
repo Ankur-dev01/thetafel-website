@@ -3,6 +3,15 @@ import { ConsumerShellTopBar } from '@/components/consumer/ConsumerShellTopBar'
 import { ConsumerShellFooter } from '@/components/consumer/ConsumerShellFooter'
 
 /**
+ * ISR baseline for all consumer pages under /r/[slug]/...
+ *
+ * Pages re-render at most every 60 seconds on a fresh visit. On-demand
+ * invalidation via `invalidateConsumerPage(slug)` purges the cache earlier
+ * when the restaurant updates data in the dashboard.
+ */
+export const revalidate = 60
+
+/**
  * Layout for every public consumer page under /r/[slug]/...
  *
  * Renders only the surrounding chrome:
@@ -10,11 +19,7 @@ import { ConsumerShellFooter } from '@/components/consumer/ConsumerShellFooter'
  *   - a thin footer with legal / privacy links
  *
  * The restaurant-specific header (photo, hours, address) is rendered inside
- * each page in C0.2 onwards, so that this layout can also be used for the
- * 404 page (which has no restaurant to render).
- *
- * ISR / cache headers are configured in C0.3 — for now this layout is
- * dynamic on every request.
+ * each page, so this layout can also wrap the 404.
  */
 export default function ConsumerSlugLayout({
   children,

@@ -1,5 +1,5 @@
 import { cache } from 'react'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createSupabasePublicClient } from './supabasePublic'
 
 /**
  * Public-facing restaurant shape returned to consumer pages.
@@ -39,13 +39,15 @@ export type PublicRestaurant = {
  *
  * We pin status='live' explicitly here (in addition to relying on RLS) because
  * the `restaurants_owner_all` policy permits an owner to read their own row at
- * any status. Without the explicit filter, an owner visiting their own
- * public URL during onboarding would see a half-finished page render instead
- * of the expected 404.
+ * any status. The cookies-free public client used here doesn't carry an auth
+ * session so the owner-policy wouldn't apply anyway — but the explicit filter
+ * is kept as defence in depth in case the client ever changes.
  *
- * Wrapped in React's cache() so that multiple components in the same server
- * render that all need the restaurant (layout, page, header) only trigger one
- * Supabase round-trip per request.
+ * Uses the public (anon-only, cookies-free) Supabase client so the calling
+ * page can be statically rendered with ISR.
+ *
+ * Wrapped in React.cache so that multiple components in the same render
+ * (layout, page, header) trigger a single Supabase round-trip per request.
  */
 export const resolveRestaurantBySlug = cache(
   async (slug: string): Promise<PublicRestaurant | null> => {
@@ -53,7 +55,7 @@ export const resolveRestaurantBySlug = cache(
       return null
     }
 
-    const supabase = await createSupabaseServerClient()
+    const supabase = createSupabasePublicClient()
 
     const { data, error } = await supabase
       .from('restaurants')

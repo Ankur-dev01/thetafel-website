@@ -4,6 +4,8 @@ import { resolveRestaurantBySlug } from '@/lib/consumer/resolveRestaurant'
 import type { PublicRestaurant } from '@/lib/consumer/resolveRestaurant'
 import { RestaurantHeader } from '@/components/consumer/RestaurantHeader'
 
+export const revalidate = 60
+
 /**
  * Bare /r/[slug]/ landing page.
  *

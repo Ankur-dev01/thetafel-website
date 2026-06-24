@@ -1,5 +1,5 @@
 import { cache } from 'react'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createSupabasePublicClient } from './supabasePublic'
 
 export type AvailabilityRow = {
   day_of_week: number // 1=Mon ... 7=Sun (ISO 8601)
@@ -13,19 +13,17 @@ export type AvailabilityRow = {
 /**
  * Resolve all active availability rows for a restaurant.
  *
- * Wrapped in React.cache so multiple components in the same render that need
- * hours (header, booking form, etc.) hit Supabase only once. RLS guarantees
- * we only see rows for live restaurants.
+ * Uses the public (anon-only, cookies-free) Supabase client so the calling
+ * page can be statically rendered with ISR. Inactive rows are excluded — a
+ * temporarily disabled day reports as closed.
  *
- * Returns rows ordered by day_of_week then open_time for deterministic
- * downstream rendering. Inactive rows are excluded — if a restaurant has
- * temporarily disabled a day, it should be reported as closed.
+ * RLS guarantees we only see rows for live restaurants.
  */
 export const resolveHoursForRestaurant = cache(
   async (restaurantId: string): Promise<AvailabilityRow[]> => {
     if (!restaurantId || typeof restaurantId !== 'string') return []
 
-    const supabase = await createSupabaseServerClient()
+    const supabase = createSupabasePublicClient()
     const { data, error } = await supabase
       .from('availability')
       .select(

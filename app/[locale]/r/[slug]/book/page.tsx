@@ -2,9 +2,10 @@ import { notFound } from 'next/navigation'
 import { resolveRestaurantBySlug } from '@/lib/consumer/resolveRestaurant'
 import { RestaurantHeader } from '@/components/consumer/RestaurantHeader'
 
+export const revalidate = 60
+
 /**
  * Placeholder for the booking flow (real implementation in C4).
- * Renders the shared restaurant header so we can verify C0.2 visually.
  */
 export default async function BookingPlaceholderPage({
   params,
