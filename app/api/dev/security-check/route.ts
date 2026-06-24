@@ -16,6 +16,7 @@ import {
   generateMagicLinkToken,
   hashMagicLinkToken,
 } from '@/lib/consumer/magicLinks'
+import { guestInputSchema, flattenZodErrors } from '@/lib/consumer/schemas'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -33,6 +34,7 @@ const NO_STORE = { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
  *   GET ?action=audit_test&restaurantId=<uuid>
  *   GET ?action=doorman_test&restaurantId=<uuid>&doormanAction=booking.create
  *   GET ?action=magic_link_test
+ *   GET ?action=sanitize_test&name=...&email=...&phone=...&marketing=on
  */
 export async function GET(request: NextRequest) {
   if (process.env.NODE_ENV === 'production') {
@@ -46,12 +48,7 @@ export async function GET(request: NextRequest) {
   if (action === 'rate_limit_test') {
     const result = await checkConsumerRateLimit('booking_submit', ip)
     return NextResponse.json(
-      {
-        action: 'rate_limit_test',
-        callerIp: redactIp(ip),
-        result,
-        note: 'In NODE_ENV=development the helper bypasses Redis.',
-      },
+      { action: 'rate_limit_test', callerIp: redactIp(ip), result },
       { headers: { ...NO_STORE, ...rateLimitHeaders(result) } }
     )
   }
@@ -92,8 +89,6 @@ export async function GET(request: NextRequest) {
         callerIp: redactIp(ip),
         tokenPrefix: token ? token.slice(0, 8) : null,
         result,
-        note:
-          'With no TURNSTILE_SECRET_KEY set in dev, this always returns ok=true with reason=dev_bypass. Set the env var to actually call Cloudflare siteverify.',
       },
       { headers: NO_STORE }
     )
@@ -110,19 +105,13 @@ export async function GET(request: NextRequest) {
     const ok = await auditLog({
       restaurantId,
       eventType: 'dev.audit_test',
-      eventData: { ts: new Date().toISOString(), note: 'invoked via dev endpoint' },
+      eventData: { ts: new Date().toISOString() },
       actorType: 'system',
       ipAddress: ip,
       userAgent: request.headers.get('user-agent') ?? null,
     })
     return NextResponse.json(
-      {
-        action: 'audit_test',
-        callerIp: redactIp(ip),
-        wrote: ok,
-        note:
-          'Look in Supabase consumer_audit_logs table — newest row should have event_type=dev.audit_test',
-      },
+      { action: 'audit_test', callerIp: redactIp(ip), wrote: ok },
       { headers: NO_STORE }
     )
   }
@@ -133,11 +122,7 @@ export async function GET(request: NextRequest) {
       url.searchParams.get('doormanAction') ?? 'booking.create'
     if (!restaurantId) {
       return NextResponse.json(
-        {
-          ok: false,
-          error:
-            'Provide ?restaurantId=<uuid>&doormanAction=booking.create | order.qr.create | etc.',
-        },
+        { ok: false, error: 'Provide ?restaurantId=<uuid>&doormanAction=...' },
         { status: 400, headers: NO_STORE }
       )
     }
@@ -184,11 +169,36 @@ export async function GET(request: NextRequest) {
     )
   }
 
+  if (action === 'sanitize_test') {
+    const input = {
+      fullName: url.searchParams.get('name') ?? '',
+      email: url.searchParams.get('email') ?? '',
+      phone: url.searchParams.get('phone') ?? '',
+      marketingConsent: url.searchParams.get('marketing') ?? '',
+    }
+    const parsed = guestInputSchema.safeParse(input)
+    if (parsed.success) {
+      return NextResponse.json(
+        { action: 'sanitize_test', ok: true, input, output: parsed.data },
+        { headers: NO_STORE }
+      )
+    }
+    return NextResponse.json(
+      {
+        action: 'sanitize_test',
+        ok: false,
+        input,
+        errors: flattenZodErrors(parsed.error),
+      },
+      { status: 400, headers: NO_STORE }
+    )
+  }
+
   return NextResponse.json(
     {
       ok: false,
       error:
-        'Provide ?action= rate_limit_test | rate_limit_real | turnstile_test | audit_test | doorman_test | magic_link_test',
+        'Provide ?action= rate_limit_test | rate_limit_real | turnstile_test | audit_test | doorman_test | magic_link_test | sanitize_test',
     },
     { status: 400, headers: NO_STORE }
   )
