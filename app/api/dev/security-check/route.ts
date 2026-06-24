@@ -12,6 +12,10 @@ import {
   rejectionPayload,
   type ConsumerWriteAction,
 } from '@/lib/consumer/guards'
+import {
+  generateMagicLinkToken,
+  hashMagicLinkToken,
+} from '@/lib/consumer/magicLinks'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -28,6 +32,7 @@ const NO_STORE = { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
  *   GET ?action=turnstile_test&token=XYZ
  *   GET ?action=audit_test&restaurantId=<uuid>
  *   GET ?action=doorman_test&restaurantId=<uuid>&doormanAction=booking.create
+ *   GET ?action=magic_link_test
  */
 export async function GET(request: NextRequest) {
   if (process.env.NODE_ENV === 'production') {
@@ -45,8 +50,7 @@ export async function GET(request: NextRequest) {
         action: 'rate_limit_test',
         callerIp: redactIp(ip),
         result,
-        note:
-          'In NODE_ENV=development the helper bypasses Redis. Use action=rate_limit_real for an end-to-end Upstash check.',
+        note: 'In NODE_ENV=development the helper bypasses Redis.',
       },
       { headers: { ...NO_STORE, ...rateLimitHeaders(result) } }
     )
@@ -125,13 +129,14 @@ export async function GET(request: NextRequest) {
 
   if (action === 'doorman_test') {
     const restaurantId = url.searchParams.get('restaurantId') ?? ''
-    const doormanActionParam = url.searchParams.get('doormanAction') ?? 'booking.create'
+    const doormanActionParam =
+      url.searchParams.get('doormanAction') ?? 'booking.create'
     if (!restaurantId) {
       return NextResponse.json(
         {
           ok: false,
           error:
-            'Provide ?restaurantId=<uuid>&doormanAction=booking.create (or order.qr.create / order.takeaway.create / etc.)',
+            'Provide ?restaurantId=<uuid>&doormanAction=booking.create | order.qr.create | etc.',
         },
         { status: 400, headers: NO_STORE }
       )
@@ -157,12 +162,25 @@ export async function GET(request: NextRequest) {
       )
     }
     return NextResponse.json(
-      {
-        action: 'doorman_test',
-        allowed: false,
-        ...rejectionPayload(check),
-      },
+      { action: 'doorman_test', allowed: false, ...rejectionPayload(check) },
       { status: check.httpStatus, headers: NO_STORE }
+    )
+  }
+
+  if (action === 'magic_link_test') {
+    const token = generateMagicLinkToken()
+    const tokenHash = hashMagicLinkToken(token)
+    return NextResponse.json(
+      {
+        action: 'magic_link_test',
+        token,
+        tokenHash,
+        tokenLength: token.length,
+        hashLength: tokenHash.length,
+        note:
+          'Token is 256 bits base64url-encoded (~43 chars). Hash is SHA-256 hex (64 chars). The token is plaintext for this dev endpoint only — never log or echo real tokens.',
+      },
+      { headers: NO_STORE }
     )
   }
 
@@ -170,7 +188,7 @@ export async function GET(request: NextRequest) {
     {
       ok: false,
       error:
-        'Provide ?action=rate_limit_test | rate_limit_real | turnstile_test&token=... | audit_test&restaurantId=... | doorman_test&restaurantId=...&doormanAction=...',
+        'Provide ?action= rate_limit_test | rate_limit_real | turnstile_test | audit_test | doorman_test | magic_link_test',
     },
     { status: 400, headers: NO_STORE }
   )
