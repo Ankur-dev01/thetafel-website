@@ -913,6 +913,13 @@
     }
   },
  "consumer": {
+    "header": {
+      "openTodayPrefix": "Open today",
+      "closedToday": "Closed today",
+      "openSuffixNextDay": "(next day)",
+      "callAria": "Call the restaurant",
+      "mapsAria": "Open in Google Maps"
+    },
     "shell": {
       "homeLinkAria": "Back to The Tafel homepage",
       "footerNavAria": "Legal links",

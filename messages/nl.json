@@ -913,6 +913,13 @@
     }
   },
   "consumer": {
+    "header": {
+      "openTodayPrefix": "Open van",
+      "closedToday": "Gesloten vandaag",
+      "openSuffixNextDay": "(morgen)",
+      "callAria": "Bel het restaurant",
+      "mapsAria": "Open in Google Maps"
+    },
     "shell": {
       "homeLinkAria": "Naar de homepage van The Tafel",
       "footerNavAria": "Juridische links",

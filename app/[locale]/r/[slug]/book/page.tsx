@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation'
 import { resolveRestaurantBySlug } from '@/lib/consumer/resolveRestaurant'
+import { RestaurantHeader } from '@/components/consumer/RestaurantHeader'
 
 /**
  * Placeholder for the booking flow (real implementation in C4).
- * Resolves the slug so an invalid one still 404s, and renders a tiny
- * "coming soon" notice in the layout chrome.
+ * Renders the shared restaurant header so we can verify C0.2 visually.
  */
 export default async function BookingPlaceholderPage({
   params,
@@ -16,24 +16,25 @@ export default async function BookingPlaceholderPage({
   if (!restaurant) notFound()
 
   return (
-    <section
-      style={{
-        flex: '1 1 auto',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '64px 24px',
-      }}
-    >
-      <p
+    <>
+      <RestaurantHeader restaurant={restaurant} />
+      <section
         style={{
-          fontFamily: 'var(--font-jost), sans-serif',
-          fontSize: '14px',
-          color: 'var(--stone, #7a7264)',
+          maxWidth: '1100px',
+          margin: '0 auto',
+          padding: '40px 20px 80px',
         }}
       >
-        /r/{restaurant.slug}/book
-      </p>
-    </section>
+        <p
+          style={{
+            fontFamily: 'var(--font-jost), sans-serif',
+            fontSize: '14px',
+            color: 'var(--stone, #7a7264)',
+          }}
+        >
+          /r/{restaurant.slug}/book — booking form arrives in C4.
+        </p>
+      </section>
+    </>
   )
 }
