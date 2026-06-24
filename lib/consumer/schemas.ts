@@ -27,11 +27,18 @@ import {
 /**
  * Reusable email field. Lowercased + trimmed by preprocess. Validation
  * matches the DB CHECK constraint on guests.email.
+ *
+ * Falls back to raw string (not null) so zod's type check passes and our
+ * friendly refine message fires instead of "Expected string, received null".
  */
 export const emailField = z.preprocess(
-  normalizeEmail,
+  (v) => {
+    if (typeof v !== 'string') return ''
+    return normalizeEmail(v) ?? v
+  },
   z
     .string({ required_error: 'Email is required.' })
+    .min(1, 'Email is required.')
     .max(254, 'Email is too long.')
     .refine(isValidEmail, 'Please enter a valid email address.')
 )
@@ -39,14 +46,21 @@ export const emailField = z.preprocess(
 /**
  * Reusable phone field. Normalises Dutch national and intl-without-plus to
  * E.164 by preprocess. Validates the E.164 form matches DB CHECK.
+ *
+ * Falls back to raw string (not null) so the refine fires the friendly
+ * message instead of zod's internal type error.
  */
 export const phoneField = z.preprocess(
-  normalizePhone,
+  (v) => {
+    if (typeof v !== 'string') return ''
+    return normalizePhone(v) ?? v
+  },
   z
     .string({
       required_error:
         'Phone number is required. Use international format e.g. +31 6 12345678.',
     })
+    .min(1, 'Phone number is required.')
     .refine(
       isValidPhone,
       'Please enter a valid phone number in international format.'
