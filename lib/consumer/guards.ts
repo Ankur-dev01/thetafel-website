@@ -1,5 +1,5 @@
 import 'server-only'
-import { createSupabasePublicClient } from './supabasePublic'
+import { createSupabaseServerClientAdmin } from '@/lib/supabase/server'
 
 /**
  * The "mutation doorman" — every consumer write endpoint calls this first.
@@ -9,17 +9,16 @@ import { createSupabasePublicClient } from './supabasePublic'
  *   - status is anything other than 'live'
  *   - the specific service the write needs is disabled
  *
- * Why we need this even with RLS, the slug resolver, and page-level redirects:
- *   - A guest could hold a stale form open across a service toggle-off.
- *   - API endpoints can be hit directly via curl / scripts.
- *   - The page-level checks never run for direct API calls.
+ * Uses the service-role admin client (bypasses RLS) so it can distinguish
+ * "restaurant doesn't exist" from "restaurant exists but isn't live". The
+ * anon public client would hide non-live rows behind RLS and we'd incorrectly
+ * return restaurant_not_found for an onboarding-status restaurant.
  *
- * Returns a discriminated union — the API route can pattern-match on the
- * `ok` field and either continue with the resolved restaurant or shape a
- * proper response from the rejection reason.
+ * Only restaurant flags are read here — never returned to callers beyond
+ * what's already public (slug, status, service flags).
  *
- * Modelled on Phase 1's `assertOnboardingMutationForUser` (restaurants/draft
- * route). Same shape, different concerns.
+ * Modelled on Phase 1's `assertOnboardingMutationForUser`. Same shape,
+ * different concerns.
  */
 
 export type ConsumerWriteAction =
@@ -69,7 +68,7 @@ export async function assertConsumerWriteAllowed(
     return { ok: false, reason: 'restaurant_not_found', httpStatus: 404 }
   }
 
-  const supabase = createSupabasePublicClient()
+  const supabase = await createSupabaseServerClientAdmin()
   const { data, error } = await supabase
     .from('restaurants')
     .select(
