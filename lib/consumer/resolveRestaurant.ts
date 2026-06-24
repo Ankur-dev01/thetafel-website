@@ -32,19 +32,23 @@ export type PublicRestaurant = {
 /**
  * Resolve a restaurant by URL slug for public consumer pages.
  *
- * Returns `null` if no restaurant exists for the slug, or if the matching
- * restaurant is not `status = 'live'` (RLS blocks the row from being read
- * for both anon and authenticated callers when status is anything else).
+ * Returns null if:
+ *   - the slug is empty / malformed
+ *   - no restaurant matches the slug
+ *   - the matching restaurant is not status='live'
  *
- * Wrapped in React's `cache()` so that multiple components in the same
- * server render that all need the restaurant (layout, page, header, etc.)
- * only trigger one Supabase round-trip per request.
+ * We pin status='live' explicitly here (in addition to relying on RLS) because
+ * the `restaurants_owner_all` policy permits an owner to read their own row at
+ * any status. Without the explicit filter, an owner visiting their own
+ * public URL during onboarding would see a half-finished page render instead
+ * of the expected 404.
+ *
+ * Wrapped in React's cache() so that multiple components in the same server
+ * render that all need the restaurant (layout, page, header) only trigger one
+ * Supabase round-trip per request.
  */
 export const resolveRestaurantBySlug = cache(
   async (slug: string): Promise<PublicRestaurant | null> => {
-    // Defensive: the dynamic segment should always be a non-empty string,
-    // but if upstream code ever passes an empty value we want a clean null
-    // rather than an "ilike-everything" query.
     if (!slug || typeof slug !== 'string' || slug.trim().length === 0) {
       return null
     }
@@ -75,11 +79,10 @@ export const resolveRestaurantBySlug = cache(
         ].join(',')
       )
       .eq('slug', slug)
+      .eq('status', 'live')
       .maybeSingle()
 
     if (error) {
-      // Log server-side so we can see this in Vercel logs if it ever fires,
-      // but never throw — a public-facing route must degrade gracefully.
       console.error('[resolveRestaurantBySlug] supabase error', {
         slug,
         error,
