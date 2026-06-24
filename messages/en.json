@@ -912,6 +912,25 @@
       "submitting": "Submitting…"
     }
   },
+ "consumer": {
+    "shell": {
+      "homeLinkAria": "Back to The Tafel homepage",
+      "footerNavAria": "Legal links",
+      "privacy": "Privacy policy",
+      "terms": "Terms of service"
+    },
+    "landing": {
+      "qrOnly": {
+        "body": "Scan the QR code on your table to view the menu and place your order."
+      }
+    },
+    "notFound": {
+      "eyebrow": "404",
+      "title": "This restaurant doesn't exist",
+      "body": "We couldn't find a restaurant at this address. Check the link or head back to the homepage.",
+      "cta": "Back to The Tafel"
+    }
+  },
  "modal": {
   "eyebrow": "Start for free",
   "heading": "Your restaurant on The Tafel.",

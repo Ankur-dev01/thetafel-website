@@ -912,6 +912,25 @@
       "submitting": "Bezig met insturen…"
     }
   },
+  "consumer": {
+    "shell": {
+      "homeLinkAria": "Naar de homepage van The Tafel",
+      "footerNavAria": "Juridische links",
+      "privacy": "Privacybeleid",
+      "terms": "Algemene voorwaarden"
+    },
+    "landing": {
+      "qrOnly": {
+        "body": "Scan de QR-code op uw tafel om de kaart te bekijken en te bestellen."
+      }
+    },
+    "notFound": {
+      "eyebrow": "404",
+      "title": "Dit restaurant bestaat niet",
+      "body": "We konden geen restaurant vinden op dit adres. Controleer de link of ga terug naar de homepage.",
+      "cta": "Terug naar The Tafel"
+    }
+  },
   "modal": {
   "eyebrow": "Gratis starten",
   "heading": "Jouw restaurant op The Tafel.",
