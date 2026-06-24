@@ -1,8 +1,25 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { resolveRestaurantBySlug } from '@/lib/consumer/resolveRestaurant'
 import { RestaurantHeader } from '@/components/consumer/RestaurantHeader'
+import { buildRestaurantMetadata } from '@/lib/consumer/metadata'
 
 export const revalidate = 60
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<Metadata> {
+  const { locale, slug } = await params
+  const restaurant = await resolveRestaurantBySlug(slug)
+  return buildRestaurantMetadata({
+    restaurant,
+    locale: locale as 'nl' | 'en',
+    slug,
+    intent: 'book',
+  })
+}
 
 /**
  * Placeholder for the booking flow (real implementation in C4).

@@ -4,23 +4,18 @@ import { invalidateConsumerPage, invalidateMenu } from '@/lib/consumer/cache'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
+const NO_STORE = { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+
 /**
  * Dev-only cache invalidation endpoint.
  *
  * Hard-blocked in production — returns 404 so the route appears not to exist.
- *
- * Usage (local dev):
- *   GET /api/dev/invalidate?slug=draft-0abe63c4270d4e6e
- *   GET /api/dev/invalidate?menuRestaurantId=<uuid>
- *   GET /api/dev/invalidate?slug=...&menuRestaurantId=<uuid>   (both)
- *
- * In Phase 3 the dashboard write paths will call `invalidateConsumerPage()`
- * and `invalidateMenu()` directly — this endpoint exists solely so we can
- * prove the wiring works before that dashboard exists.
+ * Every response carries `Cache-Control: no-store` so an upstream caching
+ * proxy never holds onto a successful or failed invalidation result.
  */
 export async function GET(request: NextRequest) {
   if (process.env.NODE_ENV === 'production') {
-    return new NextResponse(null, { status: 404 })
+    return new NextResponse(null, { status: 404, headers: NO_STORE })
   }
 
   const url = new URL(request.url)
@@ -46,9 +41,12 @@ export async function GET(request: NextRequest) {
         error:
           'Provide ?slug=... and/or ?menuRestaurantId=... to invalidate.',
       },
-      { status: 400 }
+      { status: 400, headers: NO_STORE }
     )
   }
 
-  return NextResponse.json({ ok: true, actions })
+  return NextResponse.json(
+    { ok: true, actions },
+    { headers: NO_STORE }
+  )
 }
