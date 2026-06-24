@@ -6,6 +6,12 @@ import {
   redactIp,
 } from '@/lib/consumer/rateLimit'
 import { verifyTurnstileToken } from '@/lib/consumer/turnstile'
+import { auditLog } from '@/lib/consumer/audit'
+import {
+  assertConsumerWriteAllowed,
+  rejectionPayload,
+  type ConsumerWriteAction,
+} from '@/lib/consumer/guards'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -13,26 +19,15 @@ export const dynamic = 'force-dynamic'
 const NO_STORE = { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
 
 /**
- * Dev-only sanity check for the security primitives.
+ * Dev-only sanity checks for the security primitives.
  *
- * Hard-404 in production. Use locally to verify rate-limit and Turnstile
- * helpers wire correctly before any real consumer endpoint depends on them.
+ * Hard-404 in production.
  *
- *   GET /api/dev/security-check?action=rate_limit_test
- *     → fires checkConsumerRateLimit on the 'booking_submit' bucket with
- *       NODE_ENV bypass active in dev (always returns allowed=true,
- *       bypassed=true). Useful only as a smoke test.
- *
- *   GET /api/dev/security-check?action=rate_limit_real
- *     → temporarily skips the dev bypass by going around the helper to
- *       confirm Upstash is reachable. Hits 'csm:devcheck' bucket with a
- *       3/minute window. After 3 hits in a minute returns allowed=false.
- *
- *   GET /api/dev/security-check?action=turnstile_test&token=XYZ
- *     → calls verifyTurnstileToken with the supplied token. With no
- *       TURNSTILE_SECRET_KEY env var set, returns ok=true with reason
- *       'dev_bypass'. With Cloudflare test keys configured, returns the
- *       answer Cloudflare promises for that token.
+ *   GET ?action=rate_limit_test
+ *   GET ?action=rate_limit_real
+ *   GET ?action=turnstile_test&token=XYZ
+ *   GET ?action=audit_test&restaurantId=<uuid>
+ *   GET ?action=doorman_test&restaurantId=<uuid>&doormanAction=booking.create
  */
 export async function GET(request: NextRequest) {
   if (process.env.NODE_ENV === 'production') {
@@ -58,7 +53,6 @@ export async function GET(request: NextRequest) {
   }
 
   if (action === 'rate_limit_real') {
-    // Reach into the helper internals deliberately for the smoke test.
     const { Ratelimit } = await import('@upstash/ratelimit')
     const { Redis } = await import('@upstash/redis')
     const redis = new Redis({
@@ -101,11 +95,82 @@ export async function GET(request: NextRequest) {
     )
   }
 
+  if (action === 'audit_test') {
+    const restaurantId = url.searchParams.get('restaurantId') ?? ''
+    if (!restaurantId) {
+      return NextResponse.json(
+        { ok: false, error: 'Provide ?restaurantId=<uuid>' },
+        { status: 400, headers: NO_STORE }
+      )
+    }
+    const ok = await auditLog({
+      restaurantId,
+      eventType: 'dev.audit_test',
+      eventData: { ts: new Date().toISOString(), note: 'invoked via dev endpoint' },
+      actorType: 'system',
+      ipAddress: ip,
+      userAgent: request.headers.get('user-agent') ?? null,
+    })
+    return NextResponse.json(
+      {
+        action: 'audit_test',
+        callerIp: redactIp(ip),
+        wrote: ok,
+        note:
+          'Look in Supabase consumer_audit_logs table — newest row should have event_type=dev.audit_test',
+      },
+      { headers: NO_STORE }
+    )
+  }
+
+  if (action === 'doorman_test') {
+    const restaurantId = url.searchParams.get('restaurantId') ?? ''
+    const doormanActionParam = url.searchParams.get('doormanAction') ?? 'booking.create'
+    if (!restaurantId) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            'Provide ?restaurantId=<uuid>&doormanAction=booking.create (or order.qr.create / order.takeaway.create / etc.)',
+        },
+        { status: 400, headers: NO_STORE }
+      )
+    }
+    const check = await assertConsumerWriteAllowed(
+      restaurantId,
+      doormanActionParam as ConsumerWriteAction
+    )
+    if (check.ok) {
+      return NextResponse.json(
+        {
+          action: 'doorman_test',
+          allowed: true,
+          restaurant: {
+            slug: check.restaurant.slug,
+            status: check.restaurant.status,
+            reservations: check.restaurant.service_reservations_enabled,
+            qr: check.restaurant.service_qr_enabled,
+            takeaway: check.restaurant.service_takeaway_enabled,
+          },
+        },
+        { headers: NO_STORE }
+      )
+    }
+    return NextResponse.json(
+      {
+        action: 'doorman_test',
+        allowed: false,
+        ...rejectionPayload(check),
+      },
+      { status: check.httpStatus, headers: NO_STORE }
+    )
+  }
+
   return NextResponse.json(
     {
       ok: false,
       error:
-        'Provide ?action=rate_limit_test, ?action=rate_limit_real, or ?action=turnstile_test&token=...',
+        'Provide ?action=rate_limit_test | rate_limit_real | turnstile_test&token=... | audit_test&restaurantId=... | doorman_test&restaurantId=...&doormanAction=...',
     },
     { status: 400, headers: NO_STORE }
   )
