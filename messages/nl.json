@@ -301,7 +301,6 @@
       "sub": "Bepaal de regels die het reserveringssysteem voor je toepast.",
       "continue": "Doorgaan",
       "saveFailed": "Opslaan mislukt. Probeer het opnieuw.",
-
       "leadTimeLabel": "Minimale wachttijd",
       "leadTimeHint": "Hoe ver van tevoren gasten nog kunnen reserveren.",
       "leadTimeOff": "Geen wachttijd",
@@ -310,10 +309,8 @@
       "leadTime120": "2 uur",
       "leadTime240": "4 uur",
       "leadTime1440": "24 uur",
-
       "partySizeLabel": "Maximale groepsgrootte",
       "partySizeHint": "Grotere groepen nemen rechtstreeks contact met je op.",
-
       "windowLabel": "Reserveringsperiode",
       "windowHint": "Hoe ver vooruit gasten kunnen reserveren.",
       "window7": "7 dagen",
@@ -323,17 +320,14 @@
       "window90": "90 dagen",
       "window180": "180 dagen",
       "window365": "365 dagen",
-
       "maxGuestsLabel": "Maximaal aantal gasten per tijdslot",
       "maxGuestsHint": "Optionele bovengrens voor het totaal aantal gasten in één tijdslot.",
       "noLimit": "Geen limiet",
       "custom": "Aangepast",
       "customGuestsPlaceholder": "Bijv. 35",
       "customGuestsErrorRange": "Vul een aantal tussen 2 en 500 in.",
-
       "waitlistLabel": "Wachtlijst toestaan",
       "waitlistDescription": "Wanneer alle tafels bezet zijn, kunnen gasten zich aanmelden voor de wachtlijst.",
-
       "zonePreferenceLabel": "Zonevoorkeur van gast",
       "zonePreferenceDescription": "Gasten zien beschikbare zones (bijv. terras of binnenzaal) en kunnen een voorkeur aangeven."
     },
@@ -344,21 +338,17 @@
       "continue": "Doorgaan",
       "saveFailed": "Opslaan mislukt. Probeer het opnieuw.",
       "costNote": "Herinneringen zijn gratis op alle abonnementen. WhatsApp-herinneringen vereisen Premium en verbruiken je maandelijkse WhatsApp-bundel — daarna is het € 0,05 per bericht.",
-
       "comingSoonBadge": "Binnenkort",
-
       "reminders": {
         "title": "Herinneringen",
         "description": "Automatisch bericht 24 uur en 2 uur voor de reservering.",
         "emailLabel": "E-mail — altijd inbegrepen",
         "whatsappLabel": "WhatsApp — vereist Premium"
       },
-
       "reconfirmation": {
         "title": "Bevestiging vooraf",
         "description": "Gast bevestigt 24 uur van tevoren via een link. Geen bevestiging? Reservering vervalt."
       },
-
       "prepaid": {
         "title": "Aanbetaling",
         "description": "Gast betaalt vooraf een aanbetaling. Bij no-show houd je het bedrag.",
@@ -368,12 +358,10 @@
         "amountErrorRange": "Vul een bedrag tussen € 1,00 en € 500,00 in.",
         "depositDisclosureNote": "Aanbetalingen worden bij gasten in rekening gebracht zodra Mollie je bedrijf heeft geverifieerd — meestal 2–5 werkdagen na het koppelen. Je instelling wordt bewaard, maar tot die tijd worden er geen aanbetalingen afgeschreven."
       },
-
       "ccGuarantee": {
         "title": "Creditcard-garantie",
         "description": "Gast geeft creditcardgegevens; je belast deze alleen bij no-show."
       },
-
       "aiPredictor": {
         "title": "AI no-show voorspeller",
         "description": "Modellen voorspellen welke reserveringen risico lopen op een no-show."
@@ -385,7 +373,6 @@
       "sub": "Schrijf het welkom dat elke gast ontvangt, en kies daarna wat je wilt weten voordat ze arriveren.",
       "continue": "Doorgaan",
       "saveFailed": "Opslaan mislukt. Probeer het opnieuw.",
-
       "templateHeading": "Bevestigingsbericht",
       "templateSub": "Dit bericht gaat naar elke gast zodra een reservering is bevestigd.",
       "templatePlaceholder": "Beste '{naam}', bedankt voor je reservering bij '{restaurant}'…",
@@ -393,28 +380,22 @@
       "tabEn": "EN",
       "variablesHint": "Klik op een variabele om deze op de cursor in te voegen.",
       "charCount": "{count} / 5000",
-
       "langLabel": "Taal",
       "varHelper": "Klik op een variabele om deze op de cursor in te voegen.",
-
       "previewHeading": "Voorbeeld — hoe het aankomt",
       "previewEmpty": "Begin met typen om je voorbeeld te zien.",
       "tabEmail": "E-mail",
       "tabWhatsApp": "WhatsApp",
       "previewNoteEmail": "Verzonden per e-mail zodra een reservering is bevestigd.",
       "previewNoteWhatsApp": "Verzonden via WhatsApp — beschikbaar in het Premium-abonnement.",
-
       "questionsHeading": "Vragen tijdens reserveren",
       "questionsSub": "Wat je elke gast vraagt bij het reserveren. Zet er een aan om te zien wat zij zien.",
       "questionsCount": "{count} van 3 aan",
       "questionGuestSees": "Wat de gast ziet",
-
       "questionAllergiesLabel": "Allergieën en dieetwensen",
       "questionAllergiesDescription": "Gast geeft aan of er allergieën of speciale dieetwensen zijn.",
-
       "questionOccasionLabel": "Speciale gelegenheid",
       "questionOccasionDescription": "Verjaardag, jubileum of andere reden voor het bezoek.",
-
       "questionRequestsLabel": "Aanvullende wensen",
       "questionRequestsDescription": "Vrije tekst voor wensen zoals tafelvoorkeur of toegankelijkheid."
     },
@@ -424,26 +405,19 @@
       "sub": "Bepaal hoe gasten online bij je bestellen voor afhalen.",
       "continue": "Doorgaan",
       "saveFailed": "Opslaan mislukt. Probeer het opnieuw.",
-
       "prepTimeLabel": "Voorbereidingstijd",
       "prepTimeHint": "Hoe lang de keuken nodig heeft van bestelling tot klaar.",
-
       "minOrderLabel": "Minimum bestelbedrag",
       "minOrderHint": "Laat op 0 staan om geen minimum te eisen.",
       "minOrderError": "Vul een bedrag tussen € 0 en € 500 in.",
-
       "slotIntervalLabel": "Ophalingsinterval",
       "slotIntervalHint": "Hoe vaak een nieuw afhaalmoment beschikbaar komt.",
-
       "acceptingLabel": "Online bestellingen accepteren",
       "acceptingDescription": "Zet uit om afhalen tijdelijk te pauzeren — bijvoorbeeld bij drukte.",
-
       "itemNotesLabel": "Notities per gerecht toestaan",
       "itemNotesDescription": "Gasten kunnen extra opmerkingen toevoegen, zoals 'geen ui'.",
-
       "scheduledLabel": "Vooruit bestellen",
       "scheduledDescription": "Gasten kunnen een afhaalmoment later op de dag of in de toekomst kiezen.",
-
       "options": {
         "min10": "10 minuten",
         "min15": "15 minuten",
@@ -462,14 +436,12 @@
       "sub": "Lever ons de basis aan — wij maken er binnen 2 werkdagen een gepolijste menukaart van. Uploaden mag later ook.",
       "continue": "Doorgaan",
       "saveFailed": "Opslaan mislukt. Probeer het opnieuw.",
-
       "sameMenu": {
         "heading": "Eén menu of twee?",
         "sub": "Bepaal of je dezelfde kaart wilt gebruiken voor afhalen en QR-bestellen aan tafel.",
         "label": "Eén menu voor Afhalen en QR",
         "description": "Het meeste werk bespaar je door dezelfde menukaart voor beide te gebruiken. Uit zetten als je verschillende kaarten voor afhalen en QR-bestellen wilt."
       },
-
       "menuFiles": {
         "heading": "Menukaart uploaden",
         "sub": "Stuur ons je bestaande menukaart in PDF, JPG, PNG of WebP. Onze ontwerpers bouwen er een merk-vriendelijke versie van.",
@@ -481,7 +453,6 @@
         "placeholderTakeaway": "Afhaal-menu: het upload-veld wordt in de volgende build toegevoegd.",
         "placeholderQr": "QR-menu: het upload-veld wordt in de volgende build toegevoegd."
       },
-
       "cuisine": {
         "heading": "Vertel over je keuken",
         "sub": "Een paar zinnen helpen ons designteam de juiste sfeer te vinden.",
@@ -489,7 +460,6 @@
         "hint": "Korte beschrijving van je keuken en sfeer — italiaans-rustiek, japans-strak, etc. Helpt ons designteam.",
         "placeholder": "Bijv. Italiaans rustiek met focus op pasta en wijn…"
       },
-
       "photos": {
         "heading": "Foto's (optioneel)",
         "sub": "Eigen foto's van je interieur of gerechten. Optioneel — niet vereist.",
@@ -497,7 +467,6 @@
         "acceptText": "JPG, PNG of WebP — maximaal 20 MB per bestand, tot 10 foto's.",
         "placeholder": "Het upload-veld wordt in de volgende build toegevoegd."
       },
-
       "design": {
         "heading": "Ontwerpvoorkeuren (optioneel)",
         "sub": "Specifieke wensen voor kleuren, fonts, of voorbeeldkaarten die je mooi vindt.",
@@ -505,7 +474,6 @@
         "hint": "Kleuren, lettertypes, voorbeelden van menukaarten die je mooi vindt — alles wat ons helpt om in jouw stijl te ontwerpen.",
         "placeholder": "Bijv. donkere kleuren, klassiek serif lettertype…"
       },
-
       "uploadErrorNoRestaurant": "Restaurant niet gevonden. Vernieuw de pagina.",
       "uploadErrorTooManyMenu": "Maximaal {max} menubestanden toegestaan.",
       "uploadErrorTooManyPhotos": "Maximaal {max} foto's toegestaan.",
@@ -525,12 +493,10 @@
       "sub": "Kies hoe je QR-bestellen aan tafel werkt en welk abonnement bij je past.",
       "continue": "Doorgaan",
       "saveFailed": "Opslaan mislukt. Probeer het opnieuw.",
-
       "plansHeading": "Kies een abonnement",
       "plansSub": "Eenmalige setup-kosten. Het maandabonnement kies je in stap 12.",
       "premiumLocked": "Premium-abonnement vereist",
       "oneTime": "eenmalig",
-
       "plans": {
         "basic": {
           "title": "QR Basic",
@@ -549,19 +515,16 @@
           "bullet5": "Extra tafels € 11 per stuk"
         }
       },
-
       "autoAccept": {
         "heading": "Bestellingen accepteren",
         "label": "QR-bestellingen automatisch accepteren",
         "description": "Aan: bestellingen gaan direct naar de keuken. Uit: personeel moet elke bestelling handmatig goedkeuren."
       },
-
       "itemNotes": {
         "heading": "Notities per gerecht",
         "label": "Notities per gerecht toestaan",
         "description": "Gasten kunnen extra opmerkingen toevoegen, zoals 'geen ui'."
       },
-
       "language": {
         "heading": "Menu-taal",
         "sub": "De talen die gasten zien wanneer ze het QR-menu openen.",
@@ -570,7 +533,6 @@
         "nl": "Alleen NL",
         "en": "Alleen EN"
       },
-
       "accentColor": {
         "heading": "Accentkleur",
         "sub": "Kleur van de 'Bestellen' knop op het QR-menu. Standaard is The Tafel-amber.",
@@ -939,27 +901,43 @@
     }
   },
   "modal": {
-  "eyebrow": "Gratis starten",
-  "heading": "Jouw restaurant op The Tafel.",
-  "sub": "Geen creditcard. Geen contract. Je ontvangt direct een activatielink per e-mail.",
-  "labelNaam": "Naam",
-  "labelEmail": "E-mail",
-  "labelTelefoon": "Telefoon",
-  "labelRestaurant": "Restaurantnaam",
-  "labelStad": "Stad",
-  "placeholderNaam": "Jouw naam",
-  "placeholderEmail": "jouw@restaurant.nl",
-  "placeholderTelefoon": "+31 6 00 000 000",
-  "placeholderRestaurant": "Naam van je restaurant",
-  "placeholderStad": "Amsterdam",
-  "submit": "Aanmelden — gratis",
-  "submitting": "Bezig...",
-  "successTitle": "Aanmelding ontvangen.",
-  "successClose": "Sluiten",
-  "errorFallback": "Er is een fout opgetreden. Probeer het opnieuw.",
-  "errorEmailExists": "Dit e-mailadres is al aangemeld.",
-  "errorRateLimit": "Te veel pogingen. Probeer het over 1 uur opnieuw.",
-  "errorGeneral": "Er is een fout opgetreden. Probeer het opnieuw.",
-  "disclaimer": "Geen commissie. Geen verborgen kosten. Gratis tijdens de probeerperiode."
-}
+    "eyebrow": "Gratis starten",
+    "heading": "Jouw restaurant op The Tafel.",
+    "sub": "Geen creditcard. Geen contract. Je ontvangt direct een activatielink per e-mail.",
+    "labelNaam": "Naam",
+    "labelEmail": "E-mail",
+    "labelTelefoon": "Telefoon",
+    "labelRestaurant": "Restaurantnaam",
+    "labelStad": "Stad",
+    "placeholderNaam": "Jouw naam",
+    "placeholderEmail": "jouw@restaurant.nl",
+    "placeholderTelefoon": "+31 6 00 000 000",
+    "placeholderRestaurant": "Naam van je restaurant",
+    "placeholderStad": "Amsterdam",
+    "submit": "Aanmelden — gratis",
+    "submitting": "Bezig...",
+    "successTitle": "Aanmelding ontvangen.",
+    "successClose": "Sluiten",
+    "errorFallback": "Er is een fout opgetreden. Probeer het opnieuw.",
+    "errorEmailExists": "Dit e-mailadres is al aangemeld.",
+    "errorRateLimit": "Te veel pogingen. Probeer het over 1 uur opnieuw.",
+    "errorGeneral": "Er is een fout opgetreden. Probeer het opnieuw.",
+    "disclaimer": "Geen commissie. Geen verborgen kosten. Gratis tijdens de probeerperiode."
+  },
+  "booking": {
+    "errors": {
+      "restaurant_not_found": "Dit restaurant bestaat niet",
+      "restaurant_not_live": "Dit restaurant is nog niet actief op The Tafel",
+      "reservations_disabled": "Dit restaurant accepteert geen online reserveringen",
+      "generic": "Er ging iets mis. Probeer het opnieuw"
+    },
+    "shared": {
+      "guests_one": "{count} gast",
+      "guests_other": "{count} gasten",
+      "contact_restaurant": "Bel het restaurant voor groepen groter dan {max}",
+      "continue": "Doorgaan",
+      "back": "Terug",
+      "step_of": "Stap {current} van {total}"
+    }
+  }
 }

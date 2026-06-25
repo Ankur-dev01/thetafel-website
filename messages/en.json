@@ -301,7 +301,6 @@
       "sub": "Set the rules the booking engine enforces for you.",
       "continue": "Continue",
       "saveFailed": "Save failed. Please try again.",
-
       "leadTimeLabel": "Minimum lead time",
       "leadTimeHint": "How far in advance guests can still book.",
       "leadTimeOff": "No wait time",
@@ -310,10 +309,8 @@
       "leadTime120": "2 hours",
       "leadTime240": "4 hours",
       "leadTime1440": "24 hours",
-
       "partySizeLabel": "Maximum party size",
       "partySizeHint": "Larger parties contact you directly.",
-
       "windowLabel": "Booking window",
       "windowHint": "How far ahead guests can book.",
       "window7": "7 days",
@@ -323,17 +320,14 @@
       "window90": "90 days",
       "window180": "180 days",
       "window365": "365 days",
-
       "maxGuestsLabel": "Maximum guests per slot",
       "maxGuestsHint": "Optional cap on total guests in any single slot.",
       "noLimit": "No limit",
       "custom": "Custom",
       "customGuestsPlaceholder": "e.g. 35",
       "customGuestsErrorRange": "Enter a number between 2 and 500.",
-
       "waitlistLabel": "Allow waitlist",
       "waitlistDescription": "When all tables are full, guests can join the waitlist.",
-
       "zonePreferenceLabel": "Guest zone preference",
       "zonePreferenceDescription": "Guests see available zones (e.g. terrace or indoors) and can express a preference."
     },
@@ -344,21 +338,17 @@
       "continue": "Continue",
       "saveFailed": "Save failed. Please try again.",
       "costNote": "Reminders are free on all plans. WhatsApp reminders require Premium and use your monthly WhatsApp allowance — overage is € 0.05 per message.",
-
       "comingSoonBadge": "Coming soon",
-
       "reminders": {
         "title": "Reminders",
         "description": "Automatic message 24 hours and 2 hours before the booking.",
         "emailLabel": "Email — always included",
         "whatsappLabel": "WhatsApp — requires Premium"
       },
-
       "reconfirmation": {
         "title": "Reconfirmation",
         "description": "Guest confirms 24 hours before via a link. No confirmation? Booking lapses."
       },
-
       "prepaid": {
         "title": "Prepaid deposit",
         "description": "Guest pays a deposit at booking. Refunded on attendance, kept on no-show.",
@@ -368,12 +358,10 @@
         "amountErrorRange": "Enter an amount between € 1.00 and € 500.00.",
         "depositDisclosureNote": "Deposits will start charging guests once Mollie verifies your business — usually 2–5 business days after connecting. Until then your setting is saved but no deposits are taken."
       },
-
       "ccGuarantee": {
         "title": "Credit-card guarantee",
         "description": "Guest provides credit-card details; you charge only on no-show."
       },
-
       "aiPredictor": {
         "title": "AI no-show predictor",
         "description": "Models predict which bookings are at risk of being a no-show."
@@ -385,7 +373,6 @@
       "sub": "Write the welcome every guest receives, then choose what you'd like to know before they arrive.",
       "continue": "Continue",
       "saveFailed": "Save failed. Please try again.",
-
       "templateHeading": "Confirmation message",
       "templateSub": "This note goes out to every guest the moment a booking is confirmed.",
       "templatePlaceholder": "Dear '{naam}', thanks for booking with '{restaurant}'…",
@@ -393,28 +380,22 @@
       "tabEn": "EN",
       "variablesHint": "Click a variable to drop it in at the cursor.",
       "charCount": "{count} / 5000",
-
       "langLabel": "Language",
       "varHelper": "Click a variable to drop it in at the cursor.",
-
       "previewHeading": "Preview — how it arrives",
       "previewEmpty": "Start typing to see your preview.",
       "tabEmail": "Email",
       "tabWhatsApp": "WhatsApp",
       "previewNoteEmail": "Sent by email the instant a booking is confirmed.",
       "previewNoteWhatsApp": "Sent via WhatsApp — available on the Premium plan.",
-
       "questionsHeading": "Questions during booking",
       "questionsSub": "What you ask each guest when they reserve. Turn one on to preview exactly what they'll see.",
       "questionsCount": "{count} of 3 on",
       "questionGuestSees": "What the guest sees",
-
       "questionAllergiesLabel": "Allergies and diet",
       "questionAllergiesDescription": "Guest indicates allergies or dietary requirements.",
-
       "questionOccasionLabel": "Special occasion",
       "questionOccasionDescription": "Birthday, anniversary, or other reason for the visit.",
-
       "questionRequestsLabel": "Special requests",
       "questionRequestsDescription": "Free text for requests like table preference or accessibility."
     },
@@ -424,26 +405,19 @@
       "sub": "Set how guests order online for takeaway.",
       "continue": "Continue",
       "saveFailed": "Save failed. Please try again.",
-
       "prepTimeLabel": "Prep time",
       "prepTimeHint": "How long the kitchen needs from order to ready.",
-
       "minOrderLabel": "Minimum order",
       "minOrderHint": "Leave at 0 to require no minimum.",
       "minOrderError": "Enter an amount between € 0 and € 500.",
-
       "slotIntervalLabel": "Pickup slot interval",
       "slotIntervalHint": "How often a new pickup slot becomes available.",
-
       "acceptingLabel": "Accept online orders",
       "acceptingDescription": "Switch off to pause takeaway temporarily — for example during a rush.",
-
       "itemNotesLabel": "Allow item notes",
       "itemNotesDescription": "Guests can add notes per item, like 'no onions'.",
-
       "scheduledLabel": "Scheduled orders",
       "scheduledDescription": "Guests can choose a pickup time later in the day or in the future.",
-
       "options": {
         "min10": "10 minutes",
         "min15": "15 minutes",
@@ -462,14 +436,12 @@
       "sub": "Give us the basics — we'll turn them into a polished menu within 2 working days. You can also upload later.",
       "continue": "Continue",
       "saveFailed": "Save failed. Please try again.",
-
       "sameMenu": {
         "heading": "One menu or two?",
         "sub": "Decide whether you want the same menu for takeaway and QR ordering.",
         "label": "One menu for Takeaway and QR",
         "description": "Most restaurants save work by using the same menu for both. Switch off if you want separate menus for takeaway and QR ordering."
       },
-
       "menuFiles": {
         "heading": "Upload menu",
         "sub": "Send us your existing menu in PDF, JPG, PNG, or WebP. Our designers turn it into a brand-aligned version.",
@@ -481,7 +453,6 @@
         "placeholderTakeaway": "Takeaway menu: the upload field is added in the next build.",
         "placeholderQr": "QR menu: the upload field is added in the next build."
       },
-
       "cuisine": {
         "heading": "Tell us about your food",
         "sub": "A few sentences help our design team capture the right atmosphere.",
@@ -489,7 +460,6 @@
         "hint": "Short description of your food and atmosphere — Italian-rustic, Japanese-minimal, etc. Helps our design team.",
         "placeholder": "e.g. Italian rustic with a focus on pasta and wine…"
       },
-
       "photos": {
         "heading": "Photos (optional)",
         "sub": "Your own photos of interior or food. Optional — not required.",
@@ -497,7 +467,6 @@
         "acceptText": "JPG, PNG, or WebP — max 20 MB per file, up to 10 photos.",
         "placeholder": "The upload field is added in the next build."
       },
-
       "design": {
         "heading": "Design preferences (optional)",
         "sub": "Specific wishes for colours, fonts, or example menus you like.",
@@ -505,7 +474,6 @@
         "hint": "Colours, fonts, examples of menus you like — anything that helps us design in your style.",
         "placeholder": "e.g. dark colours, classic serif font…"
       },
-
       "uploadErrorNoRestaurant": "Restaurant not found. Refresh the page.",
       "uploadErrorTooManyMenu": "Maximum {max} menu files allowed.",
       "uploadErrorTooManyPhotos": "Maximum {max} photos allowed.",
@@ -525,12 +493,10 @@
       "sub": "Choose how QR ordering at the table works and which plan suits you.",
       "continue": "Continue",
       "saveFailed": "Save failed. Please try again.",
-
       "plansHeading": "Choose a plan",
       "plansSub": "One-time setup fee. Your monthly subscription is chosen in step 12.",
       "premiumLocked": "Requires Premium subscription",
       "oneTime": "one-time",
-
       "plans": {
         "basic": {
           "title": "QR Basic",
@@ -549,19 +515,16 @@
           "bullet5": "Extra tables € 11 each"
         }
       },
-
       "autoAccept": {
         "heading": "Accepting orders",
         "label": "Auto-accept QR orders",
         "description": "On: orders go straight to the kitchen. Off: staff must approve each order manually."
       },
-
       "itemNotes": {
         "heading": "Item notes",
         "label": "Allow item notes",
         "description": "Guests can add notes per item, like 'no onions'."
       },
-
       "language": {
         "heading": "Menu language",
         "sub": "The languages guests see when they open the QR menu.",
@@ -570,7 +533,6 @@
         "nl": "NL only",
         "en": "EN only"
       },
-
       "accentColor": {
         "heading": "Accent colour",
         "sub": "Colour of the 'Order' button on the QR menu. Default is The Tafel amber.",
@@ -912,7 +874,7 @@
       "submitting": "Submitting…"
     }
   },
- "consumer": {
+  "consumer": {
     "header": {
       "openTodayPrefix": "Open today",
       "closedToday": "Closed today",
@@ -938,28 +900,44 @@
       "cta": "Back to The Tafel"
     }
   },
- "modal": {
-  "eyebrow": "Start for free",
-  "heading": "Your restaurant on The Tafel.",
-  "sub": "No credit card. No contract. You will receive an activation link by email instantly.",
-  "labelNaam": "Name",
-  "labelEmail": "Email",
-  "labelTelefoon": "Phone",
-  "labelRestaurant": "Restaurant name",
-  "labelStad": "City",
-  "placeholderNaam": "Your name",
-  "placeholderEmail": "your@restaurant.com",
-  "placeholderTelefoon": "+31 6 00 000 000",
-  "placeholderRestaurant": "Name of your restaurant",
-  "placeholderStad": "Amsterdam",
-  "submit": "Sign up — free",
-  "submitting": "Processing...",
-  "successTitle": "Registration received.",
-  "successClose": "Close",
-  "errorFallback": "Something went wrong. Please try again.",
-  "errorEmailExists": "This email address is already registered.",
-  "errorRateLimit": "Too many attempts. Please try again in 1 hour.",
-  "errorGeneral": "Something went wrong. Please try again.",
-  "disclaimer": "No commission. No hidden costs. Free during the trial period."
-}
+  "modal": {
+    "eyebrow": "Start for free",
+    "heading": "Your restaurant on The Tafel.",
+    "sub": "No credit card. No contract. You will receive an activation link by email instantly.",
+    "labelNaam": "Name",
+    "labelEmail": "Email",
+    "labelTelefoon": "Phone",
+    "labelRestaurant": "Restaurant name",
+    "labelStad": "City",
+    "placeholderNaam": "Your name",
+    "placeholderEmail": "your@restaurant.com",
+    "placeholderTelefoon": "+31 6 00 000 000",
+    "placeholderRestaurant": "Name of your restaurant",
+    "placeholderStad": "Amsterdam",
+    "submit": "Sign up — free",
+    "submitting": "Processing...",
+    "successTitle": "Registration received.",
+    "successClose": "Close",
+    "errorFallback": "Something went wrong. Please try again.",
+    "errorEmailExists": "This email address is already registered.",
+    "errorRateLimit": "Too many attempts. Please try again in 1 hour.",
+    "errorGeneral": "Something went wrong. Please try again.",
+    "disclaimer": "No commission. No hidden costs. Free during the trial period."
+  },
+  "booking": {
+    "errors": {
+      "restaurant_not_found": "This restaurant doesn't exist",
+      "restaurant_not_live": "This restaurant isn't live on The Tafel yet",
+      "reservations_disabled": "This restaurant isn't accepting online reservations",
+      "generic": "Something went wrong. Please try again"
+    },
+    "shared": {
+      "guests_one": "{count} guest",
+      "guests_other": "{count} guests",
+      "contact_restaurant": "Call the restaurant for parties larger than {max}",
+      "continue": "Continue",
+      "back": "Back",
+      "step_of": "Step {current} of {total}"
+    }
+  }
 }
