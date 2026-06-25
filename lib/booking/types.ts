@@ -57,6 +57,8 @@ export interface BookingConfig {
   maxGuestsPerSlot: number | null;
   /** Occupancy duration per party size, in minutes. May be an empty object. */
   occupancyDurationByParty: OccupancyDurationMap;
+  /** Required gap (minutes) between two bookings on the same table. */
+  turnoverBufferMinutes: number;
 
   /** Whether the no-show deposit policy is on. */
   noShowPrepaidEnabled: boolean;
@@ -151,4 +153,93 @@ export function depositAppliesForParty(config: BookingConfig, partySize: number)
   if (config.noShowPrepaidAmountCents == null || config.noShowPrepaidAmountCents <= 0) return false;
   if (config.noShowPrepaidThreshold == null) return false;
   return partySize >= config.noShowPrepaidThreshold;
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Availability — data-layer types                                           */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * One opening window for a single calendar date (already resolved from the
+ * `availability` table for that ISO day_of_week + the `closes_next_day` flag).
+ *
+ * `openInstant` and `closeInstant` are absolute UTC instants computed in the
+ * restaurant's timezone (Europe/Amsterdam). The booking engine treats them as
+ * an inclusive-start, exclusive-end interval: a party can start at any slot
+ * time T where `openInstant <= T < closeInstant - occupancyDuration`.
+ *
+ * Multiple windows per date are possible (e.g. lunch 12:00-15:00 + dinner
+ * 18:00-22:00 as two rows in `availability`).
+ */
+export interface OpeningWindow {
+  /** Source row id (for debug / dev inspector). */
+  id: string;
+  /** Absolute UTC start of the window. */
+  openInstant: Date;
+  /** Absolute UTC end of the window. */
+  closeInstant: Date;
+  /** Did the source row have closes_next_day = true? */
+  closesNextDay: boolean;
+  /** Source service_scope. Engine filters to 'all' | 'reservations' upstream. */
+  serviceScope: string;
+  /** Service tags from the source row (UI grouping concern; engine passes through). */
+  tags: { brunch: boolean; lunch: boolean; dinner: boolean };
+}
+
+/**
+ * A zone with its bookable tables. Deleted zones and deleted/non-bookable
+ * tables are excluded by the query layer.
+ */
+export interface BookableZone {
+  id: string;
+  name: string;
+  displayOrder: number;
+  tables: BookableTable[];
+}
+
+export interface BookableTable {
+  id: string;
+  zoneId: string;
+  label: string;
+  seats: number;
+}
+
+/**
+ * An existing booking that the engine must check for conflict.
+ *
+ * `tableIds` may be empty when the booking has only a zone-level assignment
+ * (legacy / staff-pending). The engine treats an empty-tableIds active booking
+ * as occupying one table-equivalent in its zone for capacity purposes (see
+ * computeAvailability for the precise rule).
+ *
+ * Only bookings on the requested calendar date (Europe/Amsterdam) are loaded;
+ * the query layer applies a time range filter that covers the date plus the
+ * largest possible turnover-buffer-extended overlap on either side.
+ */
+export interface ExistingBooking {
+  id: string;
+  partySize: number;
+  zoneId: string | null;
+  slotInstant: Date;
+  durationMinutes: number;
+  status: 'pending' | 'confirmed' | 'attended';
+  /** Tables this booking occupies. Empty when no booking_tables rows exist yet. */
+  tableIds: string[];
+}
+
+/**
+ * All inputs the pure compute function needs for one (restaurant, date, partySize)
+ * combination. Produced by `loadAvailabilityInputs`.
+ */
+export interface AvailabilityInputs {
+  /** ISO date in Europe/Amsterdam, e.g. "2026-07-04". */
+  dateLocal: string;
+  /** ISO day of week 1-7 (Mon=1) for `dateLocal`. */
+  isoDayOfWeek: number;
+  /** Opening windows for that date (may be empty = closed). */
+  windows: OpeningWindow[];
+  /** All bookable zones with their tables (deleted excluded). */
+  zones: BookableZone[];
+  /** Active bookings overlapping the date (and turnover-buffer halo). */
+  existingBookings: ExistingBooking[];
 }

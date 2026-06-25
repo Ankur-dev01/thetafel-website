@@ -23,6 +23,7 @@ const BOOKING_CONFIG_COLUMNS = [
   'slot_interval_minutes',
   'max_guests_per_slot',
   'occupancy_duration_by_party',
+  'turnover_buffer_minutes',
   'noshow_prepaid_enabled',
   'noshow_prepaid_amount_cents',
   'noshow_prepaid_currency',
@@ -50,6 +51,7 @@ interface RawRestaurantRow {
   slot_interval_minutes: number | null;
   max_guests_per_slot: number | null;
   occupancy_duration_by_party: unknown;
+  turnover_buffer_minutes: number;
   noshow_prepaid_enabled: boolean;
   noshow_prepaid_amount_cents: number | null;
   noshow_prepaid_currency: string;
@@ -125,6 +127,7 @@ export async function loadBookingConfig(slug: string): Promise<BookingConfigResu
     slotIntervalMinutes: data.slot_interval_minutes ?? 30,
     maxGuestsPerSlot: data.max_guests_per_slot,
     occupancyDurationByParty: normalizeOccupancyMap(data.occupancy_duration_by_party),
+    turnoverBufferMinutes: data.turnover_buffer_minutes ?? 15,
 
     noShowPrepaidEnabled: data.noshow_prepaid_enabled,
     noShowPrepaidAmountCents: data.noshow_prepaid_amount_cents,
