@@ -2,10 +2,11 @@
 //
 // The interactive booking shell. Renders chrome (back-to-restaurant link,
 // title, progress dots, step counter, footer button row) plus a slot for
-// step content. C4.2 ships a placeholder body; C4.3+ fills it.
+// step content rendered via `children`.
 
 'use client';
 
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useBookingFlow } from '@/lib/booking/state';
@@ -13,14 +14,15 @@ import { BookingProgressDots } from './BookingProgressDots';
 
 interface Props {
   restaurantName: string;
-  /** Full locale-prefixed path back to the restaurant page, e.g. `/nl/r/draft-abc`. */
+  /** Locale-prefixed path back to the restaurant page (e.g. `/nl/r/draft-abc`). */
   restaurantHref: string;
+  children: ReactNode;
 }
 
-export function BookingStepShell({ restaurantName, restaurantHref }: Props) {
+export function BookingStepShell({ restaurantName, restaurantHref, children }: Props) {
   const shared = useTranslations('booking.shared');
   const shell = useTranslations('booking.shell');
-  const { step, totalSteps, goBack } = useBookingFlow();
+  const { step, totalSteps, goBack, goNext, canContinue } = useBookingFlow();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
@@ -89,29 +91,17 @@ export function BookingStepShell({ restaurantName, restaurantHref }: Props) {
         </p>
       </div>
 
-      {/* Step content slot — placeholder until C4.3 */}
+      {/* Step content slot */}
       <section
         aria-live="polite"
         style={{
-          minHeight: 280,
           borderRadius: 8,
           backgroundColor: 'rgba(253, 250, 245, 0.7)',
           border: '1px solid rgba(156, 139, 106, 0.15)',
           padding: '32px 28px',
-          display: 'flex',
-          alignItems: 'center',
         }}
       >
-        <p
-          style={{
-            fontSize: 14,
-            color: 'rgba(15, 13, 8, 0.4)',
-            fontFamily: 'var(--font-jost), sans-serif',
-            margin: 0,
-          }}
-        >
-          {shell('placeholder_body')}
-        </p>
+        {children}
       </section>
 
       {/* Footer button row */}
@@ -136,25 +126,27 @@ export function BookingStepShell({ restaurantName, restaurantHref }: Props) {
             color: 'rgba(15, 13, 8, 0.65)',
             opacity: step <= 1 ? 0.3 : 1,
             padding: '8px 0',
-            transition: 'opacity 0.15s ease, color 0.15s ease',
+            transition: 'opacity 0.15s ease',
           }}
         >
           {shared('back')}
         </button>
         <button
           type="button"
-          disabled
+          onClick={canContinue ? goNext : undefined}
+          disabled={!canContinue}
           style={{
             background: 'var(--amber, #d4820a)',
             border: 'none',
             borderRadius: 6,
-            cursor: 'not-allowed',
-            opacity: 0.4,
+            cursor: canContinue ? 'pointer' : 'not-allowed',
+            opacity: canContinue ? 1 : 0.4,
             color: '#fff',
             fontSize: 14,
             fontFamily: 'var(--font-jost), sans-serif',
             fontWeight: 600,
             padding: '10px 28px',
+            transition: 'opacity 0.15s ease',
           }}
         >
           {shared('continue')}

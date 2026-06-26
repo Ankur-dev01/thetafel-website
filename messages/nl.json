@@ -944,6 +944,13 @@
       "subtitle_at": "bij {name}",
       "back_to_restaurant": "Terug naar het restaurant",
       "placeholder_body": "Stap wordt binnenkort geladen"
+    },
+    "r1": {
+      "date_label": "Kies een datum",
+      "party_label": "Met hoeveel mensen?",
+      "prev_month": "Vorige maand",
+      "next_month": "Volgende maand",
+      "closed_day": "Gesloten"
     }
   }
 }

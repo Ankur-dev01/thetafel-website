@@ -1,4 +1,4 @@
-// lib/booking/state.ts
+// lib/booking/state.tsx
 //
 // Client-side state machine for the booking flow.
 //
@@ -63,11 +63,18 @@ export interface BookingFlowContextValue {
   step: number;
   totalSteps: number;
   draft: BookingDraft;
+  /**
+   * Whether the active step considers itself valid enough to advance.
+   * Each step component sets this via a useEffect based on its own validation.
+   * Resets to `false` automatically on every step transition.
+   */
+  canContinue: boolean;
   setStep: (n: number) => void;
   goNext: () => void;
   goBack: () => void;
   updateDraft: (patch: Partial<BookingDraft>) => void;
   updateGuest: (patch: Partial<GuestDraft>) => void;
+  setCanContinue: (v: boolean) => void;
   reset: () => void;
 }
 
@@ -86,22 +93,26 @@ export function BookingFlowProvider({
 }) {
   const [step, setStepRaw] = useState(1);
   const [draft, setDraft] = useState<BookingDraft>(EMPTY_DRAFT);
+  const [canContinue, setCanContinueRaw] = useState(false);
 
   const setStep = useCallback(
     (n: number) => {
       if (!Number.isInteger(n)) return;
       const clamped = Math.max(1, Math.min(totalSteps, n));
       setStepRaw(clamped);
+      setCanContinueRaw(false);
     },
     [totalSteps],
   );
 
   const goNext = useCallback(() => {
     setStepRaw((s) => Math.min(totalSteps, s + 1));
+    setCanContinueRaw(false);
   }, [totalSteps]);
 
   const goBack = useCallback(() => {
     setStepRaw((s) => Math.max(1, s - 1));
+    setCanContinueRaw(false);
   }, []);
 
   const updateDraft = useCallback((patch: Partial<BookingDraft>) => {
@@ -112,9 +123,14 @@ export function BookingFlowProvider({
     setDraft((d) => ({ ...d, guest: { ...d.guest, ...patch } }));
   }, []);
 
+  const setCanContinue = useCallback((v: boolean) => {
+    setCanContinueRaw(Boolean(v));
+  }, []);
+
   const reset = useCallback(() => {
     setStepRaw(1);
     setDraft(EMPTY_DRAFT);
+    setCanContinueRaw(false);
   }, []);
 
   const value = useMemo<BookingFlowContextValue>(
@@ -122,14 +138,28 @@ export function BookingFlowProvider({
       step,
       totalSteps,
       draft,
+      canContinue,
       setStep,
       goNext,
       goBack,
       updateDraft,
       updateGuest,
+      setCanContinue,
       reset,
     }),
-    [step, totalSteps, draft, setStep, goNext, goBack, updateDraft, updateGuest, reset],
+    [
+      step,
+      totalSteps,
+      draft,
+      canContinue,
+      setStep,
+      goNext,
+      goBack,
+      updateDraft,
+      updateGuest,
+      setCanContinue,
+      reset,
+    ],
   );
 
   return <BookingFlowContext.Provider value={value}>{children}</BookingFlowContext.Provider>;

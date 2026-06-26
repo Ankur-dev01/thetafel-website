@@ -944,6 +944,13 @@
       "subtitle_at": "at {name}",
       "back_to_restaurant": "Back to restaurant",
       "placeholder_body": "Step content loading soon"
+    },
+    "r1": {
+      "date_label": "Pick a date",
+      "party_label": "How many people?",
+      "prev_month": "Previous month",
+      "next_month": "Next month",
+      "closed_day": "Closed"
     }
   }
 }

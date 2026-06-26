@@ -1,15 +1,15 @@
 // app/[locale]/r/[slug]/book/page.tsx
 //
-// Reservation entry point. Loads BookingConfig server-side, renders one of:
-//   - notFound() for restaurant_not_found (delegates to not-found.tsx)
-//   - inline error card for restaurant_not_live or reservations_disabled
-//   - the client step shell on success
+// Reservation entry point. Loads BookingConfig + open days server-side,
+// renders one of: notFound(), inline error card, or the client step shell.
 
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { loadBookingConfig } from '@/lib/booking/config';
+import { loadOpenDaysOfWeek } from '@/lib/booking/openingHours';
 import { BookingFlowProvider } from '@/lib/booking/state';
 import { BookingStepShell } from '@/components/consumer/booking/BookingStepShell';
+import { StepRenderer } from '@/components/consumer/booking/StepRenderer';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,12 +57,18 @@ export default async function BookingEntryPage({ params }: PageProps) {
   }
 
   const config = result.config;
+  const [openDaysOfWeek] = await Promise.all([
+    loadOpenDaysOfWeek(config.restaurantId, config.hoursPerServiceOverride),
+  ]);
+
   const displayName = config.displayName ?? config.legalName ?? config.slug;
   const restaurantHref = `/${locale}/r/${config.slug}`;
 
   return (
     <BookingFlowProvider totalSteps={6}>
-      <BookingStepShell restaurantName={displayName} restaurantHref={restaurantHref} />
+      <BookingStepShell restaurantName={displayName} restaurantHref={restaurantHref}>
+        <StepRenderer config={config} openDaysOfWeek={openDaysOfWeek} />
+      </BookingStepShell>
     </BookingFlowProvider>
   );
 }
