@@ -1,8 +1,9 @@
 // app/api/dev/booking-config/route.ts
 //
-// Dev-only inspector. Two modes:
-//   1. ?slug=...                            -> resolved BookingConfig + derived helpers
-//   2. ?slug=...&date=YYYY-MM-DD&partySize=N -> mode (1) + loaded AvailabilityInputs
+// Dev-only inspector. Three implicit modes:
+//   1. ?slug=...                              -> BookingConfig + derived helpers
+//   2. ?slug=...&date=YYYY-MM-DD&partySize=N  -> + loaded AvailabilityInputs
+//                                              + computed AvailabilityResult
 //
 // Always 404 in production.
 
@@ -14,6 +15,7 @@ import {
   depositAppliesForParty,
 } from '@/lib/booking/types';
 import { loadAvailabilityInputs } from '@/lib/booking/queries';
+import { computeAvailability } from '@/lib/booking/computeAvailability';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -79,10 +81,9 @@ export async function GET(req: NextRequest) {
   if (!dateParam) {
     return NextResponse.json(base, { status: 200 });
   }
-
   if (!isValidLocalDate(dateParam)) {
     return NextResponse.json(
-      { ...base, inputs: null, inputsError: 'invalid_date_format' },
+      { ...base, inputs: null, inputsError: 'invalid_date_format', availability: null },
       { status: 200 },
     );
   }
@@ -90,13 +91,12 @@ export async function GET(req: NextRequest) {
   const partySize = partySizeParam ? Number(partySizeParam) : 2;
   if (!Number.isInteger(partySize) || partySize < 1 || partySize > 50) {
     return NextResponse.json(
-      { ...base, inputs: null, inputsError: 'invalid_party_size' },
+      { ...base, inputs: null, inputsError: 'invalid_party_size', availability: null },
       { status: 200 },
     );
   }
 
   const inputs = await loadAvailabilityInputs(config, dateParam);
-
   const serializedInputs = {
     dateLocal: inputs.dateLocal,
     isoDayOfWeek: inputs.isoDayOfWeek,
@@ -125,5 +125,20 @@ export async function GET(req: NextRequest) {
     },
   };
 
-  return NextResponse.json({ ...base, partySize, inputs: serializedInputs }, { status: 200 });
+  const availability = computeAvailability(config, inputs, partySize, now);
+
+  return NextResponse.json(
+    {
+      ...base,
+      partySize,
+      inputs: serializedInputs,
+      availability: {
+        ...availability,
+        slotCount: availability.slots.length,
+        firstSlot: availability.slots[0] ?? null,
+        lastSlot: availability.slots[availability.slots.length - 1] ?? null,
+      },
+    },
+    { status: 200 },
+  );
 }

@@ -243,3 +243,40 @@ export interface AvailabilityInputs {
   /** Active bookings overlapping the date (and turnover-buffer halo). */
   existingBookings: ExistingBooking[];
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Availability — compute output                                             */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Final result of `computeAvailability`. All boolean flags are mutually
+ * non-exclusive in principle (e.g. a closed Sunday could also be in the past)
+ * but the compute function returns the earliest-detected flag first. Slots is
+ * `[]` whenever any flag is true.
+ */
+export interface AvailabilityResult {
+  date: string;
+  partySize: number;
+  occupancyMinutes: number;
+  slotIntervalMinutes: number;
+
+  closed: boolean;
+  inPast: boolean;
+  beyondWindow: boolean;
+  partyTooLarge: boolean;
+
+  slots: AvailabilitySlot[];
+}
+
+export interface AvailabilitySlot {
+  /** Local wall-clock time in Europe/Amsterdam, "HH:MM". */
+  time: string;
+  /** Absolute UTC instant, ISO string. */
+  instant: string;
+  /** Zones with at least one free fitting table at this slot. */
+  availableZoneIds: string[];
+  /** Count of free fitting tables across all zones. */
+  remainingTables: number;
+  /** Count of fitting tables ignoring conflicts (capacity ceiling). */
+  totalCandidateTables: number;
+}
