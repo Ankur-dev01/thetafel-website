@@ -938,6 +938,12 @@
       "continue": "Doorgaan",
       "back": "Terug",
       "step_of": "Stap {current} van {total}"
+    },
+    "shell": {
+      "title": "Reserveer een tafel",
+      "subtitle_at": "bij {name}",
+      "back_to_restaurant": "Terug naar het restaurant",
+      "placeholder_body": "Stap wordt binnenkort geladen"
     }
   }
 }

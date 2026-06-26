@@ -938,6 +938,12 @@
       "continue": "Continue",
       "back": "Back",
       "step_of": "Step {current} of {total}"
+    },
+    "shell": {
+      "title": "Reserve a table",
+      "subtitle_at": "at {name}",
+      "back_to_restaurant": "Back to restaurant",
+      "placeholder_body": "Step content loading soon"
     }
   }
 }

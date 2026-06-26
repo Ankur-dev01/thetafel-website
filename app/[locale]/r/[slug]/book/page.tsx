@@ -1,58 +1,68 @@
-import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
-import { resolveRestaurantBySlug } from '@/lib/consumer/resolveRestaurant'
-import { RestaurantHeader } from '@/components/consumer/RestaurantHeader'
-import { buildRestaurantMetadata } from '@/lib/consumer/metadata'
+// app/[locale]/r/[slug]/book/page.tsx
+//
+// Reservation entry point. Loads BookingConfig server-side, renders one of:
+//   - notFound() for restaurant_not_found (delegates to not-found.tsx)
+//   - inline error card for restaurant_not_live or reservations_disabled
+//   - the client step shell on success
 
-export const revalidate = 60
+import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
+import { loadBookingConfig } from '@/lib/booking/config';
+import { BookingFlowProvider } from '@/lib/booking/state';
+import { BookingStepShell } from '@/components/consumer/booking/BookingStepShell';
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string; slug: string }>
-}): Promise<Metadata> {
-  const { locale, slug } = await params
-  const restaurant = await resolveRestaurantBySlug(slug)
-  return buildRestaurantMetadata({
-    restaurant,
-    locale: locale as 'nl' | 'en',
-    slug,
-    intent: 'book',
-  })
+export const dynamic = 'force-dynamic';
+
+interface PageProps {
+  params: Promise<{ locale: string; slug: string }>;
 }
 
-/**
- * Placeholder for the booking flow (real implementation in C4).
- */
-export default async function BookingPlaceholderPage({
-  params,
-}: {
-  params: Promise<{ locale: string; slug: string }>
-}) {
-  const { slug } = await params
-  const restaurant = await resolveRestaurantBySlug(slug)
-  if (!restaurant) notFound()
+export default async function BookingEntryPage({ params }: PageProps) {
+  const { locale, slug } = await params;
+  const result = await loadBookingConfig(slug);
 
-  return (
-    <>
-      <RestaurantHeader restaurant={restaurant} />
-      <section
+  if (!result.ok && result.error === 'restaurant_not_found') {
+    notFound();
+  }
+
+  if (!result.ok) {
+    const t = await getTranslations({ locale, namespace: 'booking.errors' });
+    const messageKey =
+      result.error === 'restaurant_not_live' ? 'restaurant_not_live' : 'reservations_disabled';
+    return (
+      <div
         style={{
-          maxWidth: '1100px',
-          margin: '0 auto',
-          padding: '40px 20px 80px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+          padding: '80px 20px',
+          gap: 12,
         }}
       >
-        <p
+        <h1
           style={{
-            fontFamily: 'var(--font-jost), sans-serif',
-            fontSize: '14px',
-            color: 'var(--stone, #7a7264)',
+            fontFamily: 'var(--font-raleway), serif',
+            fontWeight: 900,
+            fontSize: 'clamp(22px, 4vw, 32px)',
+            color: 'var(--night, #0f0d08)',
+            lineHeight: 1.2,
+            margin: 0,
           }}
         >
-          /r/{restaurant.slug}/book — booking form arrives in C4.
-        </p>
-      </section>
-    </>
-  )
+          {t(messageKey)}
+        </h1>
+      </div>
+    );
+  }
+
+  const config = result.config;
+  const displayName = config.displayName ?? config.legalName ?? config.slug;
+  const restaurantHref = `/${locale}/r/${config.slug}`;
+
+  return (
+    <BookingFlowProvider totalSteps={6}>
+      <BookingStepShell restaurantName={displayName} restaurantHref={restaurantHref} />
+    </BookingFlowProvider>
+  );
 }
