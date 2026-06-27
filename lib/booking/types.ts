@@ -301,7 +301,14 @@ export interface GuestDraft {
   name: string;
   email: string;
   phone: string;
+  /** Free-form "anything else" note from the user. */
   note: string;
+  /** Conditional: only collected when config.questionAllergies is true. */
+  allergies: string;
+  /** Conditional: only collected when config.questionOccasion is true. */
+  occasion: string;
+  /** Conditional: only collected when config.questionRequests is true. */
+  requests: string;
 }
 
 export interface BookingDraft {

@@ -975,6 +975,24 @@
       "heading": "Pick a zone",
       "no_preference": "No preference",
       "no_preference_hint": "We'll assign the best table"
+    },
+    "r4": {
+      "heading": "Your details",
+      "name_label": "Name",
+      "email_label": "Email address",
+      "phone_label": "Phone number",
+      "note_label": "Anything else?",
+      "allergies_label": "Allergies",
+      "occasion_label": "Special occasion?",
+      "requests_label": "Special requests",
+      "optional_placeholder": "Optional",
+      "marketing_label": "Send me news and offers by email",
+      "marketing_hint": "You can unsubscribe at any time",
+      "errors": {
+        "name_invalid": "Please enter your name",
+        "email_invalid": "Please enter a valid email address",
+        "phone_invalid": "Please enter a valid phone number"
+      }
     }
   }
 }

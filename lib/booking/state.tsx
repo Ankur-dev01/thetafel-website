@@ -55,7 +55,7 @@ const EMPTY_DRAFT: BookingDraft = {
   slotInstant: null,
   selectedSlotZoneIds: [],
   zoneId: null,
-  guest: { name: '', email: '', phone: '', note: '' },
+  guest: { name: '', email: '', phone: '', note: '', allergies: '', occasion: '', requests: '' },
   marketingConsent: false,
 };
 

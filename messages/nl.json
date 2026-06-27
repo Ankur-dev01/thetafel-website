@@ -975,6 +975,24 @@
       "heading": "Kies een zone",
       "no_preference": "Geen voorkeur",
       "no_preference_hint": "Wij wijzen je de beste tafel toe"
+    },
+    "r4": {
+      "heading": "Jouw gegevens",
+      "name_label": "Naam",
+      "email_label": "E-mailadres",
+      "phone_label": "Telefoonnummer",
+      "note_label": "Iets anders?",
+      "allergies_label": "Allergieën",
+      "occasion_label": "Speciale gelegenheid?",
+      "requests_label": "Bijzondere wensen",
+      "optional_placeholder": "Optioneel",
+      "marketing_label": "Stuur me nieuws en aanbiedingen via e-mail",
+      "marketing_hint": "Je kunt je op elk moment uitschrijven",
+      "errors": {
+        "name_invalid": "Vul je naam in",
+        "email_invalid": "Vul een geldig e-mailadres in",
+        "phone_invalid": "Vul een geldig telefoonnummer in"
+      }
     }
   }
 }
