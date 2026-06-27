@@ -1,7 +1,8 @@
 // components/consumer/booking/StepRenderer.tsx
 //
-// Switches on the current step. Step 1 mounts the real form;
-// steps 2-6 render a placeholder body until their own units land.
+// Switches on the current step from BookingFlowProvider. Mounts the real
+// step component when available; renders a placeholder body for steps still
+// under construction.
 
 'use client';
 
@@ -9,6 +10,7 @@ import { useTranslations } from 'next-intl';
 import type { BookingConfig } from '@/lib/booking/types';
 import { useBookingFlow } from '@/lib/booking/state';
 import { StepR1 } from './StepR1';
+import { StepR2 } from './StepR2';
 
 interface Props {
   config: BookingConfig;
@@ -18,6 +20,7 @@ interface Props {
 export function StepRenderer({ config, openDaysOfWeek }: Props) {
   const { step } = useBookingFlow();
   if (step === 1) return <StepR1 config={config} openDaysOfWeek={openDaysOfWeek} />;
+  if (step === 2) return <StepR2 slug={config.slug} />;
   return <PlaceholderBody />;
 }
 

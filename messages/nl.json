@@ -951,6 +951,25 @@
       "prev_month": "Vorige maand",
       "next_month": "Volgende maand",
       "closed_day": "Gesloten"
+    },
+    "r2": {
+      "edit_summary": "Wijzig",
+      "section_morning": "Ochtend",
+      "section_lunch": "Lunch",
+      "section_dinner": "Diner",
+      "tables_left": "{count, plural, =1 {Nog 1 tafel} other {Nog # tafels}}",
+      "error_title": "Kon beschikbaarheid niet laden",
+      "error_body": "Probeer het opnieuw",
+      "retry": "Opnieuw proberen",
+      "change_date": "Wijzig datum",
+      "empty_no_slots_title": "Geen beschikbaarheid op deze datum",
+      "empty_no_slots_body": "Kies een andere datum of een ander aantal gasten",
+      "empty_closed_title": "Het restaurant is gesloten op deze datum",
+      "empty_closed_body": "Kies een andere datum",
+      "empty_out_of_window_title": "Deze datum is niet beschikbaar",
+      "empty_out_of_window_body": "Kies een datum binnen de beschikbare periode",
+      "empty_party_too_large_title": "Geen online reserveringen voor deze groep",
+      "empty_party_too_large_body": "Neem contact op met het restaurant"
     }
   }
 }

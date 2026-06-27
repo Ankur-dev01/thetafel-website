@@ -280,3 +280,15 @@ export interface AvailabilitySlot {
   /** Count of fitting tables ignoring conflicts (capacity ceiling). */
   totalCandidateTables: number;
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Availability — public endpoint response                                   */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Shape returned by GET /api/v1/public/{slug}/availability.
+ * Success unwraps the AvailabilityResult fields under `ok: true`.
+ */
+export type AvailabilityResponse =
+  | ({ ok: true } & AvailabilityResult)
+  | { ok: false; error: string };

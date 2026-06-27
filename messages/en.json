@@ -951,6 +951,25 @@
       "prev_month": "Previous month",
       "next_month": "Next month",
       "closed_day": "Closed"
+    },
+    "r2": {
+      "edit_summary": "Edit",
+      "section_morning": "Morning",
+      "section_lunch": "Lunch",
+      "section_dinner": "Dinner",
+      "tables_left": "{count, plural, =1 {1 table left} other {# tables left}}",
+      "error_title": "Couldn't load availability",
+      "error_body": "Please try again",
+      "retry": "Try again",
+      "change_date": "Change date",
+      "empty_no_slots_title": "No availability on this date",
+      "empty_no_slots_body": "Pick another date or a different party size",
+      "empty_closed_title": "The restaurant is closed on this date",
+      "empty_closed_body": "Pick another date",
+      "empty_out_of_window_title": "This date is unavailable",
+      "empty_out_of_window_body": "Pick a date within the available period",
+      "empty_party_too_large_title": "No online reservations for this party size",
+      "empty_party_too_large_body": "Please contact the restaurant"
     }
   }
 }
