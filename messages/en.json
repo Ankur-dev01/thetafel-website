@@ -970,6 +970,11 @@
       "empty_out_of_window_body": "Pick a date within the available period",
       "empty_party_too_large_title": "No online reservations for this party size",
       "empty_party_too_large_body": "Please contact the restaurant"
+    },
+    "r3": {
+      "heading": "Pick a zone",
+      "no_preference": "No preference",
+      "no_preference_hint": "We'll assign the best table"
     }
   }
 }

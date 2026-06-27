@@ -970,6 +970,11 @@
       "empty_out_of_window_body": "Kies een datum binnen de beschikbare periode",
       "empty_party_too_large_title": "Geen online reserveringen voor deze groep",
       "empty_party_too_large_body": "Neem contact op met het restaurant"
+    },
+    "r3": {
+      "heading": "Kies een zone",
+      "no_preference": "Geen voorkeur",
+      "no_preference_hint": "Wij wijzen je de beste tafel toe"
     }
   }
 }

@@ -1,12 +1,13 @@
 // app/[locale]/r/[slug]/book/page.tsx
 //
-// Reservation entry point. Loads BookingConfig + open days server-side,
-// renders one of: notFound(), inline error card, or the client step shell.
+// Reservation entry point. Loads BookingConfig + open days + zones server-side,
+// then mounts the client step shell with the real step content.
 
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { loadBookingConfig } from '@/lib/booking/config';
 import { loadOpenDaysOfWeek } from '@/lib/booking/openingHours';
+import { loadBookableZones } from '@/lib/booking/zones';
 import { BookingFlowProvider } from '@/lib/booking/state';
 import { BookingStepShell } from '@/components/consumer/booking/BookingStepShell';
 import { StepRenderer } from '@/components/consumer/booking/StepRenderer';
@@ -57,17 +58,18 @@ export default async function BookingEntryPage({ params }: PageProps) {
   }
 
   const config = result.config;
-  const [openDaysOfWeek] = await Promise.all([
+  const [openDaysOfWeek, zones] = await Promise.all([
     loadOpenDaysOfWeek(config.restaurantId, config.hoursPerServiceOverride),
+    loadBookableZones(config.restaurantId),
   ]);
 
   const displayName = config.displayName ?? config.legalName ?? config.slug;
   const restaurantHref = `/${locale}/r/${config.slug}`;
 
   return (
-    <BookingFlowProvider totalSteps={6}>
+    <BookingFlowProvider config={config}>
       <BookingStepShell restaurantName={displayName} restaurantHref={restaurantHref}>
-        <StepRenderer config={config} openDaysOfWeek={openDaysOfWeek} />
+        <StepRenderer config={config} openDaysOfWeek={openDaysOfWeek} zones={zones} />
       </BookingStepShell>
     </BookingFlowProvider>
   );

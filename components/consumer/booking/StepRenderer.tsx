@@ -8,19 +8,23 @@
 
 import { useTranslations } from 'next-intl';
 import type { BookingConfig } from '@/lib/booking/types';
+import type { ConsumerZone } from '@/lib/booking/zones';
 import { useBookingFlow } from '@/lib/booking/state';
 import { StepR1 } from './StepR1';
 import { StepR2 } from './StepR2';
+import { StepR3 } from './StepR3';
 
 interface Props {
   config: BookingConfig;
   openDaysOfWeek: number[];
+  zones: ConsumerZone[];
 }
 
-export function StepRenderer({ config, openDaysOfWeek }: Props) {
+export function StepRenderer({ config, openDaysOfWeek, zones }: Props) {
   const { step } = useBookingFlow();
   if (step === 1) return <StepR1 config={config} openDaysOfWeek={openDaysOfWeek} />;
   if (step === 2) return <StepR2 slug={config.slug} />;
+  if (step === 3) return <StepR3 zones={zones} />;
   return <PlaceholderBody />;
 }
 

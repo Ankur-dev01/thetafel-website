@@ -72,14 +72,14 @@ export function StepR2({ slug }: Props) {
 
   const handleSelect = useCallback(
     (slot: AvailabilitySlot) => {
-      updateDraft({ slotInstant: slot.instant });
+      updateDraft({ slotInstant: slot.instant, selectedSlotZoneIds: slot.availableZoneIds });
     },
     [updateDraft],
   );
 
-  // "Wijzig / Edit" — clear the slot, go back to R1.
+  // "Wijzig / Edit" — clear slot + zone state, go back to R1.
   const handleEdit = useCallback(() => {
-    updateDraft({ slotInstant: null });
+    updateDraft({ slotInstant: null, selectedSlotZoneIds: [], zoneId: null });
     setStep(1);
   }, [updateDraft, setStep]);
 

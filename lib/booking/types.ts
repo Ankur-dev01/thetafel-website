@@ -292,3 +292,31 @@ export interface AvailabilitySlot {
 export type AvailabilityResponse =
   | ({ ok: true } & AvailabilityResult)
   | { ok: false; error: string };
+
+/* -------------------------------------------------------------------------- */
+/*  Booking draft — shared between state machine and visibleSteps helper      */
+/* -------------------------------------------------------------------------- */
+
+export interface GuestDraft {
+  name: string;
+  email: string;
+  phone: string;
+  note: string;
+}
+
+export interface BookingDraft {
+  /** R1 */
+  partySize: number | null;
+  /** R1 — YYYY-MM-DD in Europe/Amsterdam. */
+  date: string | null;
+  /** R2 — UTC ISO instant of the chosen slot. */
+  slotInstant: string | null;
+  /** R2 — zone IDs available at the chosen slot, captured on selection. */
+  selectedSlotZoneIds: string[];
+  /** R3 — chosen zone id (null when restaurant has 1 zone or guest skipped). */
+  zoneId: string | null;
+  /** R4 */
+  guest: GuestDraft;
+  /** R4 — marketing consent. */
+  marketingConsent: boolean;
+}

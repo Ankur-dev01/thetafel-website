@@ -2,16 +2,10 @@
 //
 // Client-side state machine for the booking flow.
 //
-// Why React Context (not Zustand):
-//   - Only one consumer tree (the booking shell).
-//   - State is short-lived (resets on full page refresh — acceptable for v1;
-//     persistence to URL or localStorage is a future enhancement).
-//   - Zustand adds a dependency for marginal benefit on this tree size.
-//
-// Step numbering matches PRD §4: R1=1 (date+party), R2=2 (slot), R3=3 (zone, optional),
-// R4=4 (guest details), R5=5 (deposit, optional), R6=6 (review). Skipping R3/R5
-// is handled by `visibleSteps` in a later unit; the raw step counter here is the
-// canonical 1..6 index regardless of visibility.
+// Internal `step` value stays 1..6 (canonical step IDs). Users see a counter
+// and dot count derived from `visibleSteps` — the subset of step IDs that
+// apply to the current draft (R3/R5 may be skipped). All transitions
+// (goNext/goBack/setStep) operate on `visibleSteps`, not raw IDs.
 
 'use client';
 
@@ -19,55 +13,26 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from 'react';
+import type { BookingConfig, BookingDraft, GuestDraft } from './types';
+import { computeVisibleSteps } from './visibleSteps';
+
+export type { BookingDraft, GuestDraft };
 
 /* -------------------------------------------------------------------------- */
-/*  Types                                                                     */
+/*  Context shape                                                             */
 /* -------------------------------------------------------------------------- */
-
-export interface GuestDraft {
-  name: string;
-  email: string;
-  phone: string;
-  note: string;
-}
-
-export interface BookingDraft {
-  /** R1 */
-  partySize: number | null;
-  /** R1 — YYYY-MM-DD in Europe/Amsterdam. */
-  date: string | null;
-  /** R2 — UTC ISO instant of the chosen slot. */
-  slotInstant: string | null;
-  /** R3 — chosen zone id (optional; null when restaurant has 1 zone or guest skipped). */
-  zoneId: string | null;
-  /** R4 */
-  guest: GuestDraft;
-  /** R4 — marketing consent checkbox. */
-  marketingConsent: boolean;
-}
-
-const EMPTY_DRAFT: BookingDraft = {
-  partySize: null,
-  date: null,
-  slotInstant: null,
-  zoneId: null,
-  guest: { name: '', email: '', phone: '', note: '' },
-  marketingConsent: false,
-};
 
 export interface BookingFlowContextValue {
   step: number;
-  totalSteps: number;
+  visibleSteps: number[];
+  currentVisibleIndex: number;
+  totalVisibleSteps: number;
   draft: BookingDraft;
-  /**
-   * Whether the active step considers itself valid enough to advance.
-   * Each step component sets this via a useEffect based on its own validation.
-   * Resets to `false` automatically on every step transition.
-   */
   canContinue: boolean;
   setStep: (n: number) => void;
   goNext: () => void;
@@ -81,39 +46,78 @@ export interface BookingFlowContextValue {
 const BookingFlowContext = createContext<BookingFlowContextValue | null>(null);
 
 /* -------------------------------------------------------------------------- */
+/*  Default draft                                                             */
+/* -------------------------------------------------------------------------- */
+
+const EMPTY_DRAFT: BookingDraft = {
+  partySize: null,
+  date: null,
+  slotInstant: null,
+  selectedSlotZoneIds: [],
+  zoneId: null,
+  guest: { name: '', email: '', phone: '', note: '' },
+  marketingConsent: false,
+};
+
+/* -------------------------------------------------------------------------- */
 /*  Provider                                                                  */
 /* -------------------------------------------------------------------------- */
 
 export function BookingFlowProvider({
   children,
-  totalSteps = 6,
+  config,
 }: {
   children: ReactNode;
-  totalSteps?: number;
+  config: BookingConfig;
 }) {
   const [step, setStepRaw] = useState(1);
   const [draft, setDraft] = useState<BookingDraft>(EMPTY_DRAFT);
   const [canContinue, setCanContinueRaw] = useState(false);
 
+  const visibleSteps = useMemo(
+    () => computeVisibleSteps(draft, config),
+    [draft, config],
+  );
+
+  // Clamp step into visibleSteps if it falls out (e.g. R3 disappears because
+  // the user re-picked a 1-zone slot). Snap to the largest visible step <= current.
+  useEffect(() => {
+    if (visibleSteps.includes(step)) return;
+    const fallback =
+      [...visibleSteps].reverse().find((s) => s <= step) ?? visibleSteps[0] ?? 1;
+    setStepRaw(fallback);
+  }, [visibleSteps, step]);
+
+  const currentVisibleIndex = useMemo(() => {
+    const idx = visibleSteps.indexOf(step);
+    return idx >= 0 ? idx + 1 : 1;
+  }, [step, visibleSteps]);
+
+  const totalVisibleSteps = visibleSteps.length;
+
   const setStep = useCallback(
     (n: number) => {
       if (!Number.isInteger(n)) return;
-      const clamped = Math.max(1, Math.min(totalSteps, n));
-      setStepRaw(clamped);
+      if (!visibleSteps.includes(n)) return;
+      setStepRaw(n);
       setCanContinueRaw(false);
     },
-    [totalSteps],
+    [visibleSteps],
   );
 
   const goNext = useCallback(() => {
-    setStepRaw((s) => Math.min(totalSteps, s + 1));
+    const idx = visibleSteps.indexOf(step);
+    if (idx < 0 || idx >= visibleSteps.length - 1) return;
+    setStepRaw(visibleSteps[idx + 1]);
     setCanContinueRaw(false);
-  }, [totalSteps]);
+  }, [step, visibleSteps]);
 
   const goBack = useCallback(() => {
-    setStepRaw((s) => Math.max(1, s - 1));
+    const idx = visibleSteps.indexOf(step);
+    if (idx <= 0) return;
+    setStepRaw(visibleSteps[idx - 1]);
     setCanContinueRaw(false);
-  }, []);
+  }, [step, visibleSteps]);
 
   const updateDraft = useCallback((patch: Partial<BookingDraft>) => {
     setDraft((d) => ({ ...d, ...patch }));
@@ -136,7 +140,9 @@ export function BookingFlowProvider({
   const value = useMemo<BookingFlowContextValue>(
     () => ({
       step,
-      totalSteps,
+      visibleSteps,
+      currentVisibleIndex,
+      totalVisibleSteps,
       draft,
       canContinue,
       setStep,
@@ -149,7 +155,9 @@ export function BookingFlowProvider({
     }),
     [
       step,
-      totalSteps,
+      visibleSteps,
+      currentVisibleIndex,
+      totalVisibleSteps,
       draft,
       canContinue,
       setStep,

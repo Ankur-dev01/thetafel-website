@@ -2,7 +2,8 @@
 //
 // The interactive booking shell. Renders chrome (back-to-restaurant link,
 // title, progress dots, step counter, footer button row) plus a slot for
-// step content rendered via `children`.
+// step content. Progress dots and counter reflect the VISIBLE step set
+// (R3/R5 may be skipped), not the raw step ID.
 
 'use client';
 
@@ -14,7 +15,7 @@ import { BookingProgressDots } from './BookingProgressDots';
 
 interface Props {
   restaurantName: string;
-  /** Locale-prefixed path back to the restaurant page (e.g. `/nl/r/draft-abc`). */
+  /** Locale-prefixed path back to the restaurant page. */
   restaurantHref: string;
   children: ReactNode;
 }
@@ -22,7 +23,7 @@ interface Props {
 export function BookingStepShell({ restaurantName, restaurantHref, children }: Props) {
   const shared = useTranslations('booking.shared');
   const shell = useTranslations('booking.shell');
-  const { step, totalSteps, goBack, goNext, canContinue } = useBookingFlow();
+  const { currentVisibleIndex, totalVisibleSteps, goBack, goNext, canContinue } = useBookingFlow();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
@@ -75,7 +76,7 @@ export function BookingStepShell({ restaurantName, restaurantHref, children }: P
 
       {/* Progress: dots + counter */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <BookingProgressDots current={step} total={totalSteps} />
+        <BookingProgressDots current={currentVisibleIndex} total={totalVisibleSteps} />
         <p
           style={{
             fontSize: 11,
@@ -87,7 +88,7 @@ export function BookingStepShell({ restaurantName, restaurantHref, children }: P
             margin: 0,
           }}
         >
-          {shared('step_of', { current: step, total: totalSteps })}
+          {shared('step_of', { current: currentVisibleIndex, total: totalVisibleSteps })}
         </p>
       </div>
 
@@ -116,15 +117,15 @@ export function BookingStepShell({ restaurantName, restaurantHref, children }: P
         <button
           type="button"
           onClick={goBack}
-          disabled={step <= 1}
+          disabled={currentVisibleIndex <= 1}
           style={{
             background: 'none',
             border: 'none',
-            cursor: step <= 1 ? 'not-allowed' : 'pointer',
+            cursor: currentVisibleIndex <= 1 ? 'not-allowed' : 'pointer',
             fontSize: 14,
             fontFamily: 'var(--font-jost), sans-serif',
             color: 'rgba(15, 13, 8, 0.65)',
-            opacity: step <= 1 ? 0.3 : 1,
+            opacity: currentVisibleIndex <= 1 ? 0.3 : 1,
             padding: '8px 0',
             transition: 'opacity 0.15s ease',
           }}
