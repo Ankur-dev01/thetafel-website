@@ -52,7 +52,12 @@ export async function createSupabaseServerClientAdmin() {
     throw new Error('NEXT_PUBLIC_SUPABASE_PROD_URL is not set')
   }
   if (!serviceKey) {
-    throw new Error('SUPABASE_PROD_SERVICE_ROLE_KEY is not set')
+    throw new Error('SUPABASE_PROD_SERVICE_ROLE_KEY is not set — admin client cannot bypass RLS')
+  }
+  if (serviceKey.length < 100) {
+    throw new Error(
+      `SUPABASE_PROD_SERVICE_ROLE_KEY looks too short (len=${serviceKey.length}) — is it the anon/publishable key by mistake?`,
+    )
   }
 
   return createClient(url, serviceKey, {

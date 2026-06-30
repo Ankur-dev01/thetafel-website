@@ -993,6 +993,46 @@
         "email_invalid": "Vul een geldig e-mailadres in",
         "phone_invalid": "Vul een geldig telefoonnummer in"
       }
+    },
+    "r6": {
+      "heading": "Controleer je gegevens",
+      "summary_when": "Wanneer",
+      "summary_party": "Gezelschap",
+      "summary_zone": "Zone",
+      "summary_name": "Naam",
+      "summary_email": "E-mailadres",
+      "summary_phone": "Telefoonnummer",
+      "summary_notes": "Opmerkingen",
+      "label_allergies": "Allergieën",
+      "label_occasion": "Speciale gelegenheid",
+      "label_requests": "Bijzondere wensen",
+      "label_note": "Opmerking",
+      "zone_no_preference": "Geen voorkeur",
+      "confirm": "Bevestig reservering",
+      "confirming": "Bezig met bevestigen…",
+      "terms_disclaimer": "Door te bevestigen ga je akkoord met de Algemene Voorwaarden en het Privacybeleid",
+      "errors": {
+        "generic": "Er ging iets mis. Probeer het opnieuw",
+        "rate_limited": "Te veel pogingen. Probeer het over een minuut opnieuw",
+        "turnstile_failed": "Beveiligingscontrole mislukt. Vernieuw de pagina en probeer het opnieuw",
+        "slot_no_longer_available": "Dit tijdslot is net volgeboekt. Kies een ander tijdslot",
+        "restaurant_not_found": "Dit restaurant bestaat niet",
+        "restaurant_not_live": "Dit restaurant is nog niet actief",
+        "reservations_disabled": "Dit restaurant accepteert geen online reserveringen",
+        "persistence_failed": "Kon de reservering niet opslaan. Probeer het opnieuw"
+      }
+    },
+    "confirmed": {
+      "eyebrow": "Bevestigd",
+      "heading": "Je tafel is gereserveerd",
+      "subhead": "Een bevestigingsmail is onderweg naar {email}",
+      "label_ref": "Reserveringsnummer",
+      "label_when": "Wanneer",
+      "label_party": "Gezelschap",
+      "label_notes": "Opmerkingen",
+      "back_to_restaurant": "Terug naar het restaurant",
+      "not_found_title": "Reservering niet gevonden",
+      "not_found_body": "Controleer de link in je e-mail"
     }
   }
 }

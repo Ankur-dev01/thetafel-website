@@ -993,6 +993,46 @@
         "email_invalid": "Please enter a valid email address",
         "phone_invalid": "Please enter a valid phone number"
       }
+    },
+    "r6": {
+      "heading": "Check your details",
+      "summary_when": "When",
+      "summary_party": "Party",
+      "summary_zone": "Zone",
+      "summary_name": "Name",
+      "summary_email": "Email address",
+      "summary_phone": "Phone number",
+      "summary_notes": "Notes",
+      "label_allergies": "Allergies",
+      "label_occasion": "Occasion",
+      "label_requests": "Special requests",
+      "label_note": "Note",
+      "zone_no_preference": "No preference",
+      "confirm": "Confirm reservation",
+      "confirming": "Confirming…",
+      "terms_disclaimer": "By confirming you agree to the Terms and Privacy Policy",
+      "errors": {
+        "generic": "Something went wrong. Please try again",
+        "rate_limited": "Too many attempts. Try again in a minute",
+        "turnstile_failed": "Security check failed. Refresh the page and try again",
+        "slot_no_longer_available": "This slot was just booked. Pick another time",
+        "restaurant_not_found": "This restaurant doesn't exist",
+        "restaurant_not_live": "This restaurant isn't live yet",
+        "reservations_disabled": "This restaurant isn't accepting online reservations",
+        "persistence_failed": "Could not save the reservation. Please try again"
+      }
+    },
+    "confirmed": {
+      "eyebrow": "Confirmed",
+      "heading": "Your table is reserved",
+      "subhead": "A confirmation email is on its way to {email}",
+      "label_ref": "Reservation number",
+      "label_when": "When",
+      "label_party": "Party",
+      "label_notes": "Notes",
+      "back_to_restaurant": "Back to restaurant",
+      "not_found_title": "Reservation not found",
+      "not_found_body": "Check the link in your email"
     }
   }
 }
