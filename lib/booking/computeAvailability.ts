@@ -130,7 +130,11 @@ export function computeAvailability(
       let zoneRemaining = 0;
       let zoneTotal = 0;
       for (const table of zone.tables) {
+        // Half-full rule: table must fit the party AND not waste more than
+        // 50% of its seats. So `partySize <= table.seats <= partySize * 2`.
+        // A party of 2 cannot book a 10-seat table; a party of 5 can.
         if (table.seats < partySize) continue;
+        if (table.seats > partySize * 2) continue;
         zoneTotal++;
         if (!tableBlockedAt(table.id, startMs, endMs, bufferMs, inputs.existingBookings)) {
           zoneRemaining++;

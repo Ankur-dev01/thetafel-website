@@ -68,9 +68,18 @@ export async function POST(req: NextRequest) {
       actorType: 'guest',
       ipAddress: ip,
     }).catch(() => {});
+
+    // Map error codes to appropriate HTTP status codes so the client can
+    // distinguish "try a different slot" (409) from "try again in a moment" (409 with retry)
+    // from "our fault" (200 with error body preserved for consumer surfaces).
+    const status =
+      result.error === 'slot_no_longer_available' || result.error === 'slot_temporarily_busy'
+        ? 409
+        : 200;
+
     return NextResponse.json(
       { ok: false, error: result.error, errorDetail: result.errorDetail },
-      { status: 200 },
+      { status },
     );
   }
 
