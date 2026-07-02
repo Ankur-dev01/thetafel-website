@@ -23,6 +23,7 @@ const BOOKING_CONFIG_COLUMNS = [
   'slot_interval_minutes',
   'max_guests_per_slot',
   'occupancy_duration_by_party',
+  'occupancy_duration_minutes',
   'turnover_buffer_minutes',
   'noshow_prepaid_enabled',
   'noshow_prepaid_amount_cents',
@@ -51,6 +52,7 @@ interface RawRestaurantRow {
   slot_interval_minutes: number | null;
   max_guests_per_slot: number | null;
   occupancy_duration_by_party: unknown;
+  occupancy_duration_minutes: number | null;
   turnover_buffer_minutes: number;
   noshow_prepaid_enabled: boolean;
   noshow_prepaid_amount_cents: number | null;
@@ -79,6 +81,31 @@ function normalizeOccupancyMap(raw: unknown): OccupancyDurationMap {
     }
   }
   return out;
+}
+
+/**
+ * Merge the restaurant's base `occupancy_duration_minutes` into the per-party
+ * override map as the `default` key.
+ *
+ * The base column is authoritative for "how long a meal takes when no per-party
+ * override is set." A user-set `default` in the map (rare — currently no UI
+ * writes it) still wins over the base column, for future-proofing.
+ *
+ * If the base column is null (very old rows or misconfigured restaurants),
+ * we leave the map untouched — resolveOccupancyMinutes will fall back to
+ * FALLBACK_OCCUPANCY_MINUTES, which is the last-resort safety net.
+ */
+function mergeOccupancyMap(
+  perPartyMap: OccupancyDurationMap,
+  baseMinutes: number | null,
+): OccupancyDurationMap {
+  if (typeof baseMinutes !== 'number' || !Number.isFinite(baseMinutes) || baseMinutes <= 0) {
+    return perPartyMap;
+  }
+  if (typeof perPartyMap.default === 'number' && perPartyMap.default > 0) {
+    return perPartyMap;
+  }
+  return { ...perPartyMap, default: Math.round(baseMinutes) };
 }
 
 /**
@@ -126,7 +153,10 @@ export async function loadBookingConfig(slug: string): Promise<BookingConfigResu
     maxPartySizeOnline: data.max_party_size_online,
     slotIntervalMinutes: data.slot_interval_minutes ?? 30,
     maxGuestsPerSlot: data.max_guests_per_slot,
-    occupancyDurationByParty: normalizeOccupancyMap(data.occupancy_duration_by_party),
+    occupancyDurationByParty: mergeOccupancyMap(
+      normalizeOccupancyMap(data.occupancy_duration_by_party),
+      data.occupancy_duration_minutes,
+    ),
     turnoverBufferMinutes: data.turnover_buffer_minutes ?? 15,
 
     noShowPrepaidEnabled: data.noshow_prepaid_enabled,
