@@ -994,6 +994,26 @@
         "phone_invalid": "Please enter a valid phone number"
       }
     },
+    "r5": {
+      "heading": "Reservation deposit",
+      "intro": "This restaurant asks for a deposit to secure larger bookings. It's fully refunded when you show up.",
+      "per_guest_label": "{amount} per guest",
+      "total_label": "Total due now",
+      "cancellation_policy": "No refund for cancellations under 24 hours before your reservation.",
+      "pay_ideal": "Pay with iDEAL",
+      "pay_card": "Pay with card",
+      "processing": "Redirecting to payment…",
+      "errors": {
+        "deposit_not_required": "A deposit isn't needed for this booking. Please go back and continue.",
+        "slot_no_longer_available": "This time slot is no longer available. Please choose another.",
+        "slot_temporarily_busy": "This time slot is being booked by someone else right now. Please try again in a moment.",
+        "rate_limited": "Too many attempts. Please wait a moment and try again.",
+        "mollie_not_connected": "This restaurant's payment setup isn't ready yet. Please contact them directly.",
+        "mollie_token_refresh_failed": "We couldn't reach the payment provider. Please try again.",
+        "mollie_error": "Something went wrong starting the payment. Please try again.",
+        "generic": "Something went wrong. Please try again."
+      }
+    },
     "r6": {
       "heading": "Check your details",
       "summary_when": "When",

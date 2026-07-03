@@ -8,6 +8,7 @@ import { StepR1 } from './StepR1';
 import { StepR2 } from './StepR2';
 import { StepR3 } from './StepR3';
 import { StepR4 } from './StepR4';
+import { StepR5 } from './StepR5';
 import { StepR6 } from './StepR6';
 
 interface Props {
@@ -22,6 +23,7 @@ export function StepRenderer({ config, openDaysOfWeek, zones }: Props) {
   if (step === 2) return <StepR2 slug={config.slug} />;
   if (step === 3) return <StepR3 zones={zones} />;
   if (step === 4) return <StepR4 config={config} />;
+  if (step === 5) return <StepR5 config={config} />;
   if (step === 6) return <StepR6 config={config} zones={zones} />;
   return <PlaceholderBody />;
 }

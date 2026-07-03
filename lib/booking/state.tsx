@@ -57,6 +57,9 @@ const EMPTY_DRAFT: BookingDraft = {
   zoneId: null,
   guest: { name: '', email: '', phone: '', note: '', allergies: '', occasion: '', requests: '' },
   marketingConsent: false,
+  depositIntentId: null,
+  depositAmountCents: null,
+  depositCurrency: null,
 };
 
 /* -------------------------------------------------------------------------- */

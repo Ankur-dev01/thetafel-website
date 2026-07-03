@@ -326,4 +326,9 @@ export interface BookingDraft {
   guest: GuestDraft;
   /** R4 — marketing consent. */
   marketingConsent: boolean;
+  /** R5 — set once start-deposit succeeds; null until a deposit flow begins. */
+  depositIntentId: string | null;
+  /** R5 — server-computed total in cents, mirrored into the draft for display continuity. */
+  depositAmountCents: number | null;
+  depositCurrency: string | null;
 }

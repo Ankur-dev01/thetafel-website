@@ -994,6 +994,26 @@
         "phone_invalid": "Vul een geldig telefoonnummer in"
       }
     },
+    "r5": {
+      "heading": "Aanbetaling reservering",
+      "intro": "Dit restaurant vraagt een aanbetaling voor grotere reserveringen. Je krijgt dit volledig terug als je komt opdagen.",
+      "per_guest_label": "{amount} per gast",
+      "total_label": "Nu te betalen",
+      "cancellation_policy": "Geen restitutie bij annuleren binnen 24 uur voor je reservering.",
+      "pay_ideal": "Betaal met iDEAL",
+      "pay_card": "Betaal met creditcard",
+      "processing": "Doorverwijzen naar betaling…",
+      "errors": {
+        "deposit_not_required": "Voor deze reservering is geen aanbetaling nodig. Ga terug en ga verder.",
+        "slot_no_longer_available": "Dit tijdstip is niet meer beschikbaar. Kies een ander tijdstip.",
+        "slot_temporarily_busy": "Dit tijdstip wordt op dit moment door iemand anders geboekt. Probeer het zo weer.",
+        "rate_limited": "Te veel pogingen. Wacht even en probeer het opnieuw.",
+        "mollie_not_connected": "De betaalinstellingen van dit restaurant zijn nog niet gereed. Neem rechtstreeks contact op.",
+        "mollie_token_refresh_failed": "We konden de betaalprovider niet bereiken. Probeer het opnieuw.",
+        "mollie_error": "Er ging iets mis bij het starten van de betaling. Probeer het opnieuw.",
+        "generic": "Er ging iets mis. Probeer het opnieuw."
+      }
+    },
     "r6": {
       "heading": "Controleer je gegevens",
       "summary_when": "Wanneer",
