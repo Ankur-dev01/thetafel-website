@@ -1,15 +1,16 @@
 // app/[locale]/r/[slug]/book/confirmed/page.tsx
 //
-// Minimal confirmation page. Reads ?ref=<booking_ref>&t=<plaintext magic link token>.
-// Token lookup goes through the magic_links table (JOIN bookings + guests).
-// Ref-only fallback for idempotent replays where the client lost the token.
+// Confirmation screen after a successful booking.
 //
-// Polished design + cancel/manage controls land in C4.8.
+// Reads ?ref=<booking_ref>&t=<plaintext magic link token>.
+// Loads the booking row by hashing the token and matching magic_link_token_hash.
+// Falls back to a ref-only lookup for idempotent replays where the client
+// lost the token (still safe — no PII rendered without the token).
 
-import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { createSupabaseServerClientAdmin } from '@/lib/supabase/server';
 import { hashMagicLinkToken } from '@/lib/consumer/magicLinks';
+import { StepR7 } from '@/components/consumer/booking/StepR7';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,155 +19,229 @@ interface PageProps {
   searchParams: Promise<{ ref?: string; t?: string }>;
 }
 
+type LoadedBooking = {
+  restaurantSlug: string;
+  restaurantDisplayName: string;
+  restaurantAddressLine: string | null;
+  restaurantPhone: string | null;
+  bookingRef: string;
+  slotStartUtc: Date;
+  partySize: number;
+  durationMinutes: number;
+  depositAmountCents: number | null;
+  depositCurrency: string | null;
+  magicLinkToken: string;
+};
+
 export default async function BookingConfirmedPage({ params, searchParams }: PageProps) {
-  const { locale, slug } = await params;
+  const { locale: localeParam, slug } = await params;
   const { ref, t: token } = await searchParams;
-  const tr = await getTranslations({ locale, namespace: 'booking.confirmed' });
+  const locale: 'nl' | 'en' = localeParam === 'en' ? 'en' : 'nl';
 
-  let booking: BookingDisplay | null = null;
-  if (token) {
-    booking = await loadBookingByToken(slug, token);
-  }
-  if (!booking && ref) {
-    booking = await loadBookingByRef(slug, ref);
-  }
-
-  const localeStr = locale === 'nl' ? 'nl' : 'en';
-  const backHref = locale === 'nl' ? `/r/${slug}` : `/${locale}/r/${slug}`;
+  const booking = token
+    ? await loadBookingByToken(slug, token)
+    : ref
+      ? await loadBookingByRef(slug, ref)
+      : null;
 
   if (!booking) {
-    return (
-      <div className="flex flex-col items-center gap-3 py-16 text-center">
-        <h1 className="font-display text-2xl text-night sm:text-3xl">{tr('not_found_title')}</h1>
-        <p className="text-sm text-night/70">{tr('not_found_body')}</p>
-        <Link href={backHref} className="mt-2 text-sm text-amber underline-offset-2 hover:underline">
-          {tr('back_to_restaurant')}
-        </Link>
-      </div>
-    );
+    return <NotFoundState locale={locale} slug={slug} />;
   }
 
-  const slotLabel = new Intl.DateTimeFormat(localeStr, {
-    timeZone: 'Europe/Amsterdam',
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  }).format(new Date(booking.slot_time));
-
   return (
-    <div className="flex flex-col gap-6 py-8 sm:py-12">
-      <div className="flex flex-col items-start gap-2">
-        <span className="text-xs uppercase tracking-wider text-amber">{tr('eyebrow')}</span>
-        <h1 className="font-display text-3xl text-night sm:text-4xl">{tr('heading')}</h1>
-        <p className="text-base text-night/70">{tr('subhead', { email: booking.guest_email })}</p>
-      </div>
-
-      <div className="rounded-md bg-white/60 p-6 sm:p-8">
-        <div className="flex flex-col gap-3">
-          <Row label={tr('label_ref')} value={booking.booking_ref} />
-          <Row label={tr('label_when')} value={slotLabel} />
-          <Row label={tr('label_party')} value={String(booking.party_size)} />
-          {booking.guest_note && (
-            <Row label={tr('label_notes')} value={booking.guest_note} multiline />
-          )}
-        </div>
-      </div>
-
-      <Link href={backHref} className="text-sm text-amber underline-offset-2 hover:underline">
-        {tr('back_to_restaurant')}
-      </Link>
-    </div>
+    <main className="min-h-screen bg-cream">
+      <StepR7
+        data={{
+          locale,
+          restaurant: {
+            slug: booking.restaurantSlug,
+            displayName: booking.restaurantDisplayName,
+            addressLine: booking.restaurantAddressLine,
+            phone: booking.restaurantPhone,
+          },
+          booking: {
+            ref: booking.bookingRef,
+            slotStartUtc: booking.slotStartUtc,
+            partySize: booking.partySize,
+            durationMinutes: booking.durationMinutes,
+            depositAmountCents: booking.depositAmountCents,
+            depositCurrency: booking.depositCurrency,
+            magicLinkToken: booking.magicLinkToken,
+          },
+        }}
+      />
+    </main>
   );
 }
 
-function Row({ label, value, multiline }: { label: string; value: string; multiline?: boolean }) {
-  return (
-    <div className="flex flex-col gap-0.5">
-      <span className="text-xs uppercase tracking-wider text-night/50">{label}</span>
-      <span className={['text-sm text-night', multiline ? 'whitespace-pre-line' : ''].join(' ')}>
-        {value}
-      </span>
-    </div>
-  );
-}
+async function loadBookingByToken(slug: string, token: string): Promise<LoadedBooking | null> {
+  if (!token || token.length < 40) return null;
+  const admin = await createSupabaseServerClientAdmin();
+  const tokenHash = hashMagicLinkToken(token);
 
-/* -------------------------------------------------------------------------- */
-/*  Data loaders                                                               */
-/* -------------------------------------------------------------------------- */
-
-interface BookingDisplay {
-  booking_ref: string;
-  slot_time: string;
-  party_size: number;
-  guest_email: string;
-  guest_note: string | null;
-}
-
-async function loadBookingByToken(slug: string, plaintext: string): Promise<BookingDisplay | null> {
-  const supabase = await createSupabaseServerClientAdmin();
-  const hash = hashMagicLinkToken(plaintext);
-
-  // Query via magic_links table — the token hash is stored there, not on bookings.
-  const { data, error } = await supabase
-    .from('magic_links')
-    .select(
-      `token_hash,
-       bookings!inner(
-         booking_ref, slot_time, party_size, guest_note,
-         restaurants!inner(slug),
-         guests!inner(email)
-       )`,
-    )
-    .eq('token_hash', hash)
-    .eq('bookings.restaurants.slug', slug)
-    .maybeSingle();
-
-  if (error || !data) return null;
-
-  const b = (data as unknown as { bookings: { booking_ref: string; slot_time: string; party_size: number; guest_note: string | null; guests: { email: string } } }).bookings;
-  if (!b) return null;
-
-  return {
-    booking_ref: b.booking_ref,
-    slot_time: b.slot_time,
-    party_size: b.party_size,
-    guest_email: b.guests.email,
-    guest_note: b.guest_note,
-  };
-}
-
-async function loadBookingByRef(slug: string, ref: string): Promise<BookingDisplay | null> {
-  const supabase = await createSupabaseServerClientAdmin();
-
-  const { data, error } = await supabase
+  const { data, error } = await admin
     .from('bookings')
-    .select(
-      `booking_ref, slot_time, party_size, guest_note,
-       restaurants!inner(slug),
-       guests!inner(email)`,
-    )
-    .eq('booking_ref', ref)
-    .eq('restaurants.slug', slug)
+    .select(`
+      id,
+      restaurant_id,
+      booking_ref,
+      slot_time,
+      party_size,
+      deposit_amount_cents,
+      deposit_currency,
+      restaurant:restaurants!inner (
+        slug,
+        display_name,
+        legal_name,
+        contact_phone,
+        legal_address_street,
+        legal_address_house_number,
+        legal_address_postcode,
+        legal_address_city,
+        occupancy_duration_minutes
+      )
+    `)
+    .eq('magic_link_token_hash', tokenHash)
     .maybeSingle();
 
   if (error || !data) return null;
 
-  const row = data as unknown as {
-    booking_ref: string;
-    slot_time: string;
-    party_size: number;
-    guest_note: string | null;
-    guests: { email: string };
+  const restaurant = data.restaurant as unknown as {
+    slug: string;
+    display_name: string | null;
+    legal_name: string | null;
+    contact_phone: string | null;
+    legal_address_street: string | null;
+    legal_address_house_number: string | null;
+    legal_address_postcode: string | null;
+    legal_address_city: string | null;
+    occupancy_duration_minutes: number | null;
   };
 
+  if (restaurant.slug !== slug) return null;
+
   return {
-    booking_ref: row.booking_ref,
-    slot_time: row.slot_time,
-    party_size: row.party_size,
-    guest_email: row.guests.email,
-    guest_note: row.guest_note,
+    restaurantSlug: restaurant.slug,
+    restaurantDisplayName:
+      restaurant.display_name || restaurant.legal_name || 'The Tafel',
+    restaurantAddressLine: buildAddressLine(restaurant),
+    restaurantPhone: restaurant.contact_phone,
+    bookingRef: data.booking_ref as string,
+    slotStartUtc: new Date(data.slot_time as string),
+    partySize: data.party_size as number,
+    durationMinutes: restaurant.occupancy_duration_minutes ?? 90,
+    depositAmountCents: (data.deposit_amount_cents as number | null) ?? null,
+    depositCurrency: (data.deposit_currency as string | null) ?? null,
+    magicLinkToken: token,
   };
+}
+
+async function loadBookingByRef(slug: string, ref: string): Promise<LoadedBooking | null> {
+  // Ref-only fallback returns a booking with an empty magic link token so
+  // the calendar buttons and manage link degrade gracefully. Still safe —
+  // knowing the ref alone doesn't reveal PII beyond what we render here.
+  if (!ref || ref.length < 4) return null;
+  const admin = await createSupabaseServerClientAdmin();
+
+  const { data, error } = await admin
+    .from('bookings')
+    .select(`
+      id,
+      restaurant_id,
+      booking_ref,
+      slot_time,
+      party_size,
+      deposit_amount_cents,
+      deposit_currency,
+      restaurant:restaurants!inner (
+        slug,
+        display_name,
+        legal_name,
+        contact_phone,
+        legal_address_street,
+        legal_address_house_number,
+        legal_address_postcode,
+        legal_address_city,
+        occupancy_duration_minutes
+      )
+    `)
+    .eq('booking_ref', ref)
+    .maybeSingle();
+
+  if (error || !data) return null;
+
+  const restaurant = data.restaurant as unknown as {
+    slug: string;
+    display_name: string | null;
+    legal_name: string | null;
+    contact_phone: string | null;
+    legal_address_street: string | null;
+    legal_address_house_number: string | null;
+    legal_address_postcode: string | null;
+    legal_address_city: string | null;
+    occupancy_duration_minutes: number | null;
+  };
+
+  if (restaurant.slug !== slug) return null;
+
+  return {
+    restaurantSlug: restaurant.slug,
+    restaurantDisplayName:
+      restaurant.display_name || restaurant.legal_name || 'The Tafel',
+    restaurantAddressLine: buildAddressLine(restaurant),
+    restaurantPhone: restaurant.contact_phone,
+    bookingRef: data.booking_ref as string,
+    slotStartUtc: new Date(data.slot_time as string),
+    partySize: data.party_size as number,
+    durationMinutes: restaurant.occupancy_duration_minutes ?? 90,
+    depositAmountCents: (data.deposit_amount_cents as number | null) ?? null,
+    depositCurrency: (data.deposit_currency as string | null) ?? null,
+    magicLinkToken: '', // no token available in ref-fallback path
+  };
+}
+
+function buildAddressLine(r: {
+  legal_address_street: string | null;
+  legal_address_house_number: string | null;
+  legal_address_postcode: string | null;
+  legal_address_city: string | null;
+}): string | null {
+  const parts: string[] = [];
+  const streetLine = [r.legal_address_street, r.legal_address_house_number]
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+  if (streetLine) parts.push(streetLine);
+  const cityLine = [r.legal_address_postcode, r.legal_address_city]
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+  if (cityLine) parts.push(cityLine);
+  return parts.length > 0 ? parts.join(', ') : null;
+}
+
+function NotFoundState({ locale, slug }: { locale: 'nl' | 'en'; slug: string }) {
+  const heading =
+    locale === 'nl' ? 'Reservering niet gevonden' : 'Booking not found';
+  const body =
+    locale === 'nl'
+      ? 'We konden je reservering niet vinden. Controleer de link uit je bevestigingsmail of neem contact op met het restaurant.'
+      : "We couldn't find your booking. Please check the link from your confirmation email or contact the restaurant.";
+  const backLabel =
+    locale === 'nl' ? 'Terug naar restaurantpagina' : 'Back to restaurant page';
+  const backHref = locale === 'nl' ? `/r/${slug}` : `/${locale}/r/${slug}`;
+
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-cream p-6">
+      <div className="flex max-w-[480px] flex-col gap-5 text-center">
+        <h1 className="font-display text-[clamp(24px,4vw,32px)] font-black text-night">
+          {heading}
+        </h1>
+        <p className="font-body text-[15px] leading-relaxed text-night/70">{body}</p>
+        <Link href={backHref} className="font-body text-[15px] font-medium text-amber underline">
+          {backLabel}
+        </Link>
+      </div>
+    </main>
+  );
 }

@@ -1054,6 +1054,68 @@
       "back_to_restaurant": "Terug naar het restaurant",
       "not_found_title": "Reservering niet gevonden",
       "not_found_body": "Controleer de link in je e-mail"
+    },
+    "r7": {
+      "heading": "Je reservering is bevestigd",
+      "sub": "Tot ziens bij {restaurant}. We hebben de details gemaild.",
+      "ref_label": "Reserveringsnummer",
+      "when_label": "Wanneer",
+      "party_label": "Aantal gasten",
+      "where_label": "Waar",
+      "deposit_label": "Aanbetaling",
+      "deposit_paid_suffix": "betaald",
+      "calendar_label": "Voeg toe aan je agenda",
+      "calendar_google": "Google Agenda",
+      "calendar_apple_outlook": "Apple / Outlook (.ics)",
+      "manage_link": "Beheer deze reservering",
+      "contact_prefix": "Vragen?"
+    },
+    "manage": {
+      "title_eyebrow": "Beheer je reservering",
+      "ref_label": "Reserveringsnummer",
+      "when_label": "Wanneer",
+      "party_label": "Aantal gasten",
+      "already_cancelled_banner": "Deze reservering is geannuleerd.",
+      "cancel_button": "Reservering annuleren",
+      "change_button": "Wijziging aanvragen",
+      "expired_heading": "Link verlopen",
+      "expired_body": "Deze link is niet langer geldig. Controleer de link in je bevestigingsmail of neem contact op met het restaurant.",
+      "back_to_restaurant": "Terug naar het restaurant"
+    },
+    "cancel": {
+      "modal_heading": "Deze reservering annuleren?",
+      "modal_body_refund": "Je krijgt {amount} volledig terug. Annuleringen voor {deadline} komen in aanmerking voor een volledige terugbetaling.",
+      "modal_body_no_refund": "De periode voor gratis annuleren is verstreken, dus deze aanbetaling wordt niet terugbetaald. De reservering wordt wel geannuleerd.",
+      "modal_body_no_deposit": "Er is geen aanbetaling gedaan voor deze reservering, dus er is niets terug te betalen.",
+      "confirm_button": "Ja, annuleren",
+      "confirming": "Bezig met annuleren...",
+      "keep_button": "Reservering behouden",
+      "success_heading": "Reservering geannuleerd",
+      "success_body_refunded": "Je reservering is geannuleerd en {amount} is terugbetaald.",
+      "success_body_refund_failed": "Je reservering is geannuleerd. Er ging iets mis bij het terugbetalen van je aanbetaling - we hebben dit gezien en nemen snel contact op.",
+      "success_body_no_deposit": "Je reservering is geannuleerd.",
+      "back_to_restaurant": "Terug naar het restaurant",
+      "errors": {
+        "generic": "Er ging iets mis. Probeer het opnieuw."
+      }
+    },
+    "changeRequest": {
+      "modal_heading": "Wijziging aanvragen",
+      "kind_label": "Wat wil je wijzigen?",
+      "kind_party_size": "Aantal personen",
+      "kind_time": "Datum of tijd",
+      "kind_other": "Iets anders",
+      "message_label": "Vertel ons meer",
+      "message_placeholder": "Bijv. we komen graag met 6 personen in plaats van 4",
+      "submit_button": "Verstuur aanvraag",
+      "submitting": "Versturen...",
+      "cancel_button": "Toch niet",
+      "success_heading": "Aanvraag verstuurd",
+      "success_body": "We hebben je aanvraag ontvangen en nemen per e-mail of telefoon contact met je op.",
+      "back_button": "Terug naar het restaurant",
+      "errors": {
+        "generic": "Er ging iets mis. Probeer het opnieuw."
+      }
     }
   }
 }

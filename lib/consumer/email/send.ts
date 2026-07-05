@@ -41,6 +41,8 @@ export type SendConsumerEmailInput = {
   orderId?: string | null
   /** Extra recipients for the BCC list. hallo@thetafel.nl is always BCC'd. */
   extraBcc?: string[]
+  /** Reply-To override — used for internal notifications the guest should be able to reply to directly. */
+  replyTo?: string
   /** Resend attachments — CID images, ICS, etc. */
   attachments?: Array<{
     filename: string
@@ -87,6 +89,7 @@ export async function sendConsumerEmail(
       html: input.html,
       text: input.text,
       attachments: input.attachments,
+      ...(input.replyTo ? { replyTo: input.replyTo } : {}),
     })
 
     if (error || !data) {
