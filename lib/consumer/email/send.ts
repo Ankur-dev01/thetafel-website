@@ -39,8 +39,10 @@ export type SendConsumerEmailInput = {
   restaurantId: string
   bookingId?: string | null
   orderId?: string | null
-  /** Extra recipients for the BCC list. hallo@thetafel.nl is always BCC'd. */
+  /** Extra recipients for the BCC list. hallo@thetafel.nl is always BCC'd unless skipAdminBcc is set. */
   extraBcc?: string[]
+  /** Skip the default hallo@thetafel.nl BCC — for sends where an admin copy isn't wanted (e.g. cancellations). */
+  skipAdminBcc?: boolean
   /** Reply-To override — used for internal notifications the guest should be able to reply to directly. */
   replyTo?: string
   /** Resend attachments — CID images, ICS, etc. */
@@ -78,7 +80,9 @@ export async function sendConsumerEmail(
     return { ok: false, reason: 'misconfigured', error: 'RESEND_API_KEY missing' }
   }
 
-  const bcc = ['hallo@thetafel.nl', ...(input.extraBcc ?? [])]
+  const bcc = input.skipAdminBcc
+    ? (input.extraBcc ?? [])
+    : ['hallo@thetafel.nl', ...(input.extraBcc ?? [])]
 
   try {
     const { data, error } = await resend.emails.send({

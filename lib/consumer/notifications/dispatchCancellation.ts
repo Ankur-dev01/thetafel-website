@@ -60,6 +60,7 @@ export async function sendBookingCancellationNotification(
       templateKey: 'booking.cancellation',
       restaurantId: input.restaurantId,
       bookingId: input.bookingId,
+      skipAdminBcc: true,
     })
 
     if (send.ok) {
