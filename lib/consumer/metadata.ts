@@ -34,7 +34,8 @@ function tidyCuisine(s: string | null | undefined): string {
 function buildTitle(
   name: string,
   intent: MetadataIntent,
-  locale: 'nl' | 'en'
+  locale: 'nl' | 'en',
+  tableLabel?: string
 ): string {
   if (intent === 'book') {
     return locale === 'en'
@@ -47,7 +48,10 @@ function buildTitle(
       : `Bestel bij ${name} · ${SITE}`
   }
   if (intent === 'qr') {
-    return `${name} · ${SITE}`
+    if (!tableLabel) return `${name} · ${SITE}`
+    return locale === 'en'
+      ? `${name} — Table ${tableLabel} — order from your table`
+      : `${name} — Tafel ${tableLabel} — bestel vanaf je tafel`
   }
   // landing
   return `${name} · ${SITE}`
@@ -73,6 +77,11 @@ function buildDescription(
     if (intent === 'order') {
       return `${opener} Order takeaway online — pay upfront, pick up at your time.`.trim()
     }
+    if (intent === 'qr') {
+      return city
+        ? `Order right from your table at ${pickName(r)} in ${city}.`
+        : `Order right from your table at ${pickName(r)}.`
+    }
     return `${opener} Discover the menu and book a table on The Tafel.`.trim()
   }
 
@@ -86,6 +95,11 @@ function buildDescription(
   }
   if (intent === 'order') {
     return `${opener} Bestel afhalen online — betaal direct, haal op je tijd.`.trim()
+  }
+  if (intent === 'qr') {
+    return city
+      ? `Bestel direct vanaf je tafel bij ${pickName(r)} in ${city}.`
+      : `Bestel direct vanaf je tafel bij ${pickName(r)}.`
   }
   return `${opener} Bekijk de kaart en reserveer via The Tafel.`.trim()
 }
@@ -133,8 +147,9 @@ export function buildRestaurantMetadata(args: {
   locale: 'nl' | 'en'
   slug: string
   intent: MetadataIntent
+  tableLabel?: string
 }): Metadata {
-  const { restaurant, locale, slug, intent } = args
+  const { restaurant, locale, slug, intent, tableLabel } = args
 
   if (!restaurant) {
     return {
@@ -144,10 +159,14 @@ export function buildRestaurantMetadata(args: {
   }
 
   const name = pickName(restaurant)
-  const title = buildTitle(name, intent, locale)
+  const title = buildTitle(name, intent, locale, tableLabel)
   const description = buildDescription(restaurant, intent, locale)
   const { canonicalPath, enPath } = buildUrls(slug, intent)
   const images = buildOgImages(restaurant)
+  const robots =
+    intent === 'qr'
+      ? { index: false, follow: false }
+      : { index: true, follow: true }
 
   return {
     title,
@@ -174,6 +193,6 @@ export function buildRestaurantMetadata(args: {
       description,
       ...(images.length ? { images: images as unknown as string[] } : {}),
     },
-    robots: { index: true, follow: true },
+    robots,
   }
 }

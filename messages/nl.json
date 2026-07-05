@@ -893,6 +893,19 @@
         "body": "Scan de QR-code op uw tafel om de kaart te bekijken en te bestellen."
       }
     },
+    "qr": {
+      "welcome": {
+        "eyebrow": "TAFEL {label}",
+        "tagline": "Bestel direct vanaf je tafel — betaal in de app.",
+        "cta": "Bekijk menu",
+        "footerNote": "Iets niet in orde? Vraag ons personeel."
+      },
+      "unknownTable": {
+        "eyebrow": "TAFEL NIET HERKEND",
+        "heading": "We konden deze tafel niet vinden.",
+        "body": "De QR-code werkt misschien niet meer. Vraag ons personeel om je verder te helpen — zij regelen het snel."
+      }
+    },
     "notFound": {
       "eyebrow": "404",
       "title": "Dit restaurant bestaat niet",

@@ -893,6 +893,19 @@
         "body": "Scan the QR code on your table to view the menu and place your order."
       }
     },
+    "qr": {
+      "welcome": {
+        "eyebrow": "TABLE {label}",
+        "tagline": "Order from your table — pay in the app.",
+        "cta": "View menu",
+        "footerNote": "Something not right? Just ask our staff."
+      },
+      "unknownTable": {
+        "eyebrow": "TABLE NOT RECOGNISED",
+        "heading": "We couldn't find this table.",
+        "body": "The QR code may no longer be active. Please ask our staff to help — they'll sort it in a moment."
+      }
+    },
     "notFound": {
       "eyebrow": "404",
       "title": "This restaurant doesn't exist",
