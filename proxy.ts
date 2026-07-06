@@ -63,5 +63,6 @@ export const config = {
   //  - _next        → Next.js internals (static, image, etc.)
   //  - _vercel      → Vercel internals
   //  - .*\\..*      → any file with an extension (.png, .jpg, .ico, favicon, etc.)
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
+  //  - q/           → short-URL QR redirect route (app/q/[qrToken]/route.ts), not localized.
+  matcher: ['/((?!api|_next|_vercel|q/|.*\\..*).*)'],
 }
