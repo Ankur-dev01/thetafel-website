@@ -906,6 +906,37 @@
         "body": "De QR-code werkt misschien niet meer. Vraag ons personeel om je verder te helpen — zij regelen het snel."
       }
     },
+    "menu": {
+      "eyebrowTable": "TAFEL {label}",
+      "add": "Toevoegen",
+      "unavailable": "Niet beschikbaar",
+      "addNote": "+ notitie",
+      "removeNote": "Verwijder notitie",
+      "notePlaceholder": "Bijv. geen ui",
+      "emptyStateHeading": "De kaart is nog niet gepubliceerd.",
+      "emptyStateBody": "Vraag ons personeel om je verder te helpen — zij regelen het snel.",
+      "allergens": {
+        "contains_gluten": "Bevat gluten",
+        "contains_dairy": "Bevat zuivel",
+        "contains_egg": "Bevat ei",
+        "contains_nuts": "Bevat noten",
+        "contains_peanuts": "Bevat pinda's",
+        "contains_soy": "Bevat soja",
+        "contains_fish": "Bevat vis",
+        "contains_shellfish": "Bevat schaaldieren",
+        "contains_sesame": "Bevat sesam",
+        "contains_mustard": "Bevat mosterd",
+        "contains_alcohol": "Bevat alcohol",
+        "spicy": "Pittig"
+      },
+      "dietTags": {
+        "vegan": "VEGAN",
+        "vegetarian": "VEGETARISCH",
+        "halal": "HALAL",
+        "kosher": "KOSJER",
+        "gluten_free": "GLUTENVRIJ"
+      }
+    },
     "notFound": {
       "eyebrow": "404",
       "title": "Dit restaurant bestaat niet",

@@ -2,7 +2,7 @@ import 'server-only'
 import type { Metadata } from 'next'
 import type { PublicRestaurant } from './resolveRestaurant'
 
-export type MetadataIntent = 'landing' | 'book' | 'order' | 'qr'
+export type MetadataIntent = 'landing' | 'book' | 'order' | 'qr' | 'qr_menu'
 
 const SITE = 'The Tafel'
 
@@ -53,6 +53,9 @@ function buildTitle(
       ? `${name} — Table ${tableLabel} — order from your table`
       : `${name} — Tafel ${tableLabel} — bestel vanaf je tafel`
   }
+  if (intent === 'qr_menu') {
+    return `Menu — ${name} · ${SITE}`
+  }
   // landing
   return `${name} · ${SITE}`
 }
@@ -77,7 +80,7 @@ function buildDescription(
     if (intent === 'order') {
       return `${opener} Order takeaway online — pay upfront, pick up at your time.`.trim()
     }
-    if (intent === 'qr') {
+    if (intent === 'qr' || intent === 'qr_menu') {
       return city
         ? `Order right from your table at ${pickName(r)} in ${city}.`
         : `Order right from your table at ${pickName(r)}.`
@@ -96,7 +99,7 @@ function buildDescription(
   if (intent === 'order') {
     return `${opener} Bestel afhalen online — betaal direct, haal op je tijd.`.trim()
   }
-  if (intent === 'qr') {
+  if (intent === 'qr' || intent === 'qr_menu') {
     return city
       ? `Bestel direct vanaf je tafel bij ${pickName(r)} in ${city}.`
       : `Bestel direct vanaf je tafel bij ${pickName(r)}.`
@@ -164,7 +167,7 @@ export function buildRestaurantMetadata(args: {
   const { canonicalPath, enPath } = buildUrls(slug, intent)
   const images = buildOgImages(restaurant)
   const robots =
-    intent === 'qr'
+    intent === 'qr' || intent === 'qr_menu'
       ? { index: false, follow: false }
       : { index: true, follow: true }
 

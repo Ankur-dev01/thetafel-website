@@ -906,6 +906,37 @@
         "body": "The QR code may no longer be active. Please ask our staff to help — they'll sort it in a moment."
       }
     },
+    "menu": {
+      "eyebrowTable": "TABLE {label}",
+      "add": "Add",
+      "unavailable": "Unavailable",
+      "addNote": "+ note",
+      "removeNote": "Remove note",
+      "notePlaceholder": "e.g. no onions",
+      "emptyStateHeading": "The menu isn't published yet.",
+      "emptyStateBody": "Please ask our staff to help — they'll sort it in a moment.",
+      "allergens": {
+        "contains_gluten": "Contains gluten",
+        "contains_dairy": "Contains dairy",
+        "contains_egg": "Contains egg",
+        "contains_nuts": "Contains nuts",
+        "contains_peanuts": "Contains peanuts",
+        "contains_soy": "Contains soy",
+        "contains_fish": "Contains fish",
+        "contains_shellfish": "Contains shellfish",
+        "contains_sesame": "Contains sesame",
+        "contains_mustard": "Contains mustard",
+        "contains_alcohol": "Contains alcohol",
+        "spicy": "Spicy"
+      },
+      "dietTags": {
+        "vegan": "VEGAN",
+        "vegetarian": "VEGETARIAN",
+        "halal": "HALAL",
+        "kosher": "KOSHER",
+        "gluten_free": "GLUTEN-FREE"
+      }
+    },
     "notFound": {
       "eyebrow": "404",
       "title": "This restaurant doesn't exist",

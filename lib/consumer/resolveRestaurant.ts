@@ -27,6 +27,13 @@ export type PublicRestaurant = {
   service_reservations_enabled: boolean
   service_takeaway_enabled: boolean
   service_qr_enabled: boolean
+  brand_primary_hex: string | null
+  brand_secondary_hex: string | null
+  brand_display_font_family: string | null
+  brand_logo_url: string | null
+  brand_menu_texture_url: string | null
+  qr_widget_accent_color: string | null
+  qr_item_notes_enabled: boolean
 }
 
 /**
@@ -78,6 +85,13 @@ export const resolveRestaurantBySlug = cache(
           'service_reservations_enabled',
           'service_takeaway_enabled',
           'service_qr_enabled',
+          'brand_primary_hex',
+          'brand_secondary_hex',
+          'brand_display_font_family',
+          'brand_logo_url',
+          'brand_menu_texture_url',
+          'qr_widget_accent_color',
+          'qr_item_notes_enabled',
         ].join(',')
       )
       .eq('slug', slug)
