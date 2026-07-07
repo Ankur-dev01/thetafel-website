@@ -1,4 +1,6 @@
-import { getTranslations } from 'next-intl/server'
+'use client'
+
+import { useTranslations } from 'next-intl'
 
 type AllergenCode =
   | 'contains_gluten'
@@ -119,11 +121,10 @@ function iconPathFor(code: AllergenCode) {
 }
 
 /**
- * Renders the allergen/spicy icon row. Server component — pure render, no
- * state. Unknown codes are silently skipped.
+ * Renders the allergen/spicy icon row. Unknown codes are silently skipped.
  */
-export async function AllergenIcons({ codes }: { codes: string[] }) {
-  const t = await getTranslations('consumer.menu.allergens')
+export function AllergenIcons({ codes }: { codes: string[] }) {
+  const t = useTranslations('consumer.menu.allergens')
   const known = codes.filter((c): c is AllergenCode =>
     KNOWN_CODES.includes(c as AllergenCode)
   )
