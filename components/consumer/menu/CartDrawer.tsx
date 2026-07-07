@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
 import { useLocale, useTranslations } from 'next-intl'
 import type { ResolvedBrand } from '@/lib/consumer/brandTokens'
 import { useCart } from '@/lib/cart/CartContext'

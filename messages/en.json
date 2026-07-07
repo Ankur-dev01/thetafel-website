@@ -911,7 +911,7 @@
         "payNow": {
           "eyebrow": "RECOMMENDED",
           "title": "Pay now",
-          "description": "Go straight to the kitchen — pay securely by iDEAL or card."
+          "description": "Pay right here in the app with iDEAL or card. As soon as your payment goes through, your order lands straight in the kitchen."
         },
         "payAtTable": {
           "title": "Pay at the table",
