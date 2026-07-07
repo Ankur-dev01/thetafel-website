@@ -32,7 +32,7 @@ export function CategoryChips({
     <div
       style={{
         position: 'sticky',
-        top: 0,
+        top: '56px',
         zIndex: 30,
         background: 'rgba(253, 250, 245, 0.92)',
         backdropFilter: 'blur(8px)',

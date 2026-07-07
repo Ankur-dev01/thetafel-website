@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { resolveTable } from '@/lib/qr/resolveTable'
 import { fetchMenu } from '@/lib/menu/fetchMenu'
-import { RestaurantHeader } from '@/components/consumer/RestaurantHeader'
+import { QrHeader } from '@/components/consumer/qr/QrHeader'
 import { QrWelcome } from '@/components/consumer/qr/QrWelcome'
 import { MenuBrowser } from '@/components/consumer/menu/MenuBrowser'
 import { buildRestaurantMetadata } from '@/lib/consumer/metadata'
@@ -90,8 +90,7 @@ export default async function QrMenuPage({
 
       return (
         <>
-          <RestaurantHeader restaurant={restaurant} />
-          <TableEyebrow label={table.label} />
+          <QrHeader restaurant={restaurant} tableLabel={table.label} />
           {menuData.categories.length === 0 ? (
             <EmptyState />
           ) : (
@@ -107,27 +106,6 @@ export default async function QrMenuPage({
       )
     }
   }
-}
-
-async function TableEyebrow({ label }: { label: string }) {
-  const t = await getTranslations('consumer.menu')
-  return (
-    <p
-      style={{
-        maxWidth: '720px',
-        margin: '0 auto',
-        padding: '16px 16px 0',
-        fontFamily: 'var(--font-jost), sans-serif',
-        fontWeight: 600,
-        fontSize: '12px',
-        letterSpacing: '0.12em',
-        textTransform: 'uppercase',
-        color: 'var(--amber, #d4820a)',
-      }}
-    >
-      {t('eyebrowTable', { label })}
-    </p>
-  )
 }
 
 async function EmptyState() {

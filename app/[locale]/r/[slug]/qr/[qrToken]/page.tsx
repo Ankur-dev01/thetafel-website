@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import { resolveTable } from '@/lib/qr/resolveTable'
-import { RestaurantHeader } from '@/components/consumer/RestaurantHeader'
+import { QrHeader } from '@/components/consumer/qr/QrHeader'
 import { QrWelcome } from '@/components/consumer/qr/QrWelcome'
 import { buildRestaurantMetadata } from '@/lib/consumer/metadata'
 import { auditLog } from '@/lib/consumer/audit'
@@ -76,7 +76,7 @@ export default async function QrLandingPage({
 
       return (
         <>
-          <RestaurantHeader restaurant={restaurant} />
+          <QrHeader restaurant={restaurant} tableLabel={table.label} />
           <QrWelcome mode="welcome" restaurant={restaurant} table={table} />
         </>
       )
