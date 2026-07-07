@@ -31,16 +31,41 @@ export function CartDrawer({ brand }: Props) {
   useEffect(() => {
     if (!isDrawerOpen) return
 
+    // Track whether the drawer close came from the browser back button —
+    // if so, the dummy history entry we push below is already gone.
+    let closedByPopstate = false
+
+    // Push a dummy history entry so an Android back press / iOS swipe-back
+    // has something to pop instead of exiting the tab.
+    history.pushState({ tafelDrawer: true }, '')
+
+    function onPopstate() {
+      closedByPopstate = true
+      closeDrawer()
+    }
+
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') closeDrawer()
     }
+
+    window.addEventListener('popstate', onPopstate)
     document.addEventListener('keydown', onKeyDown)
     document.body.style.overflow = 'hidden'
     closeButtonRef.current?.focus()
 
     return () => {
+      window.removeEventListener('popstate', onPopstate)
       document.removeEventListener('keydown', onKeyDown)
       document.body.style.overflow = ''
+      // Only pop the dummy entry if it's still in the stack — i.e. the
+      // close wasn't already triggered by a real popstate event.
+      if (
+        !closedByPopstate &&
+        history.state &&
+        (history.state as { tafelDrawer?: boolean }).tafelDrawer
+      ) {
+        history.back()
+      }
     }
     // closeDrawer is intentionally omitted: CartContext recreates it on every
     // cart change (e.g. each note keystroke), and including it here re-ran
