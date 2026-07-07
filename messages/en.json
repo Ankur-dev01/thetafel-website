@@ -937,6 +937,26 @@
         "gluten_free": "GLUTEN-FREE"
       }
     },
+    "cart": {
+      "stickyFooter": {
+        "itemsOne": "{count} item",
+        "itemsOther": "{count} items",
+        "cta": "View order"
+      },
+      "drawer": {
+        "heading": "Your order",
+        "close": "Close",
+        "editNote": "Edit note",
+        "totalLabel": "Total",
+        "vatBreakdown": "incl. 9% VAT",
+        "checkoutCta": "Continue to checkout",
+        "clearCart": "Empty basket",
+        "clearConfirm": "Are you sure you want to clear everything?",
+        "emptyStateHeading": "Your basket is empty.",
+        "backToMenu": "Back to menu",
+        "checkoutSoonToast": "Payment coming soon — this step is being enabled."
+      }
+    },
     "notFound": {
       "eyebrow": "404",
       "title": "This restaurant doesn't exist",

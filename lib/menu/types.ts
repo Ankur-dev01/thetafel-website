@@ -7,6 +7,7 @@ export type MenuItem = {
   description: string | null
   priceCents: number
   currency: string
+  vatRateBp: number
   photoUrl: string | null
   dietaryTags: string[]
   available: boolean

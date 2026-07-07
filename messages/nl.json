@@ -937,6 +937,26 @@
         "gluten_free": "GLUTENVRIJ"
       }
     },
+    "cart": {
+      "stickyFooter": {
+        "itemsOne": "{count} gerecht",
+        "itemsOther": "{count} gerechten",
+        "cta": "Bekijk bestelling"
+      },
+      "drawer": {
+        "heading": "Je bestelling",
+        "close": "Sluiten",
+        "editNote": "Wijzig notitie",
+        "totalLabel": "Totaal",
+        "vatBreakdown": "waarvan 9% btw",
+        "checkoutCta": "Doorgaan naar afrekenen",
+        "clearCart": "Wis mandje",
+        "clearConfirm": "Weet je zeker dat je alles wilt wissen?",
+        "emptyStateHeading": "Je mandje is leeg.",
+        "backToMenu": "Terug naar menu",
+        "checkoutSoonToast": "Betalen komt zo aan — deze stap wordt binnenkort geactiveerd."
+      }
+    },
     "notFound": {
       "eyebrow": "404",
       "title": "Dit restaurant bestaat niet",

@@ -5,33 +5,49 @@ import { useLocale, useTranslations } from 'next-intl'
 import type { ResolvedBrand } from '@/lib/consumer/brandTokens'
 import type { MenuItem } from '@/lib/menu/types'
 import { splitTags } from '@/lib/menu/allergens'
+import { useCart } from '@/lib/cart/CartContext'
 import { AllergenIcons } from './AllergenIcons'
 
 type Props = {
   item: MenuItem
   brand: ResolvedBrand
   itemNotesEnabled: boolean
-  qty: number
-  note: string
-  onIncrement: () => void
-  onDecrement: () => void
-  onNoteChange: (v: string) => void
 }
 
-export function MenuItemCard({
-  item,
-  brand,
-  itemNotesEnabled,
-  qty,
-  note,
-  onIncrement,
-  onDecrement,
-  onNoteChange,
-}: Props) {
+export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
   const t = useTranslations('consumer.menu')
   const tDiet = useTranslations('consumer.menu.dietTags')
   const locale = useLocale() as 'nl' | 'en'
   const [noteOpen, setNoteOpen] = useState(false)
+
+  const { addLine, incrementLine, decrementLine, updateNote, getLine } =
+    useCart()
+  const line = getLine(item.id)
+  const qty = line?.quantity ?? 0
+  const note = line?.note ?? ''
+
+  function onIncrement() {
+    if (qty === 0) {
+      addLine({
+        itemId: item.id,
+        name: item.name,
+        priceCents: item.priceCents,
+        vatRateBp: item.vatRateBp,
+        quantity: 1,
+        note: '',
+      })
+    } else {
+      incrementLine(item.id)
+    }
+  }
+
+  function onDecrement() {
+    decrementLine(item.id)
+  }
+
+  function onNoteChange(value: string) {
+    updateNote(item.id, value)
+  }
 
   const { allergens, diet } = splitTags(item.dietaryTags)
   const hasPhoto = !!item.photoUrl

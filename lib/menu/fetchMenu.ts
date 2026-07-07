@@ -19,6 +19,7 @@ type ItemRow = {
   description_en: string | null
   price_cents: number
   currency: string
+  vat_rate_bp: number
   photo_path: string | null
   available: boolean
   display_order: number
@@ -69,7 +70,7 @@ export const fetchMenu = cache(
       supabase
         .from('menu_items')
         .select(
-          'id, category_id, name_nl, name_en, description_nl, description_en, price_cents, currency, photo_path, available, display_order, dietary_tags'
+          'id, category_id, name_nl, name_en, description_nl, description_en, price_cents, currency, vat_rate_bp, photo_path, available, display_order, dietary_tags'
         )
         .eq('restaurant_id', restaurantId)
         .eq(visibilityCol, true)
@@ -115,6 +116,7 @@ export const fetchMenu = cache(
         ),
         priceCents: row.price_cents,
         currency: row.currency,
+        vatRateBp: row.vat_rate_bp,
         photoUrl,
         dietaryTags: row.dietary_tags ?? [],
         available: row.available,
