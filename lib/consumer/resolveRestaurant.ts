@@ -34,6 +34,8 @@ export type PublicRestaurant = {
   brand_menu_texture_url: string | null
   qr_widget_accent_color: string | null
   qr_item_notes_enabled: boolean
+  qr_pay_now_enabled: boolean | null
+  qr_pay_at_table_enabled: boolean | null
 }
 
 /**
@@ -92,6 +94,8 @@ export const resolveRestaurantBySlug = cache(
           'brand_menu_texture_url',
           'qr_widget_accent_color',
           'qr_item_notes_enabled',
+          'qr_pay_now_enabled',
+          'qr_pay_at_table_enabled',
         ].join(',')
       )
       .eq('slug', slug)

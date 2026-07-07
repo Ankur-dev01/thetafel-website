@@ -72,6 +72,7 @@ export function MenuBrowser({
       context={context}
       restaurantId={restaurant.id}
       tableId={table.id}
+      qrToken={table.qr_token}
     >
       <div style={backgroundStyle}>
         <CategoryChips

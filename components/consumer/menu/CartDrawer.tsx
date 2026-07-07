@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import type { ResolvedBrand } from '@/lib/consumer/brandTokens'
 import { useCart } from '@/lib/cart/CartContext'
@@ -13,6 +14,7 @@ type Props = {
 export function CartDrawer({ brand }: Props) {
   const t = useTranslations('consumer.cart.drawer')
   const locale = useLocale() as 'nl' | 'en'
+  const router = useRouter()
   const {
     cart,
     totals,
@@ -24,7 +26,6 @@ export function CartDrawer({ brand }: Props) {
     closeDrawer,
   } = useCart()
 
-  const [toastVisible, setToastVisible] = useState(false)
   const [noteOpenFor, setNoteOpenFor] = useState<string | null>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -79,11 +80,8 @@ export function CartDrawer({ brand }: Props) {
   if (!isDrawerOpen) return null
 
   function handleCheckout() {
-    setToastVisible(true)
-    setTimeout(() => {
-      setToastVisible(false)
-      closeDrawer()
-    }, 2500)
+    if (!cart.qrToken) return
+    router.push(`/r/${cart.slug}/qr/${cart.qrToken}/checkout`)
   }
 
   function handleClearCart() {
@@ -434,26 +432,6 @@ export function CartDrawer({ brand }: Props) {
             </div>
           </>
         )}
-
-        {toastVisible ? (
-          <div
-            style={{
-              position: 'absolute',
-              bottom: '16px',
-              left: '16px',
-              right: '16px',
-              background: 'var(--night, #0f0d08)',
-              color: '#fff',
-              padding: '12px 16px',
-              borderRadius: '12px',
-              fontFamily: 'var(--font-jost), sans-serif',
-              fontSize: '13px',
-              textAlign: 'center',
-            }}
-          >
-            {t('checkoutSoonToast')}
-          </div>
-        ) : null}
       </div>
 
       <style>{`

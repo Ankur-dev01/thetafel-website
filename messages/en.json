@@ -904,6 +904,30 @@
         "eyebrow": "TABLE NOT RECOGNISED",
         "heading": "We couldn't find this table.",
         "body": "The QR code may no longer be active. Please ask our staff to help — they'll sort it in a moment."
+      },
+      "payModeChooser": {
+        "heading": "How would you like to pay?",
+        "subheading": "Choose how you'd like to settle this order.",
+        "payNow": {
+          "eyebrow": "RECOMMENDED",
+          "title": "Pay now",
+          "description": "Go straight to the kitchen — pay securely by iDEAL or card."
+        },
+        "payAtTable": {
+          "title": "Pay at the table",
+          "description": "Order now, settle at the end of your meal."
+        },
+        "continue": "Continue",
+        "backToBasket": "← Back to basket",
+        "notAvailableHeading": "QR ordering is not available.",
+        "notAvailableBody": "Please ask our staff to help."
+      },
+      "paySoon": {
+        "eyebrow": "COMING SOON",
+        "heading": "Payment coming soon",
+        "body": "We're building this step. Your order is ready to go — the payment step lands soon.",
+        "modeLabel": "Mode",
+        "backToMenu": "← Back to menu"
       }
     },
     "menu": {

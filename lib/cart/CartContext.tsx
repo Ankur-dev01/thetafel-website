@@ -101,6 +101,7 @@ type Props = {
   context: CartContextName
   restaurantId: string
   tableId: string | null
+  qrToken: string | null
   children: ReactNode
 }
 
@@ -114,6 +115,7 @@ export function CartProvider({
   context,
   restaurantId,
   tableId,
+  qrToken,
   children,
 }: Props) {
   const [cart, dispatch] = useReducer(reducer, {
@@ -121,6 +123,7 @@ export function CartProvider({
     context,
     restaurantId,
     tableId,
+    qrToken,
     lines: [],
     updatedAt: Date.now(),
   })
@@ -136,7 +139,7 @@ export function CartProvider({
       if (Date.now() - parsed.updatedAt < TWENTY_FOUR_HOURS_MS) {
         dispatch({
           type: 'HYDRATE',
-          cart: { ...parsed, restaurantId, tableId },
+          cart: { ...parsed, restaurantId, tableId, qrToken },
         })
       } else {
         window.localStorage.removeItem(key)

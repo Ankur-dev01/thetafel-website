@@ -904,6 +904,30 @@
         "eyebrow": "TAFEL NIET HERKEND",
         "heading": "We konden deze tafel niet vinden.",
         "body": "De QR-code werkt misschien niet meer. Vraag ons personeel om je verder te helpen — zij regelen het snel."
+      },
+      "payModeChooser": {
+        "heading": "Hoe wil je betalen?",
+        "subheading": "Kies hoe je deze bestelling wilt afrekenen.",
+        "payNow": {
+          "eyebrow": "AANBEVOLEN",
+          "title": "Nu betalen",
+          "description": "Direct doorgeven aan de keuken — betaal veilig via iDEAL of kaart."
+        },
+        "payAtTable": {
+          "title": "Betalen aan tafel",
+          "description": "Bestel nu, betaal aan het einde van je maaltijd."
+        },
+        "continue": "Doorgaan",
+        "backToBasket": "← Terug naar mandje",
+        "notAvailableHeading": "QR-bestellen is niet beschikbaar.",
+        "notAvailableBody": "Vraag ons personeel om je verder te helpen."
+      },
+      "paySoon": {
+        "eyebrow": "BINNENKORT",
+        "heading": "Betalen komt zo aan",
+        "body": "We zijn dit onderdeel aan het bouwen. Je bestelling staat klaar — de betaalstap komt binnenkort live.",
+        "modeLabel": "Modus",
+        "backToMenu": "← Terug naar menu"
       }
     },
     "menu": {

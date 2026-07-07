@@ -14,6 +14,7 @@ export type Cart = {
   context: CartContext
   restaurantId: string
   tableId: string | null
+  qrToken: string | null
   lines: CartLine[]
   updatedAt: number
 }
