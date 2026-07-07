@@ -42,7 +42,14 @@ export function CartDrawer({ brand }: Props) {
       document.removeEventListener('keydown', onKeyDown)
       document.body.style.overflow = ''
     }
-  }, [isDrawerOpen, closeDrawer])
+    // closeDrawer is intentionally omitted: CartContext recreates it on every
+    // cart change (e.g. each note keystroke), and including it here re-ran
+    // this effect on every keystroke — re-focusing the close button and
+    // stealing focus from the note textarea mid-type. closeDrawer always
+    // just calls the (permanently stable) setIsDrawerOpen(false) setter, so
+    // dropping it from the deps is safe.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDrawerOpen])
 
   if (!isDrawerOpen) return null
 
