@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/routing'
@@ -27,6 +28,14 @@ export function ConsumerLanguageToggle() {
 
   const qs = searchParams?.toString() ?? ''
   const target = qs ? `${pathWithoutLocale}?${qs}` : pathWithoutLocale
+
+  // Warm up the other locale's page in the background so the actual switch
+  // (a full server round-trip re-rendering this page in the other locale)
+  // feels near-instant by the time the guest taps.
+  useEffect(() => {
+    const otherLocale: 'nl' | 'en' = currentLocale === 'nl' ? 'en' : 'nl'
+    router.prefetch(target, { locale: otherLocale })
+  }, [currentLocale, target, router])
 
   function switchTo(locale: 'nl' | 'en') {
     if (locale === currentLocale) return

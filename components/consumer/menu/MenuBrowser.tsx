@@ -89,7 +89,7 @@ export function MenuBrowser({
             padding: '0 16px 120px',
           }}
         >
-          {menu.categories.map((category) => (
+          {menu.categories.map((category, index) => (
             <section
               key={category.id}
               id={`category-${category.id}`}
@@ -98,14 +98,14 @@ export function MenuBrowser({
                 if (el) sectionRefs.current.set(category.id, el)
                 else sectionRefs.current.delete(category.id)
               }}
-              style={{ paddingTop: '24px' }}
+              style={{ paddingTop: index === 0 ? '24px' : '56px' }}
             >
               <h2
                 style={{
                   fontFamily: brand.headlineFontFamily,
                   fontWeight: 900,
-                  fontSize: 'clamp(22px, 4vw, 28px)',
-                  color: 'var(--night, #0f0d08)',
+                  fontSize: 'clamp(24px, 4vw, 30px)',
+                  color: '#a86205',
                   margin: '0 0 8px 0',
                 }}
               >
