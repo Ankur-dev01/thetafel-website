@@ -42,7 +42,7 @@ export function MenuBrowser({
           }
         }
       },
-      { threshold: 0.4, rootMargin: '-80px 0px -60% 0px' }
+      { threshold: 0, rootMargin: '-120px 0px -55% 0px' }
     )
 
     for (const section of sectionRefs.current.values()) {

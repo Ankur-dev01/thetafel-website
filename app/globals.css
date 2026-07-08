@@ -226,3 +226,73 @@
     scrollbar-width: none;
   }
 }
+
+/* Consumer tap feedback — press-down state + kill the iOS 300ms tap delay */
+.tafel-tap {
+  transition: transform 0.08s ease, opacity 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tafel-tap:active {
+  transform: scale(0.97);
+}
+.tafel-tap[aria-disabled='true'],
+.tafel-tap:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.tafel-tap[aria-disabled='true']:active,
+.tafel-tap:disabled:active {
+  transform: none;
+}
+
+/* Consumer locale toggle — two-position sliding pill */
+.tafel-locale-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(30, 21, 8, 0.06);
+  gap: 0;
+  height: 32px;
+  min-width: 88px;
+  -webkit-tap-highlight-color: transparent;
+}
+.tafel-locale-toggle button {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  padding: 0 14px;
+  height: 100%;
+  border: none;
+  background: transparent;
+  font-family: var(--font-jost), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: rgba(30, 21, 8, 0.55);
+  cursor: pointer;
+  transition: color 0.16s ease, transform 0.08s ease, opacity 0.12s ease;
+  touch-action: manipulation;
+}
+.tafel-locale-toggle button[aria-pressed='true'] {
+  color: white;
+}
+.tafel-locale-slider {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  width: calc(50% - 3px);
+  border-radius: 999px;
+  background: var(--night, #0f0d08);
+  transition: left 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+.tafel-locale-toggle .tafel-locale-slider[data-position='nl'] {
+  left: 3px;
+}
+.tafel-locale-toggle .tafel-locale-slider[data-position='en'] {
+  left: calc(50% + 0px);
+}

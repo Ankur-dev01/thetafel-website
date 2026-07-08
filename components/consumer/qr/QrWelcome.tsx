@@ -78,6 +78,7 @@ async function WelcomeContent({
       </p>
       <Link
         href={`/r/${restaurant.slug}/qr/${table.qr_token}/menu`}
+        className="tafel-tap"
         style={{
           display: 'block',
           width: '100%',

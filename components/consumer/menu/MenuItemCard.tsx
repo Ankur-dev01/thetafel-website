@@ -156,6 +156,7 @@ export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
   ) : qty === 0 ? (
     <button
       type="button"
+      className="tafel-tap"
       onClick={onIncrement}
       style={{
         width: '100%',
@@ -167,7 +168,6 @@ export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
         fontFamily: 'var(--font-jost), sans-serif',
         fontWeight: 600,
         fontSize: '14px',
-        cursor: 'pointer',
       }}
     >
       {t('add')}
@@ -186,6 +186,7 @@ export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
     >
       <button
         type="button"
+        className="tafel-tap"
         onClick={onDecrement}
         aria-label="-"
         style={{
@@ -195,7 +196,6 @@ export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
           fontWeight: 700,
           fontSize: '16px',
           padding: '6px 12px',
-          cursor: 'pointer',
         }}
       >
         −
@@ -212,6 +212,7 @@ export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
       </span>
       <button
         type="button"
+        className="tafel-tap"
         onClick={onIncrement}
         aria-label="+"
         style={{
@@ -221,7 +222,6 @@ export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
           fontWeight: 700,
           fontSize: '16px',
           padding: '6px 12px',
-          cursor: 'pointer',
         }}
       >
         +
@@ -303,6 +303,7 @@ export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
               />
               <button
                 type="button"
+                className="tafel-tap"
                 onClick={() => {
                   setNoteOpen(false)
                   onNoteChange('')
@@ -314,7 +315,6 @@ export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
                   color: 'var(--stone, #7a7264)',
                   fontFamily: 'var(--font-jost), sans-serif',
                   fontSize: '13px',
-                  cursor: 'pointer',
                   padding: 0,
                 }}
               >
@@ -324,6 +324,7 @@ export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
           ) : (
             <button
               type="button"
+              className="tafel-tap"
               onClick={() => setNoteOpen(true)}
               style={{
                 border: 'none',
@@ -332,7 +333,6 @@ export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
                 fontFamily: 'var(--font-jost), sans-serif',
                 fontWeight: 600,
                 fontSize: '13px',
-                cursor: 'pointer',
                 padding: 0,
               }}
             >

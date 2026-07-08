@@ -2,73 +2,64 @@
 
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useLocale } from 'next-intl'
-import Link from 'next/link'
+import { useRouter } from '@/i18n/routing'
 
 /**
- * Language toggle (NL ↔ EN) for consumer pages.
+ * Language toggle (NL ↔ EN) for consumer pages — a two-position sliding pill.
  *
- * Implementation note: we deliberately use `next/navigation`'s `usePathname`
- * and a plain `next/link` here, NOT next-intl's locale-aware Link, because we
- * need to construct the *other* locale's full path explicitly and avoid any
- * surprise locale rewriting on the toggle itself.
- *
- * Path-rewrite rules:
- *   - Strip a leading "/en" if present, then prefix "/en" if switching to EN.
- *   - Dutch (the default) lives at the bare root path with no prefix.
- *   - Preserve query string so e.g. "?date=2026-07-01" survives the toggle.
+ * Implementation note: we still use `next/navigation`'s `usePathname` /
+ * `useSearchParams` to compute the locale-agnostic path (stripping any "/en"
+ * prefix ourselves), because we need the *other* locale's path explicitly.
+ * The actual navigation, though, goes through next-intl's `useRouter` —
+ * `router.replace(path, { locale })` — so the locale prefix is applied
+ * correctly and consistently with every other locale-aware navigation in the
+ * consumer app. `replace` (not `push`) avoids piling up a history entry per
+ * language toggle.
  */
 export function ConsumerLanguageToggle() {
   const pathname = usePathname() || '/'
   const searchParams = useSearchParams()
-  const currentLocale = useLocale()
+  const currentLocale = useLocale() as 'nl' | 'en'
+  const router = useRouter()
 
   // Remove any existing locale prefix so we have a clean canonical path.
   const pathWithoutLocale = pathname.replace(/^\/(en|nl)(?=\/|$)/, '') || '/'
 
-  // Build the target path for the *other* locale.
-  const otherLocale: 'nl' | 'en' = currentLocale === 'en' ? 'nl' : 'en'
-  const targetPath =
-    otherLocale === 'en'
-      ? `/en${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`
-      : pathWithoutLocale
-
   const qs = searchParams?.toString() ?? ''
-  const target = qs ? `${targetPath}?${qs}` : targetPath
+  const target = qs ? `${pathWithoutLocale}?${qs}` : pathWithoutLocale
 
-  const activeStyle = {
-    color: 'var(--night, #0f0d08)',
-    fontWeight: 700,
-  }
-  const inactiveStyle = {
-    color: 'var(--stone, #7a7264)',
-    fontWeight: 400,
-    textDecoration: 'none',
+  function switchTo(locale: 'nl' | 'en') {
+    if (locale === currentLocale) return
+    router.replace(target, { locale })
   }
 
   return (
     <div
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '6px',
-        fontFamily: 'var(--font-jost), sans-serif',
-        fontSize: '13px',
-        letterSpacing: '0.04em',
-        textTransform: 'uppercase',
-      }}
-      aria-label="Language switcher"
+      className="tafel-locale-toggle"
+      role="group"
+      aria-label="Language"
     >
-      {currentLocale === 'nl' ? (
-        <span aria-current="true" style={activeStyle}>NL</span>
-      ) : (
-        <Link href={target} prefetch={false} style={inactiveStyle}>NL</Link>
-      )}
-      <span style={{ color: 'var(--stone, #7a7264)' }} aria-hidden="true">/</span>
-      {currentLocale === 'en' ? (
-        <span aria-current="true" style={activeStyle}>EN</span>
-      ) : (
-        <Link href={target} prefetch={false} style={inactiveStyle}>EN</Link>
-      )}
+      <button
+        type="button"
+        className="tafel-tap"
+        aria-pressed={currentLocale === 'nl'}
+        onClick={() => switchTo('nl')}
+      >
+        NL
+      </button>
+      <button
+        type="button"
+        className="tafel-tap"
+        aria-pressed={currentLocale === 'en'}
+        onClick={() => switchTo('en')}
+      >
+        EN
+      </button>
+      <span
+        className="tafel-locale-slider"
+        data-position={currentLocale}
+        aria-hidden="true"
+      />
     </div>
   )
 }

@@ -40,6 +40,7 @@ export function CartStickyFooter({ brand }: Props) {
       >
         <button
           type="button"
+          className="tafel-tap"
           onClick={openDrawer}
           aria-label={`${t('cta')}, ${itemsLabel}, ${totalLabel}`}
           style={{
@@ -56,7 +57,6 @@ export function CartStickyFooter({ brand }: Props) {
             justifyContent: 'space-between',
             alignItems: 'center',
             boxShadow: '0 8px 24px rgba(30, 21, 8, 0.14)',
-            cursor: 'pointer',
           }}
         >
           <span>

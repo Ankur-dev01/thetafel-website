@@ -138,12 +138,12 @@ export function CartDrawer({ brand }: Props) {
           <button
             ref={closeButtonRef}
             type="button"
+            className="tafel-tap"
             onClick={closeDrawer}
             aria-label={t('close')}
             style={{
               border: 'none',
               background: 'transparent',
-              cursor: 'pointer',
               padding: '4px',
               color: 'var(--night, #0f0d08)',
             }}
@@ -187,6 +187,7 @@ export function CartDrawer({ brand }: Props) {
             </p>
             <button
               type="button"
+              className="tafel-tap"
               onClick={closeDrawer}
               style={{
                 background: brand.primaryHex,
@@ -197,7 +198,6 @@ export function CartDrawer({ brand }: Props) {
                 fontFamily: 'var(--font-jost), sans-serif',
                 fontWeight: 600,
                 fontSize: '14px',
-                cursor: 'pointer',
               }}
             >
               {t('backToMenu')}
@@ -265,6 +265,7 @@ export function CartDrawer({ brand }: Props) {
                       >
                         <button
                           type="button"
+                          className="tafel-tap"
                           onClick={() => decrementLine(line.itemId)}
                           aria-label="-"
                           style={{
@@ -274,7 +275,6 @@ export function CartDrawer({ brand }: Props) {
                             fontWeight: 700,
                             fontSize: '15px',
                             padding: '4px 8px',
-                            cursor: 'pointer',
                           }}
                         >
                           −
@@ -291,6 +291,7 @@ export function CartDrawer({ brand }: Props) {
                         </span>
                         <button
                           type="button"
+                          className="tafel-tap"
                           onClick={() => incrementLine(line.itemId)}
                           aria-label="+"
                           style={{
@@ -300,7 +301,6 @@ export function CartDrawer({ brand }: Props) {
                             fontWeight: 700,
                             fontSize: '15px',
                             padding: '4px 8px',
-                            cursor: 'pointer',
                           }}
                         >
                           +
@@ -309,6 +309,7 @@ export function CartDrawer({ brand }: Props) {
 
                       <button
                         type="button"
+                        className="tafel-tap"
                         onClick={() =>
                           setNoteOpenFor(
                             noteOpenFor === line.itemId ? null : line.itemId
@@ -320,7 +321,6 @@ export function CartDrawer({ brand }: Props) {
                           color: 'var(--stone, #7a7264)',
                           fontFamily: 'var(--font-jost), sans-serif',
                           fontSize: '12px',
-                          cursor: 'pointer',
                           padding: 0,
                         }}
                       >
@@ -393,6 +393,7 @@ export function CartDrawer({ brand }: Props) {
 
               <button
                 type="button"
+                className="tafel-tap"
                 onClick={handleCheckout}
                 style={{
                   width: '100%',
@@ -405,7 +406,6 @@ export function CartDrawer({ brand }: Props) {
                   fontFamily: 'var(--font-jost), sans-serif',
                   fontWeight: 600,
                   fontSize: '15px',
-                  cursor: 'pointer',
                 }}
               >
                 {t('checkoutCta')}
@@ -413,6 +413,7 @@ export function CartDrawer({ brand }: Props) {
 
               <button
                 type="button"
+                className="tafel-tap"
                 onClick={handleClearCart}
                 style={{
                   display: 'block',
@@ -423,7 +424,6 @@ export function CartDrawer({ brand }: Props) {
                   fontFamily: 'var(--font-jost), sans-serif',
                   fontWeight: 500,
                   fontSize: '13px',
-                  cursor: 'pointer',
                   padding: 0,
                 }}
               >

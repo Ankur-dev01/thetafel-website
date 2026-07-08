@@ -87,6 +87,7 @@ export function PayModeChooser({ slug, qrToken, restaurant }: Props) {
 
       <button
         type="button"
+        className="tafel-tap"
         onClick={handleContinue}
         disabled={!selected}
         style={{
@@ -100,8 +101,6 @@ export function PayModeChooser({ slug, qrToken, restaurant }: Props) {
           fontFamily: 'var(--font-jost), sans-serif',
           fontWeight: 600,
           fontSize: '15px',
-          cursor: selected ? 'pointer' : 'not-allowed',
-          opacity: selected ? 1 : 0.4,
         }}
       >
         {t('continue')}
@@ -152,6 +151,7 @@ function PayModeCard({
   return (
     <button
       type="button"
+      className="tafel-tap"
       onClick={onClick}
       style={{
         background: selected
@@ -162,9 +162,8 @@ function PayModeCard({
           : '2px solid rgba(30, 21, 8, 0.10)',
         padding: '24px 20px',
         borderRadius: '16px',
-        cursor: 'pointer',
         textAlign: 'left',
-        transition: 'all 0.16s ease',
+        transition: 'background 0.16s ease, border-color 0.16s ease, transform 0.08s ease, opacity 0.12s ease',
       }}
     >
       {eyebrow ? (
