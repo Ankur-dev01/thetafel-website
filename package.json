@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:menu-photos": "node --env-file=.env.local scripts/seed-menu-photos.ts"
   },
   "dependencies": {
     "@mollie/api-client": "^4.5.0",
