@@ -922,12 +922,30 @@
         "notAvailableHeading": "QR-bestellen is niet beschikbaar.",
         "notAvailableBody": "Vraag ons personeel om je verder te helpen."
       },
-      "paySoon": {
-        "eyebrow": "BINNENKORT",
-        "heading": "Betalen komt zo aan",
-        "body": "We zijn dit onderdeel aan het bouwen. Je bestelling staat klaar — de betaalstap komt binnenkort live.",
-        "modeLabel": "Modus",
-        "backToMenu": "← Terug naar menu"
+      "orderSubmit": {
+        "subPayNow": "Reken af om je bestelling naar de keuken te sturen.",
+        "subPayAtTable": "Je bestelling gaat direct naar de keuken. Je betaalt aan het einde van je maaltijd.",
+        "submitting": "Bezig met verwerken…",
+        "submitPayNow": "Afrekenen",
+        "submitPayAtTable": "Bestelling plaatsen",
+        "backToMenu": "← Terug naar menu",
+        "errors": {
+          "generic": "Er ging iets mis. Probeer het opnieuw.",
+          "itemsInvalidBody": "Sommige gerechten zijn niet meer beschikbaar. Ga terug naar het menu om je mandje bij te werken.",
+          "rateLimited": "Te veel pogingen. Probeer het over een minuut opnieuw.",
+          "turnstileFailed": "Verificatie mislukt. Probeer het opnieuw.",
+          "noItems": "Je mandje is leeg.",
+          "tabBusy": "Even geduld — probeer het over een paar seconden opnieuw.",
+          "payModeDisabled": "Deze betaalmethode is niet meer beschikbaar.",
+          "tableNotFound": "We konden deze tafel niet vinden.",
+          "mollieError": "Betalen lukt nu niet. Probeer het opnieuw."
+        }
+      },
+      "orderConfirmation": {
+        "received": "Bestelling ontvangen",
+        "codeLabel": "Bestelcode",
+        "soon": "Statusupdates volgen binnenkort.",
+        "help": "Hulp nodig? Vraag een medewerker."
       }
     },
     "menu": {

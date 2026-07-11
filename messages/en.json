@@ -922,12 +922,30 @@
         "notAvailableHeading": "QR ordering is not available.",
         "notAvailableBody": "Please ask our staff to help."
       },
-      "paySoon": {
-        "eyebrow": "COMING SOON",
-        "heading": "Payment coming soon",
-        "body": "We're building this step. Your order is ready to go — the payment step lands soon.",
-        "modeLabel": "Mode",
-        "backToMenu": "← Back to menu"
+      "orderSubmit": {
+        "subPayNow": "Check out to send your order to the kitchen.",
+        "subPayAtTable": "Your order goes straight to the kitchen. You'll settle up at the end of your meal.",
+        "submitting": "Processing…",
+        "submitPayNow": "Check out",
+        "submitPayAtTable": "Place order",
+        "backToMenu": "← Back to menu",
+        "errors": {
+          "generic": "Something went wrong. Please try again.",
+          "itemsInvalidBody": "Some dishes are no longer available. Go back to the menu to update your basket.",
+          "rateLimited": "Too many attempts. Please try again in a minute.",
+          "turnstileFailed": "Verification failed. Please try again.",
+          "noItems": "Your basket is empty.",
+          "tabBusy": "One moment — please try again in a few seconds.",
+          "payModeDisabled": "This payment method is no longer available.",
+          "tableNotFound": "We couldn't find this table.",
+          "mollieError": "Payment isn't working right now. Please try again."
+        }
+      },
+      "orderConfirmation": {
+        "received": "Order received",
+        "codeLabel": "Order code",
+        "soon": "Status updates coming soon.",
+        "help": "Need help? Ask a staff member."
       }
     },
     "menu": {
