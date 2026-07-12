@@ -12,9 +12,10 @@ type Props = {
   item: MenuItem
   brand: ResolvedBrand
   itemNotesEnabled: boolean
+  orderingDisabled?: boolean
 }
 
-export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
+export function MenuItemCard({ item, brand, itemNotesEnabled, orderingDisabled = false }: Props) {
   const t = useTranslations('consumer.menu')
   const tDiet = useTranslations('consumer.menu.dietTags')
   const locale = useLocale() as 'nl' | 'en'
@@ -27,6 +28,7 @@ export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
   const note = line?.note ?? ''
 
   function onIncrement() {
+    if (orderingDisabled) return
     if (qty === 0) {
       addLine({
         itemId: item.id,
@@ -42,6 +44,7 @@ export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
   }
 
   function onDecrement() {
+    if (orderingDisabled) return
     decrementLine(item.id)
   }
 
@@ -158,6 +161,7 @@ export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
       type="button"
       className="tafel-tap"
       onClick={onIncrement}
+      disabled={orderingDisabled}
       style={{
         width: '100%',
         background: brand.primaryHex,
@@ -189,6 +193,7 @@ export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
         className="tafel-tap"
         onClick={onDecrement}
         aria-label="-"
+        disabled={orderingDisabled}
         style={{
           border: 'none',
           background: 'transparent',
@@ -215,6 +220,7 @@ export function MenuItemCard({ item, brand, itemNotesEnabled }: Props) {
         className="tafel-tap"
         onClick={onIncrement}
         aria-label="+"
+        disabled={orderingDisabled}
         style={{
           border: 'none',
           background: 'transparent',

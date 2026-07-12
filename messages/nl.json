@@ -956,6 +956,22 @@
         "minutesAgo": "{count, plural, =0 {zojuist} one {# minuut geleden} other {# minuten geleden}}"
       }
     },
+    "takeaway": {
+      "landing": {
+        "eyebrow": "Afhaal",
+        "heading": "Bestellen voor afhalen",
+        "earliestToday": "Vroegste afhaal vandaag om {time}",
+        "closedToday": "Vandaag gesloten — eerstvolgende afhaal {day} om {time}",
+        "unavailableServiceDisabled": "Afhalen is bij dit restaurant niet beschikbaar.",
+        "unavailableNotAccepting": "Afhalen is vandaag tijdelijk gepauzeerd. Kijk snel terug.",
+        "unavailableNoUpcoming": "Momenteel geen afhaalmomenten beschikbaar. Kijk snel terug."
+      },
+      "pickupPlaceholder": {
+        "heading": "Kies je afhaaltijd",
+        "body": "Deze stap wordt zo snel mogelijk toegevoegd.",
+        "backToMenu": "Terug naar het menu"
+      }
+    },
     "menu": {
       "eyebrowTable": "TAFEL {label}",
       "add": "Toevoegen",

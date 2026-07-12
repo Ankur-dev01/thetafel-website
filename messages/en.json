@@ -956,6 +956,22 @@
         "minutesAgo": "{count, plural, =0 {just now} one {# minute ago} other {# minutes ago}}"
       }
     },
+    "takeaway": {
+      "landing": {
+        "eyebrow": "Takeaway",
+        "heading": "Order for pickup",
+        "earliestToday": "Earliest pickup today at {time}",
+        "closedToday": "Closed today — next pickup {day} at {time}",
+        "unavailableServiceDisabled": "Takeaway isn't available at this restaurant.",
+        "unavailableNotAccepting": "Takeaway is paused for today. Please check back soon.",
+        "unavailableNoUpcoming": "No pickup windows available at the moment. Please check back soon."
+      },
+      "pickupPlaceholder": {
+        "heading": "Choose your pickup time",
+        "body": "This step is coming shortly.",
+        "backToMenu": "Back to menu"
+      }
+    },
     "menu": {
       "eyebrowTable": "TABLE {label}",
       "add": "Add",

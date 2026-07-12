@@ -36,6 +36,7 @@ export type PublicRestaurant = {
   qr_item_notes_enabled: boolean
   qr_pay_now_enabled: boolean | null
   qr_pay_at_table_enabled: boolean | null
+  takeaway_item_notes_allowed: boolean
 }
 
 /**
@@ -96,6 +97,7 @@ export const resolveRestaurantBySlug = cache(
           'qr_item_notes_enabled',
           'qr_pay_now_enabled',
           'qr_pay_at_table_enabled',
+          'takeaway_item_notes_allowed',
         ].join(',')
       )
       .eq('slug', slug)

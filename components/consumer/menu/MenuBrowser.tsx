@@ -14,9 +14,10 @@ import { CartDrawer } from './CartDrawer'
 type Props = {
   restaurant: PublicRestaurant
   menu: MenuData
-  table: QrTable
+  table: QrTable | null
   context: MenuContext
   itemNotesEnabled: boolean
+  orderingDisabled?: boolean
 }
 
 export function MenuBrowser({
@@ -25,6 +26,7 @@ export function MenuBrowser({
   table,
   context,
   itemNotesEnabled,
+  orderingDisabled = false,
 }: Props) {
   const brand = useMemo(() => resolveBrandTokens(restaurant), [restaurant])
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(
@@ -71,8 +73,8 @@ export function MenuBrowser({
       slug={restaurant.slug}
       context={context}
       restaurantId={restaurant.id}
-      tableId={table.id}
-      qrToken={table.qr_token}
+      tableId={table?.id ?? null}
+      qrToken={table?.qr_token ?? null}
     >
       <div style={backgroundStyle}>
         <CategoryChips
@@ -117,13 +119,14 @@ export function MenuBrowser({
                   item={item}
                   brand={brand}
                   itemNotesEnabled={itemNotesEnabled}
+                  orderingDisabled={orderingDisabled}
                 />
               ))}
             </section>
           ))}
         </div>
 
-        <CartStickyFooter brand={brand} />
+        <CartStickyFooter brand={brand} orderingDisabled={orderingDisabled} />
         <CartDrawer brand={brand} />
       </div>
     </CartProvider>

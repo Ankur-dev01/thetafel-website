@@ -80,8 +80,12 @@ export function CartDrawer({ brand }: Props) {
   if (!isDrawerOpen) return null
 
   function handleCheckout() {
-    if (!cart.qrToken) return
-    router.push(`/r/${cart.slug}/qr/${cart.qrToken}/checkout`)
+    if (cart.context === 'qr') {
+      if (!cart.qrToken) return
+      router.push(`/r/${cart.slug}/qr/${cart.qrToken}/checkout`)
+    } else {
+      router.push(`/r/${cart.slug}/order/pickup`)
+    }
   }
 
   function handleClearCart() {

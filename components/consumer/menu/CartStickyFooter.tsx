@@ -7,9 +7,10 @@ import { formatCents } from '@/lib/cart/pricing'
 
 type Props = {
   brand: ResolvedBrand
+  orderingDisabled?: boolean
 }
 
-export function CartStickyFooter({ brand }: Props) {
+export function CartStickyFooter({ brand, orderingDisabled = false }: Props) {
   const t = useTranslations('consumer.cart.stickyFooter')
   const locale = useLocale() as 'nl' | 'en'
   const { totals, openDrawer } = useCart()
@@ -57,6 +58,7 @@ export function CartStickyFooter({ brand }: Props) {
             justifyContent: 'space-between',
             alignItems: 'center',
             boxShadow: '0 8px 24px rgba(30, 21, 8, 0.14)',
+            opacity: orderingDisabled ? 0.55 : 1,
           }}
         >
           <span>
