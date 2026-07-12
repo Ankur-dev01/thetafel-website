@@ -941,11 +941,19 @@
           "mollieError": "Betalen lukt nu niet. Probeer het opnieuw."
         }
       },
-      "orderConfirmation": {
-        "received": "Bestelling ontvangen",
+      "orderStatus": {
+        "atRestaurant": "Bij",
+        "tableLabel": "Tafel",
         "codeLabel": "Bestelcode",
-        "soon": "Statusupdates volgen binnenkort.",
-        "help": "Hulp nodig? Vraag een medewerker."
+        "itemsHeading": "Je bestelling",
+        "itemsFallback": "Details worden zo geladen.",
+        "help": "Hulp nodig? Vraag een medewerker.",
+        "backToRestaurant": "Terug naar het restaurant",
+        "total": "Totaal",
+        "quantityShort": "×",
+        "lastUpdated": "Bijgewerkt",
+        "justNow": "zojuist",
+        "minutesAgo": "{count, plural, =0 {zojuist} one {# minuut geleden} other {# minuten geleden}}"
       }
     },
     "menu": {

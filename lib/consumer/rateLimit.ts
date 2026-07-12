@@ -27,6 +27,7 @@ export const CONSUMER_LIMITS = {
   magic_link_consume:    { window: '15 m', max: 10,  prefix: 'csm:ml' },
   magic_link_resend:     { window: '1 h',  max: 3,   prefix: 'csm:mlre' },
   deposit_start:         { window: '1 h',  max: 5,   prefix: 'csm:dep' },
+  order_status_poll:     { window: '1 m',  max: 30,  prefix: 'csm:ostat' },
 } as const
 
 export type ConsumerLimitKey = keyof typeof CONSUMER_LIMITS
