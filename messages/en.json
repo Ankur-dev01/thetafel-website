@@ -966,10 +966,31 @@
         "unavailableNotAccepting": "Takeaway is paused for today. Please check back soon.",
         "unavailableNoUpcoming": "No pickup windows available at the moment. Please check back soon."
       },
-      "pickupPlaceholder": {
-        "heading": "Choose your pickup time",
-        "body": "This step is coming shortly.",
-        "backToMenu": "Back to menu"
+      "pickup": {
+        "loading": "Loading available times…",
+        "asapHeading": "When would you like to pick up?",
+        "asapPill": "As soon as possible",
+        "asapCta": "{day} at {time}",
+        "scheduledHeading": "Choose a pickup time",
+        "scheduledSub": "Pick a time that works for you.",
+        "soonestPill": "Soonest",
+        "full": "Full",
+        "todayLabel": "today",
+        "tomorrowLabel": "tomorrow",
+        "unavailable": {
+          "serviceDisabled": "Takeaway isn't available at this restaurant.",
+          "notAcceptingOrders": "Takeaway is paused for today. Please check back soon.",
+          "noUpcomingHours": "No pickup windows available at the moment.",
+          "noSlotsAvailable": "No more pickup times available today."
+        },
+        "fetchError": "Couldn't load times. Please try again.",
+        "continueCta": "Continue"
+      },
+      "detailsPlaceholder": {
+        "heading": "Almost there",
+        "pickupLine": "Pickup: {when}",
+        "body": "The next step is coming shortly.",
+        "back": "Back to pickup time"
       }
     },
     "menu": {

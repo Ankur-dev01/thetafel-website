@@ -35,6 +35,7 @@ export type OpeningWindowResult =
   | {
       status: 'open_now'
       earliestPickupInstant: string // ISO
+      todayOpenInstant: string // ISO — today's actual service-open time (clean clock mark)
       todayCloseInstant: string // ISO
       slotIntervalMinutes: number
       prepTimeMinutes: number
@@ -145,6 +146,7 @@ export async function computeTakeawayOpeningWindow(
       return {
         status: 'open_now',
         earliestPickupInstant: rounded.toISOString(),
+        todayOpenInstant: openInstant.toISOString(),
         todayCloseInstant: closeInstant.toISOString(),
         slotIntervalMinutes: cfg.slotIntervalMinutes,
         prepTimeMinutes: cfg.prepTimeMinutes,

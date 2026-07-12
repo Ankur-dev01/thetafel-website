@@ -966,10 +966,31 @@
         "unavailableNotAccepting": "Afhalen is vandaag tijdelijk gepauzeerd. Kijk snel terug.",
         "unavailableNoUpcoming": "Momenteel geen afhaalmomenten beschikbaar. Kijk snel terug."
       },
-      "pickupPlaceholder": {
-        "heading": "Kies je afhaaltijd",
-        "body": "Deze stap wordt zo snel mogelijk toegevoegd.",
-        "backToMenu": "Terug naar het menu"
+      "pickup": {
+        "loading": "Even geduld — beschikbare tijden ophalen.",
+        "asapHeading": "Wanneer haal je af?",
+        "asapPill": "Zo snel mogelijk",
+        "asapCta": "{day} om {time}",
+        "scheduledHeading": "Kies een afhaaltijd",
+        "scheduledSub": "Kies een moment dat jou uitkomt.",
+        "soonestPill": "Eerste",
+        "full": "Vol",
+        "todayLabel": "vandaag",
+        "tomorrowLabel": "morgen",
+        "unavailable": {
+          "serviceDisabled": "Afhalen is bij dit restaurant niet beschikbaar.",
+          "notAcceptingOrders": "Afhalen is vandaag tijdelijk gepauzeerd. Kijk snel terug.",
+          "noUpcomingHours": "Momenteel geen afhaalmomenten beschikbaar.",
+          "noSlotsAvailable": "Geen tijden meer beschikbaar vandaag."
+        },
+        "fetchError": "Tijden konden niet geladen worden. Probeer opnieuw.",
+        "continueCta": "Doorgaan"
+      },
+      "detailsPlaceholder": {
+        "heading": "Bijna klaar",
+        "pickupLine": "Afhaal: {when}",
+        "body": "De volgende stap wordt zo snel mogelijk toegevoegd.",
+        "back": "Terug naar afhaaltijd"
       }
     },
     "menu": {
