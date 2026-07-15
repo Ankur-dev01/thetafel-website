@@ -1,23 +1,13 @@
-// app/api/v1/public/[slug]/order/route.ts
+// app/api/v1/public/[slug]/takeaway-order/route.ts
 //
-// POST /api/v1/public/{slug}/order
+// POST /api/v1/public/{slug}/takeaway-order
 //
-// Two branches selected by `payMode`:
-//   'pay_now'      → create order (pending) + create payment_intents + Mollie payment → return checkout URL
-//   'pay_at_table' → create order (confirmed) linked to a tab → return view-order URL
-//
-// Order of operations:
-//   1. Rate limit (order_submit per IP + per (slug,tableId))
-//   2. Parse JSON
-//   3. Zod validate
-//   4. Turnstile verify
-//   5. Resolve slug → restaurant
-//   6. Doorman (restaurant live + QR service enabled)
-//   7. Resolve tableId belongs to restaurant, is_qr_enabled
-//   8. Verify pay mode is enabled on this restaurant
-//   9. Call createPayNowOrder OR createPayAtTableOrder
-//  10. On pay_now: create payment_intents row (with metadata.orderId stamped), call Mollie
-//  11. Audit + respond
+// Pay-first takeaway. Creates the order (pending), creates the payment
+// intent (with metadata.orderId stamped in from the start — same
+// order-first-then-intent pattern as the QR order route), calls Mollie
+// against the connected org, returns the checkout URL. On the Mollie
+// webhook's 'paid' event the order flips to confirmed and the
+// confirmation email goes out.
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
@@ -25,18 +15,19 @@ import { checkConsumerRateLimit, getCallerIp, redactIp } from '@/lib/consumer/ra
 import { verifyTurnstileToken } from '@/lib/consumer/turnstile'
 import { auditLog } from '@/lib/consumer/audit'
 import { assertConsumerWriteAllowed, rejectionPayload } from '@/lib/consumer/guards'
+import { normalizePhone } from '@/lib/consumer/sanitize'
 import { createSupabaseServerClientAdmin } from '@/lib/supabase/server'
-import { createPayNowOrder, createPayAtTableOrder } from '@/lib/orders/transactionalInsert'
+import { createTakeawayOrder } from '@/lib/orders/createTakeawayOrder'
 import { createConnectedPayment } from '@/lib/mollie/createConnectedPayment'
+import { computeTakeawayOpeningWindow } from '@/lib/takeaway/openingWindow'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 const bodySchema = z.object({
   slug: z.string().min(1).max(120),
-  tableId: z.string().uuid(),
-  payMode: z.enum(['pay_now', 'pay_at_table']),
   locale: z.enum(['nl', 'en']),
+  pickupInstant: z.string().datetime(),
   lines: z
     .array(
       z.object({
@@ -47,19 +38,19 @@ const bodySchema = z.object({
     )
     .min(1)
     .max(50),
+  guestName: z.string().min(1).max(120),
+  guestPhone: z.string().min(6).max(20),
+  guestEmail: z.string().email().max(200),
   guestNote: z.string().max(200).optional().nullable(),
   paymentMethod: z.enum(['ideal', 'card']).optional(),
   idempotencyKey: z.string().uuid(),
   turnstileToken: z.string().min(1).max(4096),
 })
 
-type Body = z.infer<typeof bodySchema>
-
 export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: string }> }) {
   const { slug: slugParam } = await ctx.params
   const ip = getCallerIp(req)
 
-  // 1. Rate limit — per IP.
   const rl = await checkConsumerRateLimit('order_submit', ip)
   if (!rl.allowed) {
     return NextResponse.json(
@@ -68,15 +59,12 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: stri
     )
   }
 
-  // 2. Parse JSON.
   let body: unknown
   try {
     body = await req.json()
   } catch {
     return NextResponse.json({ ok: false, error: 'invalid_body' }, { status: 400 })
   }
-
-  // 3. Zod.
   const parsed = bodySchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
@@ -84,81 +72,85 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: stri
       { status: 400 },
     )
   }
-  const input: Body = parsed.data
+  const input = parsed.data
   if (input.slug !== slugParam) {
     return NextResponse.json({ ok: false, error: 'invalid_body' }, { status: 400 })
   }
 
-  // 3b. Per-(slug,tableId) rate limit — narrower to catch single-table abuse.
-  const perTableRl = await checkConsumerRateLimit('order_submit', `${slugParam}:${input.tableId}`)
-  if (!perTableRl.allowed) {
+  const perSlugRl = await checkConsumerRateLimit('order_submit', `${slugParam}:takeaway`)
+  if (!perSlugRl.allowed) {
     return NextResponse.json(
       { ok: false, error: 'rate_limited' },
-      { status: 429, headers: { 'Retry-After': String(perTableRl.retryAfterSeconds ?? 60) } },
+      { status: 429, headers: { 'Retry-After': String(perSlugRl.retryAfterSeconds ?? 60) } },
     )
   }
 
-  // 4. Turnstile.
   const tv = await verifyTurnstileToken(input.turnstileToken, ip)
   if (!tv.ok) {
     return NextResponse.json({ ok: false, error: 'turnstile_failed' }, { status: 403 })
   }
 
-  const admin = await createSupabaseServerClientAdmin()
+  // Normalise phone AFTER Turnstile passes — bad-actor traffic never reaches
+  // the normaliser. Shared helper with the booking flow (E.164 output).
+  const phoneE164 = normalizePhone(input.guestPhone)
+  if (!phoneE164) {
+    return NextResponse.json({ ok: false, error: 'invalid_phone' }, { status: 400 })
+  }
 
-  // 5. Resolve restaurant.
-  const { data: restaurant, error: rErr } = await admin
+  const admin = await createSupabaseServerClientAdmin()
+  const { data: restaurant } = await admin
     .from('restaurants')
-    .select(
-      'id, slug, display_name, legal_name, status, service_qr_enabled, qr_pay_now_enabled, qr_pay_at_table_enabled',
-    )
+    .select('id, slug, display_name, legal_name, service_takeaway_enabled, takeaway_accepting_orders')
     .eq('slug', input.slug)
     .maybeSingle()
-  if (rErr || !restaurant) {
+  if (!restaurant) {
     return NextResponse.json({ ok: false, error: 'restaurant_not_found' }, { status: 404 })
   }
 
-  // 6. Doorman — restaurant live + QR service enabled.
-  const doorman = await assertConsumerWriteAllowed(restaurant.id, 'order.qr.create')
+  const doorman = await assertConsumerWriteAllowed(restaurant.id, 'order.takeaway.create')
   if (!doorman.ok) {
     return NextResponse.json(rejectionPayload(doorman), { status: doorman.httpStatus })
   }
 
-  // 7. Resolve table.
-  const { data: table } = await admin
-    .from('restaurant_tables')
-    .select('id, restaurant_id, label, is_qr_enabled')
-    .eq('id', input.tableId)
-    .eq('restaurant_id', restaurant.id)
-    .is('deleted_at', null)
-    .maybeSingle()
-  if (!table || !table.is_qr_enabled) {
-    return NextResponse.json({ ok: false, error: 'table_not_found' }, { status: 404 })
+  if (!restaurant.service_takeaway_enabled) {
+    return NextResponse.json({ ok: false, error: 'takeaway_disabled' }, { status: 409 })
+  }
+  if (!restaurant.takeaway_accepting_orders) {
+    return NextResponse.json({ ok: false, error: 'not_accepting_orders' }, { status: 409 })
   }
 
-  // 8. Pay mode enabled?
-  if (input.payMode === 'pay_now' && !restaurant.qr_pay_now_enabled) {
-    return NextResponse.json({ ok: false, error: 'pay_mode_disabled' }, { status: 409 })
+  // Validate pickup time — must fall within the current opening window AND
+  // be at least prep_time in the future. Never trust the client's picker.
+  const window = await computeTakeawayOpeningWindow(restaurant.id)
+  if (window.status === 'unavailable') {
+    return NextResponse.json({ ok: false, error: 'not_accepting_orders' }, { status: 409 })
   }
-  if (input.payMode === 'pay_at_table' && !restaurant.qr_pay_at_table_enabled) {
-    return NextResponse.json({ ok: false, error: 'pay_mode_disabled' }, { status: 409 })
+  const pickupMs = new Date(input.pickupInstant).getTime()
+  const nowMs = Date.now()
+  const minPickupMs = nowMs + window.prepTimeMinutes * 60_000
+  const windowCloseMs = new Date(
+    window.status === 'open_now' ? window.todayCloseInstant : window.nextCloseInstant,
+  ).getTime()
+  const windowOpenMs = new Date(
+    window.status === 'open_now' ? window.todayOpenInstant : window.nextOpenInstant,
+  ).getTime()
+  if (pickupMs < Math.max(minPickupMs, windowOpenMs) || pickupMs > windowCloseMs) {
+    return NextResponse.json({ ok: false, error: 'pickup_out_of_window' }, { status: 409 })
   }
 
   const displayName = restaurant.display_name ?? restaurant.legal_name ?? 'Restaurant'
 
-  // 9. Create the order row.
-  const createInput = {
+  // ── Create order ─────────────────────────────────────────────────────
+  const orderResult = await createTakeawayOrder({
     restaurantId: restaurant.id,
-    tableId: table.id,
+    pickupInstant: input.pickupInstant,
     lines: input.lines,
+    guestName: input.guestName,
+    guestPhoneE164: phoneE164,
+    guestEmail: input.guestEmail,
     guestNote: input.guestNote ?? null,
     idempotencyKey: input.idempotencyKey,
-  }
-
-  const orderResult =
-    input.payMode === 'pay_now'
-      ? await createPayNowOrder(createInput)
-      : await createPayAtTableOrder(createInput)
+  })
 
   if (!orderResult.ok) {
     if (orderResult.error === 'items_invalid') {
@@ -167,45 +159,43 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: stri
         { status: 409 },
       )
     }
+    if (orderResult.error === 'below_minimum') {
+      return NextResponse.json(
+        { ok: false, error: 'below_minimum', minOrderCents: orderResult.minOrderCents },
+        { status: 409 },
+      )
+    }
     if (orderResult.error === 'no_items') {
       return NextResponse.json({ ok: false, error: 'no_items' }, { status: 400 })
     }
-    if (orderResult.error === 'tab_busy') {
-      return NextResponse.json({ ok: false, error: 'tab_busy' }, { status: 409 })
-    }
-    console.error('[order] order creation failed', orderResult.error, orderResult.message)
+    const message = 'message' in orderResult ? orderResult.message : undefined
+    console.error('[takeaway-order] order creation failed', orderResult.error, message)
     return NextResponse.json({ ok: false, error: 'persistence_failed' }, { status: 500 })
   }
 
-  const localePrefix = input.locale === 'en' ? '/en' : ''
-  const viewOrderUrl = `${localePrefix}/r/${input.slug}/qr/order/${orderResult.magicLinkPlaintext}`
+  const localePrefix = input.locale === 'en' ? '/en' : '/nl'
+  const viewOrderUrl = `${localePrefix}/r/${input.slug}/order/confirmed/${orderResult.magicLinkPlaintext}`
 
-  // Idempotent replay: return the existing order without touching Mollie.
   if (orderResult.idempotentReplay) {
     return NextResponse.json({
       ok: true,
       orderId: orderResult.orderId,
       orderRef: orderResult.orderRef,
-      payMode: input.payMode,
-      // No checkout URL — client already had one from the original response.
-      // For pay-at-table, the view URL isn't safe to regenerate (no fresh
-      // plaintext token on replay), so point back to the menu instead.
-      viewOrderUrl: null,
-      checkoutUrl: null,
       idempotentReplay: true,
+      checkoutUrl: null,
+      viewOrderUrl: null,
     })
   }
 
   await auditLog({
     restaurantId: restaurant.id,
-    eventType: 'qr.order_submitted',
+    eventType: 'takeaway.order_submitted',
     eventData: {
       orderId: orderResult.orderId,
       orderRef: orderResult.orderRef,
-      payMode: input.payMode,
-      tableId: table.id,
       totalCents: orderResult.totalCents,
       lineCount: input.lines.length,
+      pickupInstant: input.pickupInstant,
       ip_masked: redactIp(ip),
     },
     actorType: 'guest',
@@ -213,64 +203,40 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: stri
     ipAddress: ip,
   }).catch(() => {})
 
-  // ── Pay-at-table: done. ──────────────────────────────────────────────────
-  if (input.payMode === 'pay_at_table') {
-    await auditLog({
-      restaurantId: restaurant.id,
-      eventType: 'tab.joined',
-      eventData: {
-        tabId: orderResult.tabId,
-        orderId: orderResult.orderId,
-      },
-      actorType: 'guest',
-      orderId: orderResult.orderId,
-    }).catch(() => {})
-    return NextResponse.json({
-      ok: true,
-      orderId: orderResult.orderId,
-      orderRef: orderResult.orderRef,
-      payMode: 'pay_at_table',
-      viewOrderUrl,
-      checkoutUrl: null,
-      idempotentReplay: false,
-    })
-  }
-
-  // ── Pay-now: create payment_intents + call Mollie. ──────────────────────
+  // ── Create payment intent ────────────────────────────────────────────
   const { data: intent, error: intentErr } = await admin
     .from('payment_intents')
     .insert({
       restaurant_id: restaurant.id,
-      purpose: 'qr_order' as const,
+      purpose: 'takeaway_order' as const,
       amount_cents: orderResult.totalCents,
       currency: orderResult.currency,
       status: 'pending' as const,
-      idempotency_key: `order:${orderResult.orderId}`,
+      idempotency_key: `takeaway:${orderResult.orderId}`,
       metadata: {
         orderId: orderResult.orderId,
         orderRef: orderResult.orderRef,
-        tableId: table.id,
+        guestId: orderResult.guestId,
       },
     })
     .select('id')
     .single()
 
   if (intentErr || !intent) {
-    console.error('[order] payment_intent insert failed', intentErr?.message)
+    console.error('[takeaway-order] intent insert failed', intentErr?.message)
     return NextResponse.json({ ok: false, error: 'persistence_failed' }, { status: 500 })
   }
 
-  // Link order → intent.
   await admin.from('orders').update({ payment_intent_id: intent.id }).eq('id', orderResult.orderId)
 
   const publicBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://thetafel.nl'
   const redirectBaseUrl = process.env.NODE_ENV === 'production' ? publicBaseUrl : 'http://localhost:3000'
-  const redirectUrl = `${redirectBaseUrl}${localePrefix}/r/${input.slug}/qr/order/${orderResult.magicLinkPlaintext}`
+  const redirectUrl = `${redirectBaseUrl}${viewOrderUrl}`
   const webhookUrl = `${publicBaseUrl}/api/webhooks/mollie/consumer`
   const description =
     input.locale === 'nl'
-      ? `Bestelling ${orderResult.orderRef} — ${displayName}`
-      : `Order ${orderResult.orderRef} — ${displayName}`
+      ? `Afhaal ${orderResult.orderRef} — ${displayName}`
+      : `Pickup ${orderResult.orderRef} — ${displayName}`
 
   const paymentResult = await createConnectedPayment({
     restaurantId: restaurant.id,
@@ -295,16 +261,15 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: stri
       .eq('id', intent.id)
     // Note: orders.payment_status has no 'failed' value in its CHECK
     // constraint (orders_payment_status_check) — status='cancelled' alone
-    // marks the order dead; payment_status is left as-is. Found live during
-    // C6.3's takeaway equivalent — this QR route had the same latent bug,
-    // just never exercised in production yet.
+    // is what marks the order dead; payment_status stays whatever it was
+    // (i.e. 'pending', since no payment ever actually happened).
     await admin
       .from('orders')
       .update({ status: 'cancelled' })
       .eq('id', orderResult.orderId)
     await auditLog({
       restaurantId: restaurant.id,
-      eventType: 'qr.order_payment_failed',
+      eventType: 'takeaway.order_payment_failed',
       eventData: {
         orderId: orderResult.orderId,
         reason: paymentResult.reason,
@@ -319,7 +284,6 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: stri
     return NextResponse.json({ ok: false, error: `mollie_${paymentResult.reason}` }, { status })
   }
 
-  // Persist Mollie ids + checkout URL onto the intent.
   await admin
     .from('payment_intents')
     .update({
@@ -327,7 +291,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: stri
       metadata: {
         orderId: orderResult.orderId,
         orderRef: orderResult.orderRef,
-        tableId: table.id,
+        guestId: orderResult.guestId,
         checkoutUrl: paymentResult.checkoutUrl,
       },
     })
@@ -335,14 +299,13 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: stri
 
   await auditLog({
     restaurantId: restaurant.id,
-    eventType: 'qr.order_payment_initiated',
+    eventType: 'takeaway.order_payment_initiated',
     eventData: {
       orderId: orderResult.orderId,
       orderRef: orderResult.orderRef,
       intentId: intent.id,
       molliePaymentId: paymentResult.molliePaymentId,
       amountCents: orderResult.totalCents,
-      method: input.paymentMethod ?? null,
     },
     actorType: 'guest',
     orderId: orderResult.orderId,
@@ -354,7 +317,6 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: stri
     ok: true,
     orderId: orderResult.orderId,
     orderRef: orderResult.orderRef,
-    payMode: 'pay_now',
     checkoutUrl: paymentResult.checkoutUrl,
     viewOrderUrl,
     idempotentReplay: false,

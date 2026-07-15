@@ -986,11 +986,42 @@
         "fetchError": "Tijden konden niet geladen worden. Probeer opnieuw.",
         "continueCta": "Doorgaan"
       },
-      "detailsPlaceholder": {
-        "heading": "Bijna klaar",
-        "pickupLine": "Afhaal: {when}",
-        "body": "De volgende stap wordt zo snel mogelijk toegevoegd.",
-        "back": "Terug naar afhaaltijd"
+      "details": {
+        "heading": "Bijna klaar — jouw gegevens",
+        "sub": "We hebben deze nodig om je te laten weten dat de bestelling klaar is.",
+        "pickupPill": "Afhaaltijd",
+        "nameLabel": "Naam",
+        "phoneLabel": "Telefoonnummer",
+        "emailLabel": "E-mailadres",
+        "noteLabel": "Opmerking voor de keuken (optioneel)",
+        "totalLabel": "Totaal",
+        "submitCta": "Naar betalen",
+        "submitting": "Bezig...",
+        "errors": {
+          "generic": "Er ging iets mis. Probeer het opnieuw.",
+          "rateLimited": "Te veel pogingen. Wacht even en probeer opnieuw.",
+          "turnstileFailed": "Beveiligingscheck mislukt. Probeer opnieuw.",
+          "invalidPhone": "Vul een geldig telefoonnummer in, bijvoorbeeld +31 6 12345678.",
+          "itemsInvalid": "Een of meer items zijn niet meer beschikbaar. Ga terug naar het menu.",
+          "belowMinimum": "Je bestelling is onder het minimumbedrag van dit restaurant.",
+          "noItems": "Je mandje is leeg.",
+          "pickupOutOfWindow": "De gekozen afhaaltijd is niet meer beschikbaar. Kies opnieuw.",
+          "notAccepting": "Afhalen is nu tijdelijk gepauzeerd. Kijk snel terug.",
+          "mollieError": "Betalen lukt nu even niet. Probeer opnieuw."
+        }
+      },
+      "confirmed": {
+        "atRestaurant": "Bij",
+        "pickupLabel": "Afhaal",
+        "itemsHeading": "Je bestelling",
+        "total": "Totaal",
+        "help": "Hulp nodig? Vraag een medewerker.",
+        "backToRestaurant": "Terug naar het restaurant"
+      },
+      "status": {
+        "codeLabel": "Bestelcode",
+        "lastUpdated": "Bijgewerkt",
+        "minutesAgo": "{count, plural, =0 {zojuist} one {# minuut geleden} other {# minuten geleden}}"
       }
     },
     "menu": {

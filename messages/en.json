@@ -986,11 +986,42 @@
         "fetchError": "Couldn't load times. Please try again.",
         "continueCta": "Continue"
       },
-      "detailsPlaceholder": {
-        "heading": "Almost there",
-        "pickupLine": "Pickup: {when}",
-        "body": "The next step is coming shortly.",
-        "back": "Back to pickup time"
+      "details": {
+        "heading": "Almost there — your details",
+        "sub": "We need these to let you know when your order is ready.",
+        "pickupPill": "Pickup time",
+        "nameLabel": "Name",
+        "phoneLabel": "Phone number",
+        "emailLabel": "Email address",
+        "noteLabel": "Note for the kitchen (optional)",
+        "totalLabel": "Total",
+        "submitCta": "Continue to payment",
+        "submitting": "Processing...",
+        "errors": {
+          "generic": "Something went wrong. Please try again.",
+          "rateLimited": "Too many attempts. Please wait a moment and try again.",
+          "turnstileFailed": "Security check failed. Please try again.",
+          "invalidPhone": "Please enter a valid phone number, e.g. +31 6 12345678.",
+          "itemsInvalid": "One or more items are no longer available. Please go back to the menu.",
+          "belowMinimum": "Your order is below this restaurant's minimum order amount.",
+          "noItems": "Your basket is empty.",
+          "pickupOutOfWindow": "The selected pickup time is no longer available. Please choose again.",
+          "notAccepting": "Takeaway is paused right now. Please check back soon.",
+          "mollieError": "Payment isn't working right now. Please try again."
+        }
+      },
+      "confirmed": {
+        "atRestaurant": "At",
+        "pickupLabel": "Pickup",
+        "itemsHeading": "Your order",
+        "total": "Total",
+        "help": "Need help? Ask a staff member.",
+        "backToRestaurant": "Back to the restaurant"
+      },
+      "status": {
+        "codeLabel": "Order code",
+        "lastUpdated": "Updated",
+        "minutesAgo": "{count, plural, =0 {just now} one {# minute ago} other {# minutes ago}}"
       }
     },
     "menu": {

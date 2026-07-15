@@ -1,9 +1,9 @@
 // app/api/webhooks/mollie/consumer/route.ts
 //
 // Webhook target for consumer-facing connected-account payments
-// (payment_intents.purpose = 'qr_order' today; 'deposit' / 'takeaway_order'
-// share the same payment_intents table and will plug into this same handler
-// in a later unit — see the TODO below).
+// (payment_intents.purpose = 'qr_order' and 'takeaway_order' today;
+// 'deposit' shares the same payment_intents table and will plug into this
+// same handler in a later unit — see the TODO below).
 //
 // IMPORTANT — this is NOT the same shape as /api/mollie/webhook (which
 // handles platform-billed subscription payments via Mollie's newer
@@ -27,6 +27,7 @@ import { getMollieOAuthClient } from '@/lib/mollie/client'
 import { getValidAccessTokenForRestaurant } from '@/lib/mollie/webhook'
 import { canTransitionOrderStatus, type OrderStatus } from '@/lib/orders/transitionOrderStatus'
 import { auditLog } from '@/lib/consumer/audit'
+import { sendTakeawayOrderConfirmedEmail } from '@/lib/consumer/notifications/dispatchTakeawayConfirmation'
 
 export const runtime = 'nodejs'
 
@@ -62,10 +63,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, unknown_payment: true })
   }
 
-  // TODO(C5.5+): 'deposit' and 'takeaway_order' purposes will route through
-  // here too once their submit flows adopt the same webhookUrl. For now only
-  // qr_order is wired; anything else is acknowledged as a no-op.
-  if (intent.purpose !== 'qr_order') {
+  // TODO(C6.3+): 'deposit' will route through here too once it adopts the
+  // same webhookUrl. qr_order (C5.5) and takeaway_order (C6.3) are wired;
+  // anything else is acknowledged as a no-op.
+  if (intent.purpose !== 'qr_order' && intent.purpose !== 'takeaway_order') {
     return NextResponse.json({ ok: true, ignored: true, purpose: intent.purpose })
   }
 
@@ -97,12 +98,28 @@ export async function POST(req: NextRequest) {
   }
 
   if (molliePayment.status === 'paid') {
-    await handlePaid(admin, intent.id, intent.restaurant_id, order as { id: string; status: OrderStatus; payment_status: string }, molliePaymentId)
+    await handlePaid(
+      admin,
+      intent.id,
+      intent.restaurant_id,
+      intent.purpose as 'qr_order' | 'takeaway_order',
+      order as { id: string; status: OrderStatus; payment_status: string },
+      molliePaymentId,
+      molliePayment.redirectUrl ?? null,
+    )
     return NextResponse.json({ ok: true })
   }
 
   if (TERMINAL_UNSUCCESSFUL_STATUSES.has(molliePayment.status)) {
-    await handleFailed(admin, intent.id, intent.restaurant_id, order as { id: string; status: OrderStatus }, molliePaymentId, molliePayment.status)
+    await handleFailed(
+      admin,
+      intent.id,
+      intent.restaurant_id,
+      intent.purpose as 'qr_order' | 'takeaway_order',
+      order as { id: string; status: OrderStatus },
+      molliePaymentId,
+      molliePayment.status,
+    )
   }
 
   return NextResponse.json({ ok: true })
@@ -112,8 +129,10 @@ async function handlePaid(
   admin: AdminClient,
   intentId: string,
   restaurantId: string,
+  purpose: 'qr_order' | 'takeaway_order',
   order: { id: string; status: OrderStatus; payment_status: string },
   molliePaymentId: string,
+  redirectUrl: string | null,
 ): Promise<void> {
   // Idempotent guard: already processed.
   if (order.payment_status === 'paid') {
@@ -133,9 +152,11 @@ async function handlePaid(
       .eq('status', 'pending')
   }
 
+  const eventPrefix = purpose === 'takeaway_order' ? 'takeaway' : 'qr'
+
   await auditLog({
     restaurantId,
-    eventType: 'qr.order_paid',
+    eventType: `${eventPrefix}.order_paid`,
     eventData: { orderId: order.id, molliePaymentId },
     actorType: 'system',
     orderId: order.id,
@@ -144,22 +165,37 @@ async function handlePaid(
 
   await auditLog({
     restaurantId,
-    eventType: 'qr.order_status_changed',
+    eventType: `${eventPrefix}.order_status_changed`,
     eventData: { orderId: order.id, from: order.status, to: 'confirmed' },
     actorType: 'system',
     orderId: order.id,
     paymentIntentId: intentId,
   }).catch(() => {})
 
-  // Notifications (email/WhatsApp on order-paid) are deliberately not wired
-  // in C5.5 — the C3 dispatcher scaffolding exists but sending on this event
-  // is deferred to C7 / the notification-brief hardening pass.
+  if (purpose === 'takeaway_order') {
+    // redirectUrl is the URL we originally handed Mollie at payment
+    // creation — it's the only surviving copy of the view-order magic-link
+    // URL (the plaintext token is never persisted to the DB, only its
+    // hash). Skip the email if it's somehow missing rather than guessing.
+    if (redirectUrl) {
+      await sendTakeawayOrderConfirmedEmail(order.id, redirectUrl).catch((err) => {
+        console.error('[webhooks/mollie/consumer] confirmation email failed', err)
+      })
+    } else {
+      console.error('[webhooks/mollie/consumer] no redirectUrl on paid takeaway payment', {
+        orderId: order.id,
+      })
+    }
+  }
+  // QR order-paid notifications (email/WhatsApp) are deliberately not wired
+  // in C5.5 — deferred to C7 / the notification-brief hardening pass.
 }
 
 async function handleFailed(
   admin: AdminClient,
   intentId: string,
   restaurantId: string,
+  purpose: 'qr_order' | 'takeaway_order',
   order: { id: string; status: OrderStatus },
   molliePaymentId: string,
   mollieStatus: string,
@@ -169,15 +205,20 @@ async function handleFailed(
     .update({ status: 'failed', failed_at: new Date().toISOString() })
     .eq('id', intentId)
 
+  // Note: orders.payment_status has no 'failed' value in its CHECK
+  // constraint (orders_payment_status_check) — status='cancelled' alone
+  // marks the order dead; payment_status is left as-is.
   await admin
     .from('orders')
-    .update({ status: 'cancelled', payment_status: 'failed' })
+    .update({ status: 'cancelled' })
     .eq('id', order.id)
     .eq('status', 'pending')
 
+  const eventPrefix = purpose === 'takeaway_order' ? 'takeaway' : 'qr'
+
   await auditLog({
     restaurantId,
-    eventType: 'qr.order_payment_failed',
+    eventType: `${eventPrefix}.order_payment_failed`,
     eventData: { orderId: order.id, molliePaymentId, mollieStatus },
     actorType: 'system',
     orderId: order.id,
