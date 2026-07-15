@@ -20,6 +20,14 @@ import { redactIp } from './rateLimit'
  * helper writes to `consumer_audit_logs` exclusively.
  */
 
+/**
+ * Sentinel restaurant_id for audit events that aren't scoped to any single
+ * restaurant (e.g. GDPR privacy requests, which may span every restaurant a
+ * guest has ever interacted with). consumer_audit_logs.restaurant_id has no
+ * FK on this column for this reason — see migration 016.
+ */
+export const PLATFORM_RESTAURANT_ID = '00000000-0000-0000-0000-000000000000'
+
 export type ConsumerActorType = 'guest' | 'restaurant' | 'system' | 'platform'
 
 export type AuditLogInput = {

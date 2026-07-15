@@ -1299,5 +1299,28 @@
         "generic": "Something went wrong. Please try again."
       }
     }
+  },
+  "privacy": {
+    "dataRequest": {
+      "heading": "Request your data",
+      "intro": "Want to know what data The Tafel holds about you? Enter your email address and we'll send you a secure link to download it.",
+      "email_label": "Email address",
+      "email_placeholder": "you@example.com",
+      "confirm_label": "I confirm I'm requesting my own data.",
+      "submit": "Request my data",
+      "submitting": "Sending...",
+      "submitted_body": "If this email address is known to us, you'll receive an email within a few minutes with a link to get your data.",
+      "errors": {
+        "generic": "Something went wrong. Please try again."
+      },
+      "verify": {
+        "sending_heading": "Sending your data",
+        "sending_body": "One moment, this only takes a second.",
+        "success_heading": "Check your inbox",
+        "success_body": "The file with your data is on its way to your email address.",
+        "failure_heading": "Link expired or already used",
+        "failure_body": "This link no longer works. Go back to the previous page to request a new one."
+      }
+    }
   }
 }

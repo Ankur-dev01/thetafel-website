@@ -1,7 +1,7 @@
 import 'server-only'
 import { randomBytes, createHash } from 'node:crypto'
 import { createSupabaseServerClientAdmin } from '@/lib/supabase/server'
-import { auditLog } from './audit'
+import { auditLog, PLATFORM_RESTAURANT_ID } from './audit'
 
 /**
  * Magic-link token system for guest-facing actions.
@@ -26,12 +26,16 @@ export type MagicLinkPurpose =
   | 'manage_booking'   // multi-use; 14-day TTL by default
   | 'cancel_booking'   // single-use; 6-hour TTL by default
   | 'view_order'       // multi-use; 24-hour TTL by default
+  | 'data_export'      // single-use; 24-hour TTL by default — no booking/order target
 
 const DEFAULT_TTL_HOURS: Record<MagicLinkPurpose, number> = {
   manage_booking: 14 * 24, // 14 days
   cancel_booking: 6,       // 6 hours
   view_order: 24,          // 24 hours
+  data_export: 24,         // 24 hours
 }
+
+const PRIVACY_PURPOSES = new Set<MagicLinkPurpose>(['data_export'])
 
 // ── Token primitives ─────────────────────────────────────────────────────────
 
@@ -63,9 +67,13 @@ export type CreateMagicLinkInput = {
   purpose: MagicLinkPurpose
   bookingId?: string | null
   orderId?: string | null
+  /** Guest id, for privacy-scoped purposes (data_export) that have no single booking/order target. */
+  guestId?: string | null
+  /** Locale the request was made in, for privacy-scoped purposes. */
+  locale?: string | null
   /** Override the default TTL for this purpose. Hours. */
   ttlHours?: number
-  /** Restaurant id, for the audit log. */
+  /** Restaurant id, for the audit log. Use the null-UUID sentinel for privacy-scoped purposes. */
   restaurantId: string
   /** Caller IP for the audit log. */
   ipAddress?: string | null
@@ -92,7 +100,14 @@ export async function createMagicLink(
 ): Promise<CreateMagicLinkResult> {
   const hasBooking = !!input.bookingId
   const hasOrder = !!input.orderId
-  if (hasBooking === hasOrder) {
+  const isPrivacy = PRIVACY_PURPOSES.has(input.purpose)
+
+  if (isPrivacy) {
+    // Privacy-scoped purposes require neither a booking nor an order target.
+    if (hasBooking || hasOrder) {
+      return { ok: false, reason: 'invalid_target' }
+    }
+  } else if (hasBooking === hasOrder) {
     // Either both set or neither — both violate the DB target check.
     return { ok: false, reason: 'invalid_target' }
   }
@@ -115,6 +130,8 @@ export async function createMagicLink(
         purpose: input.purpose,
         booking_id: input.bookingId ?? null,
         order_id: input.orderId ?? null,
+        guest_id: input.guestId ?? null,
+        locale: input.locale ?? null,
         expires_at: expiresAt,
         consume_count: 0,
       })
@@ -367,6 +384,90 @@ export async function consumeOrderMagicLink(args: {
     return { ok: true, kind: 'order', payload }
   } catch (err) {
     console.error('[consumeOrderMagicLink] unexpected error', err)
+    return { ok: false, reason: 'lookup_failed' }
+  }
+}
+
+// ── consumePrivacyMagicLink ──────────────────────────────────────────────────
+
+export type PrivacyMagicLinkPayload = {
+  magicLinkId: string
+  guestId: string
+  locale: 'nl' | 'en'
+}
+
+export type ConsumePrivacyMagicLinkResult =
+  | { ok: true; payload: PrivacyMagicLinkPayload }
+  | { ok: false; reason: 'invalid_token' | 'expired_or_consumed' | 'lookup_failed' }
+
+/**
+ * Consume a privacy-scoped magic link (data_export).
+ *
+ * Unlike booking/order consumption, this never goes through a SECURITY
+ * DEFINER RPC — every caller already runs server-side with the admin
+ * (service-role) client, which bypasses RLS directly, so a single atomic
+ * UPDATE ... WHERE ... RETURNING gives the same single-use guarantee as the
+ * RPCs without new PL/pgSQL. Single-use: sets consumed_at on first success.
+ */
+export async function consumePrivacyMagicLink(args: {
+  token: string
+  purpose: Extract<MagicLinkPurpose, 'data_export'>
+  ipAddress?: string | null
+  userAgent?: string | null
+}): Promise<ConsumePrivacyMagicLinkResult> {
+  const { token, purpose, ipAddress, userAgent } = args
+
+  if (!token || typeof token !== 'string' || token.length < 20) {
+    return { ok: false, reason: 'invalid_token' }
+  }
+
+  const tokenHash = hashMagicLinkToken(token)
+
+  try {
+    const admin = await createSupabaseServerClientAdmin()
+    const nowIso = new Date().toISOString()
+
+    const { data, error } = await admin
+      .from('magic_links')
+      .update({ consumed_at: nowIso, consume_count: 1 })
+      .eq('token_hash', tokenHash)
+      .eq('purpose', purpose)
+      .is('consumed_at', null)
+      .gt('expires_at', nowIso)
+      .select('id, guest_id, locale')
+      .maybeSingle()
+
+    if (error) {
+      console.error('[consumePrivacyMagicLink] update error', { error: error.message })
+      return { ok: false, reason: 'lookup_failed' }
+    }
+
+    if (!data || !data.guest_id) {
+      // No row matched — invalid, expired, or already consumed. Deliberately
+      // not distinguished, same oracle-avoidance as the booking/order paths.
+      return { ok: false, reason: 'expired_or_consumed' }
+    }
+
+    const locale: 'nl' | 'en' = data.locale === 'en' ? 'en' : 'nl'
+    const payload: PrivacyMagicLinkPayload = {
+      magicLinkId: data.id as string,
+      guestId: data.guest_id as string,
+      locale,
+    }
+
+    await auditLog({
+      restaurantId: PLATFORM_RESTAURANT_ID,
+      eventType: 'magic_link.consumed',
+      eventData: { kind: 'privacy', purpose },
+      actorType: 'guest',
+      actorId: payload.guestId,
+      ipAddress: ipAddress ?? null,
+      userAgent: userAgent ?? null,
+    })
+
+    return { ok: true, payload }
+  } catch (err) {
+    console.error('[consumePrivacyMagicLink] unexpected error', err)
     return { ok: false, reason: 'lookup_failed' }
   }
 }

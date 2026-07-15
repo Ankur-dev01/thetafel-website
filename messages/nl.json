@@ -1299,5 +1299,28 @@
         "generic": "Er ging iets mis. Probeer het opnieuw."
       }
     }
+  },
+  "privacy": {
+    "dataRequest": {
+      "heading": "Vraag je gegevens op",
+      "intro": "Wil je weten welke gegevens The Tafel over je heeft? Vul je e-mailadres in en we sturen je een beveiligde link om ze te downloaden.",
+      "email_label": "E-mailadres",
+      "email_placeholder": "jij@voorbeeld.nl",
+      "confirm_label": "Ik bevestig dat ik mijn eigen gegevens opvraag.",
+      "submit": "Gegevens opvragen",
+      "submitting": "Versturen...",
+      "submitted_body": "Als dit e-mailadres bij ons bekend is, ontvang je binnen enkele minuten een e-mail met een link om je gegevens te ontvangen.",
+      "errors": {
+        "generic": "Er ging iets mis. Probeer het opnieuw."
+      },
+      "verify": {
+        "sending_heading": "We versturen je gegevens",
+        "sending_body": "Een moment geduld, dit duurt maar even.",
+        "success_heading": "Kijk in je inbox",
+        "success_body": "Het bestand met je gegevens is onderweg naar je e-mailadres.",
+        "failure_heading": "Link verlopen of al gebruikt",
+        "failure_body": "Deze link werkt niet meer. Vraag op de vorige pagina een nieuwe aan."
+      }
+    }
   }
 }
