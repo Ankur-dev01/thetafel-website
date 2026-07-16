@@ -1320,6 +1320,26 @@
         "success_body": "The file with your data is on its way to your email address.",
         "failure_heading": "Link expired or already used",
         "failure_body": "This link no longer works. Go back to the previous page to request a new one."
+      },
+      "pdf": {
+        "title": "Your data export",
+        "generatedOn": "Generated on",
+        "referenceLabel": "Reference",
+        "section_personal": "Personal information",
+        "field_name": "Name",
+        "field_email": "Email address",
+        "field_phone": "Phone number",
+        "field_locale": "Language preference",
+        "field_since": "Guest since",
+        "section_bookings": "Bookings",
+        "no_bookings": "No reservations on file.",
+        "section_orders": "Orders",
+        "no_orders": "No orders on file.",
+        "section_payments": "Payments",
+        "no_payments": "No payments on file.",
+        "section_activity": "Recent activity",
+        "activity_event_col": "Event",
+        "no_activity": "No activity on file."
       }
     }
   }

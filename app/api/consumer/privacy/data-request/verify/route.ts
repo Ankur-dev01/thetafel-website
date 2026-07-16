@@ -12,6 +12,7 @@ import { consumePrivacyMagicLink } from '@/lib/consumer/magicLinks'
 import { auditLog, PLATFORM_RESTAURANT_ID } from '@/lib/consumer/audit'
 import { createSupabaseServerClientAdmin } from '@/lib/supabase/server'
 import { buildDataExport } from '@/lib/consumer/privacy/buildDataExport'
+import { renderDataExportPdf } from '@/lib/consumer/privacy/renderDataExportPdf'
 import { sendDataExportFileEmail } from '@/lib/consumer/notifications/dispatchDataExport'
 
 export const runtime = 'nodejs'
@@ -70,14 +71,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'guest_not_found' }, { status: 404 })
   }
 
-  // 4. Build the export and email it.
+  // 4. Build the export (JSON payload + PDF companion) and email both.
   const payload = await buildDataExport(guestId, locale)
+  const pdfBuffer = await renderDataExportPdf(payload, locale)
 
   const dispatch = await sendDataExportFileEmail({
     locale,
     guestFullName: guest.full_name,
     guestEmail: guest.email,
     payload,
+    pdfBuffer,
   })
 
   // 5. Audit.

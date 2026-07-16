@@ -82,7 +82,7 @@ export async function buildDataExport(
   const { data: bookingsRaw } = await admin
     .from('bookings')
     .select(
-      'id, restaurant_id, booking_ref, party_size, slot_time, duration_minutes, status, guest_note, deposit_intent_id, deposit_amount_cents, deposit_currency, cancelled_at, cancelled_by, cancellation_reason, refund_intent_id, created_at, updated_at, restaurants(display_name, legal_name, name, slug)'
+      'id, restaurant_id, booking_ref, party_size, slot_time, duration_minutes, status, guest_note, deposit_intent_id, deposit_amount_cents, deposit_currency, cancelled_at, cancelled_by, cancellation_reason, refund_intent_id, created_at, updated_at, restaurants(display_name, legal_name, name, slug), zones(name)'
     )
     .eq('guest_id', guestId)
 
@@ -94,13 +94,15 @@ export async function buildDataExport(
     .eq('guest_id', guestId)
 
   const bookings = (bookingsRaw ?? []).map((b) => {
-    const { restaurants, ...rest } = b as typeof b & {
+    const { restaurants, zones, ...rest } = b as typeof b & {
       restaurants: { display_name: string | null; legal_name: string | null; name: string | null; slug: string } | null
+      zones: { name: string } | null
     }
     return {
       ...rest,
       restaurant_name: restaurantDisplayName(restaurants),
       restaurant_slug: restaurants?.slug ?? null,
+      zone_name: zones?.name ?? null,
     }
   })
 

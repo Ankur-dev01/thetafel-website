@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
       if (created.ok) {
         const base = process.env.NEXT_PUBLIC_SITE_URL || 'https://thetafel.nl'
         const localePrefix = input.locale === 'en' ? '/en' : ''
-        const verifyUrl = `${base}${localePrefix}/privacy/data-request/verify?token=${encodeURIComponent(created.token)}`
+        const verifyUrl = `${base}${localePrefix}/privacybeleid/data-request/verify?token=${encodeURIComponent(created.token)}`
 
         void sendDataExportLinkEmail({
           locale: input.locale,

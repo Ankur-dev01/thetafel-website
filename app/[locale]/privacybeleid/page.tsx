@@ -275,6 +275,34 @@ export default async function PrivacybeleidPage({ params }: Props) {
               : 'Wij behouden ons het recht voor dit privacybeleid te wijzigen. Wijzigingen worden gepubliceerd op deze pagina met een bijgewerkte datum. Wij adviseren u dit beleid regelmatig te raadplegen.'}
           </p>
 
+          {/* Your data — links to the GDPR data-export request flow (C8.1/C8.1b) */}
+          <h2 style={headingStyle}>{isEn ? 'Your data' : 'Jouw gegevens'}</h2>
+          <p style={bodyStyle}>
+            {isEn
+              ? 'You can request a copy of everything The Tafel holds about you, across every restaurant you have booked or ordered from. You will receive it by email as a PDF you can read and a JSON file for technical use.'
+              : 'Je kunt een kopie opvragen van alles wat The Tafel over je heeft opgeslagen, bij elk restaurant waar je hebt gereserveerd of besteld. Je ontvangt deze per e-mail als een leesbare PDF en een JSON-bestand voor technisch gebruik.'}
+          </p>
+          <a
+            href={isEn ? '/en/privacybeleid/data-request' : '/privacybeleid/data-request'}
+            className="tafel-tap privacy-data-request-cta"
+            style={{
+              display: 'inline-block',
+              marginBottom: '16px',
+              padding: '14px 32px',
+              borderRadius: '999px',
+              backgroundColor: 'var(--amber)',
+              color: 'var(--cream)',
+              fontFamily: 'var(--font-jost), sans-serif',
+              fontWeight: 600,
+              fontSize: '14px',
+              letterSpacing: '0.02em',
+              textDecoration: 'none',
+              textAlign: 'center',
+            }}
+          >
+            {isEn ? 'Request my data' : 'Vraag mijn gegevens op'}
+          </a>
+
           {/* Section 10 */}
           <h2 style={headingStyle}>{isEn ? '10. Contact' : '10. Contact'}</h2>
           <p style={bodyStyle}>
@@ -299,6 +327,11 @@ export default async function PrivacybeleidPage({ params }: Props) {
         @media (max-width: 768px) {
           .policy-content {
             padding: 100px 24px 60px !important;
+          }
+          .privacy-data-request-cta {
+            display: block !important;
+            width: 100%;
+            text-align: center;
           }
         }
       `}</style>

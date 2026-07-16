@@ -64,7 +64,7 @@ const CONFIRMATION_COPY = {
     preheader: 'Je gegevensexport is bijgevoegd als JSON-bestand',
     greeting: (n: string) => `Hi ${n},`,
     intro:
-      'Hierbij het overzicht van alles wat The Tafel over je heeft opgeslagen, bij elk restaurant waar je hebt gereserveerd of besteld. Het bestand zit als bijlage bij deze e-mail.',
+      'Hierbij het overzicht van alles wat The Tafel over je heeft opgeslagen, bij elk restaurant waar je hebt gereserveerd of besteld. We hebben je gegevens in twee formaten bijgevoegd: een PDF die je direct kunt openen en lezen, en een JSON-bestand voor technisch gebruik.',
     refLabel: 'Referentie',
     noteLine:
       'Vragen over dit bestand? Beantwoord deze e-mail — vermeld de referentie hierboven.',
@@ -74,7 +74,7 @@ const CONFIRMATION_COPY = {
     preheader: 'Your data export is attached as a JSON file',
     greeting: (n: string) => `Hi ${n},`,
     intro:
-      'Attached is everything The Tafel has on file about you, across every restaurant you have booked or ordered from. The file is attached to this email.',
+      'Attached is everything The Tafel has on file about you, across every restaurant you have booked or ordered from. We have attached your data in two formats: a PDF you can open and read, and a JSON file for technical use.',
     refLabel: 'Reference',
     noteLine:
       'Questions about this file? Reply to this email — mention the reference above.',

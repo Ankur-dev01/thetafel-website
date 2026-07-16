@@ -1,6 +1,6 @@
 'use client'
 
-// app/[locale]/privacy/data-request/page.tsx
+// app/[locale]/privacybeleid/data-request/page.tsx
 //
 // GDPR data-export request page (C8.1). Guest enters their email, confirms
 // they're asking for their own data, solves Turnstile, submits. Response is

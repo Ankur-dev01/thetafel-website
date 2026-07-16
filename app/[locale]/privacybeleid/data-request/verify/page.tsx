@@ -1,6 +1,6 @@
 'use client'
 
-// app/[locale]/privacy/data-request/verify/page.tsx
+// app/[locale]/privacybeleid/data-request/verify/page.tsx
 //
 // GDPR data-export verify page (C8.1). Reads the token from the URL, calls
 // the verify route on mount, shows sending / success / failure. No form —

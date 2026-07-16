@@ -71,6 +71,7 @@ export async function sendDataExportFileEmail(input: {
   guestFullName: string
   guestEmail: string
   payload: ExportPayload
+  pdfBuffer: Buffer
 }): Promise<DispatchResult> {
   let result: DispatchResult
   try {
@@ -89,6 +90,10 @@ export async function sendDataExportFileEmail(input: {
       restaurantId: PLATFORM_RESTAURANT_ID,
       skipAdminBcc: true,
       attachments: [
+        {
+          filename: `thetafel-data-export-${input.payload.request_reference}.pdf`,
+          content: input.pdfBuffer,
+        },
         {
           filename: `thetafel-data-export-${input.payload.request_reference}.json`,
           content: Buffer.from(JSON.stringify(input.payload, null, 2), 'utf-8'),
