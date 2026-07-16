@@ -1341,6 +1341,35 @@
         "activity_event_col": "Gebeurtenis",
         "no_activity": "Geen activiteit bekend."
       }
+    },
+    "dataDeletion": {
+      "heading": "Verwijder je gegevens",
+      "intro": "Wil je dat The Tafel je gegevens verwijdert? Vul je e-mailadres in en we sturen je een beveiligde link om dit te bevestigen.",
+      "retention_note": "Sommige gegevens moeten wij om fiscale redenen zeven jaar bewaren, maar alles wat jou identificeert wordt verwijderd. Dit kan niet ongedaan worden gemaakt.",
+      "email_label": "E-mailadres",
+      "email_placeholder": "jij@voorbeeld.nl",
+      "confirm_label": "Ik begrijp dat dit niet ongedaan kan worden gemaakt.",
+      "submit": "Verwijdering aanvragen",
+      "submitting": "Versturen...",
+      "submitted_body": "Als dit e-mailadres bij ons bekend is, ontvang je binnen enkele minuten een e-mail met een link om de verwijdering te bevestigen.",
+      "errors": {
+        "generic": "Er ging iets mis. Probeer het opnieuw."
+      },
+      "verify": {
+        "sending_heading": "We verwerken je verzoek",
+        "sending_body": "Een moment geduld, dit duurt maar even.",
+        "success_heading": "Je gegevens zijn verwijderd",
+        "success_body": "Je ontvangt een bevestiging per e-mail met een PDF-samenvatting.",
+        "blocked_heading": "Nog niet mogelijk",
+        "blocked": {
+          "upcoming_booking": "Je hebt een aankomende reservering. Annuleer deze eerst voordat je je gegevens laat verwijderen.",
+          "active_order": "Je hebt een bestelling die nog niet is afgerond. Wacht tot deze is voltooid, geannuleerd of terugbetaald voordat je je gegevens laat verwijderen.",
+          "payment_in_flight": "Er loopt nog een betaling of terugbetaling. Wacht tot deze is afgerond voordat je je gegevens laat verwijderen.",
+          "generic": "Verwijderen is op dit moment niet mogelijk. Probeer het later opnieuw."
+        },
+        "failure_heading": "Link verlopen of al gebruikt",
+        "failure_body": "Deze link werkt niet meer. Vraag op de vorige pagina een nieuwe aan."
+      }
     }
   }
 }

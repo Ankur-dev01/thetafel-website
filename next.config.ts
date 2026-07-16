@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     '/api/v1/restaurants/qr/generate': ['./lib/qr/fonts/**'],
     '/api/consumer/privacy/data-request/verify': ['./lib/consumer/privacy/fonts/**'],
+    '/api/consumer/privacy/data-deletion/verify': ['./lib/consumer/privacy/fonts/**'],
   },
   experimental: {
     staleTimes: {

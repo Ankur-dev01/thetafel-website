@@ -1341,6 +1341,35 @@
         "activity_event_col": "Event",
         "no_activity": "No activity on file."
       }
+    },
+    "dataDeletion": {
+      "heading": "Delete your data",
+      "intro": "Want The Tafel to delete your data? Enter your email address and we'll send you a secure link to confirm.",
+      "retention_note": "Some records must be kept for seven years for tax reasons, but everything identifying you will be removed. This cannot be undone.",
+      "email_label": "Email address",
+      "email_placeholder": "you@example.com",
+      "confirm_label": "I understand this cannot be undone.",
+      "submit": "Request deletion",
+      "submitting": "Sending...",
+      "submitted_body": "If this email address is known to us, you'll receive an email within a few minutes with a link to confirm the deletion.",
+      "errors": {
+        "generic": "Something went wrong. Please try again."
+      },
+      "verify": {
+        "sending_heading": "Processing your request",
+        "sending_body": "One moment, this only takes a second.",
+        "success_heading": "Your data has been deleted",
+        "success_body": "You'll receive a confirmation by email with a PDF summary.",
+        "blocked_heading": "Not possible yet",
+        "blocked": {
+          "upcoming_booking": "You have an upcoming reservation. Please cancel it before requesting deletion.",
+          "active_order": "You have an order that hasn't finished yet. Wait until it's completed, cancelled, or refunded before requesting deletion.",
+          "payment_in_flight": "A payment or refund is still in progress. Wait until it's finished before requesting deletion.",
+          "generic": "Deletion isn't possible right now. Please try again later."
+        },
+        "failure_heading": "Link expired or already used",
+        "failure_body": "This link no longer works. Go back to the previous page to request a new one."
+      }
     }
   }
 }

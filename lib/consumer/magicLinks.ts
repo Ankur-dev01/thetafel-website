@@ -27,15 +27,17 @@ export type MagicLinkPurpose =
   | 'cancel_booking'   // single-use; 6-hour TTL by default
   | 'view_order'       // multi-use; 24-hour TTL by default
   | 'data_export'      // single-use; 24-hour TTL by default — no booking/order target
+  | 'data_deletion'    // single-use; 24-hour TTL by default — no booking/order target
 
 const DEFAULT_TTL_HOURS: Record<MagicLinkPurpose, number> = {
   manage_booking: 14 * 24, // 14 days
   cancel_booking: 6,       // 6 hours
   view_order: 24,          // 24 hours
   data_export: 24,         // 24 hours
+  data_deletion: 24,       // 24 hours
 }
 
-const PRIVACY_PURPOSES = new Set<MagicLinkPurpose>(['data_export'])
+const PRIVACY_PURPOSES = new Set<MagicLinkPurpose>(['data_export', 'data_deletion'])
 
 // ── Token primitives ─────────────────────────────────────────────────────────
 
@@ -411,7 +413,7 @@ export type ConsumePrivacyMagicLinkResult =
  */
 export async function consumePrivacyMagicLink(args: {
   token: string
-  purpose: Extract<MagicLinkPurpose, 'data_export'>
+  purpose: Extract<MagicLinkPurpose, 'data_export' | 'data_deletion'>
   ipAddress?: string | null
   userAgent?: string | null
 }): Promise<ConsumePrivacyMagicLinkResult> {

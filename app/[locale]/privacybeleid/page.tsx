@@ -303,6 +303,32 @@ export default async function PrivacybeleidPage({ params }: Props) {
             {isEn ? 'Request my data' : 'Vraag mijn gegevens op'}
           </a>
 
+          <p style={{ ...bodyStyle, fontSize: '13px', marginTop: '8px' }}>
+            {isEn
+              ? 'You can also ask us to delete your data entirely. This cannot be undone — some records must be kept for tax reasons, but everything identifying you will be removed.'
+              : 'Je kunt ons ook vragen om je gegevens volledig te verwijderen. Dit kan niet ongedaan worden gemaakt — sommige gegevens moeten wij om fiscale redenen bewaren, maar alles wat jou identificeert wordt verwijderd.'}
+          </p>
+          <a
+            href={isEn ? '/en/privacybeleid/data-deletion' : '/privacybeleid/data-deletion'}
+            className="tafel-tap privacy-data-request-cta"
+            style={{
+              display: 'inline-block',
+              marginBottom: '16px',
+              padding: '14px 32px',
+              borderRadius: '999px',
+              backgroundColor: 'var(--amber)',
+              color: 'var(--cream)',
+              fontFamily: 'var(--font-jost), sans-serif',
+              fontWeight: 600,
+              fontSize: '14px',
+              letterSpacing: '0.02em',
+              textDecoration: 'none',
+              textAlign: 'center',
+            }}
+          >
+            {isEn ? 'Delete your data' : 'Verwijder jouw gegevens'}
+          </a>
+
           {/* Section 10 */}
           <h2 style={headingStyle}>{isEn ? '10. Contact' : '10. Contact'}</h2>
           <p style={bodyStyle}>
