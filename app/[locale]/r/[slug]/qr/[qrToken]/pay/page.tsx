@@ -8,7 +8,6 @@ import { QrWelcome } from '@/components/consumer/qr/QrWelcome'
 import { OrderSubmit } from '@/components/consumer/qr/OrderSubmit'
 import { buildRestaurantMetadata } from '@/lib/consumer/metadata'
 import { resolveBrandTokens } from '@/lib/consumer/brandTokens'
-import { CartProvider } from '@/lib/cart/CartContext'
 import type { PayMode } from '@/lib/qr/payModesForRestaurant'
 
 export const revalidate = 60
@@ -45,8 +44,9 @@ export async function generateMetadata({
 
 /**
  * Q4 order-submit page — renders the cart-backed OrderSubmit CTA for the
- * chosen pay mode. Re-mounts a CartProvider scoped to (slug, 'qr') so it
- * hydrates the same cart the guest built on the menu page from localStorage.
+ * chosen pay mode. Reads the cart from the ambient CartProvider mounted in
+ * qr/[qrToken]/layout.tsx, the same instance the guest built up on the menu
+ * page — no remount, no localStorage round-trip needed to see it.
  */
 export default async function QrPayPage({
   params,
@@ -112,35 +112,27 @@ export default async function QrPayPage({
             </p>
 
             <div style={{ marginTop: '28px' }}>
-              <CartProvider
+              <OrderSubmit
+                locale={locale}
                 slug={slug}
-                context="qr"
-                restaurantId={restaurant.id}
                 tableId={table.id}
-                qrToken={table.qr_token}
-              >
-                <OrderSubmit
-                  locale={locale}
-                  slug={slug}
-                  tableId={table.id}
-                  payMode={mode}
-                  accentHex={brand.primaryHex}
-                  paymentMethod={paymentMethod}
-                  t={{
-                    submitting: t('submitting'),
-                    submit: mode === 'pay_now' ? t('submitPayNow') : t('submitPayAtTable'),
-                    genericError: t('errors.generic'),
-                    itemsInvalidBody: t('errors.itemsInvalidBody'),
-                    rateLimited: t('errors.rateLimited'),
-                    turnstileFailed: t('errors.turnstileFailed'),
-                    noItems: t('errors.noItems'),
-                    tabBusy: t('errors.tabBusy'),
-                    payModeDisabled: t('errors.payModeDisabled'),
-                    tableNotFound: t('errors.tableNotFound'),
-                    mollieError: t('errors.mollieError'),
-                  }}
-                />
-              </CartProvider>
+                payMode={mode}
+                accentHex={brand.primaryHex}
+                paymentMethod={paymentMethod}
+                t={{
+                  submitting: t('submitting'),
+                  submit: mode === 'pay_now' ? t('submitPayNow') : t('submitPayAtTable'),
+                  genericError: t('errors.generic'),
+                  itemsInvalidBody: t('errors.itemsInvalidBody'),
+                  rateLimited: t('errors.rateLimited'),
+                  turnstileFailed: t('errors.turnstileFailed'),
+                  noItems: t('errors.noItems'),
+                  tabBusy: t('errors.tabBusy'),
+                  payModeDisabled: t('errors.payModeDisabled'),
+                  tableNotFound: t('errors.tableNotFound'),
+                  mollieError: t('errors.mollieError'),
+                }}
+              />
             </div>
 
             <div style={{ marginTop: '20px', textAlign: 'center' }}>

@@ -69,8 +69,6 @@ export default async function TakeawayLandingPage({ params }: PageProps) {
         <MenuBrowser
           restaurant={restaurant}
           menu={menu}
-          table={null}
-          context="takeaway"
           itemNotesEnabled={restaurant.takeaway_item_notes_allowed}
           orderingDisabled={!canOrder}
         />

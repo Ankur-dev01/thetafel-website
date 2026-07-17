@@ -2,15 +2,14 @@
 //
 // T4 guest-details form + T5 Mollie kickoff (C6.3). Replaces the C6.2
 // "coming shortly" placeholder. Reads ?pickup= from the picker (C6.2),
-// hydrates the takeaway cart from localStorage via a scoped CartProvider
-// (same pattern as the QR /pay page from C5.5 — the provider isn't global),
-// and renders the details form + Turnstile + submit.
+// and renders the details form + Turnstile + submit. Cart comes from the
+// ambient CartProvider mounted in order/layout.tsx — the same instance the
+// guest built up on the landing/menu page.
 
 import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { resolveRestaurantBySlug } from '@/lib/consumer/resolveRestaurant'
-import { CartProvider } from '@/lib/cart/CartContext'
 import { DetailsAndPay } from '@/components/consumer/takeaway/DetailsAndPay'
 import { buildRestaurantMetadata } from '@/lib/consumer/metadata'
 
@@ -72,14 +71,12 @@ export default async function TakeawayDetailsPage({ params, searchParams }: Page
         >
           {t('sub')}
         </p>
-        <CartProvider slug={slug} context="takeaway" restaurantId={restaurant.id} tableId={null} qrToken={null}>
-          <DetailsAndPay
-            slug={slug}
-            locale={locale}
-            pickupInstant={pickup}
-            restaurantName={restaurantName}
-          />
-        </CartProvider>
+        <DetailsAndPay
+          slug={slug}
+          locale={locale}
+          pickupInstant={pickup}
+          restaurantName={restaurantName}
+        />
       </div>
     </main>
   )

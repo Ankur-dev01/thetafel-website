@@ -3,9 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import type { PublicRestaurant } from '@/lib/consumer/resolveRestaurant'
 import { resolveBrandTokens } from '@/lib/consumer/brandTokens'
-import type { MenuContext, MenuData } from '@/lib/menu/types'
-import type { QrTable } from '@/lib/qr/resolveTable'
-import { CartProvider } from '@/lib/cart/CartContext'
+import type { MenuData } from '@/lib/menu/types'
 import { CategoryChips } from './CategoryChips'
 import { MenuItemCard } from './MenuItemCard'
 import { CartStickyFooter } from './CartStickyFooter'
@@ -14,17 +12,18 @@ import { CartDrawer } from './CartDrawer'
 type Props = {
   restaurant: PublicRestaurant
   menu: MenuData
-  table: QrTable | null
-  context: MenuContext
   itemNotesEnabled: boolean
   orderingDisabled?: boolean
 }
 
+/**
+ * Relies on an ambient CartProvider from a parent layout (qr/[qrToken]/layout.tsx
+ * or order/layout.tsx) — it no longer mounts its own, so the cart survives
+ * navigation to sibling pages within the same flow instead of remounting here.
+ */
 export function MenuBrowser({
   restaurant,
   menu,
-  table,
-  context,
   itemNotesEnabled,
   orderingDisabled = false,
 }: Props) {
@@ -69,13 +68,7 @@ export function MenuBrowser({
     : { backgroundColor: 'var(--cream, #fdfaf5)' }
 
   return (
-    <CartProvider
-      slug={restaurant.slug}
-      context={context}
-      restaurantId={restaurant.id}
-      tableId={table?.id ?? null}
-      qrToken={table?.qr_token ?? null}
-    >
+    <>
       <div style={backgroundStyle}>
         <CategoryChips
           categories={menu.categories.map((c) => ({ id: c.id, name: c.name }))}
@@ -129,6 +122,6 @@ export function MenuBrowser({
         <CartStickyFooter brand={brand} orderingDisabled={orderingDisabled} />
         <CartDrawer brand={brand} />
       </div>
-    </CartProvider>
+    </>
   )
 }

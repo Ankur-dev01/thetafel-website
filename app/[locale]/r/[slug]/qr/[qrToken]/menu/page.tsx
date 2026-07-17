@@ -97,8 +97,6 @@ export default async function QrMenuPage({
             <MenuBrowser
               restaurant={restaurant}
               menu={menuData}
-              table={table}
-              context="qr"
               itemNotesEnabled={restaurant.qr_item_notes_enabled}
             />
           )}
