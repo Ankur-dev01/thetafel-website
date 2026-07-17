@@ -7,7 +7,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { getStatusLabel, POLL_PHASES, type OrderStatus as OrderStatusValue } from '@/lib/orders/statusLabels'
+import { getStatusLabel, POLL_PHASES, type OrderStatus as OrderStatusValue, type StatusLabel } from '@/lib/orders/statusLabels'
 
 type Props = {
   token: string
@@ -25,6 +25,27 @@ const TONE_STYLES = {
   ended: { bg: '#f2eee7', text: 'rgba(15, 13, 8, 0.8)' },
   error: { bg: '#fce9e9', text: '#8a1010' },
 } as const
+
+/**
+ * Takeaway-only label overrides — applied on top of the shared statusLabels
+ * table without touching it, so QR orders (same table, same tone semantics)
+ * are unaffected. The DB enum value is untouched; only what's rendered here
+ * changes:
+ *   - ready: green, not amber — it's a positive state for takeaway, not a
+ *     warning (no "runner bringing it to your table" ambiguity here).
+ *   - served: doesn't apply to a takeaway guest who has already left with
+ *     their order — rendered as "completed" instead.
+ */
+function getTakeawayStatusLabel(status: OrderStatusValue, locale: 'nl' | 'en'): StatusLabel {
+  if (status === 'served') {
+    return getStatusLabel('completed', locale)
+  }
+  const label = getStatusLabel(status, locale)
+  if (status === 'ready') {
+    return { ...label, tone: 'success' }
+  }
+  return label
+}
 
 export function OrderStatus({ token, locale, initialStatus, initialOrderRef }: Props) {
   const t = useTranslations('consumer.takeaway.status')
@@ -114,7 +135,7 @@ export function OrderStatus({ token, locale, initialStatus, initialOrderRef }: P
     return () => clearInterval(id)
   }, [lastUpdated])
 
-  const label = getStatusLabel(status, locale)
+  const label = getTakeawayStatusLabel(status, locale)
   const tone = TONE_STYLES[label.tone]
   const updatedText = t('minutesAgo', { count: minutesSinceUpdate })
 
