@@ -970,7 +970,6 @@
         "total": "Totaal",
         "quantityShort": "×",
         "lastUpdated": "Bijgewerkt",
-        "justNow": "zojuist",
         "minutesAgo": "{count, plural, =0 {zojuist} one {# minuut geleden} other {# minuten geleden}}"
       }
     },
