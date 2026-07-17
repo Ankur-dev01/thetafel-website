@@ -177,7 +177,14 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: stri
         ? `Aanbetaling reservering — ${config.displayName ?? config.slug}`
         : `Reservation deposit — ${config.displayName ?? config.slug}`;
 
-    // 11. Call Mollie via the restaurant's connected account.
+    // 11. Call Mollie via the restaurant's connected account. Metadata is the
+    //     reverse breadcrumb Mollie stores server-side on the payment — the
+    //     anchor for reconciling a Mollie payment back to our system.
+    const molliePaymentMetadata = {
+      paymentIntentId: intentId,
+      restaurantId: config.restaurantId,
+      purpose: 'deposit' as const,
+    };
     const paymentResult = await createConnectedPayment({
       restaurantId: config.restaurantId,
       amountCents,
@@ -186,7 +193,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: stri
       redirectUrl,
       webhookUrl,
       method: input.method,
-      metadata: { payment_intent_id: intentId, restaurant_id: config.restaurantId },
+      metadata: molliePaymentMetadata,
     });
 
     if (!paymentResult.ok) {
