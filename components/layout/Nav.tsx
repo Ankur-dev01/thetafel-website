@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { Link as LocaleLink } from '@/i18n/routing'
 import { useLocale, useTranslations } from 'next-intl'
 import { useRouter, usePathname } from 'next/navigation'
 import { useModal } from '@/components/ui/ModalContext'
@@ -58,9 +59,9 @@ export default function Nav({ solid = false }: Props) {
   }
 
   const navLinks = [
-    { label: t('howItWorks'), href: '#how-it-works' },
-    { label: t('forRestaurants'), href: '#solution' },
-    { label: t('pricing'), href: '#proof' },
+    { label: t('howItWorks'), hash: 'how-it-works' },
+    { label: t('forRestaurants'), hash: 'solution' },
+    { label: t('pricing'), hash: 'proof' },
   ]
 
   const loginHref = locale === 'nl' ? '/login' : '/en/login'
@@ -133,9 +134,9 @@ export default function Nav({ solid = false }: Props) {
             className="desktop-nav"
           >
             {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
+              <LocaleLink
+                key={link.hash}
+                href={{ pathname: '/', hash: link.hash }}
                 style={{
                   fontFamily: 'var(--font-jost), sans-serif',
                   fontSize: '13px',
@@ -153,7 +154,7 @@ export default function Nav({ solid = false }: Props) {
                 }}
               >
                 {link.label}
-              </a>
+              </LocaleLink>
             ))}
           </div>
 
@@ -269,9 +270,9 @@ export default function Nav({ solid = false }: Props) {
           }}
         >
           {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
+            <LocaleLink
+              key={link.hash}
+              href={{ pathname: '/', hash: link.hash }}
               onClick={() => setMenuOpen(false)}
               style={{
                 fontFamily: 'var(--font-jost), sans-serif',
@@ -283,7 +284,7 @@ export default function Nav({ solid = false }: Props) {
               }}
             >
               {link.label}
-            </a>
+            </LocaleLink>
           ))}
           <Link
             href={loginHref}
