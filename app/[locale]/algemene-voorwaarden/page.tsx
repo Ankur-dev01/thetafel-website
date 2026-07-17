@@ -32,7 +32,7 @@ export default async function AlgemeneVoorwaardenPage({ params }: Props) {
 
   return (
     <>
-      <Nav />
+      <Nav solid />
       <main style={{ backgroundColor: 'var(--cream)', minHeight: '100vh' }}>
         <LegalDocument markdown={markdown} locale={lang} />
       </main>

@@ -8,6 +8,22 @@
     "language": "NL",
     "restaurantLogin": "Restaurant login"
   },
+  "cookieBanner": {
+    "headline": "Over cookies",
+    "description": "Wij gebruiken cookies om de site te laten werken en, met uw toestemming, om te begrijpen welke pagina's nuttig zijn. Essentiële cookies zijn altijd nodig.",
+    "acceptAll": "Alles accepteren",
+    "rejectAll": "Alles weigeren",
+    "manage": "Beheren",
+    "privacyLink": "Lees ons privacybeleid",
+    "essentialName": "Essentieel",
+    "essentialDescription": "Houdt de site werkend: CAPTCHA-bescherming, taalvoorkeur, bestelsessie en rate limiting. Hiervoor is geen toestemming vereist.",
+    "analyticsName": "Analytics",
+    "analyticsDescription": "Helpt ons begrijpen welke pagina's nuttig zijn en waar bezoekers vandaan komen. Geen cookies, geen persoonlijke identificatoren, u kunt altijd afmelden.",
+    "marketingName": "Marketing",
+    "marketingDescription": "Momenteel niet in gebruik, gereserveerd voor toekomstige functies zoals nieuwsbrieven of gerichte advertenties.",
+    "marketingDisabledNote": "Momenteel niet in gebruik.",
+    "savePreferences": "Voorkeuren opslaan"
+  },
   "hero": {
     "badge": "Nederland · Opgericht 2026",
     "line1": "Jouw restaurant.",
@@ -117,6 +133,7 @@
     "whatsapp": "WhatsApp",
     "privacy": "Privacybeleid",
     "terms": "Algemene voorwaarden",
+    "cookieSettings": "Cookie-instellingen",
     "copyright": "© 2026 The Tafel. Alle rechten voorbehouden.",
     "madeWith": "Gemaakt met ♥ in Nederland"
   },
@@ -886,7 +903,8 @@
       "homeLinkAria": "Naar de homepage van The Tafel",
       "footerNavAria": "Juridische links",
       "privacy": "Privacybeleid",
-      "terms": "Algemene voorwaarden"
+      "terms": "Algemene voorwaarden",
+      "cookieSettings": "Cookie-instellingen"
     },
     "landing": {
       "qrOnly": {

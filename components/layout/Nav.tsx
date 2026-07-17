@@ -6,8 +6,20 @@ import { useLocale, useTranslations } from 'next-intl'
 import { useRouter, usePathname } from 'next/navigation'
 import { useModal } from '@/components/ui/ModalContext'
 
-export default function Nav() {
-  const [scrolled, setScrolled] = useState(false)
+type Props = {
+  /**
+   * Pages without a dark hero at scroll position 0 (e.g. plain-cream content
+   * pages like the privacy policy) must render the header solid from the
+   * start — otherwise the cream "TAFEL" wordmark and nav links render
+   * invisible against the cream page background until the user scrolls
+   * past the sticky-header threshold.
+   */
+  solid?: boolean
+}
+
+export default function Nav({ solid = false }: Props) {
+  const [scrolledState, setScrolled] = useState(false)
+  const scrolled = solid || scrolledState
   const [menuOpen, setMenuOpen] = useState(false)
   const t = useTranslations('nav')
   const locale = useLocale()
@@ -103,7 +115,7 @@ export default function Nav() {
             </div>
             <div
               style={{
-                fontFamily: 'var(--font-raleway)',
+                fontFamily: 'var(--font-raleway), sans-serif',
                 fontSize: '22px',
                 fontWeight: 900,
                 letterSpacing: '-0.03em',

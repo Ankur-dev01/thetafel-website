@@ -8,6 +8,22 @@
     "language": "EN",
     "restaurantLogin": "Restaurant sign in"
   },
+  "cookieBanner": {
+    "headline": "About cookies",
+    "description": "We use cookies to make the site work and, with your permission, to understand which pages are useful. Essential cookies are always required.",
+    "acceptAll": "Accept all",
+    "rejectAll": "Reject all",
+    "manage": "Manage",
+    "privacyLink": "Read our privacy policy",
+    "essentialName": "Essential",
+    "essentialDescription": "Keeps the site working: CAPTCHA protection, language preference, cart session and rate limiting. No consent required.",
+    "analyticsName": "Analytics",
+    "analyticsDescription": "Helps us understand which pages are useful and where visitors come from. No cookies, no personal identifiers, you can opt out at any time.",
+    "marketingName": "Marketing",
+    "marketingDescription": "Currently unused, reserved for future features such as newsletters or targeted ads.",
+    "marketingDisabledNote": "Not currently in use.",
+    "savePreferences": "Save preferences"
+  },
   "hero": {
     "badge": "Netherlands · Founded 2026",
     "line1": "Your restaurant.",
@@ -117,6 +133,7 @@
     "whatsapp": "WhatsApp",
     "privacy": "Privacy policy",
     "terms": "Terms and conditions",
+    "cookieSettings": "Cookie settings",
     "copyright": "© 2026 The Tafel. All rights reserved.",
     "madeWith": "Made with ♥ in the Netherlands"
   },
@@ -886,7 +903,8 @@
       "homeLinkAria": "Back to The Tafel homepage",
       "footerNavAria": "Legal links",
       "privacy": "Privacy policy",
-      "terms": "Terms of service"
+      "terms": "Terms of service",
+      "cookieSettings": "Cookie settings"
     },
     "landing": {
       "qrOnly": {

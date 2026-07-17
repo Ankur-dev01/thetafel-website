@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useTranslations, useLocale } from 'next-intl'
+import { openCookieSettings } from '@/lib/consent'
 
 export default function Footer() {
   const t = useTranslations('footer')
@@ -233,6 +234,24 @@ export default function Footer() {
               >
                 {t('terms')}
               </Link>
+              <button
+                type="button"
+                onClick={openCookieSettings}
+                style={{
+                  fontFamily: 'var(--font-jost), sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 400,
+                  color: 'var(--stone)',
+                  textDecoration: 'underline',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                }}
+              >
+                {t('cookieSettings')}
+              </button>
             </div>
           </div>
         </div>

@@ -2,6 +2,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { ModalProvider } from '@/components/ui/ModalContext'
+import CookieBanner from '@/components/consent/CookieBanner'
 
 const locales = ['nl', 'en']
 
@@ -23,6 +24,7 @@ export default async function LocaleLayout({
       <ModalProvider>
         {children}
       </ModalProvider>
+      <CookieBanner />
     </NextIntlClientProvider>
   )
 }

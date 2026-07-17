@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Raleway, Jost } from 'next/font/google'
-import Script from 'next/script'
+import PlausibleLoader from '@/components/consent/PlausibleLoader'
 import './globals.css'
 
 const raleway = Raleway({
@@ -63,12 +63,7 @@ export default function RootLayout({
   return (
     <html lang="nl" className={`${raleway.variable} ${jost.variable}`} data-scroll-behavior="smooth">
       <body>{children}</body>
-      <Script
-        defer
-        data-domain="thetafel.nl"
-        src="https://plausible.io/js/script.js"
-        strategy="afterInteractive"
-      />
+      <PlausibleLoader />
     </html>
   )
 }

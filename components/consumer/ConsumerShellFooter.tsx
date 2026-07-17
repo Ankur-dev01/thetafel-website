@@ -1,4 +1,5 @@
 import { getLocale, getTranslations } from 'next-intl/server'
+import { CookieSettingsButton } from './CookieSettingsButton'
 
 /**
  * Thin footer for consumer pages.
@@ -72,6 +73,7 @@ export async function ConsumerShellFooter() {
           >
             {t('terms')}
           </a>
+          <CookieSettingsButton label={t('cookieSettings')} />
         </nav>
       </div>
     </footer>
