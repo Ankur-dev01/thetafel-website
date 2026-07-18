@@ -26,16 +26,43 @@ backfill with `booking_id`/`booking_ref`), the frontend flow wired at the
 review/confirm step, a webhook branch that marks deposits paid, and a
 `resolveDepositForBooking` helper for refunds.
 
-## 2. Missing `assertConsumerWriteAllowed` calls
+## 2. Missing `assertConsumerWriteAllowed` calls — RESOLVED in C9.2b
 
-`start-deposit` and `bookings/create` do not call the mutation doorman
-(`assertConsumerWriteAllowed`), unlike `order`, `takeaway-order`, `cancel`,
-and `change-request`. Confirm during C9.2 whether this is intentional
-(deposit/booking creation allowed to proceed even under lockdown) or a bug.
+`start-deposit` and `bookings/create` now both call
+`assertConsumerWriteAllowed` (actions `booking.create_deposit` and
+`booking.create`). Note: both routes already independently rejected writes
+for `restaurants.status !== 'live'` / `!service_reservations_enabled` via
+`loadBookingConfig` before this change — the doorman call is defense in
+depth / convention consistency, not a fix for a previously-exploitable hole.
 
-## 3. No per-(email, phone) rate limiter
+**Still open:** neither `assertConsumerWriteAllowed` nor `loadBookingConfig`
+reads billing/subscription health. Restaurant payment failure state lives on
+the separate `subscriptions` table (`subscriptions.status`, values
+`trialing | active | past_due | suspended | cancelled` — see
+`packages/db/types.ts`), not on `restaurants.status`. A restaurant whose
+subscription lapses into `past_due`/`suspended` but whose `restaurants.status`
+is still `'live'` can currently still take deposits and bookings. Needs a
+decision on whether the doorman should join `subscriptions` before Phase 3,
+and what "restaurant billing suspended" should mean for an in-progress guest
+booking.
 
-`lib/consumer/rateLimit.ts` only rate-limits by IP. There is no limiter keyed
-on guest email or phone, despite at least one prior design doc assuming one
-exists on the booking route. Add a helper and apply it to `book` and `order`
-routes in C9.2.
+## 3. No per-(email, phone) rate limiter — RESOLVED in C9.2b
+
+`checkEmailPhoneRateLimit(email, phone, scope)` added to
+`lib/consumer/rateLimit.ts`, applied to `start-deposit`, `bookings/create`
+(scope `'booking'`, 3/hour) and `takeaway-order` (scope `'order'`, 5/hour).
+
+**Not applied:** the QR order route (`app/api/v1/public/[slug]/order/route.ts`)
+collects no guest email or phone at all — QR ordering is anonymous,
+table-scoped. There is no (email, phone) tuple to key a limiter on there; it
+relies on IP + per-(slug,tableId) rate limiting only.
+
+## 4. Duplicate `qr_item_notes_allowed` column
+
+The `restaurants` table has two columns for the same setting:
+`qr_item_notes_allowed` (Phase 1, still read+written by
+`app/[locale]/onboarding/qr-setup/page.tsx` and validated in
+`lib/onboarding/draftSchema.ts`) and `qr_item_notes_enabled` (Phase 2, used
+by consumer code). Column drop deferred until onboarding is migrated to
+read/write `qr_item_notes_enabled`. Two-step: (a) update onboarding, (b) drop
+old column.
