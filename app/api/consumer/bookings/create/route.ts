@@ -8,8 +8,9 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createBookingInputSchema } from '@/lib/booking/createBookingSchema';
 import { createBooking } from '@/lib/booking/createBooking';
 import { loadBookingConfig } from '@/lib/booking/config';
-import { checkConsumerRateLimit, getCallerIp, redactIp } from '@/lib/consumer/rateLimit';
+import { checkConsumerRateLimit, checkEmailPhoneRateLimit, getCallerIp, redactIp } from '@/lib/consumer/rateLimit';
 import { verifyTurnstileToken } from '@/lib/consumer/turnstile';
+import { assertConsumerWriteAllowed, rejectionPayload } from '@/lib/consumer/guards';
 import { auditLog } from '@/lib/consumer/audit';
 import { sendBookingConfirmationNotification } from '@/lib/consumer/notifications/dispatcher';
 
@@ -57,6 +58,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: cfgResult.error }, { status: 200 });
   }
   const config = cfgResult.config;
+
+  // 4b. Named mutation doorman — same fields loadBookingConfig already
+  //     checked above, kept in lockstep so this endpoint follows the same
+  //     doorman convention as every other consumer write route.
+  const doorman = await assertConsumerWriteAllowed(config.restaurantId, 'booking.create');
+  if (!doorman.ok) {
+    return NextResponse.json(rejectionPayload(doorman), { status: doorman.httpStatus });
+  }
+
+  // 4c. Per-(email, phone) rate limit — catches a single guest identity
+  //     spamming bookings across rotating IPs.
+  const emailPhoneRl = await checkEmailPhoneRateLimit(input.guest.email, input.guest.phone, 'booking');
+  if (!emailPhoneRl.allowed) {
+    await auditLog({
+      restaurantId: config.restaurantId,
+      eventType: 'rate_limit.email_phone_exceeded',
+      eventData: { scope: 'booking', retryAfterSeconds: emailPhoneRl.retryAfterSeconds },
+      actorType: 'guest',
+      ipAddress: ip,
+    }).catch(() => {});
+    return NextResponse.json(
+      { ok: false, error: 'rate_limited' },
+      { status: 429, headers: { 'Retry-After': String(emailPhoneRl.retryAfterSeconds ?? 3600) } },
+    );
+  }
 
   // 5. Create booking.
   const result = await createBooking(input, config);
