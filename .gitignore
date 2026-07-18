@@ -41,3 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 .claude/
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/.playwright-mcp/
