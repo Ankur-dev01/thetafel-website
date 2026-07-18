@@ -11,7 +11,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
-import { checkConsumerRateLimit, getCallerIp, redactIp } from '@/lib/consumer/rateLimit'
+import { checkConsumerRateLimit, checkEmailPhoneRateLimit, getCallerIp, redactIp } from '@/lib/consumer/rateLimit'
 import { verifyTurnstileToken } from '@/lib/consumer/turnstile'
 import { auditLog } from '@/lib/consumer/audit'
 import { assertConsumerWriteAllowed, rejectionPayload } from '@/lib/consumer/guards'
@@ -110,6 +110,23 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: stri
   const doorman = await assertConsumerWriteAllowed(restaurant.id, 'order.takeaway.create')
   if (!doorman.ok) {
     return NextResponse.json(rejectionPayload(doorman), { status: doorman.httpStatus })
+  }
+
+  // Per-(email, phone) rate limit — catches a single guest identity
+  // spamming takeaway orders across rotating IPs.
+  const emailPhoneRl = await checkEmailPhoneRateLimit(input.guestEmail, input.guestPhone, 'order')
+  if (!emailPhoneRl.allowed) {
+    await auditLog({
+      restaurantId: restaurant.id,
+      eventType: 'rate_limit.email_phone_exceeded',
+      eventData: { scope: 'order', retryAfterSeconds: emailPhoneRl.retryAfterSeconds },
+      actorType: 'guest',
+      ipAddress: ip,
+    }).catch(() => {})
+    return NextResponse.json(
+      { ok: false, error: 'rate_limited' },
+      { status: 429, headers: { 'Retry-After': String(emailPhoneRl.retryAfterSeconds ?? 3600) } },
+    )
   }
 
   if (!restaurant.service_takeaway_enabled) {
