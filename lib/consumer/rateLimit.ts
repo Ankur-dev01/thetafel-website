@@ -1,7 +1,9 @@
 import 'server-only'
+import { createHash } from 'node:crypto'
 import { Ratelimit, type Duration } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 import type { NextRequest } from 'next/server'
+import { normalizePhone } from './sanitize'
 
 /**
  * Centralised rate-limit configuration for consumer endpoints.
@@ -29,6 +31,8 @@ export const CONSUMER_LIMITS = {
   deposit_start:         { window: '1 h',  max: 5,   prefix: 'csm:dep' },
   order_status_poll:     { window: '1 m',  max: 30,  prefix: 'csm:ostat' },
   data_request:          { window: '1 h',  max: 3,   prefix: 'csm:dreq' },
+  booking_email_phone:   { window: '1 h',  max: 3,   prefix: 'csm:bkep' },
+  order_email_phone:     { window: '1 h',  max: 5,   prefix: 'csm:orep' },
 } as const
 
 export type ConsumerLimitKey = keyof typeof CONSUMER_LIMITS
@@ -155,6 +159,42 @@ export async function checkConsumerRateLimit(
     remaining: result.remaining,
     bypassed: false,
   }
+}
+
+/**
+ * Discriminator for the (email, phone) limiter — a truncated hash so raw PII
+ * never ends up as a Redis key. Reuses normalizePhone (lib/consumer/sanitize)
+ * rather than reimplementing phone normalisation, so the same guest hitting
+ * this from "0612345678" and "+31612345678" hashes to the same bucket.
+ */
+function buildEmailPhoneDiscriminator(email: string, phone: string): string {
+  const normalizedEmail = email.trim().toLowerCase()
+  const normalizedPhone = normalizePhone(phone) ?? phone.trim()
+  return createHash('sha256')
+    .update(`${normalizedEmail}|${normalizedPhone}`)
+    .digest('hex')
+    .slice(0, 32)
+}
+
+/**
+ * Rate-limit by (email, phone) identity rather than IP — catches a single
+ * guest spamming bookings/orders across rotating IPs. Delegates to
+ * checkConsumerRateLimit so it shares the same Redis client, sliding-window
+ * behaviour, dev-mode bypass, and failure mode as every IP-keyed limit above
+ * — no separate Redis wiring to keep in sync.
+ *
+ * `scope` keeps booking and order limits counted independently — maxing out
+ * the booking limit must not block an unrelated takeaway order from the same
+ * guest.
+ */
+export async function checkEmailPhoneRateLimit(
+  email: string,
+  phone: string,
+  scope: 'booking' | 'order',
+): Promise<RateLimitResult> {
+  const key: ConsumerLimitKey = scope === 'booking' ? 'booking_email_phone' : 'order_email_phone'
+  const discriminator = buildEmailPhoneDiscriminator(email, phone)
+  return checkConsumerRateLimit(key, discriminator)
 }
 
 /**

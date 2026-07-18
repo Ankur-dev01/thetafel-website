@@ -23,6 +23,7 @@ import { createSupabaseServerClientAdmin } from '@/lib/supabase/server'
 
 export type ConsumerWriteAction =
   | 'booking.create'
+  | 'booking.create_deposit'
   | 'booking.cancel'
   | 'booking.modify'
   | 'order.create'         // generic order; check specific type via order_type
@@ -101,6 +102,7 @@ export async function assertConsumerWriteAllowed(
 
   switch (action) {
     case 'booking.create':
+    case 'booking.create_deposit':
     case 'booking.cancel':
     case 'booking.modify':
       if (!r.service_reservations_enabled) {

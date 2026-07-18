@@ -20,8 +20,9 @@ import { computeAvailability } from '@/lib/booking/computeAvailability';
 import { depositApplies, computeDepositAmountCents } from '@/lib/booking/deposit';
 import { acquireSlotLock, releaseSlotLock } from '@/lib/booking/slotLock';
 import { createConnectedPayment } from '@/lib/mollie/createConnectedPayment';
-import { checkConsumerRateLimit, getCallerIp, redactIp } from '@/lib/consumer/rateLimit';
+import { checkConsumerRateLimit, checkEmailPhoneRateLimit, getCallerIp, redactIp } from '@/lib/consumer/rateLimit';
 import { verifyTurnstileToken } from '@/lib/consumer/turnstile';
+import { assertConsumerWriteAllowed, rejectionPayload } from '@/lib/consumer/guards';
 import { auditLog } from '@/lib/consumer/audit';
 import { createSupabaseServerClientAdmin } from '@/lib/supabase/server';
 
@@ -74,6 +75,32 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: stri
     return NextResponse.json({ ok: false, error: cfgResult.error }, { status: 200 });
   }
   const config = cfgResult.config;
+
+  // 4b. Named mutation doorman — same live + service_reservations_enabled
+  //     fields loadBookingConfig already checked above, kept in lockstep so
+  //     this endpoint follows the same doorman convention as every other
+  //     consumer write route (order.ts, takeaway-order.ts, cancel, change-request).
+  const doorman = await assertConsumerWriteAllowed(config.restaurantId, 'booking.create_deposit');
+  if (!doorman.ok) {
+    return NextResponse.json(rejectionPayload(doorman), { status: doorman.httpStatus });
+  }
+
+  // 4c. Per-(email, phone) rate limit — catches a single guest identity
+  //     spamming deposit starts across rotating IPs.
+  const emailPhoneRl = await checkEmailPhoneRateLimit(input.guest.email, input.guest.phone, 'booking');
+  if (!emailPhoneRl.allowed) {
+    await auditLog({
+      restaurantId: config.restaurantId,
+      eventType: 'rate_limit.email_phone_exceeded',
+      eventData: { scope: 'booking', retryAfterSeconds: emailPhoneRl.retryAfterSeconds },
+      actorType: 'guest',
+      ipAddress: ip,
+    }).catch(() => {});
+    return NextResponse.json(
+      { ok: false, error: 'rate_limited' },
+      { status: 429, headers: { 'Retry-After': String(emailPhoneRl.retryAfterSeconds ?? 3600) } },
+    );
+  }
 
   // 5. Server-authoritative deposit check. Never trust that the client only
   //    calls this when it should — re-derive from config + input.
