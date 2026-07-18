@@ -66,3 +66,22 @@ The `restaurants` table has two columns for the same setting:
 by consumer code). Column drop deferred until onboarding is migrated to
 read/write `qr_item_notes_enabled`. Two-step: (a) update onboarding, (b) drop
 old column.
+
+## 5. No `metadata` JSONB column on `guests` / `bookings` / `orders`
+
+Discovered during C9.3a (Playwright test infrastructure). The original brief
+assumed a `metadata` JSONB column on these tables for tagging/cleaning up
+e2e-test-created rows (`metadata->>test_run_id`). No such column exists on
+any of the three tables in the applied schema
+(`TheTafel_Consumer_Schema_v1_0.sql`) — only `consumer_audit_logs.event_data`
+is JSONB.
+
+Worked around for now in `tests/e2e/fixtures/test-restaurant.ts` by tagging
+test rows via a distinctive guest email
+(`e2e-<testRunId>@e2e.thetafel.invalid`) and cascading cleanup from the
+guest row to its bookings/orders/audit-log rows. This is adequate for
+Phase 2 test isolation but is a workaround, not a real fix — if test suites
+grow and need to tag rows that aren't reachable from a guest (e.g.
+restaurant-level fixtures, menu items), a real `metadata` column (or a
+dedicated `test_run_id` column with a partial index) would be worth adding.
+Do not add it opportunistically; scope it as its own migration.
