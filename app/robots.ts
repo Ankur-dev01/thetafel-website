@@ -5,6 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
+      disallow: ['/api/', '/r/_*', '/en/r/_*'],
     },
     sitemap: 'https://thetafel.nl/sitemap.xml',
   }
