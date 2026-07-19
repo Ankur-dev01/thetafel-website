@@ -12,34 +12,30 @@ Three things must all be true:
 3. Dashboard part complete ❌ (not yet started — see §14)
 4. External blockers cleared ❌ (see §15)
 
-**Consumer part being "done" does not mean the product is launchable.** Two live
-production incidents were found during this audit (§1) that need fixing before
+**Consumer part being "done" does not mean the product is launchable.** A live
+production incident was found during this audit (§1) that needs fixing before
 *any* real guest traffic should be trusted, independent of the dashboard part.
+(A second incident, a Turnstile misconfiguration, was also found — see the
+Verified section below; it turned out to be a stale, already-self-resolved
+finding, not a current issue.)
 
 ## Status summary
 
 Approximate counts — the itemized sections below are the source of truth, not
 this tally:
 
-- ✅ Verified (including 2 fixed-in-this-unit items): ~30
+- ✅ Verified (including 2 fixed-in-this-unit items + 1 stale finding resolved
+  on re-diagnosis): ~31
 - 🟡 Needs attention: ~23
-- 🔴 Blocking launch: 9
+- 🔴 Blocking launch: 8
 
 ## 🚨 Active production incidents (found during this audit, not hypothetical)
 
-These aren't checklist gaps — they are things currently broken in production
+This isn't a checklist gap — it's something currently broken in production
 right now, discovered via Vercel runtime-error logs (last 7 days). Ankur owns
-both; neither is a code fix.
+it; it's not a code fix.
 
-1. **Turnstile is rejecting real consumer orders in prod.** `TURNSTILE_SECRET_KEY`
-   is not set on Vercel production. `verifyTurnstileToken` (`lib/consumer/turnstile.ts`)
-   only bypasses when `NODE_ENV=development`; in production with no secret it
-   hard-fails every request with `turnstile_failed`. Confirmed via
-   `get_runtime_errors`: 2 occurrences at `/api/v1/public/[slug]/order`,
-   2026-07-12 to 2026-07-13. **Action: set `TURNSTILE_SECRET_KEY` (and
-   `NEXT_PUBLIC_TURNSTILE_SITE_KEY`) on Vercel prod from the Cloudflare Turnstile
-   dashboard.**
-2. **A live restaurant's Mollie connection is broken.** Restaurant
+1. **A live restaurant's Mollie connection is broken.** Restaurant
    `288b0437-81da-4089-98e4-d89227a98004` (slug `draft-0abe63c4270d4e6e`) is
    `status='live'` with `mollie_status='verified'` — a real restaurant already
    taking consumer traffic. Its OAuth refresh token is now invalid
@@ -55,22 +51,20 @@ both; neither is a code fix.
 
 1. **Dashboard part not built** — Ankur owns; whole part delivered in a
    separate chat. See §14 for full scope.
-2. **Turnstile secret missing in prod** — see incident #1 above. Ankur owns;
-   5-minute Vercel dashboard fix once the Cloudflare keys are in hand.
-3. **Live restaurant's Mollie connection broken** — see incident #2 above.
+2. **Live restaurant's Mollie connection broken** — see incident #1 above.
    Restaurant owner action; dashboard part should make this visible.
-4. **Mollie consumer webhook e2e verification** — cannot be tested until a
-   restaurant has a *working* Mollie connection. Blocked on #3 and on the
+3. **Mollie consumer webhook e2e verification** — cannot be tested until a
+   restaurant has a *working* Mollie connection. Blocked on #2 and on the
    dashboard part's OAuth reconnect flow.
-5. **Dutch lawyer sign-off** — T&Cs, DPA, privacy policy. Ankur owns, in
+4. **Dutch lawyer sign-off** — T&Cs, DPA, privacy policy. Ankur owns, in
    flight, no code dependency.
-6. **KVK production API key** — Ankur has applied; delivery pending from KVK.
-7. **WhatsApp template approval** — submitted to Meta; 1–2 week review.
+5. **KVK production API key** — Ankur has applied; delivery pending from KVK.
+6. **WhatsApp template approval** — submitted to Meta; 1–2 week review.
    `WHATSAPP_ENABLED` defaults to disabled either way (verified in code, §6).
-8. **Resend suppression list** — `hallo@thetafel.nl` needs removing from
+7. **Resend suppression list** — `hallo@thetafel.nl` needs removing from
    Resend's suppression list or the team's own support inbox silently drops
    replies. Ankur owns (Resend dashboard action).
-9. **Vercel env vars could not be enumerated** — the connected Vercel MCP tool
+8. **Vercel env vars could not be enumerated** — the connected Vercel MCP tool
    set has no "list env vars" capability, and no Vercel CLI is available in
    this environment. Every "set/missing" mark in the env var table (below) is
    inferred from runtime-error evidence or is unverifiable — **Ankur should run
@@ -240,6 +234,18 @@ both; neither is a code fix.
 - 🔧 **Fixed in this unit**: `robots.ts` now disallows `/api/` and any
   `_`-prefixed restaurant slug (`/r/_*`, `/en/r/_*`) — previously allowed
   everything with no disallow rules at all.
+- ✅ **Resolved (was a stale finding)**: `TURNSTILE_SECRET_KEY missing in
+  non-dev env` — a follow-up diagnosis (re-reading `lib/consumer/turnstile.ts`
+  and cross-referencing the Mollie incident's timeline) showed this error only
+  occurred in an ~18-hour window, 2026-07-12 15:34 UTC → 2026-07-13 09:42 UTC,
+  and never recurred. Direct proof it was already fixed by 2026-07-15: real
+  takeaway checkout attempts against a live restaurant that day got past
+  Turnstile verification and failed later, at the Mollie payment step — which
+  only happens if Turnstile had already passed. This was almost certainly a
+  Vercel environment-variable propagation gap (var added to Production but the
+  already-running serverless functions hadn't redeployed yet), not a Cloudflare
+  rejection — the code never even reached the `siteverify` call; it short-
+  circuited on a missing-secret guard before that. No action needed.
 
 ### Infrastructure (§3)
 - ✅ Vercel prod points at `thetafel.nl` / `www.thetafel.nl` +
@@ -410,8 +416,8 @@ runtime-error evidence where possible; everything else is marked
 | `MOLLIE_CLIENT_SECRET` | likely set | Same as above |
 | `MOLLIE_WEBHOOK_SIGNING_SECRET` | unverified | No subscription-webhook traffic seen in the 7d log window either way |
 | `MOLLIE_API_KEY` (platform key, used by `lib/mollie/client.ts`) | unverified | — |
-| **`TURNSTILE_SECRET_KEY`** | **confirmed missing** | Live runtime error: `[turnstile] TURNSTILE_SECRET_KEY missing in non-dev env`, 2026-07-12/13 |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | unverified, likely also missing | Widget behavior depends on this being paired with the secret key above |
+| `TURNSTILE_SECRET_KEY` | resolved — set | Confirmed present since ≥2026-07-15: real requests reached the Mollie payment step that day, which only happens after Turnstile verification passes. The 2026-07-12/13 "missing" error was a transient env-propagation gap, already closed. |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | likely set | Ankur confirmed the client-side widget renders and passes in prod |
 | `UPSTASH_REDIS_REST_URL` | likely set | No rate-limiter errors in 7d logs; consumer routes are enforcing rate limits without erroring |
 | `UPSTASH_REDIS_REST_TOKEN` | likely set | Same as above |
 | `WHATSAPP_ACCESS_TOKEN` / `WHATSAPP_TOKEN` | unverified | Code reads `WHATSAPP_TOKEN`, not `WHATSAPP_ACCESS_TOKEN` — naming mismatch vs. the brief's checklist, see note below |
