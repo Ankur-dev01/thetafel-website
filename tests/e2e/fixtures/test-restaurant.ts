@@ -10,7 +10,7 @@ const SERVICE_ROLE = process.env.SUPABASE_PROD_SERVICE_ROLE_KEY
 // database.
 
 // The one and only restaurant that e2e tests are allowed to write to.
-// Seeded once via a one-off script (see docs/PHASE_3_DEFERRED.md if it ever
+// Seeded once via a one-off script (see docs/PART_3_DASHBOARD_DEFERRED.md if it ever
 // needs re-seeding) — not reproducible by running this file, since creating
 // the owner requires the Supabase Auth admin API, not a plain insert.
 //
@@ -46,7 +46,7 @@ export function adminClient(): SupabaseClient {
  * should use this so `wipeTestRestaurant` (and anyone auditing the DB) can
  * tell test data from a real guest at a glance. `guests` has no restaurant_id
  * (a guest can book multiple restaurants) and no metadata column, so this is
- * the tag, not a JSONB field — see PHASE_3_DEFERRED.md item 5.
+ * the tag, not a JSONB field — see PART_3_DASHBOARD_DEFERRED.md item 5.
  */
 export function testGuestEmail(testRunId: string): string {
   return `e2e-${testRunId}@e2e.thetafel.invalid`

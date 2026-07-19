@@ -1,4 +1,4 @@
-# Phase 3 Deferred Items
+# Part 3 (restaurant dashboard) — deferred items
 
 Items discovered during C9.1 that are real gaps but out of scope for Phase 2
 hardening. Tracked here so they aren't lost; not to be fixed opportunistically.
