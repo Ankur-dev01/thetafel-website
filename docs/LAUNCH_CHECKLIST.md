@@ -1,7 +1,7 @@
 # The Tafel — launch readiness checklist
 
-Last audited: 2026-07-19
-Last commit: 4c6fbedb2b62e75d3c764e839b543af26f9fdea0
+Last audited: 2026-07-20
+Last commit: d0b8433
 
 ## Gating conditions for public launch
 
@@ -12,59 +12,41 @@ Three things must all be true:
 3. Dashboard part complete ❌ (not yet started — see §14)
 4. External blockers cleared ❌ (see §15)
 
-**Consumer part being "done" does not mean the product is launchable.** A live
-production incident was found during this audit (§1) that needs fixing before
-*any* real guest traffic should be trusted, independent of the dashboard part.
-(A second incident, a Turnstile misconfiguration, was also found — see the
-Verified section below; it turned out to be a stale, already-self-resolved
-finding, not a current issue.)
+**Consumer part being "done" does not mean the product is launchable.** Two
+incidents were originally found during this audit — both turned out to be
+resolved on closer investigation rather than open problems (see the Verified
+section below for both: the Turnstile misconfiguration was a stale,
+self-resolved finding, and the "live restaurant's Mollie connection broken"
+finding turned out to be Ankur's own test accounts, not a real restaurant).
 
 ## Status summary
 
 Approximate counts — the itemized sections below are the source of truth, not
 this tally:
 
-- ✅ Verified (including 2 fixed-in-this-unit items + 1 stale finding resolved
-  on re-diagnosis): ~31
+- ✅ Verified (including 2 fixed-in-this-unit items + 2 findings resolved on
+  follow-up investigation): ~32
 - 🟡 Needs attention: ~23
-- 🔴 Blocking launch: 8
-
-## 🚨 Active production incidents (found during this audit, not hypothetical)
-
-This isn't a checklist gap — it's something currently broken in production
-right now, discovered via Vercel runtime-error logs (last 7 days). Ankur owns
-it; it's not a code fix.
-
-1. **A live restaurant's Mollie connection is broken.** Restaurant
-   `288b0437-81da-4089-98e4-d89227a98004` (slug `draft-0abe63c4270d4e6e`) is
-   `status='live'` with `mollie_status='verified'` — a real restaurant already
-   taking consumer traffic. Its OAuth refresh token is now invalid
-   (`invalid_grant: refresh_token doesn't exist or is invalid for the client`),
-   confirmed via `get_runtime_errors` at `/api/v1/public/[slug]/takeaway-order`,
-   2026-07-15. Every takeaway order for this restaurant is failing at checkout
-   right now. **Action: this restaurant needs to reconnect Mollie (re-run the
-   OAuth flow) — restaurant-owner action, not a code fix. Dashboard part should
-   surface this as a visible "reconnect payments" state rather than a silent
-   checkout failure (§14).**
+- 🔴 Blocking launch: 7
 
 ## Blocking items (🔴)
 
 1. **Dashboard part not built** — Ankur owns; whole part delivered in a
    separate chat. See §14 for full scope.
-2. **Live restaurant's Mollie connection broken** — see incident #1 above.
-   Restaurant owner action; dashboard part should make this visible.
-3. **Mollie consumer webhook e2e verification** — cannot be tested until a
-   restaurant has a *working* Mollie connection. Blocked on #2 and on the
-   dashboard part's OAuth reconnect flow.
-4. **Dutch lawyer sign-off** — T&Cs, DPA, privacy policy. Ankur owns, in
+2. **Mollie consumer webhook e2e verification** — cannot be tested until a
+   *real* restaurant has a working Mollie connection. No restaurant currently
+   does (see Verified section — the two that had any Mollie connection were
+   both Ankur's own test accounts, now reset). Blocked on the dashboard part's
+   OAuth connect/reconnect flow and an actual restaurant using it.
+3. **Dutch lawyer sign-off** — T&Cs, DPA, privacy policy. Ankur owns, in
    flight, no code dependency.
-5. **KVK production API key** — Ankur has applied; delivery pending from KVK.
-6. **WhatsApp template approval** — submitted to Meta; 1–2 week review.
+4. **KVK production API key** — Ankur has applied; delivery pending from KVK.
+5. **WhatsApp template approval** — submitted to Meta; 1–2 week review.
    `WHATSAPP_ENABLED` defaults to disabled either way (verified in code, §6).
-7. **Resend suppression list** — `hallo@thetafel.nl` needs removing from
+6. **Resend suppression list** — `hallo@thetafel.nl` needs removing from
    Resend's suppression list or the team's own support inbox silently drops
    replies. Ankur owns (Resend dashboard action).
-8. **Vercel env vars could not be enumerated** — the connected Vercel MCP tool
+7. **Vercel env vars could not be enumerated** — the connected Vercel MCP tool
    set has no "list env vars" capability, and no Vercel CLI is available in
    this environment. Every "set/missing" mark in the env var table (below) is
    inferred from runtime-error evidence or is unverifiable — **Ankur should run
@@ -246,6 +228,18 @@ it; it's not a code fix.
   already-running serverless functions hadn't redeployed yet), not a Cloudflare
   rejection — the code never even reached the `siteverify` call; it short-
   circuited on a missing-secret guard before that. No action needed.
+- ✅ **Resolved (was Ankur's own test data, not a real restaurant)**: "live
+  restaurant's Mollie connection broken." A dedicated investigation (Supabase
+  MCP, read-only) found exactly two restaurants with any Mollie connection at
+  all: `288b0437-81da-4089-98e4-d89227a98004` (owner `karanguptaa36@gmail.com`,
+  `status='live'`, `mollie_status='verified'` with a broken OAuth refresh
+  token) and `203feed6-2e2c-4118-adfa-ad67b1733292` (owner
+  `ankuranmol012@gmail.com`, `status='onboarding'`, display name literally
+  "Ankur's Restaurant"). Both confirmed as Ankur's own test accounts — no
+  external restaurant or real customer was ever affected. Both reset to
+  `mollie_status='not_started'` (Mollie fields cleared) via Supabase MCP on
+  2026-07-20; 2 rows affected. No restaurant currently has a live Mollie
+  connection, broken or otherwise.
 
 ### Infrastructure (§3)
 - ✅ Vercel prod points at `thetafel.nl` / `www.thetafel.nl` +
@@ -379,17 +373,20 @@ a separate chat. Enumerated here so the checklist reflects reality:
 - Onboarding column cleanup — drop `qr_item_notes_allowed` (dashboard-deferred
   item #3 above).
 - **New, surfaced by this audit**: a visible "reconnect payments" UI state for
-  when a restaurant's Mollie OAuth token goes invalid (see the active incident
-  in this restaurant, above) — right now that failure is completely silent to
-  the restaurant owner.
+  when a restaurant's Mollie OAuth token goes invalid — the incident that
+  surfaced this (see Verified, §1) turned out to be Ankur's own test account,
+  but the underlying gap is real: nothing in the current codebase tells a
+  restaurant owner their Mollie connection has gone bad. Right now that
+  failure is completely silent to the restaurant owner.
 
 ## §15 — External blockers (owned outside code)
 
 None of these can close in this unit:
 
-- **Mollie e2e verification** — blocked till a restaurant has a working OAuth
-  connection (dashboard prerequisite + the currently-broken restaurant needs
-  to reconnect).
+- **Mollie e2e verification** — blocked till a real restaurant connects
+  Mollie and uses it (dashboard-part prerequisite: the connect/OAuth flow
+  doesn't exist yet, and no restaurant currently has a live connection to
+  test against — see Verified, §1).
 - **WhatsApp template approval** — Meta review, 1–2 weeks after submission.
 - **KVK production API key** — Ankur applied, delivery pending.
 - **Dutch lawyer sign-off** — T&C, DPA, privacy policy.
