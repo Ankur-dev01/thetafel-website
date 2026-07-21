@@ -1388,5 +1388,63 @@
         "failure_body": "Deze link werkt niet meer. Vraag op de vorige pagina een nieuwe aan."
       }
     }
+  },
+  "dashboard": {
+    "today": {
+      "title": "Vandaag",
+      "tiles": {
+        "bookings": {
+          "label": "Reserveringen vandaag",
+          "covers": "{count} couverts"
+        },
+        "orders": {
+          "label": "Bestellingen vandaag"
+        },
+        "tabs": {
+          "label": "Open rekeningen"
+        },
+        "expected": {
+          "label": "Verwachte gasten"
+        }
+      },
+      "timeline": {
+        "title": "Nu en straks",
+        "past": "Eerder vandaag ({count})",
+        "empty": {
+          "title": "Nog geen reserveringen voor vandaag",
+          "body": "Zodra een gast reserveert of langskomt, verschijnt het hier.",
+          "action": "+ Walk-in toevoegen"
+        }
+      },
+      "queue": {
+        "title": "Actieve bestellingen",
+        "viewAll": "Alles bekijken"
+      },
+      "status": {
+        "booking": {
+          "pending": "Wacht bevestiging",
+          "confirmed": "Verwacht",
+          "attended": "Aangekomen"
+        },
+        "pickup": {
+          "received": "Ontvangen",
+          "preparing": "In de keuken",
+          "ready": "Klaar"
+        }
+      },
+      "action": {
+        "markAttended": "Aangekomen",
+        "markReady": "Markeer klaar",
+        "pickedUp": "Opgehaald"
+      },
+      "disconnected": "Verbinding verbroken",
+      "disconnectedRetry": "Opnieuw proberen",
+      "relative": {
+        "now": "nu",
+        "minutesAgo": "{n} min geleden",
+        "minutesFromNow": "over {n} min"
+      },
+      "walkinChip": "walk-in"
+    }
   }
 }

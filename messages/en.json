@@ -1388,5 +1388,63 @@
         "failure_body": "This link no longer works. Go back to the previous page to request a new one."
       }
     }
+  },
+  "dashboard": {
+    "today": {
+      "title": "Today",
+      "tiles": {
+        "bookings": {
+          "label": "Bookings today",
+          "covers": "{count} covers"
+        },
+        "orders": {
+          "label": "Orders today"
+        },
+        "tabs": {
+          "label": "Open tabs"
+        },
+        "expected": {
+          "label": "Expected guests"
+        }
+      },
+      "timeline": {
+        "title": "Now and next",
+        "past": "Earlier today ({count})",
+        "empty": {
+          "title": "No reservations yet today",
+          "body": "As soon as a guest books or arrives, it appears here.",
+          "action": "+ Add walk-in"
+        }
+      },
+      "queue": {
+        "title": "Active orders",
+        "viewAll": "View all"
+      },
+      "status": {
+        "booking": {
+          "pending": "Awaiting confirmation",
+          "confirmed": "Expected",
+          "attended": "Arrived"
+        },
+        "pickup": {
+          "received": "Received",
+          "preparing": "In the kitchen",
+          "ready": "Ready"
+        }
+      },
+      "action": {
+        "markAttended": "Arrived",
+        "markReady": "Mark ready",
+        "pickedUp": "Picked up"
+      },
+      "disconnected": "Connection lost",
+      "disconnectedRetry": "Retry",
+      "relative": {
+        "now": "now",
+        "minutesAgo": "{n} min ago",
+        "minutesFromNow": "in {n} min"
+      },
+      "walkinChip": "walk-in"
+    }
   }
 }
