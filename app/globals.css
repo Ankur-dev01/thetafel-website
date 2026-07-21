@@ -45,6 +45,16 @@
   --dot-pattern: #ead9b6;
 }
 
+/* Dashboard design tokens (D0.2) — Tailwind v4 utilities: bg-cream, text-night,
+   bg-amber, rounded-card, font-display */
+@theme {
+  --color-cream: #fdfaf5;
+  --color-night: #0f0d08;
+  --color-amber: #d4820a;
+  --radius-card: 16px;
+  --font-display: var(--font-raleway), Raleway, sans-serif;
+}
+
 /* Onboarding canvas — dotted cream texture (radial-gradient used as 1px dot grid texture, not a colour fade) */
 .onboarding-canvas {
   background-color: var(--cream);
