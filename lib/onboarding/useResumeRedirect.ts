@@ -30,7 +30,7 @@ export function useResumeRedirect(
     case 'pending_review':
       return { path: `${localePrefix}/onboarding/submitted` };
     case 'live':
-      return { path: `${localePrefix}/onboarding/live` };
+      return { path: `${localePrefix}/dashboard` };
     case 'suspended':
     case 'cancelled':
       return { path: locale === 'en' ? '/en/login' : '/login' };

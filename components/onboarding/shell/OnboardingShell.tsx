@@ -53,14 +53,14 @@ export default async function OnboardingShell({
 
   if (restaurant) {
     const submittedPath = `${localePrefix}/onboarding/submitted`;
-    const livePath = `${localePrefix}/onboarding/live`;
+    const dashboardPath = `${localePrefix}/dashboard`;
     const currentPath = (pathname.split('?')[0].split('#')[0] || '').replace(/\/+$/, '') || '/';
 
     if (restaurant.status === 'pending_review' && currentPath !== submittedPath) {
       redirect(submittedPath);
     }
-    if (restaurant.status === 'live' && currentPath !== livePath) {
-      redirect(livePath);
+    if (restaurant.status === 'live') {
+      redirect(dashboardPath);
     }
     if (
       restaurant.status === 'suspended' ||

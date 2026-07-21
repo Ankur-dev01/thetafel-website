@@ -23,6 +23,8 @@ export const TEST_RESTAURANT_SLUG = '_e2e_test_restaurant'
 export const TEST_RESTAURANT_ZONE_ID = '5e73e45f-70eb-4c99-9314-f4f42529d8b9'
 export const TEST_RESTAURANT_TABLE_ID = '4d1bbbe1-a3a4-46ce-a0e9-2aed3556ad91'
 export const TEST_RESTAURANT_TABLE_QR_TOKEN = 'V3aAsOHwDT7O6Gd5bzgpGQ'
+export const TEST_RESTAURANT_OWNER_ID = '113f34e6-2e49-47f2-85b5-b435934feb39'
+export const TEST_RESTAURANT_OWNER_EMAIL = 'e2e-test-restaurant-owner@e2e.thetafel.invalid'
 
 let cachedClient: SupabaseClient | null = null
 
