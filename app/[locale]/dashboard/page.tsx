@@ -1,6 +1,5 @@
 import { resolveDashboardContext } from '@/lib/dashboard/resolveDashboardContext'
-import { getTodayPayload } from '@/lib/dashboard/queries/today'
-import AlertStripStub from '@/components/dashboard/today/AlertStripStub'
+import { getTodayPayload, amsterdamCivilDate } from '@/lib/dashboard/queries/today'
 import TodayClient from '@/components/dashboard/today/TodayClient'
 
 export const dynamic = 'force-dynamic'
@@ -13,12 +12,14 @@ export default async function TodayPage({ params }: { params: Promise<Params> })
 
   const context = await resolveDashboardContext(locale)
   const now = new Date()
-  const payload = await getTodayPayload(context.restaurant.id, now)
+  const payload = await getTodayPayload(context.restaurant.id, now, context.staff.role)
 
   return (
-    <>
-      <AlertStripStub />
-      <TodayClient initial={payload} restaurantId={context.restaurant.id} locale={locale} />
-    </>
+    <TodayClient
+      initial={payload}
+      restaurantId={context.restaurant.id}
+      locale={locale}
+      todayAmsterdamCivilDate={amsterdamCivilDate(now)}
+    />
   )
 }

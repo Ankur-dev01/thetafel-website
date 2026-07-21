@@ -1445,6 +1445,9 @@
         "minutesFromNow": "in {n} min"
       },
       "walkinChip": "walk-in"
+    },
+    "alerts": {
+      "dismiss": "Dismiss"
     }
   }
 }

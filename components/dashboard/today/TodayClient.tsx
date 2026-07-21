@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { usePolling } from '@/lib/dashboard/usePolling';
 import DisconnectedStrip from '@/components/dashboard/ui/DisconnectedStrip';
+import AlertStrip from './AlertStrip';
 import StatTileRow from './StatTileRow';
 import Timeline from './Timeline';
 import OrderQueueSnapshot from './OrderQueueSnapshot';
@@ -15,6 +16,7 @@ type TodayClientProps = {
   initial: TodayPayload;
   restaurantId: string;
   locale: 'nl' | 'en';
+  todayAmsterdamCivilDate: string;
 };
 
 async function fetchTodayPayload(): Promise<TodayPayload> {
@@ -23,7 +25,12 @@ async function fetchTodayPayload(): Promise<TodayPayload> {
   return res.json();
 }
 
-export default function TodayClient({ initial, restaurantId, locale }: TodayClientProps) {
+export default function TodayClient({
+  initial,
+  restaurantId,
+  locale,
+  todayAmsterdamCivilDate,
+}: TodayClientProps) {
   void restaurantId;
 
   // Test-only interval override so the D1.1 Playwright disconnect test
@@ -52,6 +59,11 @@ export default function TodayClient({ initial, restaurantId, locale }: TodayClie
   return (
     <div className="flex flex-col gap-6 pt-4">
       {isDisconnected && <DisconnectedStrip onRetry={retry} locale={locale} />}
+      <AlertStrip
+        alerts={payload.alerts}
+        locale={locale}
+        todayAmsterdamCivilDate={todayAmsterdamCivilDate}
+      />
       <StatTileRow tiles={payload.tiles} />
       <Timeline bookings={payload.bookings} orders={payload.orders} nowIso={payload.now_iso} />
       <OrderQueueSnapshot orders={payload.orders} nowIso={payload.now_iso} locale={locale} />

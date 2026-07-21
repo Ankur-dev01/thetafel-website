@@ -1445,6 +1445,9 @@
         "minutesFromNow": "over {n} min"
       },
       "walkinChip": "walk-in"
+    },
+    "alerts": {
+      "dismiss": "Sluiten"
     }
   }
 }

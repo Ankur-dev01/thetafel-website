@@ -2,6 +2,9 @@ import 'server-only'
 
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { amsterdamWallClockToUtc, nextLocalDate } from '@/lib/booking/queries'
+import type { StaffRole } from '@/lib/dashboard/nav'
+import type { DashboardAlert } from '@/lib/dashboard/alerts/types'
+import { getTodayAlerts as getTodayAlertsImpl } from './alerts'
 
 /**
  * Server-side query helpers for the Vandaag (Today) page. All use the
@@ -19,9 +22,10 @@ import { amsterdamWallClockToUtc, nextLocalDate } from '@/lib/booking/queries'
  * "YYYY-MM-DD" civil date in Europe/Amsterdam for the given instant.
  * Duplicated from computeAvailability.ts's private `localDateInAmsterdam`
  * (three lines; not worth threading an export change through its callers
- * for this one extra caller).
+ * for this one extra caller). Exported (D1.2) so the page can pass the
+ * server-computed civil date down for alert-dismissal scoping.
  */
-function amsterdamCivilDate(instant: Date): string {
+export function amsterdamCivilDate(instant: Date): string {
   return new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Europe/Amsterdam',
     year: 'numeric',
@@ -85,15 +89,8 @@ export type TodayOrder = {
   ready_notified_at: string | null
 }
 
-export type TodayAlert = {
-  id: string
-  tone: 'warning' | 'danger' | 'success' | 'neutral'
-  label: string
-  actionHref?: string
-  actionLabel?: string
-}
-
 export type TodayPayload = {
+  alerts: DashboardAlert[]
   tiles: {
     bookings: { count: number; covers: number }
     orders: { count: number; revenue_cents: number }
@@ -260,26 +257,25 @@ export function getVerwachteGasten(todayBookings: TodayBooking[], now: Date): nu
     .reduce((sum, b) => sum + b.party_size, 0)
 }
 
-/** Alert queries land in D1.2 — empty until then. */
-export async function getTodayAlerts(restaurantId: string): Promise<TodayAlert[]> {
-  void restaurantId
-  return []
-}
-
 export async function getTodayPayload(
   restaurantId: string,
-  now: Date = new Date()
+  now: Date = new Date(),
+  role: StaffRole
 ): Promise<TodayPayload> {
-  const [bookings, orders, openTabs] = await Promise.all([
+  const [startOfTodayIso] = todayBoundsUtc(now)
+
+  const [bookings, orders, openTabs, alerts] = await Promise.all([
     getTodayBookings(restaurantId, now),
     getTodayOrders(restaurantId, now),
     getOpenTabs(restaurantId),
+    getTodayAlertsImpl(restaurantId, now, role, startOfTodayIso),
   ])
 
   const ordersForTiles = orders.filter((o) => ORDER_TILE_STATUSES.includes(o.status))
   const revenueOrders = orders.filter((o) => o.payment_status === 'paid')
 
   return {
+    alerts,
     tiles: {
       bookings: {
         count: bookings.length,
