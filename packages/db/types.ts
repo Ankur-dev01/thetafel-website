@@ -114,6 +114,53 @@ export type Database = {
           },
         ]
       }
+      availability_exceptions: {
+        Row: {
+          close_time: string | null
+          closed: boolean
+          created_at: string
+          exception_date: string
+          id: string
+          note: string | null
+          open_time: string | null
+          restaurant_id: string
+          service_scope: string
+          updated_at: string
+        }
+        Insert: {
+          close_time?: string | null
+          closed?: boolean
+          created_at?: string
+          exception_date: string
+          id?: string
+          note?: string | null
+          open_time?: string | null
+          restaurant_id: string
+          service_scope?: string
+          updated_at?: string
+        }
+        Update: {
+          close_time?: string | null
+          closed?: boolean
+          created_at?: string
+          exception_date?: string
+          id?: string
+          note?: string | null
+          open_time?: string | null
+          restaurant_id?: string
+          service_scope?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "availability_exceptions_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       booking_tables: {
         Row: {
           booking_id: string
@@ -149,6 +196,8 @@ export type Database = {
       }
       bookings: {
         Row: {
+          attended_at: string | null
+          attended_marked_by: string | null
           booking_ref: string
           cancellation_reason: string | null
           cancelled_at: string | null
@@ -167,11 +216,14 @@ export type Database = {
           refund_intent_id: string | null
           restaurant_id: string
           slot_time: string
+          source: Database["public"]["Enums"]["booking_source"]
           status: Database["public"]["Enums"]["booking_status"]
           updated_at: string
           zone_id: string | null
         }
         Insert: {
+          attended_at?: string | null
+          attended_marked_by?: string | null
           booking_ref: string
           cancellation_reason?: string | null
           cancelled_at?: string | null
@@ -190,11 +242,14 @@ export type Database = {
           refund_intent_id?: string | null
           restaurant_id: string
           slot_time: string
+          source?: Database["public"]["Enums"]["booking_source"]
           status?: Database["public"]["Enums"]["booking_status"]
           updated_at?: string
           zone_id?: string | null
         }
         Update: {
+          attended_at?: string | null
+          attended_marked_by?: string | null
           booking_ref?: string
           cancellation_reason?: string | null
           cancelled_at?: string | null
@@ -213,11 +268,19 @@ export type Database = {
           refund_intent_id?: string | null
           restaurant_id?: string
           slot_time?: string
+          source?: Database["public"]["Enums"]["booking_source"]
           status?: Database["public"]["Enums"]["booking_status"]
           updated_at?: string
           zone_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "bookings_attended_marked_by_fkey"
+            columns: ["attended_marked_by"]
+            isOneToOne: false
+            referencedRelation: "restaurant_staff"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "bookings_deposit_intent_fkey"
             columns: ["deposit_intent_id"]
@@ -320,13 +383,6 @@ export type Database = {
             referencedRelation: "payment_intents"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "consumer_audit_logs_restaurant_id_fkey"
-            columns: ["restaurant_id"]
-            isOneToOne: false
-            referencedRelation: "restaurants"
-            referencedColumns: ["id"]
-          },
         ]
       }
       contracts: {
@@ -391,6 +447,56 @@ export type Database = {
           },
         ]
       }
+      dashboard_audit_logs: {
+        Row: {
+          booking_id: string | null
+          created_at: string
+          event_data: Json
+          event_type: string
+          id: string
+          ip_address: unknown
+          order_id: string | null
+          payment_intent_id: string | null
+          restaurant_id: string
+          staff_id: string | null
+          tab_id: string | null
+        }
+        Insert: {
+          booking_id?: string | null
+          created_at?: string
+          event_data?: Json
+          event_type: string
+          id?: string
+          ip_address?: unknown
+          order_id?: string | null
+          payment_intent_id?: string | null
+          restaurant_id: string
+          staff_id?: string | null
+          tab_id?: string | null
+        }
+        Update: {
+          booking_id?: string | null
+          created_at?: string
+          event_data?: Json
+          event_type?: string
+          id?: string
+          ip_address?: unknown
+          order_id?: string | null
+          payment_intent_id?: string | null
+          restaurant_id?: string
+          staff_id?: string | null
+          tab_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dashboard_audit_logs_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "restaurant_staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gdpr_pii_columns: {
         Row: {
           anonymise_strategy: string
@@ -414,6 +520,58 @@ export type Database = {
           table_name?: string
         }
         Relationships: []
+      }
+      guest_notes: {
+        Row: {
+          created_at: string
+          guest_id: string
+          id: string
+          note: string
+          restaurant_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          guest_id: string
+          id?: string
+          note: string
+          restaurant_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          guest_id?: string
+          id?: string
+          note?: string
+          restaurant_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guest_notes_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guest_notes_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guest_notes_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "restaurant_staff"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       guests: {
         Row: {
@@ -467,8 +625,10 @@ export type Database = {
           consumed_at: string | null
           created_at: string
           expires_at: string
+          guest_id: string | null
           id: string
           last_used_ip: unknown
+          locale: string | null
           order_id: string | null
           purpose: Database["public"]["Enums"]["magic_link_purpose"]
           token_hash: string
@@ -479,8 +639,10 @@ export type Database = {
           consumed_at?: string | null
           created_at?: string
           expires_at: string
+          guest_id?: string | null
           id?: string
           last_used_ip?: unknown
+          locale?: string | null
           order_id?: string | null
           purpose: Database["public"]["Enums"]["magic_link_purpose"]
           token_hash: string
@@ -491,8 +653,10 @@ export type Database = {
           consumed_at?: string | null
           created_at?: string
           expires_at?: string
+          guest_id?: string | null
           id?: string
           last_used_ip?: unknown
+          locale?: string | null
           order_id?: string | null
           purpose?: Database["public"]["Enums"]["magic_link_purpose"]
           token_hash?: string
@@ -503,6 +667,13 @@ export type Database = {
             columns: ["booking_id"]
             isOneToOne: false
             referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "magic_links_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
             referencedColumns: ["id"]
           },
           {
@@ -524,6 +695,8 @@ export type Database = {
           restaurant_id: string
           visible_qr: boolean
           visible_takeaway: boolean
+          window_end: string | null
+          window_start: string | null
         }
         Insert: {
           created_at?: string
@@ -534,6 +707,8 @@ export type Database = {
           restaurant_id: string
           visible_qr?: boolean
           visible_takeaway?: boolean
+          window_end?: string | null
+          window_start?: string | null
         }
         Update: {
           created_at?: string
@@ -544,6 +719,8 @@ export type Database = {
           restaurant_id?: string
           visible_qr?: boolean
           visible_takeaway?: boolean
+          window_end?: string | null
+          window_start?: string | null
         }
         Relationships: [
           {
@@ -589,6 +766,7 @@ export type Database = {
       }
       menu_items: {
         Row: {
+          allergens: string[]
           available: boolean
           category_id: string | null
           created_at: string
@@ -609,6 +787,7 @@ export type Database = {
           visible_takeaway: boolean
         }
         Insert: {
+          allergens?: string[]
           available?: boolean
           category_id?: string | null
           created_at?: string
@@ -629,6 +808,7 @@ export type Database = {
           visible_takeaway?: boolean
         }
         Update: {
+          allergens?: string[]
           available?: boolean
           category_id?: string | null
           created_at?: string
@@ -801,6 +981,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          cancelled_by_staff: string | null
           created_at: string
           currency: string
           guest_company_name: string | null
@@ -826,6 +1007,7 @@ export type Database = {
           vat_cents: number
         }
         Insert: {
+          cancelled_by_staff?: string | null
           created_at?: string
           currency?: string
           guest_company_name?: string | null
@@ -851,6 +1033,7 @@ export type Database = {
           vat_cents?: number
         }
         Update: {
+          cancelled_by_staff?: string | null
           created_at?: string
           currency?: string
           guest_company_name?: string | null
@@ -876,6 +1059,13 @@ export type Database = {
           vat_cents?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "orders_cancelled_by_staff_fkey"
+            columns: ["cancelled_by_staff"]
+            isOneToOne: false
+            referencedRelation: "restaurant_staff"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "orders_guest_id_fkey"
             columns: ["guest_id"]
@@ -1097,6 +1287,63 @@ export type Database = {
         }
         Relationships: []
       }
+      restaurant_staff: {
+        Row: {
+          created_at: string
+          deactivated_at: string | null
+          display_name: string
+          id: string
+          invited_by: string | null
+          language: string
+          last_active_at: string | null
+          restaurant_id: string
+          role: Database["public"]["Enums"]["staff_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          deactivated_at?: string | null
+          display_name: string
+          id?: string
+          invited_by?: string | null
+          language?: string
+          last_active_at?: string | null
+          restaurant_id: string
+          role: Database["public"]["Enums"]["staff_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          deactivated_at?: string | null
+          display_name?: string
+          id?: string
+          invited_by?: string | null
+          language?: string
+          last_active_at?: string | null
+          restaurant_id?: string
+          role?: Database["public"]["Enums"]["staff_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_staff_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "restaurant_staff"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "restaurant_staff_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       restaurant_tables: {
         Row: {
           created_at: string
@@ -1178,6 +1425,7 @@ export type Database = {
           deleted_at: string | null
           director_name: string | null
           display_name: string | null
+          grace_period_started_at: string | null
           guest_zone_choice_enabled: boolean
           hero_image_url: string | null
           hours_per_service_override: boolean
@@ -1222,6 +1470,9 @@ export type Database = {
           noshow_reminders_whatsapp_enabled: boolean
           occupancy_duration_by_party: Json | null
           occupancy_duration_minutes: number | null
+          pause_reason: string | null
+          paused_at: string | null
+          paused_by: string | null
           phone_public: string | null
           photo_url: string | null
           qr_auto_accept: boolean
@@ -1280,6 +1531,7 @@ export type Database = {
           deleted_at?: string | null
           director_name?: string | null
           display_name?: string | null
+          grace_period_started_at?: string | null
           guest_zone_choice_enabled?: boolean
           hero_image_url?: string | null
           hours_per_service_override?: boolean
@@ -1324,6 +1576,9 @@ export type Database = {
           noshow_reminders_whatsapp_enabled?: boolean
           occupancy_duration_by_party?: Json | null
           occupancy_duration_minutes?: number | null
+          pause_reason?: string | null
+          paused_at?: string | null
+          paused_by?: string | null
           phone_public?: string | null
           photo_url?: string | null
           qr_auto_accept?: boolean
@@ -1382,6 +1637,7 @@ export type Database = {
           deleted_at?: string | null
           director_name?: string | null
           display_name?: string | null
+          grace_period_started_at?: string | null
           guest_zone_choice_enabled?: boolean
           hero_image_url?: string | null
           hours_per_service_override?: boolean
@@ -1426,6 +1682,9 @@ export type Database = {
           noshow_reminders_whatsapp_enabled?: boolean
           occupancy_duration_by_party?: Json | null
           occupancy_duration_minutes?: number | null
+          pause_reason?: string | null
+          paused_at?: string | null
+          paused_by?: string | null
           phone_public?: string | null
           photo_url?: string | null
           qr_auto_accept?: boolean
@@ -1464,7 +1723,15 @@ export type Database = {
           website?: string | null
           went_live_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "restaurants_paused_by_fkey"
+            columns: ["paused_by"]
+            isOneToOne: false
+            referencedRelation: "restaurant_staff"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       review_tasks: {
         Row: {
@@ -1564,6 +1831,60 @@ export type Database = {
           },
           {
             foreignKeyName: "reviews_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_invites: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          email_lower: string
+          expires_at: string
+          id: string
+          invited_by: string
+          restaurant_id: string
+          revoked_at: string | null
+          role: Database["public"]["Enums"]["staff_role"]
+          token_hash: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          email_lower: string
+          expires_at: string
+          id?: string
+          invited_by: string
+          restaurant_id: string
+          revoked_at?: string | null
+          role: Database["public"]["Enums"]["staff_role"]
+          token_hash: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          email_lower?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          restaurant_id?: string
+          revoked_at?: string | null
+          role?: Database["public"]["Enums"]["staff_role"]
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "restaurant_staff"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_invites_restaurant_id_fkey"
             columns: ["restaurant_id"]
             isOneToOne: false
             referencedRelation: "restaurants"
@@ -1728,6 +2049,7 @@ export type Database = {
       tabs: {
         Row: {
           closed_at: string | null
+          closed_by: string | null
           created_at: string
           currency: string
           id: string
@@ -1735,13 +2057,16 @@ export type Database = {
           restaurant_id: string
           settled_at: string | null
           settled_payment_intent_id: string | null
+          settlement: Database["public"]["Enums"]["tab_settlement"] | null
           status: string
           table_id: string
           total_cents: number
           updated_at: string
+          write_off_reason: string | null
         }
         Insert: {
           closed_at?: string | null
+          closed_by?: string | null
           created_at?: string
           currency?: string
           id?: string
@@ -1749,13 +2074,16 @@ export type Database = {
           restaurant_id: string
           settled_at?: string | null
           settled_payment_intent_id?: string | null
+          settlement?: Database["public"]["Enums"]["tab_settlement"] | null
           status?: string
           table_id: string
           total_cents?: number
           updated_at?: string
+          write_off_reason?: string | null
         }
         Update: {
           closed_at?: string | null
+          closed_by?: string | null
           created_at?: string
           currency?: string
           id?: string
@@ -1763,12 +2091,21 @@ export type Database = {
           restaurant_id?: string
           settled_at?: string | null
           settled_payment_intent_id?: string | null
+          settlement?: Database["public"]["Enums"]["tab_settlement"] | null
           status?: string
           table_id?: string
           total_cents?: number
           updated_at?: string
+          write_off_reason?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tabs_closed_by_fkey"
+            columns: ["closed_by"]
+            isOneToOne: false
+            referencedRelation: "restaurant_staff"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tabs_restaurant_id_fkey"
             columns: ["restaurant_id"]
@@ -1895,6 +2232,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      anonymise_guest: { Args: { p_guest_id: string }; Returns: Json }
       lookup_booking_by_magic_link: {
         Args: { p_token: string }
         Returns: {
@@ -1935,13 +2273,20 @@ export type Database = {
       show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
+      booking_source: "online" | "walk_in" | "phone"
       booking_status:
         | "pending"
         | "confirmed"
         | "cancelled"
         | "attended"
         | "no_show"
-      magic_link_purpose: "manage_booking" | "view_order" | "cancel_booking"
+      magic_link_purpose:
+        | "manage_booking"
+        | "view_order"
+        | "cancel_booking"
+        | "data_export"
+        | "data_deletion"
+        | "staff_invite"
       menu_upload_channel: "takeaway" | "qr" | "both"
       menu_upload_type: "menu" | "photo" | "reference"
       mollie_status:
@@ -1994,6 +2339,7 @@ export type Database = {
         | "suspended"
         | "cancelled"
       review_status: "pending" | "approved" | "needs_followup" | "cancelled"
+      staff_role: "owner" | "manager" | "service" | "kitchen"
       subscription_status:
         | "trialing"
         | "active"
@@ -2001,6 +2347,7 @@ export type Database = {
         | "suspended"
         | "cancelled"
       subscription_tier: "starter" | "plus" | "premium"
+      tab_settlement: "paid_at_table" | "written_off"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2128,6 +2475,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      booking_source: ["online", "walk_in", "phone"],
       booking_status: [
         "pending",
         "confirmed",
@@ -2135,7 +2483,14 @@ export const Constants = {
         "attended",
         "no_show",
       ],
-      magic_link_purpose: ["manage_booking", "view_order", "cancel_booking"],
+      magic_link_purpose: [
+        "manage_booking",
+        "view_order",
+        "cancel_booking",
+        "data_export",
+        "data_deletion",
+        "staff_invite",
+      ],
       menu_upload_channel: ["takeaway", "qr", "both"],
       menu_upload_type: ["menu", "photo", "reference"],
       mollie_status: [
@@ -2195,6 +2550,7 @@ export const Constants = {
         "cancelled",
       ],
       review_status: ["pending", "approved", "needs_followup", "cancelled"],
+      staff_role: ["owner", "manager", "service", "kitchen"],
       subscription_status: [
         "trialing",
         "active",
@@ -2203,6 +2559,7 @@ export const Constants = {
         "cancelled",
       ],
       subscription_tier: ["starter", "plus", "premium"],
+      tab_settlement: ["paid_at_table", "written_off"],
     },
   },
 } as const
