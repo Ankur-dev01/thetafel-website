@@ -1493,7 +1493,15 @@
       },
       "hub": {
         "upcoming": {
-          "title": "Binnenkort:"
+          "title": "Binnenkort:",
+          "hours": "Openingstijden",
+          "floor": "Zaalindeling",
+          "menu": "Menu",
+          "team": "Team",
+          "payments": "Betalingen",
+          "billing": "Facturatie",
+          "privacy": "Privacy",
+          "account": "Account"
         }
       },
       "confirmPause": {
@@ -1501,6 +1509,28 @@
         "body": "Gasten kunnen dan niet meer reserveren of bestellen tot je hervat. Bestaande reserveringen en actieve bestellingen blijven zichtbaar.",
         "confirm": "Ja, pauzeer",
         "cancel": "Annuleren"
+      }
+    },
+    "placeholder": {
+      "orders": {
+        "title": "Bestellingen",
+        "subtitle": "Nog niet gebouwd — komt in D3.1."
+      },
+      "tabs": {
+        "title": "Open rekeningen",
+        "subtitle": "Nog niet gebouwd — komt in D3.4."
+      },
+      "guests": {
+        "title": "Gasten",
+        "subtitle": "Nog niet gebouwd — komt in D7.1."
+      },
+      "menu": {
+        "title": "Menu",
+        "subtitle": "Nog niet gebouwd — komt in D4.1."
+      },
+      "analytics": {
+        "title": "Inzichten",
+        "subtitle": "Nog niet gebouwd — komt in D7.3."
       }
     }
   }

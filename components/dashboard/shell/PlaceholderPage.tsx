@@ -5,10 +5,10 @@
 
 type PlaceholderPageProps = {
   title: string;
-  unit: string;
+  subtitle: string;
 };
 
-export default function PlaceholderPage({ title, unit }: PlaceholderPageProps) {
+export default function PlaceholderPage({ title, subtitle }: PlaceholderPageProps) {
   return (
     <div className="pt-4">
       <h1
@@ -21,7 +21,7 @@ export default function PlaceholderPage({ title, unit }: PlaceholderPageProps) {
         className="mt-2 text-[14px] text-[#6f6353]"
         style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 300 }}
       >
-        Nog niet gebouwd — komt in {unit}.
+        {subtitle}
       </p>
     </div>
   );

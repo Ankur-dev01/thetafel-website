@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { useTranslations, useLocale } from 'next-intl';
 import ConfirmDialog from '@/components/dashboard/ui/ConfirmDialog';
 import { pauseRestaurant, resumeRestaurant } from '@/lib/dashboard/actions/pauseResume';

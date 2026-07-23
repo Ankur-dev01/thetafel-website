@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link, usePathname } from '@/i18n/routing';
 import type { DashboardNavItem } from '@/lib/dashboard/nav';
 import { activeNavKey } from '@/lib/dashboard/nav';
 import { NavIcon } from './navIcons';
@@ -24,9 +23,7 @@ export default function DashboardSidebar({
   items,
 }: DashboardSidebarProps) {
   const pathname = usePathname();
-  const strippedPath = pathname.replace(/^\/en(?=\/|$)/, '') || '/';
-  const active = activeNavKey(strippedPath);
-  const localePrefix = locale === 'en' ? '/en' : '';
+  const active = activeNavKey(pathname || '/');
 
   const t = {
     nl: { eyebrow: 'RESTAURANT', help: 'Hulp nodig? Mail ons — we reageren snel.', cta: 'hallo@thetafel.nl' },
@@ -73,7 +70,7 @@ export default function DashboardSidebar({
             return (
               <li key={item.key}>
                 <Link
-                  href={`${localePrefix}${item.path}`}
+                  href={item.path}
                   title={label}
                   aria-current={isActive ? 'page' : undefined}
                   className={

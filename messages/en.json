@@ -1493,7 +1493,15 @@
       },
       "hub": {
         "upcoming": {
-          "title": "Coming soon:"
+          "title": "Coming soon:",
+          "hours": "Opening hours",
+          "floor": "Floor plan",
+          "menu": "Menu",
+          "team": "Team",
+          "payments": "Payments",
+          "billing": "Billing",
+          "privacy": "Privacy",
+          "account": "Account"
         }
       },
       "confirmPause": {
@@ -1501,6 +1509,28 @@
         "body": "Guests won't be able to book or order until you resume. Existing bookings and active orders stay visible.",
         "confirm": "Yes, pause",
         "cancel": "Cancel"
+      }
+    },
+    "placeholder": {
+      "orders": {
+        "title": "Orders",
+        "subtitle": "Not built yet — coming in D3.1."
+      },
+      "tabs": {
+        "title": "Open tabs",
+        "subtitle": "Not built yet — coming in D3.4."
+      },
+      "guests": {
+        "title": "Guests",
+        "subtitle": "Not built yet — coming in D7.1."
+      },
+      "menu": {
+        "title": "Menu",
+        "subtitle": "Not built yet — coming in D4.1."
+      },
+      "analytics": {
+        "title": "Insights",
+        "subtitle": "Not built yet — coming in D7.3."
       }
     }
   }

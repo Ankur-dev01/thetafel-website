@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import type { DashboardNavItem } from '@/lib/dashboard/nav';
 import { NavIcon } from './navIcons';
 
@@ -19,8 +19,6 @@ type MoreSheetProps = {
 };
 
 export default function MoreSheet({ open, onClose, locale, items }: MoreSheetProps) {
-  const localePrefix = locale === 'en' ? '/en' : '';
-
   // Prevent body scroll while the sheet is open.
   useEffect(() => {
     if (!open) return;
@@ -62,7 +60,7 @@ export default function MoreSheet({ open, onClose, locale, items }: MoreSheetPro
               return (
                 <li key={item.key}>
                   <Link
-                    href={`${localePrefix}${item.path}`}
+                    href={item.path}
                     onClick={onClose}
                     tabIndex={open ? 0 : -1}
                     className="tafel-tap flex items-center gap-4 py-3.5 px-3 rounded-card text-[#1e1508] hover:bg-[#f5ede0] transition-colors"

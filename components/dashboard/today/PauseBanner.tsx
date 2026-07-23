@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { Pause } from '@/components/dashboard/icons';
 import { resumeRestaurant } from '@/lib/dashboard/actions/pauseResume';
 

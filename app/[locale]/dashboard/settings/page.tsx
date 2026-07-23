@@ -7,27 +7,7 @@ export const dynamic = 'force-dynamic'
 
 type Params = { locale: string }
 
-const UPCOMING_KEYS_NL = [
-  'Openingstijden',
-  'Zaalindeling',
-  'Menu',
-  'Team',
-  'Betalingen',
-  'Facturatie',
-  'Privacy',
-  'Account',
-]
-
-const UPCOMING_KEYS_EN = [
-  'Hours',
-  'Floor plan',
-  'Menu',
-  'Team',
-  'Payments',
-  'Billing',
-  'Privacy',
-  'Account',
-]
+const UPCOMING_KEYS = ['hours', 'floor', 'menu', 'team', 'payments', 'billing', 'privacy', 'account'] as const
 
 export default async function SettingsPage({ params }: { params: Promise<Params> }) {
   const { locale: rawLocale } = await params
@@ -35,8 +15,6 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
 
   const context = await resolveDashboardContext(locale)
   const t = await getTranslations('dashboard.settings')
-
-  const upcoming = locale === 'en' ? UPCOMING_KEYS_EN : UPCOMING_KEYS_NL
 
   return (
     <div className="max-w-[640px]">
@@ -65,13 +43,13 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
           {t('hub.upcoming.title')}
         </p>
         <ul className="flex flex-col gap-1">
-          {upcoming.map((label) => (
+          {UPCOMING_KEYS.map((key) => (
             <li
-              key={label}
+              key={key}
               className="text-[14px] text-[#6f6353]"
               style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 300 }}
             >
-              {label}
+              {t(`hub.upcoming.${key}`)}
             </li>
           ))}
         </ul>

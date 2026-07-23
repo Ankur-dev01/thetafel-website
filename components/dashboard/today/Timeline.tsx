@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import SectionHeader from '@/components/dashboard/ui/SectionHeader';
 import EmptyState from '@/components/dashboard/ui/EmptyState';
 import { Plate } from '@/components/dashboard/icons';

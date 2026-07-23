@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 
 /**
  * EntityCard — the base card for a booking or order row. White card on cream.

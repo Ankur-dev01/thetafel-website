@@ -1,7 +1,9 @@
+import { getTranslations } from 'next-intl/server'
 import PlaceholderPage from '@/components/dashboard/shell/PlaceholderPage'
 
 export const dynamic = 'force-dynamic'
 
-export default function MenuPage() {
-  return <PlaceholderPage title="Menu" unit="D4.1" />
+export default async function MenuPage() {
+  const t = await getTranslations('dashboard.placeholder.menu')
+  return <PlaceholderPage title={t('title')} subtitle={t('subtitle')} />
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import SectionHeader from '@/components/dashboard/ui/SectionHeader';
 import EntityCard from '@/components/dashboard/ui/EntityCard';
 import StatusChip, { type StatusTone } from '@/components/dashboard/ui/StatusChip';

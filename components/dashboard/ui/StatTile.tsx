@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 
 /**
  * StatTile — the reference-dashboard stat card in the Tafel palette.

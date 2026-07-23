@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link, usePathname } from '@/i18n/routing';
 import type { DashboardNavItem } from '@/lib/dashboard/nav';
 import { activeNavKey } from '@/lib/dashboard/nav';
 import { NavIcon } from './navIcons';
@@ -21,9 +20,7 @@ type PhoneTabBarProps = {
 export default function PhoneTabBar({ locale, items }: PhoneTabBarProps) {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
-  const strippedPath = pathname.replace(/^\/en(?=\/|$)/, '') || '/';
-  const active = activeNavKey(strippedPath);
-  const localePrefix = locale === 'en' ? '/en' : '';
+  const active = activeNavKey(pathname || '/');
 
   const tabItems = items.filter((i) => i.phoneTab);
   const moreItems = items.filter((i) => !i.phoneTab);
@@ -55,7 +52,7 @@ export default function PhoneTabBar({ locale, items }: PhoneTabBarProps) {
             return (
               <li key={item.key} className="flex-1">
                 <Link
-                  href={`${localePrefix}${item.path}`}
+                  href={item.path}
                   aria-current={isActive ? 'page' : undefined}
                   onClick={() => setMoreOpen(false)}
                   className={
