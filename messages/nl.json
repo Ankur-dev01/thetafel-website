@@ -1532,6 +1532,57 @@
         "title": "Inzichten",
         "subtitle": "Nog niet gebouwd — komt in D7.3."
       }
+    },
+    "bookings": {
+      "title": "Reserveringen",
+      "filter": {
+        "all": "Alle",
+        "expected": "Verwacht",
+        "attended": "Aangekomen",
+        "cancelled": "Geannuleerd",
+        "noShow": "No-show",
+        "depositPending": "Aanbetaling open",
+        "upcoming": "Nog te komen",
+        "paymentFailed": "Betaling mislukt"
+      },
+      "group": {
+        "lunch": "Lunch",
+        "dinner": "Diner",
+        "brunch": "Brunch",
+        "other": "Andere"
+      },
+      "empty": {
+        "day": "Geen reserveringen op deze dag",
+        "filter": "Niets voor dit filter",
+        "showAll": "Toon alles"
+      },
+      "status": {
+        "pending": "Wacht bevestiging",
+        "confirmed": "Verwacht",
+        "attended": "Aangekomen",
+        "cancelled": "Geannuleerd",
+        "no_show": "No-show"
+      },
+      "source": {
+        "walkin": "walk-in"
+      },
+      "deposit": {
+        "pending": "Aanbetaling open"
+      },
+      "detail": {
+        "party": "{count} personen",
+        "tables": "Tafel(s)",
+        "zone": "Zone",
+        "guestNote": "Notitie van gast",
+        "deposit": "Aanbetaling {amount}"
+      },
+      "action": {
+        "markAttended": "Aangekomen",
+        "markNoShow": "No-show",
+        "cancel": "Annuleren",
+        "edit": "Bewerken",
+        "stubTooltip": "Beschikbaar in D2.3"
+      }
     }
   }
 }

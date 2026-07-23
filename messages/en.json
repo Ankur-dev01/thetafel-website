@@ -1532,6 +1532,57 @@
         "title": "Insights",
         "subtitle": "Not built yet — coming in D7.3."
       }
+    },
+    "bookings": {
+      "title": "Bookings",
+      "filter": {
+        "all": "All",
+        "expected": "Expected",
+        "attended": "Arrived",
+        "cancelled": "Cancelled",
+        "noShow": "No-show",
+        "depositPending": "Deposit pending",
+        "upcoming": "Still to arrive",
+        "paymentFailed": "Payment failed"
+      },
+      "group": {
+        "lunch": "Lunch",
+        "dinner": "Dinner",
+        "brunch": "Brunch",
+        "other": "Other"
+      },
+      "empty": {
+        "day": "No bookings on this day",
+        "filter": "Nothing under this filter",
+        "showAll": "Show all"
+      },
+      "status": {
+        "pending": "Awaiting confirmation",
+        "confirmed": "Expected",
+        "attended": "Arrived",
+        "cancelled": "Cancelled",
+        "no_show": "No-show"
+      },
+      "source": {
+        "walkin": "walk-in"
+      },
+      "deposit": {
+        "pending": "Deposit pending"
+      },
+      "detail": {
+        "party": "{count} guests",
+        "tables": "Table(s)",
+        "zone": "Zone",
+        "guestNote": "Guest note",
+        "deposit": "Deposit {amount}"
+      },
+      "action": {
+        "markAttended": "Arrived",
+        "markNoShow": "No-show",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "stubTooltip": "Available in D2.3"
+      }
     }
   }
 }

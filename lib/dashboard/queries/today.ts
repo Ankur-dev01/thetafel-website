@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { createSupabaseServerClient } from '@/lib/supabase/server'
-import { amsterdamWallClockToUtc, nextLocalDate } from '@/lib/booking/queries'
+import { amsterdamCivilDate, amsterdamDayBoundsUtc } from '@/lib/dashboard/date/amsterdamDay'
 import type { StaffRole } from '@/lib/dashboard/nav'
 import type { DashboardAlert } from '@/lib/dashboard/alerts/types'
 import { getTodayAlerts as getTodayAlertsImpl } from './alerts'
@@ -14,32 +14,15 @@ import { getTodayAlerts as getTodayAlertsImpl } from './alerts'
  * from the server clock at request time — never the client clock.
  */
 
-// ---------------------------------------------------------------------------
-// Amsterdam civil-date helper
-// ---------------------------------------------------------------------------
-
-/**
- * "YYYY-MM-DD" civil date in Europe/Amsterdam for the given instant.
- * Duplicated from computeAvailability.ts's private `localDateInAmsterdam`
- * (three lines; not worth threading an export change through its callers
- * for this one extra caller). Exported (D1.2) so the page can pass the
- * server-computed civil date down for alert-dismissal scoping.
- */
-export function amsterdamCivilDate(instant: Date): string {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Europe/Amsterdam',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(instant)
-}
+// Re-exported for existing callers (the Vandaag page passes this down for
+// alert-dismissal scoping) — the implementation now lives in
+// lib/dashboard/date/amsterdamDay.ts, shared with D2.1's bookings queries.
+export { amsterdamCivilDate }
 
 /** [startOfTodayUtcIso, startOfTomorrowUtcIso) for the restaurant-local day containing `now`. */
 function todayBoundsUtc(now: Date): [string, string] {
-  const todayLocal = amsterdamCivilDate(now)
-  const start = amsterdamWallClockToUtc(todayLocal, '00:00:00')
-  const end = amsterdamWallClockToUtc(nextLocalDate(todayLocal), '00:00:00')
-  return [start.toISOString(), end.toISOString()]
+  const { startUtc, endUtc } = amsterdamDayBoundsUtc(amsterdamCivilDate(now))
+  return [startUtc, endUtc]
 }
 
 // ---------------------------------------------------------------------------
