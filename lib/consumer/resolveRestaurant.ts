@@ -37,6 +37,9 @@ export type PublicRestaurant = {
   qr_pay_now_enabled: boolean | null
   qr_pay_at_table_enabled: boolean | null
   takeaway_item_notes_allowed: boolean
+  /** Non-null while paused (manual or billing_suspended — D1.3). Consumer
+   *  surfaces treat both reasons identically; only the dashboard cares which. */
+  paused_at: string | null
 }
 
 /**
@@ -98,6 +101,7 @@ export const resolveRestaurantBySlug = cache(
           'qr_pay_now_enabled',
           'qr_pay_at_table_enabled',
           'takeaway_item_notes_allowed',
+          'paused_at',
         ].join(',')
       )
       .eq('slug', slug)

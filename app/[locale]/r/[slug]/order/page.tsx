@@ -15,6 +15,7 @@ import { fetchMenu } from '@/lib/menu/fetchMenu'
 import { RestaurantHeader } from '@/components/consumer/RestaurantHeader'
 import { TakeawayLanding } from '@/components/consumer/takeaway/TakeawayLanding'
 import { MenuBrowser } from '@/components/consumer/menu/MenuBrowser'
+import { PausedBanner } from '@/components/consumer/PausedBanner'
 import { buildRestaurantMetadata } from '@/lib/consumer/metadata'
 
 export const revalidate = 60
@@ -40,6 +41,15 @@ export default async function TakeawayLandingPage({ params }: PageProps) {
 
   const restaurant = await resolveRestaurantBySlug(slug)
   if (!restaurant) notFound()
+
+  if (restaurant.paused_at !== null) {
+    return (
+      <main style={{ backgroundColor: 'var(--cream, #fdfaf5)', minHeight: '100vh' }}>
+        <RestaurantHeader restaurant={restaurant} />
+        <PausedBanner />
+      </main>
+    )
+  }
 
   const window = await computeTakeawayOpeningWindow(restaurant.id)
   const menu = await fetchMenu(restaurant.id, 'takeaway', locale)

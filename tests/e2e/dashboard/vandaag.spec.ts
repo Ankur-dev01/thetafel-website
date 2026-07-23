@@ -47,6 +47,10 @@ test.describe('Vandaag (D1.1)', () => {
   })
 
   test('populated day renders tiles, timeline split, and queue snapshot', async ({ page }) => {
+    // This test's multi-row seed + getTodayPayload's parallel queries sit
+    // close to the default 30s budget under load (D1.3 investigation) — give
+    // it room rather than let it flake on a slow CI/dev machine.
+    test.setTimeout(60_000)
     await wipeTestRestaurant()
 
     const futureNearTime = amsterdamTimeAtOffset(2)

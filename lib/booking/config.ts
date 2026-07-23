@@ -37,6 +37,7 @@ const BOOKING_CONFIG_COLUMNS = [
   'waitlist_enabled',
   'guest_zone_choice_enabled',
   'hours_per_service_override',
+  'paused_at',
 ].join(', ');
 
 interface RawRestaurantRow {
@@ -66,6 +67,7 @@ interface RawRestaurantRow {
   waitlist_enabled: boolean;
   guest_zone_choice_enabled: boolean;
   hours_per_service_override: boolean;
+  paused_at: string | null;
 }
 
 /**
@@ -176,6 +178,8 @@ export async function loadBookingConfig(slug: string): Promise<BookingConfigResu
     waitlistEnabled: data.waitlist_enabled,
     guestZoneChoiceEnabled: data.guest_zone_choice_enabled,
     hoursPerServiceOverride: data.hours_per_service_override,
+
+    pausedAt: data.paused_at,
   };
 
   return { ok: true, config };

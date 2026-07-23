@@ -86,6 +86,14 @@ export interface BookingConfig {
   guestZoneChoiceEnabled: boolean;
   /** Whether the restaurant uses per-service hours overrides. */
   hoursPerServiceOverride: boolean;
+
+  /**
+   * Non-null while paused (manual or billing_suspended — D1.3). This is
+   * display-only data on an otherwise-successful config load, not a new
+   * error branch: writes are still enforced by assertConsumerWriteAllowed's
+   * pause check regardless of whether the page reads this field.
+   */
+  pausedAt: string | null;
 }
 
 /* -------------------------------------------------------------------------- */

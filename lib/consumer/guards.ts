@@ -6,6 +6,8 @@ import { createSupabaseServerClientAdmin } from '@/lib/supabase/server'
  *
  * Loads the target restaurant by id and refuses the write if:
  *   - the restaurant doesn't exist
+ *   - the restaurant is paused (manual or billing_suspended — D1.3; checked
+ *     before every other condition, including 'live')
  *   - status is anything other than 'live'
  *   - the specific service the write needs is disabled
  *
@@ -37,6 +39,7 @@ export type ConsumerWriteAction =
 export type ConsumerWriteRejectionReason =
   | 'restaurant_not_found'
   | 'restaurant_not_live'
+  | 'paused'
   | 'service_reservations_disabled'
   | 'service_qr_disabled'
   | 'service_takeaway_disabled'
@@ -48,11 +51,12 @@ export type DoormanRestaurant = {
   service_reservations_enabled: boolean
   service_qr_enabled: boolean
   service_takeaway_enabled: boolean
+  paused_at: string | null
 }
 
 export type ConsumerWriteCheck =
   | { ok: true; restaurant: DoormanRestaurant }
-  | { ok: false; reason: ConsumerWriteRejectionReason; httpStatus: 404 | 409 }
+  | { ok: false; reason: ConsumerWriteRejectionReason; httpStatus: 404 | 409 | 503 }
 
 /**
  * Check whether a consumer write is permitted for the given restaurant+action.
@@ -73,7 +77,7 @@ export async function assertConsumerWriteAllowed(
   const { data, error } = await supabase
     .from('restaurants')
     .select(
-      'id, slug, status, service_reservations_enabled, service_qr_enabled, service_takeaway_enabled'
+      'id, slug, status, service_reservations_enabled, service_qr_enabled, service_takeaway_enabled, paused_at'
     )
     .eq('id', restaurantId)
     .maybeSingle()
@@ -95,6 +99,14 @@ export async function assertConsumerWriteAllowed(
   }
 
   const r = data as unknown as DoormanRestaurant
+
+  // Pause check runs before every other check, including 'live' — a paused
+  // restaurant can never write for any reason. Manual and billing-suspended
+  // pauses are indistinguishable at this layer; the consumer surface treats
+  // them identically (D1.3).
+  if (r.paused_at !== null) {
+    return { ok: false, reason: 'paused', httpStatus: 503 }
+  }
 
   if (r.status !== 'live') {
     return { ok: false, reason: 'restaurant_not_live', httpStatus: 409 }
@@ -154,6 +166,8 @@ export function rejectionPayload(
       'This restaurant does not exist or is not available.',
     restaurant_not_live:
       'This restaurant is not currently accepting requests.',
+    paused:
+      'This restaurant is not currently available.',
     service_reservations_disabled:
       'Reservations are temporarily unavailable.',
     service_qr_disabled:

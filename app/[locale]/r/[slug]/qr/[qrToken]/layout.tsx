@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react'
 import { resolveTable } from '@/lib/qr/resolveTable'
 import { CartProvider } from '@/lib/cart/CartContext'
+import { PausedBanner } from '@/components/consumer/PausedBanner'
+import { QrHeader } from '@/components/consumer/qr/QrHeader'
 
 const TOKEN_RE = /^[A-Za-z0-9_-]{20,32}$/
 
@@ -34,6 +36,19 @@ export default async function QrTokenLayout({
   }
 
   const { restaurant, table } = result
+
+  // Paused restaurants get the polite banner for the whole QR subtree
+  // (landing, menu, checkout, pay) instead of a cart — ordering is blocked
+  // at the doorman regardless, but there's no reason to let a guest build a
+  // cart they can't submit.
+  if (restaurant.paused_at !== null) {
+    return (
+      <>
+        <QrHeader restaurant={restaurant} tableLabel={table.label} />
+        <PausedBanner />
+      </>
+    )
+  }
 
   return (
     <CartProvider

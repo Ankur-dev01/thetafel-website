@@ -11,6 +11,7 @@ import { loadBookableZones } from '@/lib/booking/zones';
 import { BookingFlowProvider } from '@/lib/booking/state';
 import { BookingStepShell } from '@/components/consumer/booking/BookingStepShell';
 import { StepRenderer } from '@/components/consumer/booking/StepRenderer';
+import { PausedBanner } from '@/components/consumer/PausedBanner';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,6 +59,19 @@ export default async function BookingEntryPage({ params }: PageProps) {
   }
 
   const config = result.config;
+
+  if (config.pausedAt !== null) {
+    const displayName = config.displayName ?? config.legalName ?? config.slug;
+    const restaurantHref = `/${locale}/r/${config.slug}`;
+    return (
+      <BookingFlowProvider config={config}>
+        <BookingStepShell restaurantName={displayName} restaurantHref={restaurantHref}>
+          <PausedBanner />
+        </BookingStepShell>
+      </BookingFlowProvider>
+    );
+  }
+
   const [openDaysOfWeek, zones] = await Promise.all([
     loadOpenDaysOfWeek(config.restaurantId, config.hoursPerServiceOverride),
     loadBookableZones(config.restaurantId),

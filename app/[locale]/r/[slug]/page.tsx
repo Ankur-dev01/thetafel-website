@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server'
 import { resolveRestaurantBySlug } from '@/lib/consumer/resolveRestaurant'
 import type { PublicRestaurant } from '@/lib/consumer/resolveRestaurant'
 import { RestaurantHeader } from '@/components/consumer/RestaurantHeader'
+import { PausedBanner } from '@/components/consumer/PausedBanner'
 import { buildRestaurantMetadata } from '@/lib/consumer/metadata'
 
 export const revalidate = 60
@@ -68,27 +69,31 @@ async function QrOnlyLanding({
   return (
     <>
       <RestaurantHeader restaurant={restaurant} />
-      <section
-        style={{
-          maxWidth: '560px',
-          margin: '0 auto',
-          padding: '48px 24px 80px',
-          textAlign: 'center',
-        }}
-      >
-        <p
+      {restaurant.paused_at !== null ? (
+        <PausedBanner />
+      ) : (
+        <section
           style={{
-            fontFamily: 'var(--font-jost), sans-serif',
-            fontWeight: 400,
-            fontSize: '16px',
-            lineHeight: 1.55,
-            color: 'var(--stone, #7a7264)',
-            margin: 0,
+            maxWidth: '560px',
+            margin: '0 auto',
+            padding: '48px 24px 80px',
+            textAlign: 'center',
           }}
         >
-          {t('body')}
-        </p>
-      </section>
+          <p
+            style={{
+              fontFamily: 'var(--font-jost), sans-serif',
+              fontWeight: 400,
+              fontSize: '16px',
+              lineHeight: 1.55,
+              color: 'var(--stone, #7a7264)',
+              margin: 0,
+            }}
+          >
+            {t('body')}
+          </p>
+        </section>
+      )}
     </>
   )
 }

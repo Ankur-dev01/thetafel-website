@@ -892,6 +892,9 @@
     }
   },
   "consumer": {
+    "paused": {
+      "message": "Deze locatie is op dit moment niet beschikbaar. Kom binnenkort terug."
+    },
     "header": {
       "openTodayPrefix": "Open van",
       "closedToday": "Gesloten vandaag",
@@ -1444,10 +1447,61 @@
         "minutesAgo": "{n} min geleden",
         "minutesFromNow": "over {n} min"
       },
-      "walkinChip": "walk-in"
+      "walkinChip": "walk-in",
+      "error": {
+        "title": "Er ging iets mis",
+        "body": "We konden de gegevens niet laden. Probeer het opnieuw.",
+        "action": "Opnieuw laden"
+      }
     },
     "alerts": {
       "dismiss": "Sluiten"
+    },
+    "pause": {
+      "banner": {
+        "manual": {
+          "title": "Deze locatie is gepauzeerd.",
+          "body": "Gasten kunnen op dit moment niet reserveren of bestellen. Hervat wanneer je klaar bent.",
+          "action": "Hervatten"
+        },
+        "billing": {
+          "title": "Deze locatie is gepauzeerd wegens openstaande facturatie.",
+          "body": "Rond de betaling af om de gastenkant weer beschikbaar te maken.",
+          "action": "Naar facturatie"
+        }
+      }
+    },
+    "settings": {
+      "title": "Instellingen",
+      "status": {
+        "title": "Restaurant-status",
+        "live": {
+          "title": "Restaurant is live",
+          "body": "Gasten kunnen reserveren en bestellen. Pauzeer tijdelijk als je bijvoorbeeld een besloten evenement hebt of even geen bestellingen wilt aannemen.",
+          "action": "Pauzeer restaurant"
+        },
+        "paused": {
+          "title": "Restaurant is gepauzeerd sinds {when}",
+          "body": "Op dit moment kunnen gasten niet reserveren of bestellen.",
+          "action": "Hervat restaurant"
+        },
+        "billing": {
+          "title": "Restaurant is gepauzeerd wegens facturatie",
+          "body": "Rond de openstaande betaling af om de gastenkant weer beschikbaar te maken.",
+          "action": "Naar facturatie"
+        }
+      },
+      "hub": {
+        "upcoming": {
+          "title": "Binnenkort:"
+        }
+      },
+      "confirmPause": {
+        "title": "Weet je het zeker?",
+        "body": "Gasten kunnen dan niet meer reserveren of bestellen tot je hervat. Bestaande reserveringen en actieve bestellingen blijven zichtbaar.",
+        "confirm": "Ja, pauzeer",
+        "cancel": "Annuleren"
+      }
     }
   }
 }

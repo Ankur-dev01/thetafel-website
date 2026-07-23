@@ -892,6 +892,9 @@
     }
   },
   "consumer": {
+    "paused": {
+      "message": "This location isn't available right now. Please check back soon."
+    },
     "header": {
       "openTodayPrefix": "Open today",
       "closedToday": "Closed today",
@@ -1444,10 +1447,61 @@
         "minutesAgo": "{n} min ago",
         "minutesFromNow": "in {n} min"
       },
-      "walkinChip": "walk-in"
+      "walkinChip": "walk-in",
+      "error": {
+        "title": "Something went wrong",
+        "body": "We couldn't load the data. Please try again.",
+        "action": "Reload"
+      }
     },
     "alerts": {
       "dismiss": "Dismiss"
+    },
+    "pause": {
+      "banner": {
+        "manual": {
+          "title": "This location is paused.",
+          "body": "Guests can't book or order right now. Resume when you're ready.",
+          "action": "Resume"
+        },
+        "billing": {
+          "title": "This location is paused for billing.",
+          "body": "Complete the outstanding payment to make the guest side available again.",
+          "action": "Go to billing"
+        }
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "status": {
+        "title": "Restaurant status",
+        "live": {
+          "title": "Restaurant is live",
+          "body": "Guests can book and order. Pause temporarily if you have a private event, for example, or want to stop taking orders for a while.",
+          "action": "Pause restaurant"
+        },
+        "paused": {
+          "title": "Restaurant has been paused since {when}",
+          "body": "Guests can't book or order right now.",
+          "action": "Resume restaurant"
+        },
+        "billing": {
+          "title": "Restaurant is paused for billing",
+          "body": "Complete the outstanding payment to make the guest side available again.",
+          "action": "Go to billing"
+        }
+      },
+      "hub": {
+        "upcoming": {
+          "title": "Coming soon:"
+        }
+      },
+      "confirmPause": {
+        "title": "Are you sure?",
+        "body": "Guests won't be able to book or order until you resume. Existing bookings and active orders stay visible.",
+        "confirm": "Yes, pause",
+        "cancel": "Cancel"
+      }
     }
   }
 }
