@@ -48,7 +48,7 @@ export default function BookingRow({ booking }: BookingRowProps) {
               className="text-[15px] text-[#1e1508] truncate"
               style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
             >
-              {booking.guest_name || '—'}
+              {booking.guest_anonymised ? t('anonymisedGuest') : booking.guest_name || '—'}
             </span>
             {booking.source === 'walk_in' && (
               <StatusChip tone="neutral" label={t('source.walkin')} />

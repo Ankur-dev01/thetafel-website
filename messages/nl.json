@@ -1569,12 +1569,83 @@
       "deposit": {
         "pending": "Aanbetaling open"
       },
+      "anonymisedGuest": "Anonieme gast",
       "detail": {
         "party": "{count} personen",
         "tables": "Tafel(s)",
         "zone": "Zone",
-        "guestNote": "Notitie van gast",
-        "deposit": "Aanbetaling {amount}"
+        "deposit": "Aanbetaling {amount}",
+        "tab": {
+          "overview": "Overzicht",
+          "history": "Historie",
+          "guest": "Gast"
+        },
+        "guestSummary": {
+          "title": "Gast bij ons",
+          "visitCount": "{count, plural, =0 {geen bezoeken} =1 {1 bezoek} other {# bezoeken}}",
+          "firstVisit": "Eerste bezoek — welkom.",
+          "lastVisit": "Laatste keer op {date}.",
+          "noPrior": "Nog geen eerder afgerond bezoek.",
+          "noShowChip": "{count, plural, =1 {1 eerdere no-show} other {# eerdere no-shows}}"
+        },
+        "guestNote": {
+          "title": "Notitie van restaurant",
+          "empty": "Geen notitie",
+          "addStub": "+ Voeg notitie toe",
+          "addStubTooltip": "Beschikbaar in D7.1",
+          "meta": "Bijgewerkt op {date} door {name}",
+          "defaultAuthor": "restaurant"
+        },
+        "guestNoteFromBooking": {
+          "title": "Notitie van gast"
+        },
+        "history": {
+          "title": "Activiteit",
+          "empty": "Nog geen activiteit.",
+          "day": {
+            "today": "Vandaag",
+            "yesterday": "Gisteren"
+          }
+        },
+        "event": {
+          "booking": {
+            "create": {
+              "succeeded": "Reservering gemaakt",
+              "replay": "Reservering gemaakt"
+            },
+            "cancelled_by_guest": "Geannuleerd door gast",
+            "change_requested": "Wijziging aangevraagd",
+            "ics_downloaded": "Agendabestand gedownload",
+            "marked_attended": "Gemarkeerd als aangekomen",
+            "marked_no_show": "Gemarkeerd als no-show",
+            "cancelled_by_staff": "Geannuleerd door restaurant",
+            "edited": "Bewerkt",
+            "deposit_refunded": "Aanbetaling teruggestort"
+          },
+          "email": {
+            "sent": "Mail verzonden",
+            "send_failed": "Mail mislukt"
+          },
+          "whatsapp": {
+            "sent": "WhatsApp verzonden",
+            "send_failed": "WhatsApp mislukt"
+          }
+        },
+        "delivery": {
+          "title": "Communicatie",
+          "deposit": { "label": "Aanbetaling" },
+          "email": { "label": "Bevestigingsmail" },
+          "reminder": { "label": "Herinnering" },
+          "whatsapp": { "label": "WhatsApp" },
+          "state": {
+            "pending": "Wacht op betaling",
+            "paid": "Betaald",
+            "failed": "Mislukt",
+            "refunded": "Teruggestort",
+            "notSent": "Niet verzonden",
+            "sent": "Verzonden"
+          }
+        }
       },
       "action": {
         "markAttended": "Aangekomen",

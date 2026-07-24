@@ -12,7 +12,12 @@ import { Chair } from '@/components/dashboard/icons';
 import FilterChips from './FilterChips';
 import ServiceGroup from './ServiceGroup';
 import BookingDetail from './BookingDetail';
-import type { DayBooking, ServiceWindow, ServiceGroupKey } from '@/lib/dashboard/bookings/types';
+import type {
+  DayBooking,
+  ServiceWindow,
+  ServiceGroupKey,
+  BookingDetailPayload,
+} from '@/lib/dashboard/bookings/types';
 import { resolveServiceGroup } from '@/lib/dashboard/bookings/serviceGroup';
 import { amsterdamCivilDate } from '@/lib/dashboard/date/amsterdamDay';
 import {
@@ -28,7 +33,7 @@ type BookingsClientProps = {
   civilDate: string;
   windows: ServiceWindow[];
   bookings: DayBooking[];
-  selectedBooking: DayBooking | null;
+  selectedBookingDetail: BookingDetailPayload | null;
   locale: 'nl' | 'en';
 };
 
@@ -56,7 +61,7 @@ export default function BookingsClient({
   civilDate,
   windows,
   bookings,
-  selectedBooking,
+  selectedBookingDetail,
   locale,
 }: BookingsClientProps) {
   const t = useTranslations('dashboard.bookings');
@@ -138,7 +143,7 @@ export default function BookingsClient({
         />
       </div>
 
-      <div className={selectedBooking ? 'grid md:grid-cols-[60%_40%] gap-4 items-start' : ''}>
+      <div className={selectedBookingDetail ? 'grid md:grid-cols-[60%_40%] gap-4 items-start' : ''}>
         <div className="flex flex-col gap-5">
           {!hasAnyGroupedBookings ? (
             bookings.length === 0 ? (
@@ -169,20 +174,30 @@ export default function BookingsClient({
           )}
         </div>
 
-        {selectedBooking && (
+        {selectedBookingDetail && (
           <>
             <div className="hidden md:block">
-              <DetailPanel title={selectedBooking.guest_name || '—'}>
-                <BookingDetail booking={selectedBooking} />
+              <DetailPanel
+                title={
+                  selectedBookingDetail.booking.guest_anonymised
+                    ? t('anonymisedGuest')
+                    : selectedBookingDetail.booking.guest_name || '—'
+                }
+              >
+                <BookingDetail payload={selectedBookingDetail} locale={locale} />
               </DetailPanel>
             </div>
             <div className="md:hidden">
               <DetailSheet
                 open
                 onClose={closeDetail}
-                title={selectedBooking.guest_name || '—'}
+                title={
+                  selectedBookingDetail.booking.guest_anonymised
+                    ? t('anonymisedGuest')
+                    : selectedBookingDetail.booking.guest_name || '—'
+                }
               >
-                <BookingDetail booking={selectedBooking} />
+                <BookingDetail payload={selectedBookingDetail} locale={locale} />
               </DetailSheet>
             </div>
           </>

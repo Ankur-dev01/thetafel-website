@@ -132,3 +132,24 @@ export function formatDateHeading(civilDate: string, locale: 'nl' | 'en'): strin
     month: 'long',
   }).format(noonUtc)
 }
+
+/** "25 jul, 19:30" / "25 Jul, 19:30" — for activity-log rows and delivery timestamps. */
+export function formatDateTimeShort(iso: string, locale: 'nl' | 'en'): string {
+  return new Intl.DateTimeFormat(locale === 'nl' ? 'nl-NL' : 'en-GB', {
+    timeZone: RESTAURANT_TZ,
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(iso))
+}
+
+/** "25 juli 2026" / "25 July 2026" — full date with year, for "last visit on …" copy. */
+export function formatDateLong(iso: string, locale: 'nl' | 'en'): string {
+  return new Intl.DateTimeFormat(locale === 'nl' ? 'nl-NL' : 'en-GB', {
+    timeZone: RESTAURANT_TZ,
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(iso))
+}

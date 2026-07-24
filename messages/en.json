@@ -1569,12 +1569,83 @@
       "deposit": {
         "pending": "Deposit pending"
       },
+      "anonymisedGuest": "Anonymous guest",
       "detail": {
         "party": "{count} guests",
         "tables": "Table(s)",
         "zone": "Zone",
-        "guestNote": "Guest note",
-        "deposit": "Deposit {amount}"
+        "deposit": "Deposit {amount}",
+        "tab": {
+          "overview": "Overview",
+          "history": "History",
+          "guest": "Guest"
+        },
+        "guestSummary": {
+          "title": "Guest with us",
+          "visitCount": "{count, plural, =0 {no visits} =1 {1 visit} other {# visits}}",
+          "firstVisit": "First visit — welcome.",
+          "lastVisit": "Last visit on {date}.",
+          "noPrior": "No prior completed visits.",
+          "noShowChip": "{count, plural, =1 {1 previous no-show} other {# previous no-shows}}"
+        },
+        "guestNote": {
+          "title": "Restaurant's note",
+          "empty": "No note",
+          "addStub": "+ Add note",
+          "addStubTooltip": "Available in D7.1",
+          "meta": "Updated on {date} by {name}",
+          "defaultAuthor": "the restaurant"
+        },
+        "guestNoteFromBooking": {
+          "title": "Guest's note"
+        },
+        "history": {
+          "title": "Activity",
+          "empty": "No activity yet.",
+          "day": {
+            "today": "Today",
+            "yesterday": "Yesterday"
+          }
+        },
+        "event": {
+          "booking": {
+            "create": {
+              "succeeded": "Booking created",
+              "replay": "Booking created"
+            },
+            "cancelled_by_guest": "Cancelled by guest",
+            "change_requested": "Change requested",
+            "ics_downloaded": "Calendar file downloaded",
+            "marked_attended": "Marked as arrived",
+            "marked_no_show": "Marked as no-show",
+            "cancelled_by_staff": "Cancelled by restaurant",
+            "edited": "Edited",
+            "deposit_refunded": "Deposit refunded"
+          },
+          "email": {
+            "sent": "Email sent",
+            "send_failed": "Email failed"
+          },
+          "whatsapp": {
+            "sent": "WhatsApp sent",
+            "send_failed": "WhatsApp failed"
+          }
+        },
+        "delivery": {
+          "title": "Delivery",
+          "deposit": { "label": "Deposit" },
+          "email": { "label": "Confirmation email" },
+          "reminder": { "label": "Reminder" },
+          "whatsapp": { "label": "WhatsApp" },
+          "state": {
+            "pending": "Awaiting payment",
+            "paid": "Paid",
+            "failed": "Failed",
+            "refunded": "Refunded",
+            "notSent": "Not sent",
+            "sent": "Sent"
+          }
+        }
       },
       "action": {
         "markAttended": "Arrived",
