@@ -45,10 +45,12 @@ test.describe('Reservation detail depth (D2.2)', () => {
       // No deposit, no delivery events seeded — the whole block must be absent.
       await expect(body.getByText('Communicatie')).toHaveCount(0)
 
-      await expect(page.locator('[data-testid="detail-mark-attended-stub"]:visible')).toBeVisible()
-      await expect(page.locator('[data-testid="detail-mark-attended-stub"]:visible')).toBeDisabled()
-      await expect(page.locator('[data-testid="detail-cancel-stub"]:visible')).toBeVisible()
-      await expect(page.locator('[data-testid="detail-edit-stub"]:visible')).toBeVisible()
+      // D2.3 wired these buttons up (no longer disabled stubs) — this spec
+      // only asserts they render for a mutable booking; behavior is covered
+      // by booking-actions.spec.ts.
+      await expect(page.locator('[data-testid="detail-mark-attended"]:visible')).toBeVisible()
+      await expect(page.locator('[data-testid="detail-cancel"]:visible')).toBeVisible()
+      await expect(page.locator('[data-testid="detail-edit"]:visible')).toBeVisible()
     } finally {
       await wipeTestRestaurant()
       await cleanupSeededBookingDetail(seeded.guestId)

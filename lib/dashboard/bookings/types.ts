@@ -24,8 +24,10 @@ export type DayBooking = {
    *  "Anonymous guest" label and hides the phone number instead of showing
    *  blank/stale PII-adjacent fields. */
   guest_anonymised: boolean
+  zone_id: string | null
   zone_name: string | null
   table_labels: string[]
+  table_ids: string[]
   deposit_state: DepositState
   deposit_amount_cents: number | null
   /** Raw payment_intents.status for the deposit intent, or null if none/never created. Used by the "payment failed" filter chip. */
@@ -110,4 +112,22 @@ export type BookingDetailPayload = {
   guestNote: GuestNote | null
   history: HistoryEntry[]
   delivery: DeliveryInfo
+}
+
+// ---------------------------------------------------------------------------
+// D2.3 — booking actions
+// ---------------------------------------------------------------------------
+
+export type BookingEditPatch = {
+  slot_time?: string
+  party_size?: number
+  zone_id?: string
+  table_ids?: string[]
+  guest_note?: string | null
+}
+
+export type BookableZoneOption = {
+  id: string
+  name: string
+  tables: { id: string; label: string; seats: number }[]
 }

@@ -183,26 +183,26 @@ test.describe('Reserveringen list (D2.1)', () => {
       // Both DetailPanel (desktop) and DetailSheet (phone) are mounted at all
       // times, toggled with CSS (hidden/md:hidden) — scope to the visible
       // one so the assertions match whichever the current viewport shows.
-      await expect(page.locator('[data-testid="detail-mark-attended-stub"]:visible')).toBeVisible()
-      await expect(page.locator('[data-testid="detail-mark-attended-stub"]:visible')).toBeDisabled()
-      await expect(page.locator('[data-testid="detail-cancel-stub"]:visible')).toBeVisible()
-      await expect(page.locator('[data-testid="detail-cancel-stub"]:visible')).toBeDisabled()
-      await expect(page.locator('[data-testid="detail-edit-stub"]:visible')).toBeVisible()
-      await expect(page.locator('[data-testid="detail-edit-stub"]:visible')).toBeDisabled()
+      // D2.3 wired these buttons up (no longer disabled stubs) — this spec
+      // only asserts they render for a mutable booking; behavior is covered
+      // by booking-actions.spec.ts.
+      await expect(page.locator('[data-testid="detail-mark-attended"]:visible')).toBeVisible()
+      await expect(page.locator('[data-testid="detail-cancel"]:visible')).toBeVisible()
+      await expect(page.locator('[data-testid="detail-edit"]:visible')).toBeVisible()
 
       await page.reload()
       await expect(page).toHaveURL(/[?&]booking=/)
-      await expect(page.locator('[data-testid="detail-edit-stub"]:visible')).toBeVisible()
+      await expect(page.locator('[data-testid="detail-edit"]:visible')).toBeVisible()
 
       const currentUrl = new URL(page.url())
       currentUrl.searchParams.set('booking', '00000000-0000-0000-0000-000000000000')
       await page.goto(currentUrl.pathname + currentUrl.search)
-      await expect(page.locator('[data-testid="detail-edit-stub"]:visible')).toHaveCount(0)
+      await expect(page.locator('[data-testid="detail-edit"]:visible')).toHaveCount(0)
       await expect(page.getByText('20:00')).toBeVisible()
 
       await page.setViewportSize({ width: 375, height: 800 })
       await page.goto(`/dashboard/bookings?date=${today}&booking=${seeded.bookingIds[0]}`)
-      await expect(page.locator('[data-testid="detail-edit-stub"]:visible')).toBeVisible()
+      await expect(page.locator('[data-testid="detail-edit"]:visible')).toBeVisible()
     } finally {
       await wipeTestRestaurant()
       await cleanupSeededGuests(seeded.guestIds)

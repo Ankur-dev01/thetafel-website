@@ -1652,7 +1652,52 @@
         "markNoShow": "No-show",
         "cancel": "Cancel",
         "edit": "Edit",
-        "stubTooltip": "Available in D2.3"
+        "tooltip": {
+          "tooEarly": "Available 30 min after start time"
+        },
+        "dialog": {
+          "cancel": {
+            "title": "Cancel booking?",
+            "body": "Are you sure you want to cancel this booking? The guest won't receive an automatic email — you can inform them yourself.",
+            "deposit": {
+              "paid": "This guest's {amount} deposit is still outstanding. Automatic refund is coming later.",
+              "pending": "A deposit is still pending."
+            },
+            "reason": {
+              "label": "Reason (not shown to guest)"
+            },
+            "confirm": "Yes, cancel",
+            "cancel": "Back"
+          },
+          "edit": {
+            "title": "Edit booking",
+            "field": {
+              "date": "Date",
+              "time": "Time",
+              "party": "Party size",
+              "zone": "Zone",
+              "tables": "Tables",
+              "note": "Note"
+            },
+            "submit": "Save",
+            "cancel": "Cancel"
+          }
+        },
+        "error": {
+          "already_attended": "Already marked as arrived.",
+          "already_no_show": "Already marked as no-show.",
+          "already_cancelled": "Already cancelled.",
+          "terminal_state": "This booking is already finalised.",
+          "too_early": "Only available 30 minutes after start time.",
+          "outside_availability": "Outside opening hours.",
+          "half_full_violated": "Too much space for this party size — pick a smaller table or a bigger group.",
+          "table_conflict": "This table is already taken at this time.",
+          "no_changes": "No changes.",
+          "rate_limited": "Slow down — too many actions in a row.",
+          "not_found": "Booking not found.",
+          "not_authenticated": "Please sign in again.",
+          "unknown": "Something went wrong. Please try again."
+        }
       }
     }
   }

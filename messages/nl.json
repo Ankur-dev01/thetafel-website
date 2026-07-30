@@ -1652,7 +1652,52 @@
         "markNoShow": "No-show",
         "cancel": "Annuleren",
         "edit": "Bewerken",
-        "stubTooltip": "Beschikbaar in D2.3"
+        "tooltip": {
+          "tooEarly": "Beschikbaar 30 min na starttijd"
+        },
+        "dialog": {
+          "cancel": {
+            "title": "Reservering annuleren?",
+            "body": "Weet je zeker dat je deze reservering wil annuleren? De gast krijgt geen automatische mail — je kan hen zelf informeren.",
+            "deposit": {
+              "paid": "Aanbetaling {amount} van deze gast blijft nog staan. Automatische terugbetaling komt later.",
+              "pending": "Er staat een openstaande aanbetaling."
+            },
+            "reason": {
+              "label": "Reden (niet zichtbaar voor gast)"
+            },
+            "confirm": "Ja, annuleer",
+            "cancel": "Terug"
+          },
+          "edit": {
+            "title": "Reservering bewerken",
+            "field": {
+              "date": "Datum",
+              "time": "Tijd",
+              "party": "Groepsgrootte",
+              "zone": "Zone",
+              "tables": "Tafels",
+              "note": "Notitie"
+            },
+            "submit": "Opslaan",
+            "cancel": "Annuleren"
+          }
+        },
+        "error": {
+          "already_attended": "Al gemarkeerd als aangekomen.",
+          "already_no_show": "Al gemarkeerd als no-show.",
+          "already_cancelled": "Al geannuleerd.",
+          "terminal_state": "Deze reservering is al afgerond.",
+          "too_early": "Kan pas 30 minuten na starttijd.",
+          "outside_availability": "Buiten openingstijden.",
+          "half_full_violated": "Te veel plek voor het aantal gasten — kies een kleinere tafel of grotere groep.",
+          "table_conflict": "Deze tafel is al bezet op deze tijd.",
+          "no_changes": "Geen wijzigingen.",
+          "rate_limited": "Even wachten — te veel acties achter elkaar.",
+          "not_found": "Reservering niet gevonden.",
+          "not_authenticated": "Log opnieuw in.",
+          "unknown": "Er ging iets mis. Probeer het opnieuw."
+        }
       }
     }
   }

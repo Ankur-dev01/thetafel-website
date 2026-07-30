@@ -17,6 +17,7 @@ import type {
   ServiceWindow,
   ServiceGroupKey,
   BookingDetailPayload,
+  BookableZoneOption,
 } from '@/lib/dashboard/bookings/types';
 import { resolveServiceGroup } from '@/lib/dashboard/bookings/serviceGroup';
 import { amsterdamCivilDate } from '@/lib/dashboard/date/amsterdamDay';
@@ -34,6 +35,7 @@ type BookingsClientProps = {
   windows: ServiceWindow[];
   bookings: DayBooking[];
   selectedBookingDetail: BookingDetailPayload | null;
+  zones: BookableZoneOption[];
   locale: 'nl' | 'en';
 };
 
@@ -62,6 +64,7 @@ export default function BookingsClient({
   windows,
   bookings,
   selectedBookingDetail,
+  zones,
   locale,
 }: BookingsClientProps) {
   const t = useTranslations('dashboard.bookings');
@@ -184,7 +187,7 @@ export default function BookingsClient({
                     : selectedBookingDetail.booking.guest_name || '—'
                 }
               >
-                <BookingDetail payload={selectedBookingDetail} locale={locale} />
+                <BookingDetail payload={selectedBookingDetail} zones={zones} locale={locale} />
               </DetailPanel>
             </div>
             <div className="md:hidden">
@@ -197,7 +200,7 @@ export default function BookingsClient({
                     : selectedBookingDetail.booking.guest_name || '—'
                 }
               >
-                <BookingDetail payload={selectedBookingDetail} locale={locale} />
+                <BookingDetail payload={selectedBookingDetail} zones={zones} locale={locale} />
               </DetailSheet>
             </div>
           </>

@@ -17,6 +17,7 @@ import type {
   BookingDetailPayload,
   DepositDeliveryState,
   EmailDeliveryState,
+  BookableZoneOption,
 } from '@/lib/dashboard/bookings/types'
 
 /**
@@ -123,16 +124,17 @@ type BookingJoinRow = {
   attended_at: string | null
   deposit_amount_cents: number | null
   deposit_intent_id: string | null
+  zone_id: string | null
   guest: { id: string; full_name: string | null; phone: string | null; anonymised_at: string | null } | null
   zone: { name: string | null } | null
-  booking_tables: { restaurant_tables: { label: string | null } | null }[] | null
+  booking_tables: { restaurant_tables: { id: string; label: string | null } | null }[] | null
 }
 
 const BOOKING_SELECT = `id, slot_time, party_size, status, source, duration_minutes, guest_note, attended_at,
-       deposit_amount_cents, deposit_intent_id,
+       deposit_amount_cents, deposit_intent_id, zone_id,
        guest:guests(id, full_name, phone, anonymised_at),
        zone:zones(name),
-       booking_tables(restaurant_tables(label))`
+       booking_tables(restaurant_tables(id, label))`
 
 function toDayBooking(row: BookingJoinRow, intentStatusById: Map<string, string>): DayBooking {
   let depositState: DepositState = 'none'
@@ -157,10 +159,14 @@ function toDayBooking(row: BookingJoinRow, intentStatusById: Map<string, string>
     guest_name: anonymised ? '' : row.guest?.full_name ?? '',
     guest_phone: anonymised ? null : row.guest?.phone ?? null,
     guest_anonymised: anonymised,
+    zone_id: row.zone_id,
     zone_name: row.zone?.name ?? null,
     table_labels: (row.booking_tables ?? [])
       .map((bt) => bt.restaurant_tables?.label)
       .filter((label): label is string => Boolean(label)),
+    table_ids: (row.booking_tables ?? [])
+      .map((bt) => bt.restaurant_tables?.id)
+      .filter((id): id is string => Boolean(id)),
     deposit_state: depositState,
     deposit_amount_cents: row.deposit_amount_cents,
     deposit_intent_status: depositIntentStatus,
@@ -232,6 +238,48 @@ export async function getBookingById(
   )
 
   return toDayBooking(row, intentStatusById)
+}
+
+/**
+ * Bookable zones + tables for the restaurant, for the D2.3 edit dialog's
+ * zone/table pickers. Deliberately not date-scoped — the dialog itself
+ * re-derives which tables are actually free for the chosen time server-side
+ * on submit (the edit route's own overlap check is authoritative); this is
+ * just the static "what exists" picklist.
+ */
+export async function getBookableZonesWithTables(restaurantId: string): Promise<BookableZoneOption[]> {
+  const supabase = await createSupabaseServerClient()
+
+  const { data: zoneRows, error: zonesError } = await supabase
+    .from('zones')
+    .select('id, name')
+    .eq('restaurant_id', restaurantId)
+    .is('deleted_at', null)
+    .order('display_order', { ascending: true })
+
+  if (zonesError) throw zonesError
+
+  const { data: tableRows, error: tablesError } = await supabase
+    .from('restaurant_tables')
+    .select('id, zone_id, label, seats')
+    .eq('restaurant_id', restaurantId)
+    .is('deleted_at', null)
+    .eq('is_bookable', true)
+
+  if (tablesError) throw tablesError
+
+  const tablesByZone = new Map<string, { id: string; label: string; seats: number }[]>()
+  for (const t of tableRows ?? []) {
+    const arr = tablesByZone.get(t.zone_id) ?? []
+    arr.push({ id: t.id, label: t.label, seats: t.seats })
+    tablesByZone.set(t.zone_id, arr)
+  }
+
+  return (zoneRows ?? []).map((z) => ({
+    id: z.id,
+    name: z.name,
+    tables: (tablesByZone.get(z.id) ?? []).sort((a, b) => a.seats - b.seats || a.label.localeCompare(b.label)),
+  }))
 }
 
 // ---------------------------------------------------------------------------

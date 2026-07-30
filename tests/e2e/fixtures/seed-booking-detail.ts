@@ -170,3 +170,87 @@ export async function cleanupSeededBookingDetail(guestId: string): Promise<void>
   await supabase.from('guest_notes').delete().eq('guest_id', guestId)
   await supabase.from('guests').delete().eq('id', guestId)
 }
+
+/**
+ * Seeds one booking at an exact instant (rather than a "today at HH:MM" civil
+ * time) for tests/e2e/dashboard/booking-actions.spec.ts, which needs bookings
+ * anchored relative to "now" (e.g. now-5min, now+30min) to exercise the
+ * no-show grace window and attend/cancel/edit transitions — seedBookingDetail
+ * above is civil-date-of-today-only and doesn't fit that need.
+ */
+export async function seedBookingForAction(opts: {
+  restaurantId: string
+  slotTime: Date
+  status: 'pending' | 'confirmed' | 'attended' | 'cancelled' | 'no_show'
+  partySize?: number
+  durationMinutes?: number
+  tableIds?: string[]
+  zoneId?: string
+  depositAmountCents?: number
+  depositIntentStatus?: 'pending' | 'paid' | 'failed' | 'cancelled' | 'refunded'
+}): Promise<{ bookingId: string; guestId: string }> {
+  const supabase = adminClient()
+
+  const uuid = randomUUID()
+  const email = `e2e-${uuid}@thetafel.test`
+  const { data: guest, error: guestError } = await supabase
+    .from('guests')
+    .insert({ full_name: 'E2E Action Guest', email, phone: '+31600000006', marketing_consent: false })
+    .select('id')
+    .single()
+  if (guestError || !guest) throw new Error(`[seedBookingForAction] guest failed: ${guestError?.message}`)
+
+  let depositIntentId: string | null = null
+  if (opts.depositAmountCents && opts.depositIntentStatus) {
+    const { data: intent, error: intentError } = await supabase
+      .from('payment_intents')
+      .insert({
+        restaurant_id: opts.restaurantId,
+        purpose: 'deposit',
+        status: opts.depositIntentStatus,
+        amount_cents: opts.depositAmountCents,
+      })
+      .select('id')
+      .single()
+    if (intentError || !intent) {
+      throw new Error(`[seedBookingForAction] payment_intent failed: ${intentError?.message}`)
+    }
+    depositIntentId = intent.id
+  }
+
+  const token = randomBytes(32).toString('base64url')
+  const { data: booking, error: bookingError } = await supabase
+    .from('bookings')
+    .insert({
+      restaurant_id: opts.restaurantId,
+      guest_id: guest.id,
+      booking_ref: generateBookingRef(),
+      slot_time: opts.slotTime.toISOString(),
+      party_size: opts.partySize ?? 2,
+      duration_minutes: opts.durationMinutes ?? 90,
+      zone_id: opts.zoneId ?? null,
+      status: opts.status,
+      source: 'online',
+      deposit_amount_cents: opts.depositAmountCents ?? null,
+      deposit_intent_id: depositIntentId,
+      magic_link_token_hash: hashToken(token),
+      cancelled_at: opts.status === 'cancelled' ? new Date().toISOString() : null,
+      cancelled_by: opts.status === 'cancelled' ? 'e2e-seed' : null,
+      attended_at: opts.status === 'attended' ? opts.slotTime.toISOString() : null,
+    })
+    .select('id')
+    .single()
+  if (bookingError || !booking) {
+    throw new Error(`[seedBookingForAction] booking failed: ${bookingError?.message}`)
+  }
+
+  const tableIds = opts.tableIds ?? []
+  if (tableIds.length > 0) {
+    const { error: btError } = await supabase
+      .from('booking_tables')
+      .insert(tableIds.map((tableId) => ({ booking_id: booking.id, table_id: tableId })))
+    if (btError) throw new Error(`[seedBookingForAction] booking_tables failed: ${btError.message}`)
+  }
+
+  return { bookingId: booking.id, guestId: guest.id }
+}
