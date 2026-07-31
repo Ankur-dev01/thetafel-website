@@ -1699,6 +1699,42 @@
           "unknown": "Something went wrong. Please try again."
         }
       }
+    },
+    "walkin": {
+      "dialog": { "title": "Add walk-in" },
+      "field": {
+        "name": { "label": "Name", "placeholder": "Guest's name" },
+        "phone": { "label": "Phone (optional)", "placeholder": "+31 6 12 34 56 78" },
+        "party": { "label": "Party size" },
+        "zone": { "label": "Zone" },
+        "tables": {
+          "label": "Tables",
+          "hint": "Pick tables that fit {n} guests without too much empty space.",
+          "seatsOver": "{n} seats left",
+          "tooMuchRoom": "Too much space — pick different tables"
+        },
+        "note": { "label": "Note (optional)" },
+        "duration": { "toggle": "Custom duration", "label": "Duration (minutes)" }
+      },
+      "submit": "Add walk-in",
+      "cancel": "Cancel",
+      "success": {
+        "plain": "Walk-in added",
+        "matched": "Walk-in added · Linked to {name} · {count} previous visits",
+        "viewBooking": "View booking"
+      },
+      "error": {
+        "invalid_body": "Fill in all required fields.",
+        "party_size_out_of_range": "Party size must be between 1 and 30.",
+        "invalid_phone": "Invalid phone number.",
+        "zone_or_table_mismatch": "Zone or tables don't belong to this restaurant.",
+        "over_capacity": "Party is larger than the table capacity.",
+        "half_full_violated": "Too much space for the party size — pick a smaller table or larger party.",
+        "table_conflict": "One of these tables is already taken.",
+        "slot_lock_timeout": "Please wait — another action is in progress.",
+        "rate_limited": "Too many actions in a row.",
+        "unknown": "Something went wrong. Please try again."
+      }
     }
   }
 }

@@ -1699,6 +1699,42 @@
           "unknown": "Er ging iets mis. Probeer het opnieuw."
         }
       }
+    },
+    "walkin": {
+      "dialog": { "title": "Walk-in toevoegen" },
+      "field": {
+        "name": { "label": "Naam", "placeholder": "Naam van gast" },
+        "phone": { "label": "Telefoon (optioneel)", "placeholder": "+31 6 12 34 56 78" },
+        "party": { "label": "Groepsgrootte" },
+        "zone": { "label": "Zone" },
+        "tables": {
+          "label": "Tafels",
+          "hint": "Kies tafels waar {n} gasten passen zonder te veel plek over te houden.",
+          "seatsOver": "{n} plaatsen over",
+          "tooMuchRoom": "Te veel plek — kies andere tafels"
+        },
+        "note": { "label": "Notitie (optioneel)" },
+        "duration": { "toggle": "Aangepaste duur", "label": "Duur (minuten)" }
+      },
+      "submit": "Voeg walk-in toe",
+      "cancel": "Annuleren",
+      "success": {
+        "plain": "Walk-in toegevoegd",
+        "matched": "Walk-in toegevoegd · Gekoppeld aan {name} · {count} eerdere bezoeken",
+        "viewBooking": "Bekijk reservering"
+      },
+      "error": {
+        "invalid_body": "Vul alle verplichte velden in.",
+        "party_size_out_of_range": "Groepsgrootte moet tussen 1 en 30 zijn.",
+        "invalid_phone": "Ongeldig telefoonnummer.",
+        "zone_or_table_mismatch": "Zone of tafels horen niet bij dit restaurant.",
+        "over_capacity": "Groep is groter dan de tafelcapaciteit.",
+        "half_full_violated": "Te veel plek voor het aantal gasten — kies een kleinere tafel of grotere groep.",
+        "table_conflict": "Een van deze tafels is al bezet.",
+        "slot_lock_timeout": "Even wachten — een andere actie is bezig.",
+        "rate_limited": "Te veel acties achter elkaar.",
+        "unknown": "Er ging iets mis. Probeer het opnieuw."
+      }
     }
   }
 }

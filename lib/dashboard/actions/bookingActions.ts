@@ -29,6 +29,51 @@ async function post(path: string, body?: unknown): Promise<BookingActionResult> 
   return { ok: false, code: json.error ?? 'unknown_error', message: json.message };
 }
 
+export type WalkInPatch = {
+  full_name: string;
+  phone?: string;
+  party_size: number;
+  zone_id: string;
+  table_ids: string[];
+  guest_note?: string;
+  duration_minutes?: number;
+};
+
+export type WalkInResult =
+  | { ok: true; bookingId: string; guestId: string; matchedExistingGuest: boolean; visitCountBefore: number }
+  | { ok: false; code: string; message?: string };
+
+// Walk-in create isn't scoped to an existing booking id, so it lives outside
+// useBookingActions(bookingId) as its own hook.
+export function useWalkInCreate() {
+  const nextRouter = useNextRouter();
+  const [pending, startTransition] = useTransition();
+
+  async function create(patch: WalkInPatch): Promise<WalkInResult> {
+    const res = await fetch('/api/dashboard/bookings/walk-in', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patch),
+    });
+    const json = await res.json().catch(() => ({ error: 'unknown_error' }));
+    if (!res.ok) {
+      return { ok: false, code: json.error ?? 'unknown_error', message: json.message };
+    }
+    startTransition(() => {
+      nextRouter.refresh();
+    });
+    return {
+      ok: true,
+      bookingId: json.booking_id,
+      guestId: json.guest_id,
+      matchedExistingGuest: json.matched_existing_guest,
+      visitCountBefore: json.visit_count_before,
+    };
+  }
+
+  return { pending, create };
+}
+
 export function useBookingActions(bookingId: string) {
   const nextRouter = useNextRouter();
   const [pending, startTransition] = useTransition();

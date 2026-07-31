@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter, usePathname } from '@/i18n/routing';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -12,6 +12,7 @@ import { Chair } from '@/components/dashboard/icons';
 import FilterChips from './FilterChips';
 import ServiceGroup from './ServiceGroup';
 import BookingDetail from './BookingDetail';
+import WalkInDialog from './WalkInDialog';
 import type {
   DayBooking,
   ServiceWindow,
@@ -68,12 +69,41 @@ export default function BookingsClient({
   locale,
 }: BookingsClientProps) {
   const t = useTranslations('dashboard.bookings');
+  const tWalkin = useTranslations('dashboard.walkin');
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const filter = parseFilterParam(searchParams.get('filter'));
   const now = useMemo(() => new Date(), []);
+
+  const [walkInOpen, setWalkInOpen] = useState(searchParams.get('walkin') === '1');
+
+  useEffect(() => {
+    if (searchParams.get('walkin') === '1') setWalkInOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  function closeWalkIn() {
+    setWalkInOpen(false);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('walkin');
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname);
+  }
+
+  function openWalkIn() {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('walkin', '1');
+    router.push(`${pathname}?${params.toString()}`);
+  }
+
+  function viewWalkInBooking(bookingId: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('walkin');
+    params.set('booking', bookingId);
+    router.push(`${pathname}?${params.toString()}`);
+  }
 
   const today = useMemo(() => amsterdamCivilDate(new Date()), []);
 
@@ -153,6 +183,16 @@ export default function BookingsClient({
               <EmptyState
                 illustration={<Chair width={48} height={48} />}
                 heading={t('empty.day')}
+                action={
+                  <button
+                    type="button"
+                    onClick={openWalkIn}
+                    className="tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-amber text-[#1e1508]"
+                    style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
+                  >
+                    {tWalkin('dialog.title')}
+                  </button>
+                }
               />
             ) : (
               <EmptyState
@@ -206,6 +246,14 @@ export default function BookingsClient({
           </>
         )}
       </div>
+
+      <WalkInDialog
+        open={walkInOpen}
+        onClose={closeWalkIn}
+        onViewBooking={viewWalkInBooking}
+        zones={zones}
+        locale={locale}
+      />
     </div>
   );
 }

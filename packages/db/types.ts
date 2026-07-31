@@ -577,7 +577,7 @@ export type Database = {
         Row: {
           anonymised_at: string | null
           created_at: string
-          email: string
+          email: string | null
           email_lower: string | null
           full_name: string
           id: string
@@ -585,13 +585,13 @@ export type Database = {
           loyalty_tier: string
           marketing_consent: boolean
           marketing_consent_at: string | null
-          phone: string
+          phone: string | null
           updated_at: string
         }
         Insert: {
           anonymised_at?: string | null
           created_at?: string
-          email: string
+          email?: string | null
           email_lower?: string | null
           full_name: string
           id?: string
@@ -599,13 +599,13 @@ export type Database = {
           loyalty_tier?: string
           marketing_consent?: boolean
           marketing_consent_at?: string | null
-          phone: string
+          phone?: string | null
           updated_at?: string
         }
         Update: {
           anonymised_at?: string | null
           created_at?: string
-          email?: string
+          email?: string | null
           email_lower?: string | null
           full_name?: string
           id?: string
@@ -613,7 +613,7 @@ export type Database = {
           loyalty_tier?: string
           marketing_consent?: boolean
           marketing_consent_at?: string | null
-          phone?: string
+          phone?: string | null
           updated_at?: string
         }
         Relationships: []
