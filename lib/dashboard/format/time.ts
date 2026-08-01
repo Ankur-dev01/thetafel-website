@@ -39,3 +39,12 @@ export function formatRelativeMinutesFromNow(
 
   return locale === 'nl' ? `over ${diffMinutes} min` : `in ${diffMinutes} min`
 }
+
+/** "2u 15m" / "2h 15m" — elapsed duration since `since`, hour+minute granularity, floored. */
+export function formatElapsedHoursMinutes(since: Date | string, now: Date, locale: 'nl' | 'en' = 'nl'): string {
+  const date = typeof since === 'string' ? new Date(since) : since
+  const totalMinutes = Math.max(0, Math.floor((now.getTime() - date.getTime()) / 60_000))
+  const hours = Math.floor(totalMinutes / 60)
+  const minutes = totalMinutes % 60
+  return locale === 'nl' ? `${hours}u ${minutes}m` : `${hours}h ${minutes}m`
+}

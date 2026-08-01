@@ -1839,6 +1839,75 @@
           "back": "Terug"
         }
       }
+    },
+    "tabs": {
+      "title": "Open rekeningen",
+      "filter": {
+        "all": "Alle",
+        "stale": "Openstaand >4u"
+      },
+      "tile": {
+        "open": {
+          "label": "Open rekeningen"
+        },
+        "stale": {
+          "label": "Openstaand langer dan 4 uur",
+          "needsAttention": "Vergt aandacht",
+          "allClear": "Niets urgent"
+        }
+      },
+      "card": {
+        "table": "Tafel {label}",
+        "orders": "{count, plural, =1 {1 bestelling} other {# bestellingen}}",
+        "guestsUnknown": "onbekend aantal gasten",
+        "guests": "{count, plural, =1 {1 gast} other {# gasten}}"
+      },
+      "action": {
+        "settle": "Afgerekend",
+        "writeOff": "Afschrijven"
+      },
+      "settle": {
+        "dialog": {
+          "title": "Rekening afgerekend?",
+          "body": "De rekening van {amount} is betaald. Bestellingen worden gemarkeerd als voltooid.",
+          "warning": "Zorg dat de betaling daadwerkelijk is ontvangen voordat je bevestigt.",
+          "confirm": "Ja, afgerekend",
+          "back": "Terug"
+        }
+      },
+      "writeOff": {
+        "dialog": {
+          "title": "Rekening afschrijven?",
+          "body": "{amount} wordt als onbetaald geboekt. Deze actie kan niet worden teruggedraaid vanuit het overzicht.",
+          "reason": {
+            "label": "Reden"
+          },
+          "confirm": "Ja, afschrijven",
+          "back": "Terug"
+        }
+      },
+      "detail": {
+        "orders": "Bestellingen",
+        "subtotal": "Subtotaal",
+        "vat": "BTW",
+        "total": "Totaal",
+        "closedBanner": {
+          "settled": "Deze rekening is afgerekend op {date} door {name}.",
+          "writeOff": "Deze rekening is afgeschreven op {date} door {name}."
+        }
+      },
+      "empty": {
+        "title": "Geen open rekeningen",
+        "body": "Zodra een gast een tafel-QR scant, verschijnt hun rekening hier."
+      },
+      "error": {
+        "invalid_body": "Ongeldig verzoek.",
+        "reason_required": "Vul een reden in voor de afschrijving.",
+        "not_found": "Rekening niet gevonden.",
+        "already_closed": "Deze rekening is al gesloten.",
+        "rate_limited": "Te veel acties achter elkaar.",
+        "db_error": "Iets ging mis. Probeer opnieuw."
+      }
     }
   }
 }

@@ -1839,6 +1839,75 @@
           "back": "Back"
         }
       }
+    },
+    "tabs": {
+      "title": "Open tabs",
+      "filter": {
+        "all": "All",
+        "stale": "Open >4h"
+      },
+      "tile": {
+        "open": {
+          "label": "Open tabs"
+        },
+        "stale": {
+          "label": "Open more than 4 hours",
+          "needsAttention": "Needs attention",
+          "allClear": "Nothing urgent"
+        }
+      },
+      "card": {
+        "table": "Table {label}",
+        "orders": "{count, plural, =1 {1 order} other {# orders}}",
+        "guestsUnknown": "guest count unknown",
+        "guests": "{count, plural, =1 {1 guest} other {# guests}}"
+      },
+      "action": {
+        "settle": "Settled",
+        "writeOff": "Write off"
+      },
+      "settle": {
+        "dialog": {
+          "title": "Tab settled?",
+          "body": "The {amount} tab has been paid. Orders will be marked as completed.",
+          "warning": "Make sure payment has actually been received before confirming.",
+          "confirm": "Yes, settled",
+          "back": "Back"
+        }
+      },
+      "writeOff": {
+        "dialog": {
+          "title": "Write off tab?",
+          "body": "{amount} will be logged as unpaid. This action cannot be undone from the overview.",
+          "reason": {
+            "label": "Reason"
+          },
+          "confirm": "Yes, write off",
+          "back": "Back"
+        }
+      },
+      "detail": {
+        "orders": "Orders",
+        "subtotal": "Subtotal",
+        "vat": "VAT",
+        "total": "Total",
+        "closedBanner": {
+          "settled": "This tab was settled on {date} by {name}.",
+          "writeOff": "This tab was written off on {date} by {name}."
+        }
+      },
+      "empty": {
+        "title": "No open tabs",
+        "body": "Once a guest scans a table QR, their tab appears here."
+      },
+      "error": {
+        "invalid_body": "Invalid request.",
+        "reason_required": "Please provide a reason for the write-off.",
+        "not_found": "Tab not found.",
+        "already_closed": "This tab is already closed.",
+        "rate_limited": "Too many actions in a row.",
+        "db_error": "Something went wrong. Try again."
+      }
     }
   }
 }

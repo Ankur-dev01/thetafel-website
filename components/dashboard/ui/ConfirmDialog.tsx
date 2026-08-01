@@ -18,6 +18,8 @@ type ConfirmDialogProps = {
   cancelLabel: string;
   destructive?: boolean;
   pending?: boolean;
+  /** Disables only the confirm button (e.g. a required field is still empty) — cancel stays enabled. */
+  confirmDisabled?: boolean;
 };
 
 export default function ConfirmDialog({
@@ -30,6 +32,7 @@ export default function ConfirmDialog({
   cancelLabel,
   destructive = false,
   pending = false,
+  confirmDisabled = false,
 }: ConfirmDialogProps) {
   const cancelRef = useRef<HTMLButtonElement>(null);
 
@@ -87,7 +90,7 @@ export default function ConfirmDialog({
           <button
             type="button"
             onClick={onConfirm}
-            disabled={pending}
+            disabled={pending || confirmDisabled}
             className={
               'tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] ' +
               (destructive ? 'bg-[#b3422f] text-[#fdfaf5]' : 'bg-amber text-[#1e1508]')
