@@ -1770,7 +1770,6 @@
         "markServed": "Serve",
         "cancel": "Cancel order",
         "refund": "Refund",
-        "stubD33": "Available in D3.3",
         "error": {
           "invalid_body": "Invalid request.",
           "use_cancel_endpoint": "Use cancel or refund for this.",
@@ -1779,6 +1778,10 @@
           "already_advanced": "Order has already advanced.",
           "rate_limited": "Too many actions in a row.",
           "db_error": "Something went wrong, try again.",
+          "already_terminal": "This order is already finalised.",
+          "use_refund": "Use refund for this order.",
+          "not_completed": "Only completed orders can be refunded.",
+          "not_paid": "This order hasn't been paid.",
           "unknown": "Something went wrong."
         }
       },
@@ -1806,6 +1809,35 @@
         "vat": "VAT",
         "total": "Total",
         "notes": "Note"
+      },
+      "cancel": {
+        "dialog": {
+          "title": "Cancel order?",
+          "body": "Are you sure you want to cancel this order?",
+          "paid": {
+            "info": "This order has already been paid {amount}. The refund will be processed automatically later."
+          },
+          "openTab": {
+            "info": "This order is on an open tab."
+          },
+          "reason": {
+            "label": "Reason (not shown to guest)"
+          },
+          "confirm": "Yes, cancel",
+          "back": "Back"
+        }
+      },
+      "refund": {
+        "dialog": {
+          "title": "Refund order?",
+          "body": "The guest will receive {amount} back to the payment method used for the order.",
+          "note": "The refund will be processed automatically.",
+          "reason": {
+            "label": "Reason (internal note)"
+          },
+          "confirm": "Yes, refund",
+          "back": "Back"
+        }
       }
     }
   }

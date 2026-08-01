@@ -1770,7 +1770,6 @@
         "markServed": "Serveer",
         "cancel": "Annuleer bestelling",
         "refund": "Terugbetalen",
-        "stubD33": "Beschikbaar in D3.3",
         "error": {
           "invalid_body": "Ongeldig verzoek.",
           "use_cancel_endpoint": "Gebruik annuleren of terugbetalen voor dit.",
@@ -1779,6 +1778,10 @@
           "already_advanced": "Bestelling is al verder.",
           "rate_limited": "Te veel acties achter elkaar.",
           "db_error": "Iets ging mis, probeer opnieuw.",
+          "already_terminal": "Deze bestelling is al afgerond.",
+          "use_refund": "Gebruik terugbetalen voor deze bestelling.",
+          "not_completed": "Alleen afgeronde bestellingen kunnen worden terugbetaald.",
+          "not_paid": "Deze bestelling is niet betaald.",
           "unknown": "Iets ging mis."
         }
       },
@@ -1806,6 +1809,35 @@
         "vat": "BTW",
         "total": "Totaal",
         "notes": "Notitie"
+      },
+      "cancel": {
+        "dialog": {
+          "title": "Bestelling annuleren?",
+          "body": "Weet je zeker dat je deze bestelling wil annuleren?",
+          "paid": {
+            "info": "De bestelling is al betaald voor {amount}. De terugbetaling wordt later automatisch verwerkt."
+          },
+          "openTab": {
+            "info": "Deze bestelling staat op een openstaande rekening."
+          },
+          "reason": {
+            "label": "Reden (niet zichtbaar voor gast)"
+          },
+          "confirm": "Ja, annuleer",
+          "back": "Terug"
+        }
+      },
+      "refund": {
+        "dialog": {
+          "title": "Bestelling terugbetalen?",
+          "body": "De gast krijgt {amount} terug op de betaalmethode van de bestelling.",
+          "note": "Terugbetaling wordt automatisch verwerkt.",
+          "reason": {
+            "label": "Reden (interne notitie)"
+          },
+          "confirm": "Ja, betaal terug",
+          "back": "Terug"
+        }
       }
     }
   }

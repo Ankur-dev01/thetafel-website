@@ -17,6 +17,7 @@ export type DashboardAction =
   | 'order.accept'
   | 'order.status.advance'
   | 'order.cancel'
+  | 'order.refund'
   | 'tab.open'
   | 'tab.close'
   | 'tab.write_off'

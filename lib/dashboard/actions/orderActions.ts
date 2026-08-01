@@ -2,17 +2,20 @@
 
 // lib/dashboard/actions/orderActions.ts
 //
-// Client wrapper around the D3.2 advance route. Mirrors bookingActions.ts's
-// shape (D2.3): POST, never trusts an optimistic local update, router.refresh()
-// wrapped in startTransition on success so the new status renders once the
-// server-rendered payload streams in.
+// Client wrapper around the D3.2 advance route + D3.3's cancel/refund
+// routes. Mirrors bookingActions.ts's shape (D2.3): POST, never trusts an
+// optimistic local update, router.refresh() wrapped in startTransition on
+// success so the new status renders once the server-rendered payload
+// streams in.
 //
 // `pending` covers the WHOLE round trip (fetch + refresh), not just the
 // refresh tail — `useTransition`'s own pending flag only reflects work done
 // inside `startTransition`, i.e. just `router.refresh()`, which would leave
 // the button clickable for the entire network request. `submitting` closes
 // that gap; the two flags are combined into a single `pending` the caller
-// disables on.
+// disables on. All three actions (advance/cancel/refund) share this one
+// `pending` flag so a pending cancel/refund can't be interrupted by another
+// action's click.
 
 import { useTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -26,14 +29,14 @@ export function useOrderActions(orderId: string) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function advance(to: OrderStatus): Promise<OrderActionResult> {
+  async function post(path: string, body?: unknown): Promise<OrderActionResult> {
     setError(null);
     setSubmitting(true);
     try {
-      const res = await fetch(`/api/dashboard/orders/${orderId}/advance`, {
+      const res = await fetch(path, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ to }),
+        body: JSON.stringify(body ?? {}),
       });
       if (res.ok) {
         startTransition(() => {
@@ -50,5 +53,17 @@ export function useOrderActions(orderId: string) {
     }
   }
 
-  return { advance, pending: submitting || refreshPending, error };
+  async function advance(to: OrderStatus): Promise<OrderActionResult> {
+    return post(`/api/dashboard/orders/${orderId}/advance`, { to });
+  }
+
+  async function cancel(reason?: string): Promise<OrderActionResult> {
+    return post(`/api/dashboard/orders/${orderId}/cancel`, { reason });
+  }
+
+  async function refund(reason?: string): Promise<OrderActionResult> {
+    return post(`/api/dashboard/orders/${orderId}/refund`, { reason });
+  }
+
+  return { advance, cancel, refund, pending: submitting || refreshPending, error };
 }

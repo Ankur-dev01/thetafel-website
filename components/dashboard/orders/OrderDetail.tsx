@@ -1,12 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import StatusChip from '@/components/dashboard/ui/StatusChip';
 import { getOrderStatusMapping, nextAction } from '@/lib/dashboard/format/orderStatus';
 import { formatCents } from '@/lib/dashboard/format/money';
 import { formatDateTimeShort } from '@/lib/dashboard/date/amsterdamDay';
 import { useOrderActions } from '@/lib/dashboard/actions/orderActions';
+import CancelOrderDialog from './CancelOrderDialog';
+import RefundOrderDialog from './RefundOrderDialog';
 import type { OrderDetailPayload } from '@/lib/dashboard/queries/orders';
+import type { OrderStatus } from '@/lib/orders/transitionOrderStatus';
 
 const ERROR_KEYS = new Set([
   'invalid_body',
@@ -16,7 +20,21 @@ const ERROR_KEYS = new Set([
   'already_advanced',
   'rate_limited',
   'db_error',
+  'already_terminal',
+  'use_refund',
+  'not_completed',
+  'not_paid',
 ]);
+
+const CANCELABLE_STATUSES: OrderStatus[] = ['pending', 'confirmed', 'preparing', 'ready'];
+
+function isCancelable(status: OrderStatus): boolean {
+  return CANCELABLE_STATUSES.includes(status);
+}
+
+function isRefundable(status: OrderStatus, paymentStatus: string): boolean {
+  return status === 'completed' && paymentStatus === 'paid';
+}
 
 type OrderDetailProps = {
   payload: OrderDetailPayload;
@@ -44,7 +62,19 @@ export default function OrderDetail({ payload, locale }: OrderDetailProps) {
   const statusMapping = getOrderStatusMapping(order.status);
   const action = nextAction(order.status, order.order_type);
   const showUnpaid = order.payment_status === 'pending';
-  const { advance, pending, error } = useOrderActions(order.id);
+  const { advance, cancel, refund, pending, error } = useOrderActions(order.id);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [refundOpen, setRefundOpen] = useState(false);
+
+  async function handleCancelConfirm(reason?: string) {
+    const result = await cancel(reason);
+    if (result.ok) setCancelOpen(false);
+  }
+
+  async function handleRefundConfirm(reason?: string) {
+    const result = await refund(reason);
+    if (result.ok) setRefundOpen(false);
+  }
 
   return (
     <div className="flex flex-col gap-5">
@@ -172,25 +202,25 @@ export default function OrderDetail({ payload, locale }: OrderDetailProps) {
             {pending ? '…' : t(`action.${action.key}`)}
           </button>
         )}
-        {statusMapping.isActive && (
+        {isCancelable(order.status) && (
           <button
             type="button"
-            disabled
-            title={t('action.stubD33')}
+            onClick={() => setCancelOpen(true)}
+            disabled={pending}
             data-testid="detail-order-cancel"
-            className="tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f7e8e6] text-[#b3422f] opacity-50"
+            className="tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f7e8e6] text-[#b3422f] disabled:opacity-50"
             style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
           >
             {t('action.cancel')}
           </button>
         )}
-        {!statusMapping.isActive && order.payment_status === 'paid' && (
+        {isRefundable(order.status, order.payment_status) && (
           <button
             type="button"
-            disabled
-            title={t('action.stubD33')}
+            onClick={() => setRefundOpen(true)}
+            disabled={pending}
             data-testid="detail-order-refund"
-            className="tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f5ede0] text-[#1e1508] opacity-50"
+            className="tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f5ede0] text-[#1e1508] disabled:opacity-50"
             style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
           >
             {t('action.refund')}
@@ -203,6 +233,24 @@ export default function OrderDetail({ payload, locale }: OrderDetailProps) {
           </p>
         )}
       </div>
+
+      <CancelOrderDialog
+        open={cancelOpen}
+        onCancel={() => setCancelOpen(false)}
+        onConfirm={handleCancelConfirm}
+        pending={pending}
+        paymentStatus={order.payment_status as 'pending' | 'paid' | 'open_tab' | 'refunded'}
+        totalCents={order.total_cents}
+        locale={locale}
+      />
+      <RefundOrderDialog
+        open={refundOpen}
+        onCancel={() => setRefundOpen(false)}
+        onConfirm={handleRefundConfirm}
+        pending={pending}
+        totalCents={order.total_cents}
+        locale={locale}
+      />
     </div>
   );
 }
