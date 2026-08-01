@@ -1,6 +1,9 @@
 'use client';
 
+import { usePathname } from '@/i18n/routing';
 import LanguageToggle from './LanguageToggle';
+import ChimeToggle from './ChimeToggle';
+import { useChimeEnabledState } from '@/components/dashboard/orders/useOrderChime';
 
 /**
  * Sticky header row on the cream main pane: restaurant name (small) left,
@@ -24,6 +27,10 @@ export default function DashboardHeader({
       ? 'Gepauzeerd'
       : 'Paused'
     : 'Live';
+
+  const pathname = usePathname();
+  const showChimeToggle = pathname === '/dashboard/orders';
+  const [chimeEnabled, setChimeEnabled] = useChimeEnabledState();
 
   return (
     <header className="sticky top-0 z-20 bg-cream/95 backdrop-blur-sm">
@@ -62,6 +69,7 @@ export default function DashboardHeader({
             )}
             {statusLabel}
           </span>
+          {showChimeToggle && <ChimeToggle enabled={chimeEnabled} onToggle={setChimeEnabled} />}
           <LanguageToggle locale={locale} />
         </div>
       </div>

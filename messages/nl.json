@@ -1512,10 +1512,6 @@
       }
     },
     "placeholder": {
-      "orders": {
-        "title": "Bestellingen",
-        "subtitle": "Nog niet gebouwd — komt in D3.1."
-      },
       "tabs": {
         "title": "Open rekeningen",
         "subtitle": "Nog niet gebouwd — komt in D3.4."
@@ -1734,6 +1730,73 @@
         "slot_lock_timeout": "Even wachten — een andere actie is bezig.",
         "rate_limited": "Te veel acties achter elkaar.",
         "unknown": "Er ging iets mis. Probeer het opnieuw."
+      }
+    },
+    "orders": {
+      "title": "Bestellingen",
+      "filter": {
+        "all": "Alle",
+        "qr": "QR",
+        "takeaway": "Afhaal"
+      },
+      "tab": {
+        "active": "Actief",
+        "completed": "Voltooid ({count})"
+      },
+      "type": {
+        "qr": "QR",
+        "takeaway": "Afhaal"
+      },
+      "status": {
+        "pending": "Wacht op bevestiging",
+        "confirmed": "Bevestigd",
+        "preparing": "In behandeling",
+        "ready": "Klaar",
+        "served": "Aan tafel",
+        "completed": "Voltooid",
+        "cancelled": "Geannuleerd",
+        "refunded": "Terugbetaald"
+      },
+      "card": {
+        "table": "Tafel {label}",
+        "itemCount": "{count, plural, =1 {1 gerecht} other {# gerechten}}",
+        "unpaid": "Niet betaald"
+      },
+      "action": {
+        "accept": "Accepteer",
+        "startPreparing": "Start bereiden",
+        "markReady": "Klaar",
+        "markPickedUp": "Opgehaald",
+        "markServed": "Serveer",
+        "cancel": "Annuleer bestelling",
+        "refund": "Terugbetalen",
+        "stubD32": "Beschikbaar in D3.2",
+        "stubD33": "Beschikbaar in D3.3"
+      },
+      "empty": {
+        "active": {
+          "title": "Geen actieve bestellingen",
+          "body": "Nieuwe bestellingen verschijnen hier zodra ze binnenkomen."
+        },
+        "completed": "Nog niets afgerond vandaag."
+      },
+      "chime": {
+        "tooltip": {
+          "enable": "Geluid aan bij nieuwe bestellingen",
+          "disable": "Geluid uit"
+        }
+      },
+      "detail": {
+        "timing": {
+          "created": "Aangemaakt {when}"
+        },
+        "items": {
+          "title": "Bestelling"
+        },
+        "subtotal": "Subtotaal",
+        "vat": "BTW",
+        "total": "Totaal",
+        "notes": "Notitie"
       }
     }
   }

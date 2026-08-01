@@ -1512,10 +1512,6 @@
       }
     },
     "placeholder": {
-      "orders": {
-        "title": "Orders",
-        "subtitle": "Not built yet — coming in D3.1."
-      },
       "tabs": {
         "title": "Open tabs",
         "subtitle": "Not built yet — coming in D3.4."
@@ -1734,6 +1730,73 @@
         "slot_lock_timeout": "Please wait — another action is in progress.",
         "rate_limited": "Too many actions in a row.",
         "unknown": "Something went wrong. Please try again."
+      }
+    },
+    "orders": {
+      "title": "Orders",
+      "filter": {
+        "all": "All",
+        "qr": "QR",
+        "takeaway": "Takeaway"
+      },
+      "tab": {
+        "active": "Active",
+        "completed": "Completed ({count})"
+      },
+      "type": {
+        "qr": "QR",
+        "takeaway": "Takeaway"
+      },
+      "status": {
+        "pending": "Awaiting confirmation",
+        "confirmed": "Confirmed",
+        "preparing": "Preparing",
+        "ready": "Ready",
+        "served": "At table",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "refunded": "Refunded"
+      },
+      "card": {
+        "table": "Table {label}",
+        "itemCount": "{count, plural, =1 {1 item} other {# items}}",
+        "unpaid": "Not paid"
+      },
+      "action": {
+        "accept": "Accept",
+        "startPreparing": "Start preparing",
+        "markReady": "Ready",
+        "markPickedUp": "Picked up",
+        "markServed": "Serve",
+        "cancel": "Cancel order",
+        "refund": "Refund",
+        "stubD32": "Available in D3.2",
+        "stubD33": "Available in D3.3"
+      },
+      "empty": {
+        "active": {
+          "title": "No active orders",
+          "body": "New orders will appear here as they come in."
+        },
+        "completed": "Nothing completed today yet."
+      },
+      "chime": {
+        "tooltip": {
+          "enable": "Sound on for new orders",
+          "disable": "Sound off"
+        }
+      },
+      "detail": {
+        "timing": {
+          "created": "Created {when}"
+        },
+        "items": {
+          "title": "Order"
+        },
+        "subtotal": "Subtotal",
+        "vat": "VAT",
+        "total": "Total",
+        "notes": "Note"
       }
     }
   }

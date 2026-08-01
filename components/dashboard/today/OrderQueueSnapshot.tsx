@@ -66,7 +66,7 @@ export default function OrderQueueSnapshot({ orders, nowIso, locale }: OrderQueu
         {activeOrders.map((order) => (
           <EntityCard
             key={order.id}
-            href={`/dashboard/orders/${order.id}`}
+            href={`/dashboard/orders?order=${order.id}`}
             title={`Bestelling ${order.order_ref}`}
             subtitle={`${order.order_type === 'qr' ? 'QR' : 'Afhaal'} · ${currencyFormatter.format(
               order.total_cents / 100
