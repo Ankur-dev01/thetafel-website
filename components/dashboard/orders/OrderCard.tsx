@@ -4,10 +4,21 @@ import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n/routing';
 import { useSearchParams } from 'next/navigation';
 import StatusChip from '@/components/dashboard/ui/StatusChip';
-import { getOrderStatusMapping, nextActionKey } from '@/lib/dashboard/format/orderStatus';
+import { getOrderStatusMapping, nextAction } from '@/lib/dashboard/format/orderStatus';
 import { formatRelativeMinutesFromNow } from '@/lib/dashboard/format/time';
 import { formatCents } from '@/lib/dashboard/format/money';
+import { useOrderActions } from '@/lib/dashboard/actions/orderActions';
 import type { OrderListRow } from '@/lib/dashboard/queries/orders';
+
+const ERROR_KEYS = new Set([
+  'invalid_body',
+  'use_cancel_endpoint',
+  'not_found',
+  'illegal_transition',
+  'already_advanced',
+  'rate_limited',
+  'db_error',
+]);
 
 type OrderCardProps = {
   order: OrderListRow;
@@ -25,8 +36,16 @@ export default function OrderCard({ order, now, locale }: OrderCardProps) {
   const href = `${pathname}?${params.toString()}`;
 
   const statusMapping = getOrderStatusMapping(order.status);
-  const actionKey = nextActionKey(order.status, order.order_type);
+  const action = nextAction(order.status, order.order_type);
   const showUnpaid = order.payment_status === 'pending';
+  const { advance, pending, error } = useOrderActions(order.id);
+
+  async function handleActionClick(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!action || pending) return;
+    await advance(action.to);
+  }
 
   return (
     <Link href={href} className="tafel-tap block" data-testid={`order-card-${order.id}`}>
@@ -77,17 +96,24 @@ export default function OrderCard({ order, now, locale }: OrderCardProps) {
           <span className="text-[12px] text-[#8c8577]">
             {formatRelativeMinutesFromNow(order.created_at, now, locale)}
           </span>
-          {actionKey && (
-            <button
-              type="button"
-              disabled
-              title={t('action.stubD32')}
-              aria-label={t('action.stubD32')}
-              className="tafel-tap px-3.5 py-2 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f5ede0] text-[#1e1508] opacity-50"
-              style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
-            >
-              {t(`action.${actionKey}`)}
-            </button>
+          {action && (
+            <div className="flex flex-col items-end gap-1">
+              <button
+                type="button"
+                onClick={handleActionClick}
+                disabled={pending}
+                data-testid={`order-action-${order.id}`}
+                className="tafel-tap px-3.5 py-2 rounded-full text-[12px] uppercase tracking-[0.08em] bg-amber text-[#1e1508] disabled:opacity-50"
+                style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
+              >
+                {pending ? '…' : t(`action.${action.key}`)}
+              </button>
+              {error && (
+                <span className="text-[11px] text-[#b3422f] max-w-[180px] text-right leading-snug">
+                  {t(`action.error.${ERROR_KEYS.has(error) ? error : 'unknown'}`)}
+                </span>
+              )}
+            </div>
           )}
         </div>
       </div>

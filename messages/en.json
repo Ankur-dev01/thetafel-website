@@ -1770,8 +1770,17 @@
         "markServed": "Serve",
         "cancel": "Cancel order",
         "refund": "Refund",
-        "stubD32": "Available in D3.2",
-        "stubD33": "Available in D3.3"
+        "stubD33": "Available in D3.3",
+        "error": {
+          "invalid_body": "Invalid request.",
+          "use_cancel_endpoint": "Use cancel or refund for this.",
+          "not_found": "Order not found.",
+          "illegal_transition": "This step isn't available now.",
+          "already_advanced": "Order has already advanced.",
+          "rate_limited": "Too many actions in a row.",
+          "db_error": "Something went wrong, try again.",
+          "unknown": "Something went wrong."
+        }
       },
       "empty": {
         "active": {

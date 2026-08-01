@@ -39,22 +39,29 @@ export const TERMINAL_ORDER_STATUSES = (Object.keys(MAPPING) as OrderStatus[]).f
   (s) => !MAPPING[s].isActive,
 )
 
+export type OrderNextAction = {
+  /** Key suffix under `dashboard.orders.action.*`. */
+  key: string
+  /** The status this action's button advances to — passed straight to `useOrderActions().advance()`. */
+  to: OrderStatus
+}
+
 /**
- * The single inline next-action stub per (status, order_type) — key suffix
- * under `dashboard.orders.action.*`. Null when there's no next action to show
- * (served orders, or any terminal status). D3.2 wires these up for real;
- * D3.1 renders them disabled with a "Beschikbaar in D3.2" tooltip.
+ * The single inline next-action per (status, order_type) — same shape the
+ * D3.2 advance route's own `legalNextStatuses` enforces server-side; this is
+ * UX help only; the server is the real authority. Null when there's no next
+ * action to show (served orders, or any terminal status).
  */
-export function nextActionKey(status: OrderStatus, orderType: 'qr' | 'takeaway'): string | null {
+export function nextAction(status: OrderStatus, orderType: 'qr' | 'takeaway'): OrderNextAction | null {
   switch (status) {
     case 'pending':
-      return 'accept'
+      return { key: 'accept', to: 'confirmed' }
     case 'confirmed':
-      return 'startPreparing'
+      return { key: 'startPreparing', to: 'preparing' }
     case 'preparing':
-      return 'markReady'
+      return { key: 'markReady', to: 'ready' }
     case 'ready':
-      return orderType === 'takeaway' ? 'markPickedUp' : 'markServed'
+      return orderType === 'takeaway' ? { key: 'markPickedUp', to: 'completed' } : { key: 'markServed', to: 'served' }
     default:
       return null
   }

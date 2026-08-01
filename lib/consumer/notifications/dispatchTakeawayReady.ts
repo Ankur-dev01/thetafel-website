@@ -80,6 +80,22 @@ export async function sendTakeawayReadyEmail(
     return { ok: false, error }
   }
 
+  // Anonymous walk-in-style guests (or any guest who simply didn't give an
+  // email) have nothing to send to — not a failure, and NOT the same as a
+  // send attempt that bounced. `ready_notified_at` stays null: nothing fired,
+  // so there's nothing to guard against re-firing later if an address shows
+  // up (e.g. a manual staff correction).
+  if (!guest.email) {
+    await auditLog({
+      restaurantId: order.restaurant_id,
+      eventType: 'email.skipped',
+      eventData: { intent: 'takeaway_ready_for_pickup', reason: 'no_guest_email', orderRef: order.order_ref },
+      actorType: 'system',
+      orderId: order.id,
+    }).catch(() => {})
+    return { ok: false, error: 'no_guest_email' }
+  }
+
   const restaurantName = restaurant.display_name ?? restaurant.legal_name ?? 'Restaurant'
 
   const link = await createMagicLink({

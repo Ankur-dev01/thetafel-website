@@ -19,6 +19,14 @@ export type SeedOrderSpec = {
   tableId?: string // QR only, defaults to the fixture table
   guestName?: string // takeaway only
   guestPhone?: string
+  /**
+   * takeaway only. Omit for the default `e2e-{uuid}@thetafel.test` address
+   * (D3.2's ready-email test needs a real deliverable-shaped address).
+   * Pass `null` explicitly to seed a guest with NO email — the D3.2
+   * "email skipped, no guest address" case (`guests.email` is nullable
+   * since the D2.4 migration).
+   */
+  guestEmail?: string | null
   minutesAgoCreated?: number
   pickupMinutesFromNow?: number // takeaway only, default 20
   itemCount?: number // default 3 — inserted with menu_item_id=null (nullable FK), plain name_snapshot text
@@ -52,11 +60,12 @@ export async function seedOrders(opts: {
     let guestId: string | null = null
     if (spec.orderType === 'takeaway') {
       const uuid = randomUUID()
+      const email = spec.guestEmail === undefined ? `e2e-${uuid}@thetafel.test` : spec.guestEmail
       const { data: guest, error: guestError } = await supabase
         .from('guests')
         .insert({
           full_name: spec.guestName ?? 'E2E Order Guest',
-          email: `e2e-${uuid}@thetafel.test`,
+          email,
           phone: spec.guestPhone ?? '+31600000007',
           marketing_consent: false,
         })

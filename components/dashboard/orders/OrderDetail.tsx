@@ -2,10 +2,21 @@
 
 import { useTranslations } from 'next-intl';
 import StatusChip from '@/components/dashboard/ui/StatusChip';
-import { getOrderStatusMapping, nextActionKey } from '@/lib/dashboard/format/orderStatus';
+import { getOrderStatusMapping, nextAction } from '@/lib/dashboard/format/orderStatus';
 import { formatCents } from '@/lib/dashboard/format/money';
 import { formatDateTimeShort } from '@/lib/dashboard/date/amsterdamDay';
+import { useOrderActions } from '@/lib/dashboard/actions/orderActions';
 import type { OrderDetailPayload } from '@/lib/dashboard/queries/orders';
+
+const ERROR_KEYS = new Set([
+  'invalid_body',
+  'use_cancel_endpoint',
+  'not_found',
+  'illegal_transition',
+  'already_advanced',
+  'rate_limited',
+  'db_error',
+]);
 
 type OrderDetailProps = {
   payload: OrderDetailPayload;
@@ -31,8 +42,9 @@ export default function OrderDetail({ payload, locale }: OrderDetailProps) {
   const { order, items } = payload;
 
   const statusMapping = getOrderStatusMapping(order.status);
-  const actionKey = nextActionKey(order.status, order.order_type);
+  const action = nextAction(order.status, order.order_type);
   const showUnpaid = order.payment_status === 'pending';
+  const { advance, pending, error } = useOrderActions(order.id);
 
   return (
     <div className="flex flex-col gap-5">
@@ -146,17 +158,18 @@ export default function OrderDetail({ payload, locale }: OrderDetailProps) {
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2 pt-1">
-        {actionKey && (
+      <div className="flex flex-col gap-2 pt-1">
+        <div className="flex flex-wrap gap-2">
+        {action && (
           <button
             type="button"
-            disabled
-            title={t('action.stubD32')}
+            onClick={() => !pending && advance(action.to)}
+            disabled={pending}
             data-testid="detail-order-next-action"
-            className="tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-amber text-[#1e1508] opacity-50"
+            className="tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-amber text-[#1e1508] disabled:opacity-50"
             style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
           >
-            {t(`action.${actionKey}`)}
+            {pending ? '…' : t(`action.${action.key}`)}
           </button>
         )}
         {statusMapping.isActive && (
@@ -182,6 +195,12 @@ export default function OrderDetail({ payload, locale }: OrderDetailProps) {
           >
             {t('action.refund')}
           </button>
+        )}
+        </div>
+        {error && (
+          <p className="text-[12px] text-[#b3422f]" data-testid="detail-order-action-error">
+            {t(`action.error.${ERROR_KEYS.has(error) ? error : 'unknown'}`)}
+          </p>
         )}
       </div>
     </div>

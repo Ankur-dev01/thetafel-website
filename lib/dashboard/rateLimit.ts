@@ -11,7 +11,7 @@ import { Redis } from '@upstash/redis';
 
 const WINDOW = '1 m';
 const MAX = 20;
-const PREFIX = 'dash:booking_actions';
+const PREFIX = 'dash:mutation_actions';
 
 let _redis: Redis | null = null;
 function getRedis(): Redis {
@@ -41,16 +41,18 @@ export type DashboardRateLimitResult = {
 };
 
 /**
- * 20 mutating booking-action requests per minute per staff user. Same
- * dev-mode bypass convention as lib/consumer/rateLimit.ts so local dev and
- * Playwright runs (NODE_ENV=development) don't fight Redis quotas.
+ * 20 mutating dashboard requests per minute per staff user — shared across
+ * booking actions (D2.3) and order actions (D3.2), one budget per staff
+ * member rather than per feature. Same dev-mode bypass convention as
+ * lib/consumer/rateLimit.ts so local dev and Playwright runs
+ * (NODE_ENV=development) don't fight Redis quotas.
  */
 export async function dashboardMutationRateLimit(userId: string): Promise<DashboardRateLimitResult> {
   if (process.env.NODE_ENV === 'development') {
     return { ok: true };
   }
 
-  const result = await getLimiter().limit(`user:${userId}:dashboard_booking_actions`);
+  const result = await getLimiter().limit(`user:${userId}:dashboard_mutation_actions`);
   if (result.success) return { ok: true };
 
   const retryAfter = Math.max(1, Math.ceil((result.reset - Date.now()) / 1000));

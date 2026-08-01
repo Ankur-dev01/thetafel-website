@@ -1770,8 +1770,17 @@
         "markServed": "Serveer",
         "cancel": "Annuleer bestelling",
         "refund": "Terugbetalen",
-        "stubD32": "Beschikbaar in D3.2",
-        "stubD33": "Beschikbaar in D3.3"
+        "stubD33": "Beschikbaar in D3.3",
+        "error": {
+          "invalid_body": "Ongeldig verzoek.",
+          "use_cancel_endpoint": "Gebruik annuleren of terugbetalen voor dit.",
+          "not_found": "Bestelling niet gevonden.",
+          "illegal_transition": "Deze stap kan nu niet.",
+          "already_advanced": "Bestelling is al verder.",
+          "rate_limited": "Te veel acties achter elkaar.",
+          "db_error": "Iets ging mis, probeer opnieuw.",
+          "unknown": "Iets ging mis."
+        }
       },
       "empty": {
         "active": {
