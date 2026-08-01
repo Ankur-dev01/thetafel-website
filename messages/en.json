@@ -1908,6 +1908,62 @@
         "rate_limited": "Too many actions in a row.",
         "db_error": "Something went wrong. Try again."
       }
+    },
+    "menu": {
+      "title": "Menu",
+      "subtitle": "{items} items · {categories} categories",
+      "stats": {
+        "unavailable": "{count} unavailable"
+      },
+      "search": {
+        "placeholder": "Search menu…",
+        "empty": "Nothing found for '{q}'",
+        "clear": "Clear search"
+      },
+      "category": {
+        "list": {
+          "title": "Categories"
+        },
+        "add": {
+          "label": "+ Add category",
+          "tooltip": "Available in D4.2"
+        },
+        "empty": "No items in this category"
+      },
+      "items": {
+        "add": {
+          "label": "+ Add item",
+          "tooltip": "Available in D4.3"
+        }
+      },
+      "empty": {
+        "categories": {
+          "title": "No menu categories yet",
+          "body": "Categories arrive in D4.2."
+        }
+      },
+      "detail": {
+        "description": "Description",
+        "inCategory": "in {name}",
+        "window": {
+          "title": "Availability",
+          "body": "Only orderable between {start}–{end}."
+        },
+        "unavailable": {
+          "title": "Currently unavailable",
+          "body": "Turn on in D4.3."
+        },
+        "modifiers": "Options",
+        "action": {
+          "edit": { "label": "Edit", "tooltip": "Available in D4.3" },
+          "toggle86": { "label": "86 / Un-86", "tooltip": "Available in D4.3" },
+          "replaceImage": { "label": "Replace image", "tooltip": "Available in D4.4" }
+        }
+      },
+      "item": {
+        "unavailableChip": "86'd",
+        "placeholderAlt": "Menu item photo"
+      }
     }
   }
 }

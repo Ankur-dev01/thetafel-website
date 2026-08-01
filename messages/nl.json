@@ -1908,6 +1908,62 @@
         "rate_limited": "Te veel acties achter elkaar.",
         "db_error": "Iets ging mis. Probeer opnieuw."
       }
+    },
+    "menu": {
+      "title": "Menu",
+      "subtitle": "{items} items · {categories} categorieën",
+      "stats": {
+        "unavailable": "{count} niet beschikbaar"
+      },
+      "search": {
+        "placeholder": "Zoek in menu…",
+        "empty": "Niets gevonden voor '{q}'",
+        "clear": "Wis zoekopdracht"
+      },
+      "category": {
+        "list": {
+          "title": "Categorieën"
+        },
+        "add": {
+          "label": "+ Categorie toevoegen",
+          "tooltip": "Beschikbaar in D4.2"
+        },
+        "empty": "Geen items in deze categorie"
+      },
+      "items": {
+        "add": {
+          "label": "+ Item toevoegen",
+          "tooltip": "Beschikbaar in D4.3"
+        }
+      },
+      "empty": {
+        "categories": {
+          "title": "Nog geen menu-categorieën",
+          "body": "Categorieën komen in D4.2."
+        }
+      },
+      "detail": {
+        "description": "Omschrijving",
+        "inCategory": "in {name}",
+        "window": {
+          "title": "Beschikbaarheid",
+          "body": "Alleen te bestellen tussen {start}–{end}."
+        },
+        "unavailable": {
+          "title": "Momenteel niet beschikbaar",
+          "body": "Zet aan in D4.3."
+        },
+        "modifiers": "Extra keuzes",
+        "action": {
+          "edit": { "label": "Bewerken", "tooltip": "Beschikbaar in D4.3" },
+          "toggle86": { "label": "86'en / Un-86'en", "tooltip": "Beschikbaar in D4.3" },
+          "replaceImage": { "label": "Foto vervangen", "tooltip": "Beschikbaar in D4.4" }
+        }
+      },
+      "item": {
+        "unavailableChip": "86'd",
+        "placeholderAlt": "Menu-item foto"
+      }
     }
   }
 }
