@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/routing';
 import { useSearchParams } from 'next/navigation';
@@ -10,9 +10,17 @@ import DetailSheet from '@/components/dashboard/ui/DetailSheet';
 import { Plate } from '@/components/dashboard/icons';
 import MenuSearch from './MenuSearch';
 import CategoryList from './CategoryList';
+import CategoryEditDialog from './CategoryEditDialog';
 import ItemGrid from './ItemGrid';
 import ItemDetail from './ItemDetail';
+import { useMenuCategoryActions } from '@/lib/dashboard/actions/menuCategoryActions';
+import type { CategoryPatch } from '@/lib/dashboard/menu/categoryValidation';
 import type { MenuCategory, MenuItem, MenuItemDetail as MenuItemDetailType } from '@/lib/dashboard/queries/menu';
+
+type DialogState =
+  | { mode: 'closed' }
+  | { mode: 'create' }
+  | { mode: 'edit'; initial: CategoryPatch & { id: string; itemCount: number } };
 
 type MenuClientProps = {
   categories: MenuCategory[];
@@ -29,6 +37,30 @@ export default function MenuClient({ categories, items, unavailableCount, active
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const actions = useMenuCategoryActions();
+  const [dialog, setDialog] = useState<DialogState>({ mode: 'closed' });
+
+  function openEdit(category: MenuCategory) {
+    setDialog({
+      mode: 'edit',
+      initial: {
+        id: category.id,
+        itemCount: category.itemCount,
+        name_nl: category.nameNl,
+        name_en: category.nameEn,
+        window_start: category.windowStart,
+        window_end: category.windowEnd,
+        visible_takeaway: category.visibleTakeaway,
+        visible_qr: category.visibleQr,
+      },
+    });
+  }
+
+  async function handleReorder(orderedIds: string[]): Promise<boolean> {
+    const result = await actions.reorderCategories(orderedIds);
+    return result.ok;
+  }
 
   function selectCategory(categoryId: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -55,11 +87,42 @@ export default function MenuClient({ categories, items, unavailableCount, active
 
   const matchedCategoryIds = useMemo(() => new Set(items.map((i) => i.categoryId).filter((id): id is string => Boolean(id))), [items]);
 
+  const categoryDialog = (
+    <CategoryEditDialog
+      open={dialog.mode !== 'closed'}
+      mode={dialog.mode === 'edit' ? 'edit' : 'create'}
+      initial={dialog.mode === 'edit' ? dialog.initial : null}
+      onClose={() => setDialog({ mode: 'closed' })}
+      onSubmit={(patch) =>
+        dialog.mode === 'edit' ? actions.updateCategory(dialog.initial.id, patch) : actions.createCategory(patch)
+      }
+      onDelete={dialog.mode === 'edit' ? actions.deleteCategory : undefined}
+      pending={actions.pending}
+    />
+  );
+
   if (categories.length === 0) {
     return (
       <div className="flex flex-col gap-4 pt-2">
         <MenuSearch initialValue={search} />
-        <EmptyState illustration={<Plate width={48} height={48} />} heading={t('empty.categories.title')} body={t('empty.categories.body')} />
+        <EmptyState
+          illustration={<Plate width={48} height={48} />}
+          heading={t('empty.categories.title')}
+          body={t('empty.categories.body')}
+          action={
+            <button
+              type="button"
+              onClick={() => setDialog({ mode: 'create' })}
+              disabled={actions.pending}
+              data-testid="menu-category-add"
+              className="tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-amber text-[#1e1508] disabled:opacity-50"
+              style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
+            >
+              {t('category.add.label')}
+            </button>
+          }
+        />
+        {categoryDialog}
       </div>
     );
   }
@@ -125,7 +188,15 @@ export default function MenuClient({ categories, items, unavailableCount, active
       <div className="hidden md:grid md:grid-cols-[280px_1fr] gap-6 items-start">
         <div className="flex flex-col gap-4">
           <MenuSearch initialValue={search} />
-          <CategoryList categories={categories} activeCategoryId={activeCategoryId} onSelect={selectCategory} />
+          <CategoryList
+            categories={categories}
+            activeCategoryId={activeCategoryId}
+            onSelect={selectCategory}
+            onEdit={openEdit}
+            onAdd={() => setDialog({ mode: 'create' })}
+            onReorder={handleReorder}
+            pending={actions.pending}
+          />
         </div>
         <div>{itemsSection}</div>
       </div>
@@ -144,6 +215,8 @@ export default function MenuClient({ categories, items, unavailableCount, active
           </div>
         </>
       )}
+
+      {categoryDialog}
     </div>
   );
 }

@@ -1925,10 +1925,79 @@
           "title": "Categorieën"
         },
         "add": {
-          "label": "+ Categorie toevoegen",
-          "tooltip": "Beschikbaar in D4.2"
+          "label": "+ Categorie toevoegen"
         },
-        "empty": "Geen items in deze categorie"
+        "empty": "Geen items in deze categorie",
+        "create": { "title": "Categorie toevoegen" },
+        "edit": { "title": "Categorie bewerken" },
+        "field": {
+          "nameNl": {
+            "label": "Naam (Nederlands)",
+            "placeholder": "Bijv. Voorgerechten"
+          },
+          "nameEn": {
+            "label": "Naam (Engels, optioneel)",
+            "placeholder": "Bijv. Starters",
+            "hint": "Leeg laten om Nederlandse naam te gebruiken."
+          },
+          "window": {
+            "toggle": "Tijdvenster instellen",
+            "hint": "Alleen te bestellen tussen deze tijden.",
+            "start": "Van",
+            "end": "Tot"
+          },
+          "visibility": {
+            "title": "Zichtbaar op",
+            "qr": "In-restaurant menu (QR)",
+            "takeaway": "Afhaalmenu",
+            "hint": "Uit zetten om deze categorie en al zijn items te verbergen."
+          }
+        },
+        "button": {
+          "create": "Toevoegen",
+          "save": "Opslaan",
+          "cancel": "Annuleren",
+          "delete": "Verwijderen"
+        },
+        "delete": {
+          "confirm": {
+            "title": "Categorie verwijderen?",
+            "body": "Weet je zeker dat je \"{name}\" wil verwijderen?",
+            "confirm": "Ja, verwijder",
+            "back": "Terug"
+          },
+          "blocked": {
+            "title": "Kan niet verwijderd worden",
+            "body": "Deze categorie heeft {count, plural, =1 {1 item} other {# items}}. Verplaats of verwijder ze eerst.",
+            "hint": "Item-beheer komt in D4.3.",
+            "close": "Sluiten"
+          }
+        },
+        "reorder": {
+          "error": {
+            "revert": "Volgorde kon niet worden opgeslagen."
+          }
+        },
+        "error": {
+          "name_nl_required": "Nederlandse naam is verplicht.",
+          "name_nl_too_long": "Naam is te lang (max 60 tekens).",
+          "name_en_too_long": "Engelse naam is te lang (max 60 tekens).",
+          "window_both_or_neither": "Vul beide tijden in, of laat beide leeg.",
+          "window_invalid_format": "Ongeldig tijdformaat. Gebruik HH:MM.",
+          "window_start_after_end": "Starttijd moet voor eindtijd zijn.",
+          "invalid_visibility": "Ongeldige zichtbaarheidsinstelling.",
+          "invalid_body": "Ongeldig verzoek.",
+          "not_found": "Categorie niet gevonden.",
+          "has_items": "Deze categorie heeft nog items.",
+          "unknown_category": "Onbekende categorie in de volgorde.",
+          "incomplete_order": "De volgorde is niet compleet.",
+          "duplicate_id": "Dubbele categorie in de volgorde.",
+          "rate_limited": "Even wachten — te veel acties.",
+          "not_staff": "Geen toegang.",
+          "forbidden": "Geen toegang.",
+          "db_error": "Er ging iets mis.",
+          "unknown_error": "Er ging iets mis."
+        }
       },
       "items": {
         "add": {
@@ -1939,7 +2008,7 @@
       "empty": {
         "categories": {
           "title": "Nog geen menu-categorieën",
-          "body": "Categorieën komen in D4.2."
+          "body": "Voeg je eerste categorie toe om te beginnen."
         }
       },
       "detail": {

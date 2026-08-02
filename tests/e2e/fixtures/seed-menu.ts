@@ -89,3 +89,55 @@ export async function cleanupSeededMenu(ids: { categoryIds: string[]; itemIds: s
     await supabase.from('menu_categories').delete().in('id', ids.categoryIds)
   }
 }
+
+/**
+ * The test restaurant's permanent menu, which is never wiped and which
+ * tests/e2e/qr/pay-at-table.spec.ts reads by name AND by position — it picks
+ * the first item card under a category heading, so item display_order is
+ * load-bearing there.
+ *
+ * D4.2's reorder route rewrites EVERY category of the restaurant, so any test
+ * that reorders must put these three back afterwards.
+ */
+export const PERMANENT_CATEGORY_ORDER: { name_nl: string; display_order: number }[] = [
+  { name_nl: 'Voorgerechten', display_order: 0 },
+  { name_nl: 'Hoofdgerechten', display_order: 1 },
+  { name_nl: 'Desserts', display_order: 2 },
+]
+
+/** Snapshot every category's display_order, so a reorder test can put things back exactly. */
+export async function snapshotCategoryOrder(
+  restaurantId: string,
+): Promise<{ id: string; display_order: number | null }[]> {
+  const supabase = adminClient()
+  const { data, error } = await supabase
+    .from('menu_categories')
+    .select('id, display_order')
+    .eq('restaurant_id', restaurantId)
+  if (error) throw new Error(`[snapshotCategoryOrder] failed: ${error.message}`)
+  return (data ?? []).map((r) => ({ id: r.id as string, display_order: r.display_order as number | null }))
+}
+
+/** Restore a snapshot taken by `snapshotCategoryOrder`. Rows that no longer exist are skipped. */
+export async function restoreCategoryOrder(
+  snapshot: { id: string; display_order: number | null }[],
+): Promise<void> {
+  const supabase = adminClient()
+  for (const row of snapshot) {
+    await supabase.from('menu_categories').update({ display_order: row.display_order }).eq('id', row.id)
+  }
+}
+
+/** Deletes any `_D42_test_%` categories (and their items) left behind by a failed D4.2 test. */
+export async function cleanupD42TestCategories(restaurantId: string): Promise<void> {
+  const supabase = adminClient()
+  const { data: categories } = await supabase
+    .from('menu_categories')
+    .select('id')
+    .eq('restaurant_id', restaurantId)
+    .like('name_nl', '\\_D42\\_test\\_%')
+  const ids = (categories ?? []).map((c) => c.id as string)
+  if (ids.length === 0) return
+  await supabase.from('menu_items').delete().in('category_id', ids)
+  await supabase.from('menu_categories').delete().in('id', ids)
+}

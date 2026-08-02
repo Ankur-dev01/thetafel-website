@@ -1925,10 +1925,79 @@
           "title": "Categories"
         },
         "add": {
-          "label": "+ Add category",
-          "tooltip": "Available in D4.2"
+          "label": "+ Add category"
         },
-        "empty": "No items in this category"
+        "empty": "No items in this category",
+        "create": { "title": "Add category" },
+        "edit": { "title": "Edit category" },
+        "field": {
+          "nameNl": {
+            "label": "Name (Dutch)",
+            "placeholder": "e.g. Starters"
+          },
+          "nameEn": {
+            "label": "Name (English, optional)",
+            "placeholder": "e.g. Starters",
+            "hint": "Leave blank to use the Dutch name."
+          },
+          "window": {
+            "toggle": "Set time window",
+            "hint": "Only orderable between these times.",
+            "start": "From",
+            "end": "To"
+          },
+          "visibility": {
+            "title": "Visible on",
+            "qr": "In-restaurant menu (QR)",
+            "takeaway": "Takeaway menu",
+            "hint": "Turn off to hide this category and all its items."
+          }
+        },
+        "button": {
+          "create": "Add",
+          "save": "Save",
+          "cancel": "Cancel",
+          "delete": "Delete"
+        },
+        "delete": {
+          "confirm": {
+            "title": "Delete category?",
+            "body": "Are you sure you want to delete \"{name}\"?",
+            "confirm": "Yes, delete",
+            "back": "Back"
+          },
+          "blocked": {
+            "title": "Can't delete",
+            "body": "This category has {count, plural, =1 {1 item} other {# items}}. Move or delete them first.",
+            "hint": "Item management arrives in D4.3.",
+            "close": "Close"
+          }
+        },
+        "reorder": {
+          "error": {
+            "revert": "Order could not be saved."
+          }
+        },
+        "error": {
+          "name_nl_required": "Dutch name is required.",
+          "name_nl_too_long": "Name is too long (max 60 characters).",
+          "name_en_too_long": "English name is too long (max 60 characters).",
+          "window_both_or_neither": "Fill in both times, or leave both empty.",
+          "window_invalid_format": "Invalid time format. Use HH:MM.",
+          "window_start_after_end": "Start time must be before end time.",
+          "invalid_visibility": "Invalid visibility setting.",
+          "invalid_body": "Invalid request.",
+          "not_found": "Category not found.",
+          "has_items": "This category still has items.",
+          "unknown_category": "Unknown category in the order.",
+          "incomplete_order": "The order is not complete.",
+          "duplicate_id": "Duplicate category in the order.",
+          "rate_limited": "Slow down — too many actions.",
+          "not_staff": "No access.",
+          "forbidden": "No access.",
+          "db_error": "Something went wrong.",
+          "unknown_error": "Something went wrong."
+        }
       },
       "items": {
         "add": {
@@ -1939,7 +2008,7 @@
       "empty": {
         "categories": {
           "title": "No menu categories yet",
-          "body": "Categories arrive in D4.2."
+          "body": "Add your first category to get started."
         }
       },
       "detail": {

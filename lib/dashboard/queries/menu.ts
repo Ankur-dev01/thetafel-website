@@ -18,10 +18,15 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 export type MenuCategory = {
   id: string
+  /** Locale-picked, for display. The raw pair below is what the D4.2 edit dialog round-trips. */
   name: string
+  nameNl: string
+  nameEn: string | null
   displayOrder: number | null
   windowStart: string | null
   windowEnd: string | null
+  visibleTakeaway: boolean
+  visibleQr: boolean
   itemCount: number
 }
 
@@ -66,6 +71,8 @@ type CategoryRow = {
   display_order: number | null
   window_start: string | null
   window_end: string | null
+  visible_takeaway: boolean
+  visible_qr: boolean
 }
 
 type ItemRow = {
@@ -106,7 +113,7 @@ export async function getMenuCategories(restaurantId: string, locale: 'nl' | 'en
   const [{ data: categoryRows, error: categoryError }, { data: itemRows, error: itemError }] = await Promise.all([
     supabase
       .from('menu_categories')
-      .select('id, name_nl, name_en, display_order, window_start, window_end')
+      .select('id, name_nl, name_en, display_order, window_start, window_end, visible_takeaway, visible_qr')
       .eq('restaurant_id', restaurantId)
       .order('display_order', { ascending: true, nullsFirst: false })
       .order('name_nl', { ascending: true }),
@@ -124,9 +131,13 @@ export async function getMenuCategories(restaurantId: string, locale: 'nl' | 'en
   return ((categoryRows ?? []) as CategoryRow[]).map((row) => ({
     id: row.id,
     name: pickLocalised(row.name_nl, row.name_en, locale),
+    nameNl: row.name_nl,
+    nameEn: row.name_en,
     displayOrder: row.display_order,
     windowStart: row.window_start,
     windowEnd: row.window_end,
+    visibleTakeaway: row.visible_takeaway,
+    visibleQr: row.visible_qr,
     itemCount: counts.get(row.id) ?? 0,
   }))
 }

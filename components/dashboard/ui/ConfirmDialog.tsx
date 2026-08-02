@@ -20,6 +20,8 @@ type ConfirmDialogProps = {
   pending?: boolean;
   /** Disables only the confirm button (e.g. a required field is still empty) — cancel stays enabled. */
   confirmDisabled?: boolean;
+  /** Drops the confirm button entirely, leaving a dismiss-only dialog for "this can't be done" states. */
+  hideConfirm?: boolean;
 };
 
 export default function ConfirmDialog({
@@ -33,6 +35,7 @@ export default function ConfirmDialog({
   destructive = false,
   pending = false,
   confirmDisabled = false,
+  hideConfirm = false,
 }: ConfirmDialogProps) {
   const cancelRef = useRef<HTMLButtonElement>(null);
 
@@ -87,18 +90,20 @@ export default function ConfirmDialog({
           >
             {cancelLabel}
           </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            disabled={pending || confirmDisabled}
-            className={
-              'tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] ' +
-              (destructive ? 'bg-[#b3422f] text-[#fdfaf5]' : 'bg-amber text-[#1e1508]')
-            }
-            style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
-          >
-            {pending ? '…' : confirmLabel}
-          </button>
+          {!hideConfirm && (
+            <button
+              type="button"
+              onClick={onConfirm}
+              disabled={pending || confirmDisabled}
+              className={
+                'tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] ' +
+                (destructive ? 'bg-[#b3422f] text-[#fdfaf5]' : 'bg-amber text-[#1e1508]')
+              }
+              style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
+            >
+              {pending ? '…' : confirmLabel}
+            </button>
+          )}
         </div>
       </div>
     </div>
