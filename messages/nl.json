@@ -1629,10 +1629,18 @@
         },
         "delivery": {
           "title": "Communicatie",
-          "deposit": { "label": "Aanbetaling" },
-          "email": { "label": "Bevestigingsmail" },
-          "reminder": { "label": "Herinnering" },
-          "whatsapp": { "label": "WhatsApp" },
+          "deposit": {
+            "label": "Aanbetaling"
+          },
+          "email": {
+            "label": "Bevestigingsmail"
+          },
+          "reminder": {
+            "label": "Herinnering"
+          },
+          "whatsapp": {
+            "label": "WhatsApp"
+          },
           "state": {
             "pending": "Wacht op betaling",
             "paid": "Betaald",
@@ -1697,20 +1705,37 @@
       }
     },
     "walkin": {
-      "dialog": { "title": "Walk-in toevoegen" },
+      "dialog": {
+        "title": "Walk-in toevoegen"
+      },
       "field": {
-        "name": { "label": "Naam", "placeholder": "Naam van gast" },
-        "phone": { "label": "Telefoon (optioneel)", "placeholder": "+31 6 12 34 56 78" },
-        "party": { "label": "Groepsgrootte" },
-        "zone": { "label": "Zone" },
+        "name": {
+          "label": "Naam",
+          "placeholder": "Naam van gast"
+        },
+        "phone": {
+          "label": "Telefoon (optioneel)",
+          "placeholder": "+31 6 12 34 56 78"
+        },
+        "party": {
+          "label": "Groepsgrootte"
+        },
+        "zone": {
+          "label": "Zone"
+        },
         "tables": {
           "label": "Tafels",
           "hint": "Kies tafels waar {n} gasten passen zonder te veel plek over te houden.",
           "seatsOver": "{n} plaatsen over",
           "tooMuchRoom": "Te veel plek — kies andere tafels"
         },
-        "note": { "label": "Notitie (optioneel)" },
-        "duration": { "toggle": "Aangepaste duur", "label": "Duur (minuten)" }
+        "note": {
+          "label": "Notitie (optioneel)"
+        },
+        "duration": {
+          "toggle": "Aangepaste duur",
+          "label": "Duur (minuten)"
+        }
       },
       "submit": "Voeg walk-in toe",
       "cancel": "Annuleren",
@@ -1928,8 +1953,12 @@
           "label": "+ Categorie toevoegen"
         },
         "empty": "Geen items in deze categorie",
-        "create": { "title": "Categorie toevoegen" },
-        "edit": { "title": "Categorie bewerken" },
+        "create": {
+          "title": "Categorie toevoegen"
+        },
+        "edit": {
+          "title": "Categorie bewerken"
+        },
         "field": {
           "nameNl": {
             "label": "Naam (Nederlands)",
@@ -2024,14 +2053,158 @@
         },
         "modifiers": "Extra keuzes",
         "action": {
-          "edit": { "label": "Bewerken", "tooltip": "Beschikbaar in D4.3" },
-          "toggle86": { "label": "86'en / Un-86'en", "tooltip": "Beschikbaar in D4.3" },
-          "replaceImage": { "label": "Foto vervangen", "tooltip": "Beschikbaar in D4.4" }
+          "edit": {
+            "label": "Bewerken",
+            "tooltip": "Beschikbaar in D4.3"
+          },
+          "toggle86": {
+            "label": "86'en / Un-86'en",
+            "tooltip": "Beschikbaar in D4.3"
+          },
+          "replaceImage": {
+            "label": "Foto vervangen",
+            "tooltip": "Beschikbaar in D4.4"
+          }
         }
       },
       "item": {
+        "create": {
+          "title": "Item toevoegen"
+        },
+        "edit": {
+          "title": "Item bewerken"
+        },
+        "field": {
+          "category": "Categorie",
+          "nameNl": "Naam (Nederlands)",
+          "nameEn": {
+            "label": "Naam (Engels, optioneel)",
+            "hint": "Leeg laten om Nederlandse naam te gebruiken."
+          },
+          "descriptionNl": "Omschrijving (Nederlands)",
+          "descriptionEn": "Omschrijving (Engels, optioneel)",
+          "price": {
+            "label": "Prijs",
+            "placeholder": "12,50"
+          },
+          "vat": {
+            "label": "BTW",
+            "option": {
+              "low": "9% (voedsel)",
+              "high": "21% (alcohol)"
+            },
+            "warning": {
+              "alcohol": "Dit item bevat alcohol — de Nederlandse regel is meestal 21% BTW voor alcohol."
+            }
+          },
+          "tags": {
+            "label": "Dieet- en allergie-informatie",
+            "section": {
+              "allergens": "Allergenen",
+              "diet": "Dieet"
+            }
+          },
+          "visibility": {
+            "title": "Zichtbaar op",
+            "qr": "In-restaurant menu (QR)",
+            "takeaway": "Afhaalmenu",
+            "hint": "Uit zetten om dit item te verbergen."
+          },
+          "available": {
+            "label": "Beschikbaar (niet ge-86'd)",
+            "hint": "Zet uit om tijdelijk uit te schakelen — bijv. op = op."
+          },
+          "photo": {
+            "title": "Foto",
+            "empty": "Geen foto",
+            "replaceStub": {
+              "label": "Foto vervangen",
+              "tooltip": "Beschikbaar in D4.4"
+            }
+          }
+        },
+        "variants": {
+          "section": "Varianten (extra keuzes)",
+          "empty": "Geen varianten. Voeg toe voor bijv. \"Extra kaas\" of \"Kleine portie\".",
+          "name": {
+            "placeholder": "Naam van variant"
+          },
+          "delta": {
+            "placeholder": "+1,50 of -3,00"
+          },
+          "add": "+ Toevoegen",
+          "edit": "Bewerk",
+          "save": "Opslaan",
+          "cancel": "Annuleer",
+          "delete": "Verwijder",
+          "saveFirst": "Sla het item eerst op om varianten toe te voegen."
+        },
+        "button": {
+          "create": "Toevoegen",
+          "save": "Opslaan",
+          "cancel": "Annuleren",
+          "delete": "Verwijderen"
+        },
+        "delete": {
+          "confirm": {
+            "title": "Item verwijderen?",
+            "body": "Weet je zeker dat je \"{name}\" wil verwijderen? Bestelgeschiedenis blijft bewaard.",
+            "confirm": "Ja, verwijder",
+            "back": "Terug"
+          }
+        },
+        "toggle86": {
+          "markOff": "Zet op 86",
+          "markOn": "Weer beschikbaar"
+        },
+        "reorder": {
+          "error": {
+            "revert": "Volgorde kon niet worden opgeslagen."
+          }
+        },
         "unavailableChip": "86'd",
-        "placeholderAlt": "Menu-item foto"
+        "placeholderAlt": "Menu-item foto",
+        "error": {
+          "category_id_required": "Kies een categorie.",
+          "name_nl_required": "Nederlandse naam is verplicht.",
+          "name_nl_too_long": "Naam is te lang (max 80 tekens).",
+          "name_en_too_long": "Engelse naam is te lang (max 80 tekens).",
+          "description_nl_too_long": "Omschrijving is te lang (max 500 tekens).",
+          "description_en_too_long": "Engelse omschrijving is te lang (max 500 tekens).",
+          "price_not_integer": "Ongeldige prijs.",
+          "price_negative": "Prijs mag niet negatief zijn.",
+          "price_too_high": "Prijs is te hoog.",
+          "vat_invalid": "Kies 9% of 21% BTW.",
+          "tags_not_array": "Ongeldige tags.",
+          "tag_invalid": "Ongeldige tag.",
+          "tag_unknown": "Onbekende tag.",
+          "too_many_tags": "Te veel tags (max 20).",
+          "invalid_visibility": "Ongeldige zichtbaarheidsinstelling.",
+          "invalid_availability": "Ongeldige beschikbaarheid.",
+          "invalid_body": "Ongeldig verzoek.",
+          "unknown_category": "Categorie hoort niet bij dit restaurant.",
+          "not_found": "Item niet gevonden.",
+          "unknown_item": "Onbekend item in de volgorde.",
+          "incomplete_order": "De volgorde is niet compleet.",
+          "duplicate_id": "Dubbel item in de volgorde.",
+          "rate_limited": "Even wachten — te veel acties.",
+          "not_staff": "Geen toegang.",
+          "forbidden": "Geen toegang.",
+          "db_error": "Er ging iets mis.",
+          "unknown_error": "Er ging iets mis."
+        }
+      },
+      "variant": {
+        "error": {
+          "variant_name_required": "Naam is verplicht.",
+          "variant_name_too_long": "Naam is te lang (max 60 tekens).",
+          "price_delta_not_integer": "Ongeldig prijsverschil.",
+          "price_delta_too_extreme": "Prijsverschil is te extreem.",
+          "invalid_body": "Ongeldig verzoek.",
+          "not_found": "Variant niet gevonden.",
+          "db_error": "Er ging iets mis.",
+          "unknown_error": "Er ging iets mis."
+        }
       }
     }
   }

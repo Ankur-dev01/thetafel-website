@@ -16,9 +16,12 @@ import type { MenuItemDetail as MenuItemDetailType } from '@/lib/dashboard/queri
 type ItemDetailProps = {
   item: MenuItemDetailType;
   locale: 'nl' | 'en';
+  onEdit: () => void;
+  onToggle86: () => void;
+  pending: boolean;
 };
 
-export default function ItemDetail({ item, locale }: ItemDetailProps) {
+export default function ItemDetail({ item, locale, onEdit, onToggle86, pending }: ItemDetailProps) {
   const t = useTranslations('dashboard.menu');
   const router = useRouter();
   const pathname = usePathname();
@@ -152,23 +155,23 @@ export default function ItemDetail({ item, locale }: ItemDetailProps) {
       <div className="flex flex-wrap gap-2 pt-1 border-t border-[#e7ddc9]">
         <button
           type="button"
-          disabled
-          title={t('detail.action.edit.tooltip')}
-          data-testid="menu-item-edit-stub"
-          className="tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f5ede0] text-[#8c8577] opacity-60"
+          onClick={onEdit}
+          disabled={pending}
+          data-testid="menu-item-detail-edit"
+          className="tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f5ede0] text-[#1e1508] disabled:opacity-50"
           style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
         >
           {t('detail.action.edit.label')}
         </button>
         <button
           type="button"
-          disabled
-          title={t('detail.action.toggle86.tooltip')}
-          data-testid="menu-item-toggle86-stub"
-          className="tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f5ede0] text-[#8c8577] opacity-60"
+          onClick={onToggle86}
+          disabled={pending}
+          data-testid="menu-item-detail-toggle86"
+          className="tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f5ede0] text-[#1e1508] disabled:opacity-50"
           style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
         >
-          {t('detail.action.toggle86.label')}
+          {item.available ? t('item.toggle86.markOff') : t('item.toggle86.markOn')}
         </button>
         <button
           type="button"

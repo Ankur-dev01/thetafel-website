@@ -1629,10 +1629,18 @@
         },
         "delivery": {
           "title": "Delivery",
-          "deposit": { "label": "Deposit" },
-          "email": { "label": "Confirmation email" },
-          "reminder": { "label": "Reminder" },
-          "whatsapp": { "label": "WhatsApp" },
+          "deposit": {
+            "label": "Deposit"
+          },
+          "email": {
+            "label": "Confirmation email"
+          },
+          "reminder": {
+            "label": "Reminder"
+          },
+          "whatsapp": {
+            "label": "WhatsApp"
+          },
           "state": {
             "pending": "Awaiting payment",
             "paid": "Paid",
@@ -1697,20 +1705,37 @@
       }
     },
     "walkin": {
-      "dialog": { "title": "Add walk-in" },
+      "dialog": {
+        "title": "Add walk-in"
+      },
       "field": {
-        "name": { "label": "Name", "placeholder": "Guest's name" },
-        "phone": { "label": "Phone (optional)", "placeholder": "+31 6 12 34 56 78" },
-        "party": { "label": "Party size" },
-        "zone": { "label": "Zone" },
+        "name": {
+          "label": "Name",
+          "placeholder": "Guest's name"
+        },
+        "phone": {
+          "label": "Phone (optional)",
+          "placeholder": "+31 6 12 34 56 78"
+        },
+        "party": {
+          "label": "Party size"
+        },
+        "zone": {
+          "label": "Zone"
+        },
         "tables": {
           "label": "Tables",
           "hint": "Pick tables that fit {n} guests without too much empty space.",
           "seatsOver": "{n} seats left",
           "tooMuchRoom": "Too much space — pick different tables"
         },
-        "note": { "label": "Note (optional)" },
-        "duration": { "toggle": "Custom duration", "label": "Duration (minutes)" }
+        "note": {
+          "label": "Note (optional)"
+        },
+        "duration": {
+          "toggle": "Custom duration",
+          "label": "Duration (minutes)"
+        }
       },
       "submit": "Add walk-in",
       "cancel": "Cancel",
@@ -1928,8 +1953,12 @@
           "label": "+ Add category"
         },
         "empty": "No items in this category",
-        "create": { "title": "Add category" },
-        "edit": { "title": "Edit category" },
+        "create": {
+          "title": "Add category"
+        },
+        "edit": {
+          "title": "Edit category"
+        },
         "field": {
           "nameNl": {
             "label": "Name (Dutch)",
@@ -2024,14 +2053,158 @@
         },
         "modifiers": "Options",
         "action": {
-          "edit": { "label": "Edit", "tooltip": "Available in D4.3" },
-          "toggle86": { "label": "86 / Un-86", "tooltip": "Available in D4.3" },
-          "replaceImage": { "label": "Replace image", "tooltip": "Available in D4.4" }
+          "edit": {
+            "label": "Edit",
+            "tooltip": "Available in D4.3"
+          },
+          "toggle86": {
+            "label": "86 / Un-86",
+            "tooltip": "Available in D4.3"
+          },
+          "replaceImage": {
+            "label": "Replace image",
+            "tooltip": "Available in D4.4"
+          }
         }
       },
       "item": {
+        "create": {
+          "title": "Add item"
+        },
+        "edit": {
+          "title": "Edit item"
+        },
+        "field": {
+          "category": "Category",
+          "nameNl": "Name (Dutch)",
+          "nameEn": {
+            "label": "Name (English, optional)",
+            "hint": "Leave blank to use the Dutch name."
+          },
+          "descriptionNl": "Description (Dutch)",
+          "descriptionEn": "Description (English, optional)",
+          "price": {
+            "label": "Price",
+            "placeholder": "12.50"
+          },
+          "vat": {
+            "label": "VAT",
+            "option": {
+              "low": "9% (food)",
+              "high": "21% (alcohol)"
+            },
+            "warning": {
+              "alcohol": "This item contains alcohol — the Dutch rule is usually 21% VAT for alcohol."
+            }
+          },
+          "tags": {
+            "label": "Diet & allergen information",
+            "section": {
+              "allergens": "Allergens",
+              "diet": "Diet"
+            }
+          },
+          "visibility": {
+            "title": "Visible on",
+            "qr": "In-restaurant menu (QR)",
+            "takeaway": "Takeaway menu",
+            "hint": "Turn off to hide this item."
+          },
+          "available": {
+            "label": "Available (not 86'd)",
+            "hint": "Turn off to disable temporarily — e.g. sold out."
+          },
+          "photo": {
+            "title": "Photo",
+            "empty": "No photo",
+            "replaceStub": {
+              "label": "Replace photo",
+              "tooltip": "Available in D4.4"
+            }
+          }
+        },
+        "variants": {
+          "section": "Variants (extra options)",
+          "empty": "No variants. Add options like \"Extra cheese\" or \"Small portion\".",
+          "name": {
+            "placeholder": "Variant name"
+          },
+          "delta": {
+            "placeholder": "+1.50 or -3.00"
+          },
+          "add": "+ Add",
+          "edit": "Edit",
+          "save": "Save",
+          "cancel": "Cancel",
+          "delete": "Delete",
+          "saveFirst": "Save the item first to add variants."
+        },
+        "button": {
+          "create": "Add",
+          "save": "Save",
+          "cancel": "Cancel",
+          "delete": "Delete"
+        },
+        "delete": {
+          "confirm": {
+            "title": "Delete item?",
+            "body": "Are you sure you want to delete \"{name}\"? Order history is preserved.",
+            "confirm": "Yes, delete",
+            "back": "Back"
+          }
+        },
+        "toggle86": {
+          "markOff": "Mark 86",
+          "markOn": "Mark available"
+        },
+        "reorder": {
+          "error": {
+            "revert": "Order could not be saved."
+          }
+        },
         "unavailableChip": "86'd",
-        "placeholderAlt": "Menu item photo"
+        "placeholderAlt": "Menu item photo",
+        "error": {
+          "category_id_required": "Choose a category.",
+          "name_nl_required": "Dutch name is required.",
+          "name_nl_too_long": "Name is too long (max 80 characters).",
+          "name_en_too_long": "English name is too long (max 80 characters).",
+          "description_nl_too_long": "Description is too long (max 500 characters).",
+          "description_en_too_long": "English description is too long (max 500 characters).",
+          "price_not_integer": "Invalid price.",
+          "price_negative": "Price cannot be negative.",
+          "price_too_high": "Price is too high.",
+          "vat_invalid": "Choose 9% or 21% VAT.",
+          "tags_not_array": "Invalid tags.",
+          "tag_invalid": "Invalid tag.",
+          "tag_unknown": "Unknown tag.",
+          "too_many_tags": "Too many tags (max 20).",
+          "invalid_visibility": "Invalid visibility setting.",
+          "invalid_availability": "Invalid availability.",
+          "invalid_body": "Invalid request.",
+          "unknown_category": "Category doesn't belong to this restaurant.",
+          "not_found": "Item not found.",
+          "unknown_item": "Unknown item in the order.",
+          "incomplete_order": "The order is not complete.",
+          "duplicate_id": "Duplicate item in the order.",
+          "rate_limited": "Slow down — too many actions.",
+          "not_staff": "No access.",
+          "forbidden": "No access.",
+          "db_error": "Something went wrong.",
+          "unknown_error": "Something went wrong."
+        }
+      },
+      "variant": {
+        "error": {
+          "variant_name_required": "Name is required.",
+          "variant_name_too_long": "Name is too long (max 60 characters).",
+          "price_delta_not_integer": "Invalid price difference.",
+          "price_delta_too_extreme": "Price difference is too extreme.",
+          "invalid_body": "Invalid request.",
+          "not_found": "Variant not found.",
+          "db_error": "Something went wrong.",
+          "unknown_error": "Something went wrong."
+        }
       }
     }
   }

@@ -13,7 +13,9 @@ import CategoryList from './CategoryList';
 import CategoryEditDialog from './CategoryEditDialog';
 import ItemGrid from './ItemGrid';
 import ItemDetail from './ItemDetail';
+import ItemEditDialog from './ItemEditDialog';
 import { useMenuCategoryActions } from '@/lib/dashboard/actions/menuCategoryActions';
+import { useMenuItemActions } from '@/lib/dashboard/actions/menuItemActions';
 import type { CategoryPatch } from '@/lib/dashboard/menu/categoryValidation';
 import type { MenuCategory, MenuItem, MenuItemDetail as MenuItemDetailType } from '@/lib/dashboard/queries/menu';
 
@@ -21,6 +23,11 @@ type DialogState =
   | { mode: 'closed' }
   | { mode: 'create' }
   | { mode: 'edit'; initial: CategoryPatch & { id: string; itemCount: number } };
+
+type ItemDialogState =
+  | { mode: 'closed' }
+  | { mode: 'create' }
+  | { mode: 'edit'; itemId: string };
 
 type MenuClientProps = {
   categories: MenuCategory[];
@@ -39,7 +46,38 @@ export default function MenuClient({ categories, items, unavailableCount, active
   const searchParams = useSearchParams();
 
   const actions = useMenuCategoryActions();
+  const itemActions = useMenuItemActions();
   const [dialog, setDialog] = useState<DialogState>({ mode: 'closed' });
+  const [itemCreateOpen, setItemCreateOpen] = useState(false);
+
+  // Editing an item is URL-driven (`?item=<id>&edit=1`) rather than local
+  // state: the dialog needs the item's variants, which only the server-side
+  // detail query loads. Deriving from the URL means the dialog can't open
+  // before that data exists, and a refresh mid-edit lands back in the dialog.
+  const editingItem = searchParams.get('edit') === '1' ? selectedItem : null;
+
+  function openItemEdit(itemId: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('item', itemId);
+    params.set('edit', '1');
+    router.replace(`${pathname}?${params.toString()}`);
+  }
+
+  function closeItemEdit() {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('edit');
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname);
+  }
+
+  async function handleToggle86(item: MenuItem | MenuItemDetailType) {
+    await itemActions.toggle86(item.id, !item.available);
+  }
+
+  async function handleItemReorder(categoryId: string, orderedIds: string[]): Promise<boolean> {
+    const result = await itemActions.reorderItems(categoryId, orderedIds);
+    return result.ok;
+  }
 
   function openEdit(category: MenuCategory) {
     setDialog({
@@ -101,6 +139,24 @@ export default function MenuClient({ categories, items, unavailableCount, active
     />
   );
 
+  const itemDialog = (
+    <ItemEditDialog
+      open={itemCreateOpen || editingItem !== null}
+      mode={editingItem ? 'edit' : 'create'}
+      categories={categories}
+      defaultCategoryId={activeCategoryId}
+      item={editingItem}
+      onClose={() => {
+        if (editingItem) closeItemEdit();
+        setItemCreateOpen(false);
+      }}
+      onSubmit={(patch) => (editingItem ? itemActions.updateItem(editingItem.id, patch) : itemActions.createItem(patch))}
+      onDelete={editingItem ? itemActions.deleteItem : undefined}
+      onVariantsChanged={() => router.refresh()}
+      pending={itemActions.pending}
+    />
+  );
+
   if (categories.length === 0) {
     return (
       <div className="flex flex-col gap-4 pt-2">
@@ -145,10 +201,32 @@ export default function MenuClient({ categories, items, unavailableCount, active
           }
         />
       ) : (
-        <EmptyState heading={t('category.empty')} />
+        <EmptyState
+          heading={t('category.empty')}
+          action={
+            <button
+              type="button"
+              onClick={() => setItemCreateOpen(true)}
+              disabled={itemActions.pending}
+              data-testid="menu-item-add"
+              className="tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-amber text-[#1e1508] disabled:opacity-50"
+              style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
+            >
+              {t('items.add.label')}
+            </button>
+          }
+        />
       )
     ) : (
-      <ItemGrid items={items} />
+      <ItemGrid
+        items={items}
+        categoryId={isSearching ? null : activeCategoryId}
+        onAdd={() => setItemCreateOpen(true)}
+        onEdit={(item) => openItemEdit(item.id)}
+        onToggle86={handleToggle86}
+        onReorder={handleItemReorder}
+        pending={itemActions.pending}
+      />
     );
 
   return (
@@ -205,18 +283,31 @@ export default function MenuClient({ categories, items, unavailableCount, active
         <>
           <div className="hidden md:block" data-testid="menu-item-detail-desktop">
             <DetailPanel title={selectedItem.name}>
-              <ItemDetail item={selectedItem} locale={locale} />
+              <ItemDetail
+                item={selectedItem}
+                locale={locale}
+                onEdit={() => openItemEdit(selectedItem.id)}
+                onToggle86={() => handleToggle86(selectedItem)}
+                pending={itemActions.pending}
+              />
             </DetailPanel>
           </div>
           <div className="md:hidden" data-testid="menu-item-detail-phone">
             <DetailSheet open onClose={closeDetail} title={selectedItem.name}>
-              <ItemDetail item={selectedItem} locale={locale} />
+              <ItemDetail
+                item={selectedItem}
+                locale={locale}
+                onEdit={() => openItemEdit(selectedItem.id)}
+                onToggle86={() => handleToggle86(selectedItem)}
+                pending={itemActions.pending}
+              />
             </DetailSheet>
           </div>
         </>
       )}
 
       {categoryDialog}
+      {itemDialog}
     </div>
   );
 }

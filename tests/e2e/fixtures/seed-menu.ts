@@ -128,6 +128,56 @@ export async function restoreCategoryOrder(
   }
 }
 
+/**
+ * Snapshot one category's item ordering. Needed because
+ * tests/e2e/qr/pay-at-table.spec.ts picks the FIRST item card under a
+ * category heading — item display_order is load-bearing there, so any test
+ * that reorders permanent items must restore it.
+ */
+export async function snapshotItemOrder(
+  restaurantId: string,
+  categoryId: string,
+): Promise<{ id: string; display_order: number | null }[]> {
+  const supabase = adminClient()
+  const { data, error } = await supabase
+    .from('menu_items')
+    .select('id, display_order')
+    .eq('restaurant_id', restaurantId)
+    .eq('category_id', categoryId)
+  if (error) throw new Error(`[snapshotItemOrder] failed: ${error.message}`)
+  return (data ?? []).map((r) => ({ id: r.id as string, display_order: r.display_order as number | null }))
+}
+
+/** Restore a snapshot taken by `snapshotItemOrder`. Rows that no longer exist are skipped. */
+export async function restoreItemOrder(
+  snapshot: { id: string; display_order: number | null }[],
+): Promise<void> {
+  const supabase = adminClient()
+  for (const row of snapshot) {
+    await supabase.from('menu_items').update({ display_order: row.display_order }).eq('id', row.id)
+  }
+}
+
+/** Deletes any `_D43_test_%` items (and their variants, via FK cascade) left behind by a failed D4.3 test. */
+export async function cleanupD43TestItems(restaurantId: string): Promise<void> {
+  const supabase = adminClient()
+  await supabase
+    .from('menu_items')
+    .delete()
+    .eq('restaurant_id', restaurantId)
+    .like('name_nl', '\\_D43\\_test\\_%')
+  const { data: categories } = await supabase
+    .from('menu_categories')
+    .select('id')
+    .eq('restaurant_id', restaurantId)
+    .like('name_nl', '\\_D43\\_test\\_%')
+  const ids = (categories ?? []).map((c) => c.id as string)
+  if (ids.length > 0) {
+    await supabase.from('menu_items').delete().in('category_id', ids)
+    await supabase.from('menu_categories').delete().in('id', ids)
+  }
+}
+
 /** Deletes any `_D42_test_%` categories (and their items) left behind by a failed D4.2 test. */
 export async function cleanupD42TestCategories(restaurantId: string): Promise<void> {
   const supabase = adminClient()

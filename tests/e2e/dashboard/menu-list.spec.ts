@@ -26,7 +26,10 @@ test.describe('Menu page — categories, items, search, detail (D4.1)', () => {
       await page.goto(`/dashboard/menu?category=${seeded.categoryIds[0]}`)
 
       await expect(page.locator('h2:visible', { hasText: 'Geen items in deze categorie' })).toHaveCount(1)
-      await expect(page.locator('[data-testid^="menu-item-"]:visible')).toHaveCount(0)
+      // `menu-item-row-` (the card wrapper), not `menu-item-` — the latter is
+      // also a prefix of D4.3's `menu-item-add` button, which is present and
+      // enabled precisely when the category IS empty.
+      await expect(page.locator('[data-testid^="menu-item-row-"]:visible')).toHaveCount(0)
     } finally {
       await cleanupSeededMenu(seeded)
     }
@@ -111,7 +114,7 @@ test.describe('Menu page — categories, items, search, detail (D4.1)', () => {
     }
   })
 
-  test('item detail via ?item shows full fields and disabled action stubs', async ({ page }) => {
+  test('item detail via ?item shows full fields and its action buttons', async ({ page }) => {
     test.setTimeout(60_000)
     const seeded = await seedMenu({
       restaurantId: TEST_RESTAURANT_ID,
@@ -143,13 +146,13 @@ test.describe('Menu page — categories, items, search, detail (D4.1)', () => {
       await expect(panel.getByText('VEGETARISCH')).toBeVisible()
       await expect(panel.getByText('Bevat zuivel')).toBeVisible()
 
-      const editBtn = page.locator('[data-testid="menu-item-edit-stub"]:visible')
-      const toggleBtn = page.locator('[data-testid="menu-item-toggle86-stub"]:visible')
+      // D4.3 activated the edit and 86 actions that D4.1 shipped as disabled
+      // stubs; only the photo action is still waiting on D4.4.
+      const editBtn = page.locator('[data-testid="menu-item-detail-edit"]:visible')
+      const toggleBtn = page.locator('[data-testid="menu-item-detail-toggle86"]:visible')
       const photoBtn = page.locator('[data-testid="menu-item-replace-image-stub"]:visible')
-      await expect(editBtn).toBeDisabled()
-      await expect(editBtn).toHaveAttribute('title', 'Beschikbaar in D4.3')
-      await expect(toggleBtn).toBeDisabled()
-      await expect(toggleBtn).toHaveAttribute('title', 'Beschikbaar in D4.3')
+      await expect(editBtn).toBeEnabled()
+      await expect(toggleBtn).toBeEnabled()
       await expect(photoBtn).toBeDisabled()
       await expect(photoBtn).toHaveAttribute('title', 'Beschikbaar in D4.4')
     } finally {
@@ -176,7 +179,9 @@ test.describe('Menu page — categories, items, search, detail (D4.1)', () => {
       await signInAsTestOwner(page)
       await page.goto(`/dashboard/menu?category=${categoryId}`)
 
-      const card = page.locator(`[data-testid="menu-item-${itemId}"]:visible`)
+      // The greying lives on the card wrapper; `menu-item-{id}` is the inner
+      // link D4.3 split out so the row's action buttons sit outside it.
+      const card = page.locator(`[data-testid="menu-item-row-${itemId}"]:visible`)
       await expect(card).toHaveCount(1)
       await expect(card).toHaveClass(/opacity-60/)
       await expect(card.getByText("86'd")).toBeVisible()

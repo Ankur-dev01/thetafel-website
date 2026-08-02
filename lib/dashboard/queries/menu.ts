@@ -34,13 +34,22 @@ export type MenuItem = {
   id: string
   categoryId: string | null
   categoryName: string | null
+  /** Locale-picked, for display. The raw pairs below are what the D4.3 edit dialog round-trips. */
   name: string
+  nameNl: string
+  nameEn: string | null
   description: string | null
+  descriptionNl: string | null
+  descriptionEn: string | null
   priceCents: number
   currency: string
+  vatRateBp: number
   dietaryTags: string[]
   available: boolean
+  visibleTakeaway: boolean
+  visibleQr: boolean
   photoUrl: string | null
+  photoPath: string | null
   displayOrder: number | null
 }
 
@@ -84,8 +93,11 @@ type ItemRow = {
   description_en: string | null
   price_cents: number
   currency: string
+  vat_rate_bp: number
   dietary_tags: string[] | null
   available: boolean
+  visible_takeaway: boolean
+  visible_qr: boolean
   photo_path: string | null
   display_order: number | null
   category: { name_nl: string; name_en: string | null } | null
@@ -142,6 +154,34 @@ export async function getMenuCategories(restaurantId: string, locale: 'nl' | 'en
   }))
 }
 
+function toMenuItem(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  row: ItemRow,
+  locale: 'nl' | 'en',
+): MenuItem {
+  return {
+    id: row.id,
+    categoryId: row.category_id,
+    categoryName: row.category ? pickLocalised(row.category.name_nl, row.category.name_en, locale) : null,
+    name: pickLocalised(row.name_nl, row.name_en, locale),
+    nameNl: row.name_nl,
+    nameEn: row.name_en,
+    description: pickLocalisedNullable(row.description_nl, row.description_en, locale),
+    descriptionNl: row.description_nl,
+    descriptionEn: row.description_en,
+    priceCents: row.price_cents,
+    currency: row.currency,
+    vatRateBp: row.vat_rate_bp,
+    dietaryTags: row.dietary_tags ?? [],
+    available: row.available,
+    visibleTakeaway: row.visible_takeaway,
+    visibleQr: row.visible_qr,
+    photoUrl: photoUrlFor(supabase, row.photo_path),
+    photoPath: row.photo_path,
+    displayOrder: row.display_order,
+  }
+}
+
 export type GetMenuItemsOpts = {
   categoryId?: string
   search?: string
@@ -153,8 +193,8 @@ export async function getMenuItems(restaurantId: string, locale: 'nl' | 'en', op
   let query = supabase
     .from('menu_items')
     .select(
-      `id, category_id, name_nl, name_en, description_nl, description_en, price_cents, currency,
-       dietary_tags, available, photo_path, display_order,
+      `id, category_id, name_nl, name_en, description_nl, description_en, price_cents, currency, vat_rate_bp,
+       dietary_tags, available, visible_takeaway, visible_qr, photo_path, display_order,
        category:menu_categories(name_nl, name_en)`,
     )
     .eq('restaurant_id', restaurantId)
@@ -171,19 +211,7 @@ export async function getMenuItems(restaurantId: string, locale: 'nl' | 'en', op
   const { data, error } = await query.order('display_order', { ascending: true, nullsFirst: false }).order('name_nl', { ascending: true })
   if (error) throw error
 
-  return ((data ?? []) as unknown as ItemRow[]).map((row) => ({
-    id: row.id,
-    categoryId: row.category_id,
-    categoryName: row.category ? pickLocalised(row.category.name_nl, row.category.name_en, locale) : null,
-    name: pickLocalised(row.name_nl, row.name_en, locale),
-    description: pickLocalisedNullable(row.description_nl, row.description_en, locale),
-    priceCents: row.price_cents,
-    currency: row.currency,
-    dietaryTags: row.dietary_tags ?? [],
-    available: row.available,
-    photoUrl: photoUrlFor(supabase, row.photo_path),
-    displayOrder: row.display_order,
-  }))
+  return ((data ?? []) as unknown as ItemRow[]).map((row) => toMenuItem(supabase, row, locale))
 }
 
 export async function getMenuItemDetail(restaurantId: string, itemId: string, locale: 'nl' | 'en'): Promise<MenuItemDetail | null> {
@@ -192,8 +220,8 @@ export async function getMenuItemDetail(restaurantId: string, itemId: string, lo
   const { data: row, error } = await supabase
     .from('menu_items')
     .select(
-      `id, category_id, name_nl, name_en, description_nl, description_en, price_cents, currency,
-       dietary_tags, available, photo_path, display_order, created_at, updated_at,
+      `id, category_id, name_nl, name_en, description_nl, description_en, price_cents, currency, vat_rate_bp,
+       dietary_tags, available, visible_takeaway, visible_qr, photo_path, display_order, created_at, updated_at,
        category:menu_categories(name_nl, name_en, window_start, window_end)`,
     )
     .eq('id', itemId)
@@ -217,17 +245,7 @@ export async function getMenuItemDetail(restaurantId: string, itemId: string, lo
   if (variantError) throw variantError
 
   return {
-    id: item.id,
-    categoryId: item.category_id,
-    categoryName: item.category ? pickLocalised(item.category.name_nl, item.category.name_en, locale) : null,
-    name: pickLocalised(item.name_nl, item.name_en, locale),
-    description: pickLocalisedNullable(item.description_nl, item.description_en, locale),
-    priceCents: item.price_cents,
-    currency: item.currency,
-    dietaryTags: item.dietary_tags ?? [],
-    available: item.available,
-    photoUrl: photoUrlFor(supabase, item.photo_path),
-    displayOrder: item.display_order,
+    ...toMenuItem(supabase, item, locale),
     categoryWindowStart: item.category?.window_start ?? null,
     categoryWindowEnd: item.category?.window_end ?? null,
     createdAt: item.created_at,
