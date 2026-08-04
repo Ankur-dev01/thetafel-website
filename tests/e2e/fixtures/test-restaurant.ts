@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import { resetTestRestaurantPauseState } from './resetTestRestaurantPauseState'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_PROD_URL
 const SERVICE_ROLE = process.env.SUPABASE_PROD_SERVICE_ROLE_KEY
@@ -57,15 +58,45 @@ export function testGuestEmail(testRunId: string): string {
 export const TEST_GUEST_PHONE = '+31600000000'
 
 /**
+ * Remove every object D4.4 uploaded under this restaurant's folder in the
+ * `menu-photos` bucket.
+ *
+ * Storage is not covered by any of the table deletes, so without this a test
+ * that uploads a photo leaks the object forever. Scoped to the
+ * `{restaurant_id}/` prefix, so the legacy `demo/` seed photos other
+ * restaurants still reference are never touched.
+ */
+export async function wipeTestRestaurantPhotos(): Promise<void> {
+  const supabase = adminClient()
+  const bucket = supabase.storage.from('menu-photos')
+  const { data: objects, error } = await bucket.list(TEST_RESTAURANT_ID)
+  if (error) {
+    console.warn('[wipeTestRestaurantPhotos] list failed', error.message)
+    return
+  }
+  const keys = (objects ?? []).map((o) => `${TEST_RESTAURANT_ID}/${o.name}`)
+  if (keys.length === 0) return
+  const { error: removeError } = await bucket.remove(keys)
+  if (removeError) console.warn('[wipeTestRestaurantPhotos] remove failed', removeError.message)
+}
+
+/**
  * Deletes ALL bookings, orders, tabs, order-items, audit logs, magic links,
- * and payment intents scoped to the test restaurant, then anonymises any
- * `e2e-*@e2e.thetafel.invalid` guest rows. Safe to run whenever — the test
- * restaurant has no real guests, ever. Children deleted before parents to
- * satisfy FKs.
+ * and payment intents scoped to the test restaurant, resets pause state, and
+ * anonymises any `e2e-*@e2e.thetafel.invalid` guest rows. Safe to run
+ * whenever — the test restaurant has no real guests, ever. Children deleted
+ * before parents to satisfy FKs.
  */
 export async function wipeTestRestaurant(): Promise<void> {
   const supabase = adminClient()
   const rId = TEST_RESTAURANT_ID
+
+  // First, not last: everything below (and every test that calls this
+  // helper) assumes an unpaused restaurant. Load-bearing fix for the
+  // pause.spec.ts leak — see resetTestRestaurantPauseState's own comment.
+  await resetTestRestaurantPauseState()
+
+  await wipeTestRestaurantPhotos()
 
   const { data: orders } = await supabase.from('orders').select('id').eq('restaurant_id', rId)
   const orderIds = (orders ?? []).map((o) => o.id as string)
