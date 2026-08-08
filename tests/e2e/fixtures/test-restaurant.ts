@@ -4,6 +4,7 @@ import { resetTestRestaurantHours } from './resetTestRestaurantHours'
 import { resetTestRestaurantFloor } from './resetTestRestaurantFloor'
 import { resetTestRestaurantBookingRules } from './resetTestRestaurantBookingRules'
 import { resetTestRestaurantOrdering } from './resetTestRestaurantOrdering'
+import { resetTestRestaurantQrSettings } from './resetTestRestaurantQrSettings'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_PROD_URL
 const SERVICE_ROLE = process.env.SUPABASE_PROD_SERVICE_ROLE_KEY
@@ -103,6 +104,7 @@ export async function wipeTestRestaurant(): Promise<void> {
   await resetTestRestaurantHours()
   await resetTestRestaurantBookingRules()
   await resetTestRestaurantOrdering()
+  await resetTestRestaurantQrSettings()
 
   await wipeTestRestaurantPhotos()
 

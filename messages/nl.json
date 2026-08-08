@@ -1509,7 +1509,9 @@
           "booking": "Reserveringsregels",
           "bookingDesc": "Boekingsregels, no-show bescherming en gastervaring.",
           "ordering": "Bestellen & afhalen",
-          "orderingDesc": "Voorbereidingstijd, afhaalintervallen en minimumbedrag."
+          "orderingDesc": "Voorbereidingstijd, afhaalintervallen en minimumbedrag.",
+          "qr": "QR-instellingen",
+          "qrDesc": "Auto-accept, betaalmethodes, kleur en menutaal."
         }
       },
       "confirmPause": {
@@ -1753,6 +1755,64 @@
           "prepTimeInvalid": "Ongeldige voorbereidingstijd.",
           "slotIntervalInvalid": "Ongeldig afhaalinterval.",
           "takeawayNotEnabled": "Afhalen is niet actief voor dit restaurant.",
+          "saveFailed": "Opslaan is niet gelukt. Probeer het opnieuw."
+        }
+      },
+      "qr": {
+        "title": "QR-instellingen",
+        "subtitle": "Hoe QR-bestellen aan tafel werkt in jouw zaak.",
+        "back": "Terug naar instellingen",
+        "disabledCard": {
+          "title": "QR-bestellen is niet actief",
+          "body": "Deze service is uitgeschakeld. Wil je QR-bestellen aanbieden? Neem contact met ons op."
+        },
+        "config": {
+          "sectionTitle": "Instellingen",
+          "autoAccept": {
+            "label": "Bestellingen automatisch accepteren",
+            "help": "Nieuwe QR-bestellingen gaan meteen naar de keuken. Zet uit als je elke bestelling eerst wilt beoordelen."
+          },
+          "itemNotes": {
+            "label": "Opmerkingen bij items toestaan",
+            "help": "Gasten kunnen opmerkingen toevoegen aan losse items."
+          },
+          "menuLanguage": {
+            "label": "Menutaal",
+            "help": "Welke talen zichtbaar zijn voor gasten in de QR-menu.",
+            "options": {
+              "nl": "Alleen Nederlands",
+              "en": "Alleen Engels",
+              "nl_en": "Nederlands + Engels"
+            }
+          },
+          "accentColor": {
+            "label": "Accentkleur",
+            "help": "De kleur van knoppen en accenten in de QR-menu."
+          },
+          "payNow": {
+            "label": "Direct betalen (Betaal nu)",
+            "help": "Gasten betalen aan het einde van het bestellen, voor de bestelling naar de keuken gaat."
+          },
+          "payAtTable": {
+            "label": "Later betalen (Betaal aan tafel)",
+            "help": "Gasten laten de rekening oplopen en betalen samen aan het einde."
+          }
+        },
+        "codes": {
+          "sectionTitle": "QR-codes",
+          "comingSoonBody": "Beheer je QR-codes per tafel — komt in de volgende update."
+        },
+        "actions": {
+          "save": "Opslaan",
+          "saving": "Opslaan…",
+          "cancel": "Annuleren"
+        },
+        "savedToast": "QR-instellingen opgeslagen.",
+        "errors": {
+          "accentColorInvalid": "Kies een geldige kleurcode (bijv. #d4820a).",
+          "menuLanguageInvalid": "Ongeldige menutaal.",
+          "needsPaymentMethod": "Kies minstens één betaalmethode (Direct of Later).",
+          "qrNotEnabled": "QR-bestellen is niet actief voor dit restaurant.",
           "saveFailed": "Opslaan is niet gelukt. Probeer het opnieuw."
         }
       }

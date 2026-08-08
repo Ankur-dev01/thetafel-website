@@ -449,7 +449,7 @@ export default function QrSetupPage() {
   // Field state
   const [qrPlan, setQrPlan] = useState<'basic' | 'premium' | null>(null)
   const [autoAccept, setAutoAccept] = useState(true)
-  const [itemNotesAllowed, setItemNotesAllowed] = useState(true)
+  const [itemNotesEnabled, setItemNotesEnabled] = useState(true)
   const [menuLanguage, setMenuLanguage] = useState<'nl' | 'en' | 'nl_en'>('nl_en')
   const [accentColor, setAccentColor] = useState('#d4820a')
   const [accentHexInput, setAccentHexInput] = useState('#d4820a')
@@ -496,7 +496,7 @@ export default function QrSetupPage() {
         else setQrPlan(null)
 
         setAutoAccept(parseBool(r.qr_auto_accept, true))
-        setItemNotesAllowed(parseBool(r.qr_item_notes_allowed, true))
+        setItemNotesEnabled(parseBool(r.qr_item_notes_enabled, true))
 
         const langVal = r.qr_menu_language
         if (langVal === 'nl' || langVal === 'en' || langVal === 'nl_en') setMenuLanguage(langVal)
@@ -535,7 +535,7 @@ export default function QrSetupPage() {
     return {
       qr_plan: qrPlan,
       qr_auto_accept: autoAccept,
-      qr_item_notes_allowed: itemNotesAllowed,
+      qr_item_notes_enabled: itemNotesEnabled,
       qr_menu_language: menuLanguage,
       qr_widget_accent_color: accentColor,
     }
@@ -558,8 +558,8 @@ export default function QrSetupPage() {
 
   function handleItemNotesChange(val: boolean) {
     if (!hydrated) return
-    setItemNotesAllowed(val)
-    save({ restaurant: { ...buildQrSetupPatch(), qr_item_notes_allowed: val } })
+    setItemNotesEnabled(val)
+    save({ restaurant: { ...buildQrSetupPatch(), qr_item_notes_enabled: val } })
   }
 
   function handleMenuLanguageChange(val: string) {
@@ -867,7 +867,7 @@ export default function QrSetupPage() {
           }
           title={t('itemNotes.label')}
           description={t('itemNotes.description')}
-          control={<TogglePill value={itemNotesAllowed} onChange={handleItemNotesChange} />}
+          control={<TogglePill value={itemNotesEnabled} onChange={handleItemNotesChange} />}
         />
 
         {/* Menu language — amber tile (global / configuration) */}

@@ -779,6 +779,7 @@ export type Database = {
           name_en: string | null
           name_nl: string
           photo_path: string | null
+          photo_thumb_path: string | null
           price_cents: number
           restaurant_id: string
           updated_at: string
@@ -800,6 +801,7 @@ export type Database = {
           name_en?: string | null
           name_nl: string
           photo_path?: string | null
+          photo_thumb_path?: string | null
           price_cents: number
           restaurant_id: string
           updated_at?: string
@@ -821,6 +823,7 @@ export type Database = {
           name_en?: string | null
           name_nl?: string
           photo_path?: string | null
+          photo_thumb_path?: string | null
           price_cents?: number
           restaurant_id?: string
           updated_at?: string
@@ -1478,7 +1481,6 @@ export type Database = {
           qr_auto_accept: boolean
           qr_cards_shipped_at: string | null
           qr_codes_generated_at: string | null
-          qr_item_notes_allowed: boolean
           qr_item_notes_enabled: boolean
           qr_menu_language: string
           qr_pay_at_table_enabled: boolean
@@ -1584,7 +1586,6 @@ export type Database = {
           qr_auto_accept?: boolean
           qr_cards_shipped_at?: string | null
           qr_codes_generated_at?: string | null
-          qr_item_notes_allowed?: boolean
           qr_item_notes_enabled?: boolean
           qr_menu_language?: string
           qr_pay_at_table_enabled?: boolean
@@ -1690,7 +1691,6 @@ export type Database = {
           qr_auto_accept?: boolean
           qr_cards_shipped_at?: string | null
           qr_codes_generated_at?: string | null
-          qr_item_notes_allowed?: boolean
           qr_item_notes_enabled?: boolean
           qr_menu_language?: string
           qr_pay_at_table_enabled?: boolean

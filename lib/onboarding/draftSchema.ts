@@ -148,7 +148,7 @@ export const restaurantPatchSchema = z
     // QR setup (Step 9)
     qr_plan: qrPlanSchema.nullable().optional(),
     qr_auto_accept: z.boolean().optional(),
-    qr_item_notes_allowed: z.boolean().optional(),
+    qr_item_notes_enabled: z.boolean().optional(),
     qr_menu_language: qrMenuLanguageSchema.optional(),
     qr_widget_accent_color: hexColor.optional(),
 

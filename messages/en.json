@@ -1509,7 +1509,9 @@
           "booking": "Booking rules",
           "bookingDesc": "Booking rules, no-show protection and guest experience.",
           "ordering": "Ordering & takeaway",
-          "orderingDesc": "Prep time, pickup intervals and minimum order."
+          "orderingDesc": "Prep time, pickup intervals and minimum order.",
+          "qr": "QR settings",
+          "qrDesc": "Auto-accept, payment methods, colour and menu language."
         }
       },
       "confirmPause": {
@@ -1753,6 +1755,64 @@
           "prepTimeInvalid": "Invalid prep time.",
           "slotIntervalInvalid": "Invalid pickup slot interval.",
           "takeawayNotEnabled": "Takeaway is not active for this restaurant.",
+          "saveFailed": "Save failed. Please try again."
+        }
+      },
+      "qr": {
+        "title": "QR settings",
+        "subtitle": "How QR table ordering works at your restaurant.",
+        "back": "Back to settings",
+        "disabledCard": {
+          "title": "QR ordering is not active",
+          "body": "This service is disabled. Want to offer QR ordering? Contact us."
+        },
+        "config": {
+          "sectionTitle": "Settings",
+          "autoAccept": {
+            "label": "Automatically accept orders",
+            "help": "New QR orders go straight to the kitchen. Turn off if you want to review every order first."
+          },
+          "itemNotes": {
+            "label": "Allow item notes",
+            "help": "Guests can add notes to individual items."
+          },
+          "menuLanguage": {
+            "label": "Menu language",
+            "help": "Which languages are visible to guests in the QR menu.",
+            "options": {
+              "nl": "Dutch only",
+              "en": "English only",
+              "nl_en": "Dutch + English"
+            }
+          },
+          "accentColor": {
+            "label": "Accent colour",
+            "help": "The colour of buttons and accents in the QR menu."
+          },
+          "payNow": {
+            "label": "Pay now (checkout)",
+            "help": "Guests pay at the end of ordering, before the order goes to the kitchen."
+          },
+          "payAtTable": {
+            "label": "Pay at table (later)",
+            "help": "Guests run a tab and pay together at the end."
+          }
+        },
+        "codes": {
+          "sectionTitle": "QR codes",
+          "comingSoonBody": "Manage your per-table QR codes — coming in the next update."
+        },
+        "actions": {
+          "save": "Save",
+          "saving": "Saving…",
+          "cancel": "Cancel"
+        },
+        "savedToast": "QR settings saved.",
+        "errors": {
+          "accentColorInvalid": "Choose a valid colour code (e.g. #d4820a).",
+          "menuLanguageInvalid": "Invalid menu language.",
+          "needsPaymentMethod": "Choose at least one payment method (Now or Later).",
+          "qrNotEnabled": "QR ordering is not active for this restaurant.",
           "saveFailed": "Save failed. Please try again."
         }
       }
