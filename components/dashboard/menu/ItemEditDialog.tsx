@@ -7,6 +7,9 @@ import VatPicker from './VatPicker';
 import TagPicker from './TagPicker';
 import VariantEditor from './VariantEditor';
 import ItemDeleteConfirm from './ItemDeleteConfirm';
+import PhotoUploadDialog from './PhotoUploadDialog';
+import PhotoDeleteConfirm from './PhotoDeleteConfirm';
+import { useMenuItemActions } from '@/lib/dashboard/actions/menuItemActions';
 import {
   validateItemPatch,
   normalizeItemPatch,
@@ -66,6 +69,9 @@ export default function ItemEditDialog({
   const [errors, setErrors] = useState<ValidationError[]>([]);
   const [formError, setFormError] = useState<string | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [photoUploadOpen, setPhotoUploadOpen] = useState(false);
+  const [photoDeleteOpen, setPhotoDeleteOpen] = useState(false);
+  const { deletePhoto, pending: photoPending } = useMenuItemActions();
 
   // Reset on every open so a cancelled edit never leaks into the next one.
   useEffect(() => {
@@ -232,7 +238,7 @@ export default function ItemEditDialog({
 
             <div>
               <label htmlFor="item-name-en" className={labelClass} style={labelStyle}>
-                {t('field.nameEn')}
+                {t('field.nameEn.label')}
               </label>
               <input
                 id="item-name-en"
@@ -284,7 +290,7 @@ export default function ItemEditDialog({
 
             <div>
               <label htmlFor="item-price" className={labelClass} style={labelStyle}>
-                {t('field.price')}
+                {t('field.price.label')}
               </label>
               <input
                 id="item-price"
@@ -374,18 +380,77 @@ export default function ItemEditDialog({
                     <Plate width={24} height={24} className="text-[#c2b594]" aria-hidden="true" />
                   )}
                 </div>
-                <button
-                  type="button"
-                  disabled
-                  title={t('field.photo.replaceStub.tooltip')}
-                  data-testid="item-photo-replace-stub"
-                  className="tafel-tap px-3.5 py-2 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f5ede0] text-[#8c8577] opacity-60"
-                  style={labelStyle}
-                >
-                  {t('field.photo.replaceStub')}
-                </button>
+                {mode === 'edit' && item ? (
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPhotoUploadOpen(true)}
+                      disabled={pending || photoPending}
+                      data-testid="item-photo-replace"
+                      className="tafel-tap px-3.5 py-2 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f5ede0] text-[#1e1508] disabled:opacity-50"
+                      style={labelStyle}
+                    >
+                      {item.photoUrl ? t('photo.replace') : t('photo.upload.title')}
+                    </button>
+                    {item.photoUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setPhotoDeleteOpen(true)}
+                        disabled={pending || photoPending}
+                        data-testid="item-photo-delete"
+                        className="tafel-tap px-3.5 py-2 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f7e8e6] text-[#b3422f] disabled:opacity-50"
+                        style={labelStyle}
+                      >
+                        {t('photo.delete.action')}
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    <button
+                      type="button"
+                      disabled
+                      data-testid="item-photo-replace-stub"
+                      className="tafel-tap px-3.5 py-2 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f5ede0] text-[#8c8577] opacity-60"
+                      style={labelStyle}
+                    >
+                      {t('photo.createMode.disabled')}
+                    </button>
+                  </div>
+                )}
               </div>
+              {mode === 'create' && (
+                <p className="mt-1 text-[12px] text-[#8c8577]">{t('photo.createMode.hint')}</p>
+              )}
             </div>
+
+            {mode === 'edit' && item && (
+              <>
+                <PhotoUploadDialog
+                  open={photoUploadOpen}
+                  itemId={item.id}
+                  currentPhotoUrl={item.photoUrl}
+                  onCancel={() => setPhotoUploadOpen(false)}
+                  onUploaded={() => {
+                    setPhotoUploadOpen(false);
+                    onVariantsChanged();
+                  }}
+                />
+                <PhotoDeleteConfirm
+                  open={photoDeleteOpen}
+                  itemName={item.name}
+                  pending={photoPending}
+                  onCancel={() => setPhotoDeleteOpen(false)}
+                  onConfirm={async () => {
+                    const result = await deletePhoto(item.id);
+                    if (result.ok) {
+                      setPhotoDeleteOpen(false);
+                      onVariantsChanged();
+                    }
+                  }}
+                />
+              </>
+            )}
 
             <div className="pt-2 border-t border-[#e7ddc9]">
               {mode === 'create' ? (

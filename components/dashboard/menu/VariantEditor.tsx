@@ -162,7 +162,7 @@ export default function VariantEditor({ itemId, variants, onChanged }: VariantEd
                   className={smallBtn + ' bg-[#b3422f] text-[#fdfaf5]'}
                   style={btnStyle}
                 >
-                  {t('delete.confirm')}
+                  {t('delete')}
                 </button>
               ) : (
                 <button

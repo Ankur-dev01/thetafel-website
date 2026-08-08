@@ -109,7 +109,7 @@ export default function PhotoUploadDialog({
   }
 
   const shownPreview = previewUrl ?? currentPhotoUrl;
-  const title = currentPhotoUrl ? t('replace.title') : t('upload.title');
+  const title = currentPhotoUrl ? t('replace') : t('upload.title');
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
