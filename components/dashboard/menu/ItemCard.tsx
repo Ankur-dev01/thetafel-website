@@ -70,9 +70,17 @@ export default function ItemCard({
 
       <Link href={href} className="tafel-tap flex gap-3 min-w-0 flex-1" data-testid={`menu-item-${item.id}`}>
         <div className="w-16 h-16 rounded-card bg-[#f7f2e9] flex-shrink-0 flex items-center justify-center overflow-hidden">
-          {item.photoUrl ? (
+          {/* Thumb first: a 60-item grid pulls 400px renditions instead of
+              1200px ones. Falls back to the full image for rows uploaded
+              before D4.4, which have no thumb. */}
+          {item.photoThumbUrl ?? item.photoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={item.photoUrl} alt={t('item.placeholderAlt')} className="w-full h-full object-cover" />
+            <img
+              src={item.photoThumbUrl ?? item.photoUrl!}
+              alt={t('item.placeholderAlt')}
+              loading="lazy"
+              className="w-full h-full object-cover"
+            />
           ) : (
             <Plate width={24} height={24} className="text-[#c2b594]" aria-hidden="true" />
           )}

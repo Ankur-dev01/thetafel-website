@@ -146,15 +146,16 @@ test.describe('Menu page — categories, items, search, detail (D4.1)', () => {
       await expect(panel.getByText('VEGETARISCH')).toBeVisible()
       await expect(panel.getByText('Bevat zuivel')).toBeVisible()
 
-      // D4.3 activated the edit and 86 actions that D4.1 shipped as disabled
-      // stubs; only the photo action is still waiting on D4.4.
+      // D4.3 activated edit + 86, and D4.4 activated the photo action, so all
+      // three of D4.1's stubs are now live buttons.
       const editBtn = page.locator('[data-testid="menu-item-detail-edit"]:visible')
       const toggleBtn = page.locator('[data-testid="menu-item-detail-toggle86"]:visible')
-      const photoBtn = page.locator('[data-testid="menu-item-replace-image-stub"]:visible')
+      const photoBtn = page.locator('[data-testid="menu-item-photo-replace"]:visible')
       await expect(editBtn).toBeEnabled()
       await expect(toggleBtn).toBeEnabled()
-      await expect(photoBtn).toBeDisabled()
-      await expect(photoBtn).toHaveAttribute('title', 'Beschikbaar in D4.4')
+      await expect(photoBtn).toBeEnabled()
+      // No photo on this seeded item, so the delete action isn't offered.
+      await expect(page.locator('[data-testid="menu-item-photo-delete"]')).toHaveCount(0)
     } finally {
       await cleanupSeededMenu(seeded)
     }

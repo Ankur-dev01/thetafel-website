@@ -27,6 +27,7 @@ export type DashboardAction =
   | 'menu.item.delete'
   | 'menu.item.reorder'
   | 'menu.item.toggle_visibility'
+  | 'menu.item.photo.edit'
   | 'menu.category.edit'
   | 'menu.category.create'
   | 'menu.category.delete'

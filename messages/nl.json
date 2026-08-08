@@ -2192,6 +2192,44 @@
           "forbidden": "Geen toegang.",
           "db_error": "Er ging iets mis.",
           "unknown_error": "Er ging iets mis."
+        },
+        "photo": {
+          "upload": {
+            "title": "Foto uploaden"
+          },
+          "replace": "Foto vervangen",
+          "hint": "Minimaal 400×400 pixels. Foto's worden automatisch geoptimaliseerd.",
+          "uploading": "Bezig met uploaden…",
+          "submit": "Uploaden",
+          "cancel": "Annuleren",
+          "delete": {
+            "action": "Foto verwijderen",
+            "confirm": {
+              "title": "Foto verwijderen?",
+              "body": "Weet je zeker dat je de foto van “{name}” wil verwijderen?",
+              "hint": "Het item blijft bestaan, alleen de foto wordt verwijderd.",
+              "confirm": "Ja, verwijder",
+              "back": "Terug"
+            }
+          },
+          "createMode": {
+            "disabled": "Foto uploaden — na opslaan",
+            "hint": "Sla eerst het item op, upload dan een foto."
+          },
+          "error": {
+            "no_file": "Kies een bestand.",
+            "too_large": "Bestand is te groot (max 5 MB).",
+            "bad_mime": "Alleen JPEG, PNG of WebP toegestaan.",
+            "mime_mismatch": "Bestandstype klopt niet.",
+            "too_small": "Foto is te klein (minimaal 400×400 pixels).",
+            "bad_aspect_ratio": "Foto is te breed of te smal.",
+            "corrupt": "Foto lijkt beschadigd.",
+            "processing_failed": "Foto kon niet verwerkt worden.",
+            "upload_failed": "Upload mislukt. Probeer opnieuw.",
+            "not_found": "Item niet gevonden.",
+            "rate_limited": "Even wachten — te veel acties.",
+            "db_error": "Er ging iets mis."
+          }
         }
       },
       "variant": {

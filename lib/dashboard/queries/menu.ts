@@ -50,6 +50,9 @@ export type MenuItem = {
   visibleQr: boolean
   photoUrl: string | null
   photoPath: string | null
+  /** 400x400 WebP. The card grid renders this; only the detail panel loads the full image. */
+  photoThumbUrl: string | null
+  photoThumbPath: string | null
   displayOrder: number | null
 }
 
@@ -99,6 +102,7 @@ type ItemRow = {
   visible_takeaway: boolean
   visible_qr: boolean
   photo_path: string | null
+  photo_thumb_path: string | null
   display_order: number | null
   category: { name_nl: string; name_en: string | null } | null
 }
@@ -178,6 +182,8 @@ function toMenuItem(
     visibleQr: row.visible_qr,
     photoUrl: photoUrlFor(supabase, row.photo_path),
     photoPath: row.photo_path,
+    photoThumbUrl: photoUrlFor(supabase, row.photo_thumb_path),
+    photoThumbPath: row.photo_thumb_path,
     displayOrder: row.display_order,
   }
 }
@@ -194,7 +200,7 @@ export async function getMenuItems(restaurantId: string, locale: 'nl' | 'en', op
     .from('menu_items')
     .select(
       `id, category_id, name_nl, name_en, description_nl, description_en, price_cents, currency, vat_rate_bp,
-       dietary_tags, available, visible_takeaway, visible_qr, photo_path, display_order,
+       dietary_tags, available, visible_takeaway, visible_qr, photo_path, photo_thumb_path, display_order,
        category:menu_categories(name_nl, name_en)`,
     )
     .eq('restaurant_id', restaurantId)
@@ -221,7 +227,7 @@ export async function getMenuItemDetail(restaurantId: string, itemId: string, lo
     .from('menu_items')
     .select(
       `id, category_id, name_nl, name_en, description_nl, description_en, price_cents, currency, vat_rate_bp,
-       dietary_tags, available, visible_takeaway, visible_qr, photo_path, display_order, created_at, updated_at,
+       dietary_tags, available, visible_takeaway, visible_qr, photo_path, photo_thumb_path, display_order, created_at, updated_at,
        category:menu_categories(name_nl, name_en, window_start, window_end)`,
     )
     .eq('id', itemId)

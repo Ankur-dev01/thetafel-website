@@ -79,15 +79,38 @@ export function fakePhotoPath(): string {
   return `e2e/${randomUUID()}.jpg`
 }
 
-/** Deletes exactly the rows `seedMenu` created — items first (FK), then categories. */
+/**
+ * Deletes exactly the rows `seedMenu` created — items first (FK), then categories.
+ *
+ * Errors are surfaced rather than swallowed: a silently-failed cleanup leaves
+ * stray categories behind, and D4.2's delete route renumbers EVERY remaining
+ * category of the restaurant, so one leaked row from a previous spec shows up
+ * as a bogus ordering failure in a completely unrelated test.
+ */
 export async function cleanupSeededMenu(ids: { categoryIds: string[]; itemIds: string[] }): Promise<void> {
   const supabase = adminClient()
   if (ids.itemIds.length > 0) {
-    await supabase.from('menu_items').delete().in('id', ids.itemIds)
+    const { error } = await supabase.from('menu_items').delete().in('id', ids.itemIds)
+    if (error) console.warn('[cleanupSeededMenu] item delete failed', error.message)
   }
   if (ids.categoryIds.length > 0) {
-    await supabase.from('menu_categories').delete().in('id', ids.categoryIds)
+    const { error } = await supabase.from('menu_categories').delete().in('id', ids.categoryIds)
+    if (error) console.warn('[cleanupSeededMenu] category delete failed', error.message)
   }
+}
+
+/** Belt-and-braces sweep by name prefix, for specs whose per-test cleanup may have been cut short. */
+export async function cleanupMenuCategoriesByPrefix(restaurantId: string, prefix: string): Promise<void> {
+  const supabase = adminClient()
+  const { data: cats } = await supabase
+    .from('menu_categories')
+    .select('id')
+    .eq('restaurant_id', restaurantId)
+    .like('name_nl', `${prefix}%`)
+  const ids = (cats ?? []).map((c) => c.id as string)
+  if (ids.length === 0) return
+  await supabase.from('menu_items').delete().in('category_id', ids)
+  await supabase.from('menu_categories').delete().in('id', ids)
 }
 
 /**

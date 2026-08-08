@@ -45,6 +45,31 @@ export function useMenuItemActions() {
     }
   }
 
+  // Photo upload can't use `post` — it sends multipart/form-data, so the
+  // Content-Type header must be left off entirely for the browser to set the
+  // boundary itself.
+  async function uploadPhoto(itemId: string, file: File): Promise<MenuItemResult> {
+    setError(null);
+    setSubmitting(true);
+    try {
+      const body = new FormData();
+      body.append('photo', file);
+      const res = await fetch(`/api/dashboard/menu/items/${itemId}/photo/upload`, { method: 'POST', body });
+      const json = await res.json().catch(() => ({ error: 'unknown_error' }));
+      if (res.ok) {
+        startTransition(() => {
+          router.refresh();
+        });
+        return { ok: true };
+      }
+      const code = json.error ?? 'unknown_error';
+      setError(code);
+      return { ok: false, code };
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return {
     pending: submitting || refreshPending,
     error,
@@ -57,5 +82,7 @@ export function useMenuItemActions() {
       post(`/api/dashboard/menu/items/${id}/toggle-visibility`, changes),
     reorderItems: (categoryId: string, orderedIds: string[]) =>
       post('/api/dashboard/menu/items/reorder', { category_id: categoryId, ordered_ids: orderedIds }),
+    uploadPhoto,
+    deletePhoto: (id: string) => post(`/api/dashboard/menu/items/${id}/photo/delete`, {}),
   };
 }

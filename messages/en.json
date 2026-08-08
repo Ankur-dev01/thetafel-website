@@ -2192,6 +2192,44 @@
           "forbidden": "No access.",
           "db_error": "Something went wrong.",
           "unknown_error": "Something went wrong."
+        },
+        "photo": {
+          "upload": {
+            "title": "Upload photo"
+          },
+          "replace": "Replace photo",
+          "hint": "Minimum 400×400 pixels. Photos are optimised automatically.",
+          "uploading": "Uploading…",
+          "submit": "Upload",
+          "cancel": "Cancel",
+          "delete": {
+            "action": "Delete photo",
+            "confirm": {
+              "title": "Delete photo?",
+              "body": "Are you sure you want to delete the photo of “{name}”?",
+              "hint": "The item stays, only the photo is removed.",
+              "confirm": "Yes, delete",
+              "back": "Back"
+            }
+          },
+          "createMode": {
+            "disabled": "Upload photo — after saving",
+            "hint": "Save the item first, then upload a photo."
+          },
+          "error": {
+            "no_file": "Choose a file.",
+            "too_large": "File is too large (max 5 MB).",
+            "bad_mime": "Only JPEG, PNG or WebP allowed.",
+            "mime_mismatch": "File type mismatch.",
+            "too_small": "Photo is too small (minimum 400×400 pixels).",
+            "bad_aspect_ratio": "Photo is too wide or too narrow.",
+            "corrupt": "Photo appears corrupt.",
+            "processing_failed": "Photo could not be processed.",
+            "upload_failed": "Upload failed. Try again.",
+            "not_found": "Item not found.",
+            "rate_limited": "Slow down — too many actions.",
+            "db_error": "Something went wrong."
+          }
         }
       },
       "variant": {

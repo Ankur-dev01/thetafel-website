@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/routing';
 import { useSearchParams } from 'next/navigation';
@@ -11,6 +12,9 @@ import { splitTags } from '@/lib/dashboard/menu/dietaryTags';
 import DietaryChip from './DietaryChip';
 import AllergenChip from './AllergenChip';
 import CategoryWindowChip from './CategoryWindowChip';
+import PhotoUploadDialog from './PhotoUploadDialog';
+import PhotoDeleteConfirm from './PhotoDeleteConfirm';
+import { useMenuItemActions } from '@/lib/dashboard/actions/menuItemActions';
 import type { MenuItemDetail as MenuItemDetailType } from '@/lib/dashboard/queries/menu';
 
 type ItemDetailProps = {
@@ -26,6 +30,10 @@ export default function ItemDetail({ item, locale, onEdit, onToggle86, pending }
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const { deletePhoto, pending: photoPending } = useMenuItemActions();
+  const [photoUploadOpen, setPhotoUploadOpen] = useState(false);
+  const [photoDeleteOpen, setPhotoDeleteOpen] = useState(false);
 
   const { allergens, diet } = splitTags(item.dietaryTags);
   const hasWindow = Boolean(item.categoryWindowStart && item.categoryWindowEnd);
@@ -175,15 +183,45 @@ export default function ItemDetail({ item, locale, onEdit, onToggle86, pending }
         </button>
         <button
           type="button"
-          disabled
-          title={t('detail.action.replaceImage.tooltip')}
-          data-testid="menu-item-replace-image-stub"
-          className="tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f5ede0] text-[#8c8577] opacity-60"
+          onClick={() => setPhotoUploadOpen(true)}
+          disabled={pending || photoPending}
+          data-testid="menu-item-photo-replace"
+          className="tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f5ede0] text-[#1e1508] disabled:opacity-50"
           style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
         >
-          {t('detail.action.replaceImage.label')}
+          {item.photoUrl ? t('item.photo.replace') : t('item.photo.upload.title')}
         </button>
+        {item.photoUrl && (
+          <button
+            type="button"
+            onClick={() => setPhotoDeleteOpen(true)}
+            disabled={pending || photoPending}
+            data-testid="menu-item-photo-delete"
+            className="tafel-tap px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f7e8e6] text-[#b3422f] disabled:opacity-50"
+            style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
+          >
+            {t('item.photo.delete.action')}
+          </button>
+        )}
       </div>
+
+      <PhotoUploadDialog
+        open={photoUploadOpen}
+        itemId={item.id}
+        currentPhotoUrl={item.photoUrl}
+        onCancel={() => setPhotoUploadOpen(false)}
+        onUploaded={() => setPhotoUploadOpen(false)}
+      />
+      <PhotoDeleteConfirm
+        open={photoDeleteOpen}
+        itemName={item.name}
+        pending={photoPending}
+        onCancel={() => setPhotoDeleteOpen(false)}
+        onConfirm={async () => {
+          const result = await deletePhoto(item.id);
+          if (result.ok) setPhotoDeleteOpen(false);
+        }}
+      />
     </div>
   );
 }
