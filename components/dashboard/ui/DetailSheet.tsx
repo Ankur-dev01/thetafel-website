@@ -1,10 +1,18 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 /**
  * DetailSheet — phone full-screen sheet sliding in from the right.
  * Backdrop tap closes. Traps focus while open; restores focus on close.
+ *
+ * Callers render this unconditionally inside a `md:hidden` wrapper (the
+ * desktop equivalent is a separate `DetailPanel` in a `hidden md:block`
+ * sibling) — the CSS hides the sheet's markup on desktop, but React effects
+ * don't know that. Without the `min-width: 768px` check below, `open`'s
+ * scroll-lock and focus-trap effects still fire on desktop the moment an
+ * item is selected, locking body scroll and stealing focus into an
+ * invisible panel until the item selection is cleared.
  */
 
 type DetailSheetProps = {
@@ -24,21 +32,32 @@ export default function DetailSheet({
 }: DetailSheetProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 768px)');
+    setIsDesktop(mql.matches);
+    const onChange = () => setIsDesktop(mql.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+
+  const effectiveOpen = open && !isDesktop;
 
   // Focus management: remember the opener, focus the panel, restore on close.
   useEffect(() => {
-    if (open) {
+    if (effectiveOpen) {
       restoreFocusRef.current = document.activeElement as HTMLElement | null;
       panelRef.current?.focus();
     } else {
       restoreFocusRef.current?.focus?.();
       restoreFocusRef.current = null;
     }
-  }, [open]);
+  }, [effectiveOpen]);
 
   // Prevent body scroll while open; close on Escape; trap Tab inside.
   useEffect(() => {
-    if (!open) return;
+    if (!effectiveOpen) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
@@ -68,14 +87,14 @@ export default function DetailSheet({
       document.body.style.overflow = prev;
       document.removeEventListener('keydown', onKeyDown);
     };
-  }, [open, onClose]);
+  }, [effectiveOpen, onClose]);
 
   return (
     <>
       <div
         className={
           'fixed inset-0 bg-black/40 z-40 transition-opacity duration-200 ' +
-          (open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none')
+          (effectiveOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none')
         }
         onClick={onClose}
         aria-hidden="true"
@@ -85,11 +104,11 @@ export default function DetailSheet({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        aria-hidden={!open}
+        aria-hidden={!effectiveOpen}
         tabIndex={-1}
         className={
           'fixed inset-y-0 right-0 z-50 w-full max-w-[480px] bg-cream flex flex-col outline-none transition-transform duration-200 ' +
-          (open ? 'translate-x-0' : 'translate-x-full')
+          (effectiveOpen ? 'translate-x-0' : 'translate-x-full')
         }
       >
         <div className="flex items-center justify-between gap-3 px-4 py-3 bg-white/60">
@@ -102,7 +121,7 @@ export default function DetailSheet({
           <button
             type="button"
             onClick={onClose}
-            tabIndex={open ? 0 : -1}
+            tabIndex={effectiveOpen ? 0 : -1}
             className="tafel-tap p-2 -m-1 rounded text-[#1e1508] hover:bg-[#f0e8d8] transition-colors"
             aria-label="Sluiten"
           >
