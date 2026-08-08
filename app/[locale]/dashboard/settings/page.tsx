@@ -96,6 +96,26 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
         </Link>
       </div>
 
+      <div className="mt-2">
+        <Link
+          href="/dashboard/settings/ordering"
+          className="block bg-white rounded-card p-4 tafel-tap"
+        >
+          <span
+            className="block text-[15px] text-[#1e1508]"
+            style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
+          >
+            {t('hub.links.ordering')}
+          </span>
+          <span
+            className="block mt-0.5 text-[13px] text-[#6f6353]"
+            style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 300 }}
+          >
+            {t('hub.links.orderingDesc')}
+          </span>
+        </Link>
+      </div>
+
       <div className="mt-8">
         <p
           className="text-[13px] uppercase tracking-[0.1em] text-[#8c8577] mb-2"

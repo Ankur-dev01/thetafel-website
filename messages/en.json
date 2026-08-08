@@ -1507,7 +1507,9 @@
           "floor": "Floor plan",
           "floorDesc": "Tables, zones and seating.",
           "booking": "Booking rules",
-          "bookingDesc": "Booking rules, no-show protection and guest experience."
+          "bookingDesc": "Booking rules, no-show protection and guest experience.",
+          "ordering": "Ordering & takeaway",
+          "orderingDesc": "Prep time, pickup intervals and minimum order."
         }
       },
       "confirmPause": {
@@ -1697,6 +1699,60 @@
           "whatsappNeedsPremium": "WhatsApp reminders require Premium.",
           "templateMissingRestaurant": "The confirmation email must contain '{restaurant}'.",
           "templateUnknownPlaceholder": "Unknown variable: {placeholder}",
+          "saveFailed": "Save failed. Please try again."
+        }
+      },
+      "ordering": {
+        "title": "Ordering & takeaway",
+        "subtitle": "Settings for your takeaway service.",
+        "back": "Back to settings",
+        "disabledCard": {
+          "title": "Takeaway is not active",
+          "body": "This service is disabled. Want to offer takeaway? Contact us to turn it on."
+        },
+        "operational": {
+          "sectionTitle": "Accepting orders now",
+          "toggle": {
+            "label": "Orders open",
+            "help": "Turn off temporarily if you can't take orders right now. Guests will see takeaway is closed."
+          }
+        },
+        "config": {
+          "sectionTitle": "Settings",
+          "prepTime": {
+            "label": "Prep time",
+            "help": "How long the kitchen needs from order to ready.",
+            "minutes": "{count} minutes"
+          },
+          "slotInterval": {
+            "label": "Pickup slot interval",
+            "help": "How often a new pickup slot becomes available."
+          },
+          "minOrder": {
+            "label": "Minimum order value",
+            "help": "Optional. Leave at €0.00 if there's no minimum."
+          },
+          "itemNotes": {
+            "label": "Allow item notes",
+            "help": "Guests can add notes to individual items (e.g. 'no onion')."
+          },
+          "scheduledOrders": {
+            "label": "Allow scheduled orders",
+            "help": "Guests can choose a pickup time later today or in the coming days."
+          }
+        },
+        "actions": {
+          "save": "Save",
+          "saving": "Saving…",
+          "cancel": "Cancel"
+        },
+        "savedToast": "Settings saved.",
+        "errors": {
+          "minOrderNegative": "Minimum order value can't be negative.",
+          "minOrderTooHigh": "Minimum order value is too high.",
+          "prepTimeInvalid": "Invalid prep time.",
+          "slotIntervalInvalid": "Invalid pickup slot interval.",
+          "takeawayNotEnabled": "Takeaway is not active for this restaurant.",
           "saveFailed": "Save failed. Please try again."
         }
       }

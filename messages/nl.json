@@ -1507,7 +1507,9 @@
           "floor": "Plattegrond",
           "floorDesc": "Tafels, zones en zitplaatsen.",
           "booking": "Reserveringsregels",
-          "bookingDesc": "Boekingsregels, no-show bescherming en gastervaring."
+          "bookingDesc": "Boekingsregels, no-show bescherming en gastervaring.",
+          "ordering": "Bestellen & afhalen",
+          "orderingDesc": "Voorbereidingstijd, afhaalintervallen en minimumbedrag."
         }
       },
       "confirmPause": {
@@ -1697,6 +1699,60 @@
           "whatsappNeedsPremium": "WhatsApp-herinneringen vereisen Premium.",
           "templateMissingRestaurant": "De bevestigingsmail moet '{restaurant}' bevatten.",
           "templateUnknownPlaceholder": "Onbekende variabele: {placeholder}",
+          "saveFailed": "Opslaan is niet gelukt. Probeer het opnieuw."
+        }
+      },
+      "ordering": {
+        "title": "Bestellen & afhalen",
+        "subtitle": "Instellingen voor je afhaalservice.",
+        "back": "Terug naar instellingen",
+        "disabledCard": {
+          "title": "Afhalen is niet actief",
+          "body": "Deze service is uitgeschakeld. Wil je afhalen aanbieden? Neem contact met ons op om het aan te zetten."
+        },
+        "operational": {
+          "sectionTitle": "Nu bestellingen aannemen",
+          "toggle": {
+            "label": "Bestellingen open",
+            "help": "Zet tijdelijk uit als je even geen bestellingen wilt ontvangen. Gasten zien dan dat je gesloten bent voor afhalen."
+          }
+        },
+        "config": {
+          "sectionTitle": "Instellingen",
+          "prepTime": {
+            "label": "Voorbereidingstijd",
+            "help": "Hoe lang de keuken nodig heeft vanaf bestelling tot klaar.",
+            "minutes": "{count} minuten"
+          },
+          "slotInterval": {
+            "label": "Afhaalinterval",
+            "help": "Hoe vaak een nieuw afhaalmoment beschikbaar komt."
+          },
+          "minOrder": {
+            "label": "Minimum bestelbedrag",
+            "help": "Optioneel. Laat op € 0,00 staan als er geen minimum is."
+          },
+          "itemNotes": {
+            "label": "Opmerkingen bij items toestaan",
+            "help": "Gasten kunnen opmerkingen toevoegen aan losse items (bv. 'zonder ui')."
+          },
+          "scheduledOrders": {
+            "label": "Vooruit bestellen toestaan",
+            "help": "Gasten kunnen een afhaaltijd later op de dag of in de komende dagen kiezen."
+          }
+        },
+        "actions": {
+          "save": "Opslaan",
+          "saving": "Opslaan…",
+          "cancel": "Annuleren"
+        },
+        "savedToast": "Instellingen opgeslagen.",
+        "errors": {
+          "minOrderNegative": "Minimum bestelbedrag kan niet negatief zijn.",
+          "minOrderTooHigh": "Minimum bestelbedrag is te hoog.",
+          "prepTimeInvalid": "Ongeldige voorbereidingstijd.",
+          "slotIntervalInvalid": "Ongeldig afhaalinterval.",
+          "takeawayNotEnabled": "Afhalen is niet actief voor dit restaurant.",
           "saveFailed": "Opslaan is niet gelukt. Probeer het opnieuw."
         }
       }
