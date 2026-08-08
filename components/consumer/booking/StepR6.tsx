@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import type { BookingConfig } from '@/lib/booking/types';
 import type { ConsumerZone } from '@/lib/booking/zones';
 import { useBookingFlow } from '@/lib/booking/state';
+import { TurnstileWidget } from '@/components/consumer/booking/TurnstileWidget';
 
 interface Props {
   config: BookingConfig;
@@ -37,6 +38,7 @@ export function StepR6({ config, zones }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [errorDetail, setErrorDetail] = useState<ErrorDetail | null>(null);
   const [isHover, setIsHover] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   useEffect(() => {
     setCanContinue(false);
@@ -61,7 +63,7 @@ export function StepR6({ config, zones }: Props) {
   }, [draft.slotInstant, locale]);
 
   async function handleConfirm() {
-    if (submitting) return;
+    if (submitting || !turnstileToken) return;
     setSubmitting(true);
     setError(null);
     setErrorDetail(null);
@@ -84,7 +86,7 @@ export function StepR6({ config, zones }: Props) {
       requests: draft.guest.requests,
       marketingConsent: draft.marketingConsent,
       locale,
-      turnstileToken: 'dev-bypass-token',
+      turnstileToken,
       idempotencyKey: crypto.randomUUID(),
     };
 
@@ -173,6 +175,7 @@ export function StepR6({ config, zones }: Props) {
       </div>
 
       <div className="flex flex-col gap-3 border-t border-night/10 pt-4">
+        <TurnstileWidget onSuccess={setTurnstileToken} onError={() => setTurnstileToken(null)} />
         {error && (
           <div className="flex flex-col gap-1">
             <p className="text-sm text-red-700">{error}</p>
@@ -198,7 +201,7 @@ export function StepR6({ config, zones }: Props) {
         <button
           type="button"
           onClick={handleConfirm}
-          disabled={submitting}
+          disabled={submitting || !turnstileToken}
           onMouseEnter={() => setIsHover(true)}
           onMouseLeave={() => setIsHover(false)}
           style={buttonStyle}

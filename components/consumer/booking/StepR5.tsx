@@ -16,6 +16,7 @@ import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import type { BookingConfig } from '@/lib/booking/types';
 import { useBookingFlow } from '@/lib/booking/state';
+import { TurnstileWidget } from '@/components/consumer/booking/TurnstileWidget';
 
 interface Props {
   config: BookingConfig;
@@ -35,6 +36,7 @@ export function StepR5({ config }: Props) {
 
   const [submittingMethod, setSubmittingMethod] = useState<'ideal' | 'creditcard' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   useEffect(() => {
     // Payment happens off-page (Mollie redirect); this step never "continues"
@@ -52,7 +54,7 @@ export function StepR5({ config }: Props) {
   }
 
   async function handlePay(method: 'ideal' | 'creditcard') {
-    if (submittingMethod) return;
+    if (submittingMethod || !turnstileToken) return;
     setSubmittingMethod(method);
     setError(null);
 
@@ -68,7 +70,7 @@ export function StepR5({ config }: Props) {
       },
       method,
       locale,
-      turnstileToken: 'dev-bypass-token',
+      turnstileToken,
       idempotencyKey: crypto.randomUUID(),
     };
 
@@ -186,6 +188,8 @@ export function StepR5({ config }: Props) {
         {t('cancellation_policy')}
       </p>
 
+      <TurnstileWidget onSuccess={setTurnstileToken} onError={() => setTurnstileToken(null)} />
+
       {error && (
         <p
           style={{
@@ -203,7 +207,7 @@ export function StepR5({ config }: Props) {
         <button
           type="button"
           onClick={() => handlePay('ideal')}
-          disabled={submittingMethod !== null}
+          disabled={submittingMethod !== null || !turnstileToken}
           style={{
             backgroundColor: submittingMethod !== null ? DISABLED_BG : AMBER,
             color: submittingMethod !== null ? DISABLED_TEXT : '#ffffff',
@@ -223,7 +227,7 @@ export function StepR5({ config }: Props) {
         <button
           type="button"
           onClick={() => handlePay('creditcard')}
-          disabled={submittingMethod !== null}
+          disabled={submittingMethod !== null || !turnstileToken}
           style={{
             backgroundColor: 'transparent',
             color: submittingMethod !== null ? DISABLED_TEXT : NIGHT,
