@@ -1494,7 +1494,6 @@
       "hub": {
         "upcoming": {
           "title": "Binnenkort:",
-          "floor": "Zaalindeling",
           "menu": "Menu",
           "team": "Team",
           "payments": "Betalingen",
@@ -1504,7 +1503,9 @@
         },
         "links": {
           "hours": "Openingstijden",
-          "hoursDesc": "Weekschema en openingstijden per service."
+          "hoursDesc": "Weekschema en openingstijden per service.",
+          "floor": "Plattegrond",
+          "floorDesc": "Tafels, zones en zitplaatsen."
         }
       },
       "confirmPause": {
@@ -1557,6 +1558,41 @@
           "closeEqualsOpen": "Open- en sluittijd mogen niet gelijk zijn.",
           "scopeEmpty": "Elke service moet minstens één geopende dag hebben.",
           "saveFailed": "Opslaan is niet gelukt. Probeer het opnieuw."
+        }
+      },
+      "floor": {
+        "title": "Plattegrond",
+        "subtitle": "Beheer je tafels, indeling en capaciteit.",
+        "back": "Terug naar instellingen",
+        "addTable": "Tafel toevoegen",
+        "row": {
+          "nameLabel": "Naam",
+          "namePlaceholder": "bv. T1",
+          "capacityLabel": "Zitplaatsen",
+          "bookableLabel": "Reserveerbaar",
+          "bookableHelp": "Reserveerbaar: gasten kunnen voor deze tafel reserveren.",
+          "qrLabel": "QR bestellen actief",
+          "qrHelp": "Als je dit uitzet, werkt de fysieke QR-code op deze tafel niet meer voor gasten.",
+          "qrNotGenerated": "QR-code nog niet gegenereerd.",
+          "delete": "Verwijderen",
+          "deleteConfirm": "Weet je zeker dat je '{name}' wilt verwijderen?"
+        },
+        "actions": {
+          "save": "Opslaan",
+          "saving": "Opslaan…",
+          "cancel": "Annuleren"
+        },
+        "savedToast": "Plattegrond opgeslagen.",
+        "errors": {
+          "zoneNameRequired": "Geef elke zone een naam.",
+          "zoneNameTooLong": "Zonenaam is te lang.",
+          "zoneNameDuplicate": "Twee zones mogen niet dezelfde naam hebben.",
+          "nameRequired": "Geef elke tafel een naam.",
+          "nameTooLong": "Tafelnaam is te lang.",
+          "nameDuplicate": "Twee tafels mogen niet dezelfde naam hebben.",
+          "capacityInvalid": "Zitplaatsen moet tussen 1 en 30 liggen.",
+          "saveFailed": "Opslaan is niet gelukt. Probeer het opnieuw.",
+          "tableHasFutureBookings": "Deze tafels hebben nog boekingen en kunnen niet worden verwijderd: {names}."
         }
       }
     },

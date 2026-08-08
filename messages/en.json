@@ -1494,7 +1494,6 @@
       "hub": {
         "upcoming": {
           "title": "Coming soon:",
-          "floor": "Floor plan",
           "menu": "Menu",
           "team": "Team",
           "payments": "Payments",
@@ -1504,7 +1503,9 @@
         },
         "links": {
           "hours": "Opening hours",
-          "hoursDesc": "Weekly schedule and hours per service."
+          "hoursDesc": "Weekly schedule and hours per service.",
+          "floor": "Floor plan",
+          "floorDesc": "Tables, zones and seating."
         }
       },
       "confirmPause": {
@@ -1557,6 +1558,41 @@
           "closeEqualsOpen": "Opening and closing time can't be equal.",
           "scopeEmpty": "Each service must have at least one open day.",
           "saveFailed": "Save failed. Please try again."
+        }
+      },
+      "floor": {
+        "title": "Floor plan",
+        "subtitle": "Manage your tables, layout and capacity.",
+        "back": "Back to settings",
+        "addTable": "Add table",
+        "row": {
+          "nameLabel": "Name",
+          "namePlaceholder": "e.g. T1",
+          "capacityLabel": "Seats",
+          "bookableLabel": "Bookable",
+          "bookableHelp": "Bookable: guests can be assigned to this table for reservations.",
+          "qrLabel": "QR ordering active",
+          "qrHelp": "Turning this off disables the physical QR code at this table for guests.",
+          "qrNotGenerated": "QR code not yet generated.",
+          "delete": "Delete",
+          "deleteConfirm": "Are you sure you want to delete '{name}'?"
+        },
+        "actions": {
+          "save": "Save",
+          "saving": "Saving…",
+          "cancel": "Cancel"
+        },
+        "savedToast": "Floor plan saved.",
+        "errors": {
+          "zoneNameRequired": "Give every zone a name.",
+          "zoneNameTooLong": "Zone name is too long.",
+          "zoneNameDuplicate": "Two zones can't have the same name.",
+          "nameRequired": "Give every table a name.",
+          "nameTooLong": "Table name is too long.",
+          "nameDuplicate": "Two tables can't have the same name.",
+          "capacityInvalid": "Seats must be between 1 and 30.",
+          "saveFailed": "Save failed. Please try again.",
+          "tableHasFutureBookings": "These tables still have bookings and can't be deleted: {names}."
         }
       }
     },

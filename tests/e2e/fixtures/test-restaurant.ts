@@ -1,6 +1,7 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { resetTestRestaurantPauseState } from './resetTestRestaurantPauseState'
 import { resetTestRestaurantHours } from './resetTestRestaurantHours'
+import { resetTestRestaurantFloor } from './resetTestRestaurantFloor'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_PROD_URL
 const SERVICE_ROLE = process.env.SUPABASE_PROD_SERVICE_ROLE_KEY
@@ -83,10 +84,11 @@ export async function wipeTestRestaurantPhotos(): Promise<void> {
 
 /**
  * Deletes ALL bookings, orders, tabs, order-items, audit logs, magic links,
- * and payment intents scoped to the test restaurant, resets pause state and
- * opening hours, and anonymises any `e2e-*@e2e.thetafel.invalid` guest rows.
- * Safe to run whenever — the test restaurant has no real guests, ever.
- * Children deleted before parents to satisfy FKs.
+ * and payment intents scoped to the test restaurant, resets pause state,
+ * opening hours, and the floor plan (zones/tables), and anonymises any
+ * `e2e-*@e2e.thetafel.invalid` guest rows. Safe to run whenever — the test
+ * restaurant has no real guests, ever. Children deleted before parents to
+ * satisfy FKs.
  */
 export async function wipeTestRestaurant(): Promise<void> {
   const supabase = adminClient()
@@ -114,6 +116,14 @@ export async function wipeTestRestaurant(): Promise<void> {
     await supabase.from('booking_tables').delete().in('booking_id', bookingIds)
   }
   await supabase.from('bookings').delete().eq('restaurant_id', rId)
+
+  // After bookings/orders are gone, not before: resetTestRestaurantFloor
+  // hard-deletes the ephemeral T2-T4 fixture tables, and both
+  // `booking_tables.table_id` and `orders.table_id` reference
+  // `restaurant_tables` — deleting a table while either still pointed at it
+  // would either violate an FK or (via booking_tables' ON DELETE CASCADE)
+  // silently eat rows this same wipe is also trying to clean up.
+  await resetTestRestaurantFloor()
 
   await supabase.from('payment_intents').delete().eq('restaurant_id', rId)
   await supabase.from('consumer_audit_logs').delete().eq('restaurant_id', rId)
