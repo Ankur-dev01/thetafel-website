@@ -1,6 +1,6 @@
 // lib/consumer/email/templates/bookingChangeRequest.ts
 //
-// Internal email sent to hallo@thetafel.nl when a guest requests a
+// Internal email sent to hello@thetafel.nl when a guest requests a
 // change to their booking via the manage page. English-only - this is
 // staff-facing.
 

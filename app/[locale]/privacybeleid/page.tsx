@@ -85,14 +85,14 @@ export default async function PrivacybeleidPage({ params }: Props) {
                 The Tafel is a Dutch platform offering free booking systems to restaurants.
                 We are registered with the Chamber of Commerce under number KVK 42027611 and have
                 VAT number NL005440779B20. For questions about your personal data, please contact us at{' '}
-                <a href="mailto:hallo@thetafel.nl" style={linkStyle}>hallo@thetafel.nl</a>.
+                <a href="mailto:hello@thetafel.nl" style={linkStyle}>hello@thetafel.nl</a>.
               </>
             ) : (
               <>
                 The Tafel is een Nederlands platform dat gratis boekingssystemen aanbiedt aan restaurants.
                 Wij zijn geregistreerd bij de Kamer van Koophandel onder nummer KVK 42027611 en hebben
                 BTW-nummer NL005440779B20. Voor vragen over uw persoonsgegevens kunt u contact opnemen via{' '}
-                <a href="mailto:hallo@thetafel.nl" style={linkStyle}>hallo@thetafel.nl</a>.
+                <a href="mailto:hello@thetafel.nl" style={linkStyle}>hello@thetafel.nl</a>.
               </>
             )}
           </p>
@@ -316,14 +316,14 @@ export default async function PrivacybeleidPage({ params }: Props) {
                   <strong>Right of access</strong> — you can request a copy of everything we hold about you, via{' '}
                   <Link href="/en/privacybeleid/data-request" style={linkStyle}>our data request page</Link>.
                 </li>
-                <li style={{ marginBottom: '6px' }}><strong>Right to rectification</strong> — you can ask us to correct inaccurate or incomplete data. Currently handled manually — contact <a href="mailto:hallo@thetafel.nl" style={linkStyle}>hallo@thetafel.nl</a>.</li>
+                <li style={{ marginBottom: '6px' }}><strong>Right to rectification</strong> — you can ask us to correct inaccurate or incomplete data. Currently handled manually — contact <a href="mailto:hello@thetafel.nl" style={linkStyle}>hello@thetafel.nl</a>.</li>
                 <li style={{ marginBottom: '6px' }}>
                   <strong>Right to erasure</strong> — you can ask us to delete your data (&apos;right to be forgotten&apos;), via{' '}
                   <Link href="/en/privacybeleid/data-deletion" style={linkStyle}>our data deletion page</Link>.
                 </li>
                 <li style={{ marginBottom: '6px' }}><strong>Right to data portability</strong> — you can receive your data in a machine-readable format. Covered by the same data request page as the right of access.</li>
                 <li style={{ marginBottom: '6px' }}><strong>Right to restriction of processing</strong> — you can ask us to restrict processing in certain circumstances.</li>
-                <li style={{ marginBottom: '6px' }}><strong>Right to object</strong> — you can object to specific processing. Manual — contact <a href="mailto:hallo@thetafel.nl" style={linkStyle}>hallo@thetafel.nl</a>.</li>
+                <li style={{ marginBottom: '6px' }}><strong>Right to object</strong> — you can object to specific processing. Manual — contact <a href="mailto:hello@thetafel.nl" style={linkStyle}>hello@thetafel.nl</a>.</li>
                 <li style={{ marginBottom: '6px' }}><strong>Right to lodge a complaint</strong> — with the Dutch Data Protection Authority (Autoriteit Persoonsgegevens), at autoriteitpersoonsgegevens.nl.</li>
               </>
             ) : (
@@ -332,14 +332,14 @@ export default async function PrivacybeleidPage({ params }: Props) {
                   <strong>Recht op inzage</strong> — u kunt een kopie opvragen van alles wat wij van u hebben opgeslagen, via{' '}
                   <Link href="/privacybeleid/data-request" style={linkStyle}>onze pagina voor gegevensopvraging</Link>.
                 </li>
-                <li style={{ marginBottom: '6px' }}><strong>Recht op rectificatie</strong> — u kunt ons verzoeken onjuiste of onvolledige gegevens te corrigeren. Momenteel handmatig — neem contact op via <a href="mailto:hallo@thetafel.nl" style={linkStyle}>hallo@thetafel.nl</a>.</li>
+                <li style={{ marginBottom: '6px' }}><strong>Recht op rectificatie</strong> — u kunt ons verzoeken onjuiste of onvolledige gegevens te corrigeren. Momenteel handmatig — neem contact op via <a href="mailto:hello@thetafel.nl" style={linkStyle}>hello@thetafel.nl</a>.</li>
                 <li style={{ marginBottom: '6px' }}>
                   <strong>Recht op verwijdering</strong> — u kunt ons verzoeken uw gegevens te verwijderen (&apos;recht op vergetelheid&apos;), via{' '}
                   <Link href="/privacybeleid/data-deletion" style={linkStyle}>onze pagina voor gegevensverwijdering</Link>.
                 </li>
                 <li style={{ marginBottom: '6px' }}><strong>Recht op dataportabiliteit</strong> — u kunt uw gegevens ontvangen in een machineleesbaar formaat. Dit valt onder dezelfde pagina als het recht op inzage.</li>
                 <li style={{ marginBottom: '6px' }}><strong>Recht op beperking van verwerking</strong> — u kunt ons vragen de verwerking te beperken in bepaalde omstandigheden.</li>
-                <li style={{ marginBottom: '6px' }}><strong>Recht op bezwaar</strong> — u kunt bezwaar maken tegen specifieke verwerking. Handmatig — neem contact op via <a href="mailto:hallo@thetafel.nl" style={linkStyle}>hallo@thetafel.nl</a>.</li>
+                <li style={{ marginBottom: '6px' }}><strong>Recht op bezwaar</strong> — u kunt bezwaar maken tegen specifieke verwerking. Handmatig — neem contact op via <a href="mailto:hello@thetafel.nl" style={linkStyle}>hello@thetafel.nl</a>.</li>
                 <li style={{ marginBottom: '6px' }}><strong>Recht om een klacht in te dienen</strong> — bij de Autoriteit Persoonsgegevens, via autoriteitpersoonsgegevens.nl.</li>
               </>
             )}
@@ -348,12 +348,12 @@ export default async function PrivacybeleidPage({ params }: Props) {
             {isEn ? (
               <>
                 To exercise a right that requires a manual request, please email{' '}
-                <a href="mailto:hallo@thetafel.nl" style={linkStyle}>hallo@thetafel.nl</a>. We aim to respond within 30 days.
+                <a href="mailto:hello@thetafel.nl" style={linkStyle}>hello@thetafel.nl</a>. We aim to respond within 30 days.
               </>
             ) : (
               <>
                 Om gebruik te maken van een recht dat een handmatig verzoek vereist, kunt u mailen naar{' '}
-                <a href="mailto:hallo@thetafel.nl" style={linkStyle}>hallo@thetafel.nl</a>. Wij streven ernaar binnen 30 dagen te reageren.
+                <a href="mailto:hello@thetafel.nl" style={linkStyle}>hello@thetafel.nl</a>. Wij streven ernaar binnen 30 dagen te reageren.
               </>
             )}
           </p>
@@ -470,7 +470,7 @@ export default async function PrivacybeleidPage({ params }: Props) {
             KVK: 42027611<br />
             BTW: NL005440779B20<br />
             {isEn ? 'Email' : 'E-mail'}:{' '}
-            <a href="mailto:hallo@thetafel.nl" style={linkStyle}>hallo@thetafel.nl</a>
+            <a href="mailto:hello@thetafel.nl" style={linkStyle}>hello@thetafel.nl</a>
             <br />
             {isEn ? 'Netherlands' : 'Nederland'}
           </p>

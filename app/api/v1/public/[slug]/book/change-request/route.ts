@@ -3,7 +3,7 @@
 // POST /api/v1/public/{slug}/book/change-request
 //
 // Guest wants to change something about their booking. We collect a
-// short structured message and email hallo@thetafel.nl. Phase 3 will
+// short structured message and email hello@thetafel.nl. Phase 3 will
 // route these directly to the restaurant.
 
 import { NextResponse, type NextRequest } from 'next/server';
@@ -111,7 +111,7 @@ export async function POST(
   });
 
   const sendResult = await sendConsumerEmail({
-    to: 'hallo@thetafel.nl',
+    to: 'hello@thetafel.nl',
     replyTo: b.guestEmail,
     subject: rendered.subject,
     html: rendered.html,

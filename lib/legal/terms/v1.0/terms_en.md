@@ -38,7 +38,7 @@ These General Terms and Conditions apply to all use of the software platform of 
 
 4.2 The Tafel targets a monthly availability of 99.5%, measured monthly, excluding scheduled maintenance announced at least 48 hours in advance, and excluding force majeure under clause 9. This target is a best-efforts commitment and does not entitle the Restaurant to service credits.
 
-4.3 The Tafel provides support by email at hallo@thetafel.nl on Dutch business days.
+4.3 The Tafel provides support by email at hello@thetafel.nl on Dutch business days.
 
 ## 5. Fees, payment, and late payment
 
@@ -114,7 +114,7 @@ These General Terms and Conditions apply to all use of the software platform of 
 
 ## 14. Notices
 
-14.1 All formal notices under the Agreement must be in writing and sent to the registered email address of the other Party. The Tafel's notice address is hallo@thetafel.nl.
+14.1 All formal notices under the Agreement must be in writing and sent to the registered email address of the other Party. The Tafel's notice address is hello@thetafel.nl.
 
 14.2 Notices are deemed delivered on the next Dutch business day after sending.
 

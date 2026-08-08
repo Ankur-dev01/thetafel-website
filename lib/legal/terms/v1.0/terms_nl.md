@@ -38,7 +38,7 @@ Deze algemene voorwaarden gelden voor elk gebruik van het softwareplatform van *
 
 4.2 The Tafel streeft naar een maandelijkse beschikbaarheid van 99,5% van de Diensten, gemeten per maand, met uitzondering van gepland onderhoud dat ten minste 48 uur van tevoren is aangekondigd, en met uitzondering van overmacht onder artikel 9. Deze doelstelling is een inspanningsverbintenis en geeft het Restaurant geen recht op servicekredieten.
 
-4.3 The Tafel biedt ondersteuning per e-mail op hallo@thetafel.nl op Nederlandse werkdagen.
+4.3 The Tafel biedt ondersteuning per e-mail op hello@thetafel.nl op Nederlandse werkdagen.
 
 ## 5. Vergoedingen, betaling en te late betaling
 
@@ -114,7 +114,7 @@ Deze algemene voorwaarden gelden voor elk gebruik van het softwareplatform van *
 
 ## 14. Kennisgevingen
 
-14.1 Formele kennisgevingen onder de Overeenkomst worden schriftelijk gedaan en gericht aan het geregistreerde e-mailadres van de andere Partij. Het adres van The Tafel is hallo@thetafel.nl.
+14.1 Formele kennisgevingen onder de Overeenkomst worden schriftelijk gedaan en gericht aan het geregistreerde e-mailadres van de andere Partij. Het adres van The Tafel is hello@thetafel.nl.
 
 14.2 Kennisgevingen worden geacht te zijn ontvangen op de eerstvolgende Nederlandse werkdag na verzending.
 

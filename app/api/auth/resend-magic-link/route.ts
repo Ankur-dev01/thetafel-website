@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
           <p style="margin:0;font-size:11px;color:#d4820a;word-break:break-all;">${magicLink}</p>
         </td></tr>
         <tr><td align="center" style="padding:32px 0 0 0;">
-          <p style="margin:0;font-size:12px;color:#9c8b6a;">The Tafel &mdash; KVK: 42027611 &mdash; hallo@thetafel.nl</p>
+          <p style="margin:0;font-size:12px;color:#9c8b6a;">The Tafel &mdash; KVK: 42027611 &mdash; hello@thetafel.nl</p>
         </td></tr>
       </table>
     </td></tr>

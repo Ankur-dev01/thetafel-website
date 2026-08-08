@@ -177,7 +177,7 @@ export default function OnboardingSidebar({
           {t.help}
         </p>
         <a
-          href="mailto:hallo@thetafel.nl?subject=Setup-gesprek"
+          href="mailto:hello@thetafel.nl?subject=Setup-gesprek"
           className="block w-full text-center px-4 py-2.5 rounded bg-white/10 hover:bg-white/15 text-[#fdfaf5] text-[12px] uppercase tracking-[0.12em] transition-colors"
           style={{
             fontFamily: 'var(--font-jost), Jost, sans-serif',

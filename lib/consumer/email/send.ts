@@ -5,7 +5,7 @@ import { auditLog } from '../audit'
 /**
  * Single entry point for every consumer-facing email send.
  *
- * Wraps the Resend client, BCCs hallo@thetafel.nl so the team can see all
+ * Wraps the Resend client, BCCs hello@thetafel.nl so the team can see all
  * outgoing consumer mail for support / debugging, audits the result.
  *
  * Never throws — a failed email never blocks the user-visible action that
@@ -39,9 +39,9 @@ export type SendConsumerEmailInput = {
   restaurantId: string
   bookingId?: string | null
   orderId?: string | null
-  /** Extra recipients for the BCC list. hallo@thetafel.nl is always BCC'd unless skipAdminBcc is set. */
+  /** Extra recipients for the BCC list. hello@thetafel.nl is always BCC'd unless skipAdminBcc is set. */
   extraBcc?: string[]
-  /** Skip the default hallo@thetafel.nl BCC — for sends where an admin copy isn't wanted (e.g. cancellations). */
+  /** Skip the default hello@thetafel.nl BCC — for sends where an admin copy isn't wanted (e.g. cancellations). */
   skipAdminBcc?: boolean
   /** Reply-To override — used for internal notifications the guest should be able to reply to directly. */
   replyTo?: string
@@ -82,7 +82,7 @@ export async function sendConsumerEmail(
 
   const bcc = input.skipAdminBcc
     ? (input.extraBcc ?? [])
-    : ['hallo@thetafel.nl', ...(input.extraBcc ?? [])]
+    : ['hello@thetafel.nl', ...(input.extraBcc ?? [])]
 
   try {
     const { data, error } = await resend.emails.send({

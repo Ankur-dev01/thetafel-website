@@ -173,7 +173,7 @@ export default function Footer() {
               }}
             >
               <a
-                href="mailto:hallo@thetafel.nl"
+                href="mailto:hello@thetafel.nl"
                 style={{
                   fontFamily: 'var(--font-jost), sans-serif',
                   fontSize: '14px',

@@ -2,7 +2,7 @@ import { Resend } from 'resend'
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
 const FROM_ADDRESS = 'The Tafel <hallo@thetafel.nl>'
-const ADMIN_INBOX = 'hallo@thetafel.nl'
+const ADMIN_INBOX = 'hello@thetafel.nl'
 
 type Args = {
   legalName: string

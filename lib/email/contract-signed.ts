@@ -170,7 +170,7 @@ export async function sendContractSignedEmail(args: {
     dpaAccepted: isNl ? 'Verwerkersovereenkomst aanvaard' : 'Data Processing Agreement accepted',
     view: isNl ? 'bekijken' : 'view',
     signatureLabel: isNl ? 'Handtekening' : 'Signature',
-    footer: 'hallo@thetafel.nl',
+    footer: 'hello@thetafel.nl',
   }
 
   const contractHtml = mdToHtml(contractMarkdown)
@@ -218,7 +218,7 @@ export async function sendContractSignedEmail(args: {
   </td></tr>
 
   <tr><td style="padding:20px 32px 28px;text-align:center;font-size:12px;color:#9c8b6a;border-top:1px solid #f0e8d8;">
-    <a href="mailto:hallo@thetafel.nl" style="color:#d4820a;text-decoration:underline;">hallo@thetafel.nl</a> &middot; <a href="https://thetafel.nl" style="color:#d4820a;text-decoration:underline;">thetafel.nl</a>
+    <a href="mailto:hello@thetafel.nl" style="color:#d4820a;text-decoration:underline;">hello@thetafel.nl</a> &middot; <a href="https://thetafel.nl" style="color:#d4820a;text-decoration:underline;">thetafel.nl</a>
   </td></tr>
 </table>
 </td></tr>
@@ -228,7 +228,7 @@ export async function sendContractSignedEmail(args: {
   await resend.emails.send({
     from: 'The Tafel <hallo@thetafel.nl>',
     to: [to],
-    bcc: ['hallo@thetafel.nl'],
+    bcc: ['hello@thetafel.nl'],
     subject,
     html,
     attachments: [

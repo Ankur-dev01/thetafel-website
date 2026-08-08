@@ -61,7 +61,7 @@ const COPY = {
     section_retained: 'Wat is bewaard (en waarom)',
     retained_body:
       'Je reserveringen en bestellingen blijven als geanonimiseerde transactiegegevens in het systeem staan. De Wet op de Rijksbelastingen (art. 52) verplicht restaurants deze gegevens zeven jaar te bewaren. Niets in deze gegevens kan nog naar jou worden herleid.',
-    contact: 'Vragen? Neem contact op via hallo@thetafel.nl.',
+    contact: 'Vragen? Neem contact op via hello@thetafel.nl.',
     footer: (date: string, ref: string) => `Gegenereerd op ${date}. Referentie: ${ref}.`,
   },
   en: {
@@ -75,7 +75,7 @@ const COPY = {
     section_retained: 'What was retained (and why)',
     retained_body:
       'Your bookings and orders remain in the system as anonymised transaction records. Dutch tax law (Wet op de Rijksbelastingen art. 52) requires restaurants to keep these records for seven years. Nothing in these records can be linked back to you.',
-    contact: 'Questions? Reach us at hallo@thetafel.nl.',
+    contact: 'Questions? Reach us at hello@thetafel.nl.',
     footer: (date: string, ref: string) => `Generated on ${date}. Reference: ${ref}.`,
   },
 } as const
