@@ -9,7 +9,7 @@
 
 ## 1. Partijen
 
-**Aanbieder:** Ontwikkeling Tech Services, eenmanszaak ingeschreven bij de Kamer van Koophandel onder nummer `42027611`, BTW-nummer `NL005440779B20`, gevestigd te `[OTS_ADDRESS]`, handelend onder de geregistreerde handelsnaam **"The Tafel"** (hierna: **"The Tafel"**).
+**Aanbieder:** Ontwikkeling Tech Services, eenmanszaak ingeschreven bij de Kamer van Koophandel onder nummer `42027611`, BTW-nummer `NL005440779B20`, gevestigd te `{{ots_address}}`, handelend onder de geregistreerde handelsnaam **"The Tafel"** (hierna: **"The Tafel"**).
 
 **Restaurant:** {{restaurant_legal_name}}, ingeschreven bij de Kamer van Koophandel onder nummer {{restaurant_kvk}}, BTW-nummer {{restaurant_btw_or_dash}}, gevestigd te {{restaurant_address}} (hierna: **"Restaurant"**).
 

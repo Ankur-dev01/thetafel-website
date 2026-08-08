@@ -9,7 +9,7 @@
 
 ## 1. Parties
 
-**Provider:** Ontwikkeling Tech Services, a sole proprietorship registered with the Dutch Chamber of Commerce (KVK) under number `42027611`, BTW number `NL005440779B20`, with registered address at `[OTS_ADDRESS]`, operating under the registered trade name **"The Tafel"** (hereafter: **"The Tafel"**).
+**Provider:** Ontwikkeling Tech Services, a sole proprietorship registered with the Dutch Chamber of Commerce (KVK) under number `42027611`, BTW number `NL005440779B20`, with registered address at `{{ots_address}}`, operating under the registered trade name **"The Tafel"** (hereafter: **"The Tafel"**).
 
 **Restaurant:** {{restaurant_legal_name}}, registered with the Chamber of Commerce (KVK) under number {{restaurant_kvk}}, BTW number {{restaurant_btw_or_dash}}, with registered address at {{restaurant_address}} (hereafter: **"Restaurant"**).
 

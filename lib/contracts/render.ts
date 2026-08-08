@@ -12,6 +12,7 @@ import {
   CURRENT_TERMS_VERSION,
   CURRENT_DPA_VERSION,
 } from '@/lib/legal/versions'
+import { OTS_ADDRESS } from './providerConfig'
 
 // ── Template cache ─────────────────────────────────────────────────────────
 
@@ -213,6 +214,7 @@ export function buildContext(args: {
 
   return {
     contract_version: CURRENT_CONTRACT_VERSION,
+    ots_address: OTS_ADDRESS,
     terms_version: CURRENT_TERMS_VERSION,
     dpa_version: CURRENT_DPA_VERSION,
     restaurant_legal_name: restaurant.legal_name ?? '—',
@@ -276,6 +278,7 @@ export async function renderContract(
 
   const renderCtx: Record<string, string> = {
     contract_version: ctx.contract_version,
+    ots_address: ctx.ots_address,
     effective_date_placeholder: placeholderText,
     restaurant_legal_name: ctx.restaurant_legal_name,
     restaurant_kvk: ctx.restaurant_kvk,

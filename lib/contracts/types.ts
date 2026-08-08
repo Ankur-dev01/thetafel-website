@@ -9,6 +9,7 @@ export interface OneTimeFeeLine {
 
 export interface ContractContext {
   contract_version: string;
+  ots_address: string;
   restaurant_legal_name: string;
   restaurant_kvk: string;
   restaurant_btw_or_dash: string;
