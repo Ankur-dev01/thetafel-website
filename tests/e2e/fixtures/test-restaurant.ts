@@ -2,6 +2,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { resetTestRestaurantPauseState } from './resetTestRestaurantPauseState'
 import { resetTestRestaurantHours } from './resetTestRestaurantHours'
 import { resetTestRestaurantFloor } from './resetTestRestaurantFloor'
+import { resetTestRestaurantBookingRules } from './resetTestRestaurantBookingRules'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_PROD_URL
 const SERVICE_ROLE = process.env.SUPABASE_PROD_SERVICE_ROLE_KEY
@@ -99,6 +100,7 @@ export async function wipeTestRestaurant(): Promise<void> {
   // pause.spec.ts leak — see resetTestRestaurantPauseState's own comment.
   await resetTestRestaurantPauseState()
   await resetTestRestaurantHours()
+  await resetTestRestaurantBookingRules()
 
   await wipeTestRestaurantPhotos()
 

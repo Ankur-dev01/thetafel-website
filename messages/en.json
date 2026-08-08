@@ -1505,7 +1505,9 @@
           "hours": "Opening hours",
           "hoursDesc": "Weekly schedule and hours per service.",
           "floor": "Floor plan",
-          "floorDesc": "Tables, zones and seating."
+          "floorDesc": "Tables, zones and seating.",
+          "booking": "Booking rules",
+          "bookingDesc": "Booking rules, no-show protection and guest experience."
         }
       },
       "confirmPause": {
@@ -1593,6 +1595,109 @@
           "capacityInvalid": "Seats must be between 1 and 30.",
           "saveFailed": "Save failed. Please try again.",
           "tableHasFutureBookings": "These tables still have bookings and can't be deleted: {names}."
+        }
+      },
+      "booking": {
+        "title": "Booking rules",
+        "subtitle": "Decide how guests book with you. Changes only apply to new bookings.",
+        "back": "Back to settings",
+        "rules": {
+          "sectionTitle": "Booking rules",
+          "minLeadTime": {
+            "label": "Minimum lead time",
+            "help": "How much time is needed at minimum between booking and arrival.",
+            "options": {
+              "30": "30 minutes",
+              "60": "1 hour",
+              "120": "2 hours",
+              "240": "4 hours",
+              "1440": "24 hours",
+              "off": "Off"
+            }
+          },
+          "maxPartySize": {
+            "label": "Maximum party size online",
+            "help": "Larger groups contact the restaurant by phone.",
+            "noLimit": "No limit"
+          },
+          "bookingWindow": {
+            "label": "Booking window",
+            "help": "How far in advance guests can book.",
+            "days": "{count} days"
+          },
+          "maxGuestsPerSlot": {
+            "label": "Maximum guests per time slot",
+            "help": "Optional ceiling across all tables combined.",
+            "noLimit": "No limit",
+            "limitLabel": "Limit to"
+          },
+          "waitlist": {
+            "label": "Waitlist",
+            "help": "If everything is full, guests can join the waitlist."
+          },
+          "zoneChoice": {
+            "label": "Zone preference when booking",
+            "help": "Guests can indicate a zone preference while booking."
+          }
+        },
+        "noshow": {
+          "sectionTitle": "No-show protection",
+          "email": {
+            "label": "Email reminder",
+            "help": "We automatically send a reminder 24 hours and 2 hours before the reservation."
+          },
+          "whatsapp": {
+            "label": "WhatsApp reminder",
+            "help": "Same as email, but via WhatsApp."
+          },
+          "whatsappNeedsPremium": "Available on Premium.",
+          "reconfirmation": {
+            "label": "Reconfirmation 24 hours ahead",
+            "help": "The guest must reconfirm the reservation via a link — otherwise the reservation is released."
+          },
+          "prepaid": {
+            "label": "Prepaid bookings",
+            "help": "Guest pays a deposit when booking. Refunded on arrival, kept on no-show.",
+            "amountLabel": "Amount per guest",
+            "thresholdLabel": "Require for parties from",
+            "thresholdEvery": "Every reservation",
+            "advancedNote": "Advanced day/time rules for deposits aren't editable here yet."
+          },
+          "prepaidNeedsMollie": "Connect Mollie under Payments first."
+        },
+        "guest": {
+          "sectionTitle": "Guest experience",
+          "template": {
+            "nlLabel": "Confirmation email (Dutch)",
+            "enLabel": "Confirmation email (English)",
+            "help": "Use the variables below to personalize the email. '{restaurant}' is required.",
+            "placeholders": "Available variables: {vars}",
+            "previewLabel": "Preview"
+          },
+          "questions": {
+            "label": "Questions during booking",
+            "allergies": "Allergies",
+            "occasion": "Special occasion (birthday, anniversary)",
+            "requests": "Other requests (free text)"
+          }
+        },
+        "actions": {
+          "save": "Save",
+          "saving": "Saving…",
+          "cancel": "Cancel"
+        },
+        "savedToast": "Booking rules saved.",
+        "errors": {
+          "maxPartyTooLow": "Maximum party size must be at least 2.",
+          "bookingWindowTooLow": "Booking window must be at least 1 day.",
+          "maxGuestsTooLow": "Maximum per slot must be at least 2.",
+          "prepaidAmountTooLow": "Prepayment must be at least €1.",
+          "prepaidNeedsMollie": "Prepaid bookings require a connected Mollie account.",
+          "prepaidThresholdRequired": "Choose from which party size prepayment applies.",
+          "whatsappNeedsPremium": "WhatsApp reminders require Premium.",
+          "templateMissingRestaurant": "The confirmation email must contain '{restaurant}'.",
+          "templateUnknownPlaceholder": "Unknown variable: {placeholder}",
+          "saveFailed": "Save failed. Please try again."
         }
       }
     },

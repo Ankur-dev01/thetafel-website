@@ -1505,7 +1505,9 @@
           "hours": "Openingstijden",
           "hoursDesc": "Weekschema en openingstijden per service.",
           "floor": "Plattegrond",
-          "floorDesc": "Tafels, zones en zitplaatsen."
+          "floorDesc": "Tafels, zones en zitplaatsen.",
+          "booking": "Reserveringsregels",
+          "bookingDesc": "Boekingsregels, no-show bescherming en gastervaring."
         }
       },
       "confirmPause": {
@@ -1593,6 +1595,109 @@
           "capacityInvalid": "Zitplaatsen moet tussen 1 en 30 liggen.",
           "saveFailed": "Opslaan is niet gelukt. Probeer het opnieuw.",
           "tableHasFutureBookings": "Deze tafels hebben nog boekingen en kunnen niet worden verwijderd: {names}."
+        }
+      },
+      "booking": {
+        "title": "Reserveringsregels",
+        "subtitle": "Bepaal hoe gasten bij jou reserveren. Wijzigingen gelden alleen voor nieuwe reserveringen.",
+        "back": "Terug naar instellingen",
+        "rules": {
+          "sectionTitle": "Boekingsregels",
+          "minLeadTime": {
+            "label": "Minimale voorbereidingstijd",
+            "help": "Hoeveel tijd tussen boeking en aankomst minimaal nodig is.",
+            "options": {
+              "30": "30 minuten",
+              "60": "1 uur",
+              "120": "2 uur",
+              "240": "4 uur",
+              "1440": "24 uur",
+              "off": "Uit"
+            }
+          },
+          "maxPartySize": {
+            "label": "Maximale groepsgrootte online",
+            "help": "Grotere groepen nemen telefonisch contact op.",
+            "noLimit": "Geen limiet"
+          },
+          "bookingWindow": {
+            "label": "Reserveringsvenster",
+            "help": "Hoe ver vooruit gasten kunnen reserveren.",
+            "days": "{count} dagen"
+          },
+          "maxGuestsPerSlot": {
+            "label": "Maximum gasten per tijdslot",
+            "help": "Optioneel plafond over alle tafels samen.",
+            "noLimit": "Geen limiet",
+            "limitLabel": "Beperken tot"
+          },
+          "waitlist": {
+            "label": "Wachtlijst",
+            "help": "Als alles vol zit, kunnen gasten op de wachtlijst."
+          },
+          "zoneChoice": {
+            "label": "Zonevoorkeur bij boeken",
+            "help": "Gasten kunnen tijdens het boeken een voorkeur voor een zone opgeven."
+          }
+        },
+        "noshow": {
+          "sectionTitle": "No-show bescherming",
+          "email": {
+            "label": "Herinnering per e-mail",
+            "help": "Wij sturen automatisch een herinnering 24 uur en 2 uur voor de reservering."
+          },
+          "whatsapp": {
+            "label": "Herinnering via WhatsApp",
+            "help": "Zelfde als e-mail, maar via WhatsApp."
+          },
+          "whatsappNeedsPremium": "Beschikbaar op Premium.",
+          "reconfirmation": {
+            "label": "Herbevestiging 24 uur vooraf",
+            "help": "De gast moet de reservering opnieuw bevestigen via een link — anders vervalt de reservering."
+          },
+          "prepaid": {
+            "label": "Vooruitbetaling",
+            "help": "Gast betaalt een aanbetaling bij het boeken. Terugbetaald bij komst, ingehouden bij no-show.",
+            "amountLabel": "Bedrag per gast",
+            "thresholdLabel": "Vragen bij groepen vanaf",
+            "thresholdEvery": "Elke reservering",
+            "advancedNote": "Geavanceerde dag- of tijdregels voor vooruitbetaling zijn hier nog niet aanpasbaar."
+          },
+          "prepaidNeedsMollie": "Verbind eerst Mollie bij Betalingen."
+        },
+        "guest": {
+          "sectionTitle": "Gastervaring",
+          "template": {
+            "nlLabel": "Bevestigingsmail Nederlands",
+            "enLabel": "Bevestigingsmail Engels",
+            "help": "Gebruik onderstaande variabelen om de mail te personaliseren. '{restaurant}' is verplicht.",
+            "placeholders": "Beschikbare variabelen: {vars}",
+            "previewLabel": "Voorbeeld"
+          },
+          "questions": {
+            "label": "Vragen tijdens het boeken",
+            "allergies": "Allergieën",
+            "occasion": "Speciale gelegenheid (verjaardag, jubileum)",
+            "requests": "Overige verzoeken (vrije tekst)"
+          }
+        },
+        "actions": {
+          "save": "Opslaan",
+          "saving": "Opslaan…",
+          "cancel": "Annuleren"
+        },
+        "savedToast": "Reserveringsregels opgeslagen.",
+        "errors": {
+          "maxPartyTooLow": "Maximale groepsgrootte moet minstens 2 zijn.",
+          "bookingWindowTooLow": "Reserveringsvenster moet minstens 1 dag zijn.",
+          "maxGuestsTooLow": "Maximum per slot moet minstens 2 zijn.",
+          "prepaidAmountTooLow": "Vooruitbetaling moet minstens €1 zijn.",
+          "prepaidNeedsMollie": "Vooruitbetaling vereist een verbonden Mollie-account.",
+          "prepaidThresholdRequired": "Kies vanaf welke groepsgrootte vooruitbetaling geldt.",
+          "whatsappNeedsPremium": "WhatsApp-herinneringen vereisen Premium.",
+          "templateMissingRestaurant": "De bevestigingsmail moet '{restaurant}' bevatten.",
+          "templateUnknownPlaceholder": "Onbekende variabele: {placeholder}",
+          "saveFailed": "Opslaan is niet gelukt. Probeer het opnieuw."
         }
       }
     },
