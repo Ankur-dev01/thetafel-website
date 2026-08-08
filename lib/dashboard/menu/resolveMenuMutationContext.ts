@@ -48,7 +48,11 @@ export async function resolveMenuMutationContext(
     }
   }
 
-  const rl = await dashboardMutationRateLimit(user.id)
+  // No data dependency between these two — run them concurrently.
+  const [rl, { data: restaurant, error: restaurantError }] = await Promise.all([
+    dashboardMutationRateLimit(user.id),
+    supabase.from('restaurants').select('id, slug').eq('user_id', user.id).is('deleted_at', null).maybeSingle(),
+  ])
   if (!rl.ok) {
     return {
       ok: false,
@@ -58,13 +62,6 @@ export async function resolveMenuMutationContext(
       ),
     }
   }
-
-  const { data: restaurant, error: restaurantError } = await supabase
-    .from('restaurants')
-    .select('id, slug')
-    .eq('user_id', user.id)
-    .is('deleted_at', null)
-    .maybeSingle()
   if (restaurantError || !restaurant) {
     return {
       ok: false,
@@ -72,7 +69,7 @@ export async function resolveMenuMutationContext(
     }
   }
 
-  const guard = await assertDashboardWriteAllowed(restaurant.id, action)
+  const guard = await assertDashboardWriteAllowed(restaurant.id, action, user)
   if (!guard.ok) {
     return {
       ok: false,

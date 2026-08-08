@@ -1,5 +1,6 @@
 import 'server-only'
 
+import type { User } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import type { Database } from '@/packages/db/types'
 import { can, type DashboardAction } from '@/lib/dashboard/permissions'
@@ -23,20 +24,29 @@ export type AssertDashboardWriteAllowedResult =
  * Does not audit on its own — a rejection here is silent. The calling route
  * audits after a successful mutation. (D9.1 will decide whether rejections
  * also need an audit trail.)
+ *
+ * `knownUser` lets a caller that already ran `auth.getUser()` this request
+ * (e.g. resolveMenuMutationContext) skip the redundant second GoTrue round
+ * trip. Callers that haven't resolved a user yet can omit it — this guard
+ * then falls back to resolving it itself, unchanged from prior behavior.
  */
 export async function assertDashboardWriteAllowed(
   restaurantId: string,
-  action: DashboardAction
+  action: DashboardAction,
+  knownUser?: User,
 ): Promise<AssertDashboardWriteAllowedResult> {
   const supabase = await createSupabaseServerClient()
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
-
-  if (authError || !user) {
-    return { ok: false, reason: 'not_authenticated', httpStatus: 401 }
+  let user = knownUser ?? null
+  if (!user) {
+    const {
+      data: { user: fetchedUser },
+      error: authError,
+    } = await supabase.auth.getUser()
+    if (authError || !fetchedUser) {
+      return { ok: false, reason: 'not_authenticated', httpStatus: 401 }
+    }
+    user = fetchedUser
   }
 
   const { data: staffRow } = await supabase
