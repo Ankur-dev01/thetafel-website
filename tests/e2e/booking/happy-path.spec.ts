@@ -193,6 +193,16 @@ async function selectSlot(page: Page): Promise<void> {
   await slot.click()
 }
 
+/**
+ * At least `days` from today, skipping Sunday — the test restaurant's
+ * canonical hours fixture (resetTestRestaurantHours) has no `availability`
+ * row for Sunday, so it's closed and un-bookable. A fixed "+N days" target
+ * lands on a Sunday roughly 1 time in 7; when it did, this test timed out
+ * waiting to click a calendar day button that the DatePicker correctly
+ * never renders as available. Walking forward past Sundays keeps the
+ * "as soon as possible, but at least `days` out" intent without ever
+ * landing on the closed day.
+ */
 function daysFromNowInAmsterdam(days: number): { year: number; month: number; day: number } {
   const todayLocal = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Europe/Amsterdam',
@@ -201,6 +211,9 @@ function daysFromNowInAmsterdam(days: number): { year: number; month: number; da
     day: '2-digit',
   }).format(new Date())
   const [y, m, d] = todayLocal.split('-').map(Number)
-  const future = new Date(Date.UTC(y, m - 1, d + days))
+  let future = new Date(Date.UTC(y, m - 1, d + days))
+  while (future.getUTCDay() === 0) {
+    future = new Date(Date.UTC(future.getUTCFullYear(), future.getUTCMonth(), future.getUTCDate() + 1))
+  }
   return { year: future.getUTCFullYear(), month: future.getUTCMonth() + 1, day: future.getUTCDate() }
 }

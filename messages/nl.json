@@ -1494,7 +1494,6 @@
       "hub": {
         "upcoming": {
           "title": "Binnenkort:",
-          "hours": "Openingstijden",
           "floor": "Zaalindeling",
           "menu": "Menu",
           "team": "Team",
@@ -1502,6 +1501,10 @@
           "billing": "Facturatie",
           "privacy": "Privacy",
           "account": "Account"
+        },
+        "links": {
+          "hours": "Openingstijden",
+          "hoursDesc": "Weekschema en openingstijden per service."
         }
       },
       "confirmPause": {
@@ -1509,6 +1512,52 @@
         "body": "Gasten kunnen dan niet meer reserveren of bestellen tot je hervat. Bestaande reserveringen en actieve bestellingen blijven zichtbaar.",
         "confirm": "Ja, pauzeer",
         "cancel": "Annuleren"
+      },
+      "hours": {
+        "title": "Openingstijden",
+        "subtitle": "Wanneer gasten kunnen boeken, bestellen en langskomen.",
+        "back": "Terug naar instellingen",
+        "perServiceOverride": {
+          "label": "Openingstijden per service",
+          "help": "Standaard gelden dezelfde tijden voor alle services. Zet dit aan om aparte tijden in te stellen voor reserveringen, afhaal en tafel-bestellen."
+        },
+        "cards": {
+          "all": "Alle services",
+          "reservations": "Reserveringen",
+          "takeaway": "Afhaal",
+          "qr": "Bestellen aan tafel"
+        },
+        "days": {
+          "1": "Maandag",
+          "2": "Dinsdag",
+          "3": "Woensdag",
+          "4": "Donderdag",
+          "5": "Vrijdag",
+          "6": "Zaterdag",
+          "7": "Zondag"
+        },
+        "row": {
+          "closed": "Gesloten",
+          "openTime": "Open",
+          "closeTime": "Sluit",
+          "closesNextDay": "+1 dag",
+          "tagBrunch": "Brunch",
+          "tagLunch": "Lunch",
+          "tagDinner": "Diner"
+        },
+        "actions": {
+          "save": "Opslaan",
+          "saving": "Opslaan…",
+          "cancel": "Annuleren"
+        },
+        "confirmSwitchOff": "Weet je zeker dat je terug wilt naar één openingsschema voor alle services? De aparte tijden per service worden vervangen door de gedeelde tijden.",
+        "savedToast": "Openingstijden opgeslagen.",
+        "errors": {
+          "invalidTime": "Vul een open- en sluittijd in.",
+          "closeEqualsOpen": "Open- en sluittijd mogen niet gelijk zijn.",
+          "scopeEmpty": "Elke service moet minstens één geopende dag hebben.",
+          "saveFailed": "Opslaan is niet gelukt. Probeer het opnieuw."
+        }
       }
     },
     "placeholder": {

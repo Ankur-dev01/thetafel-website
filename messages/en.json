@@ -1494,7 +1494,6 @@
       "hub": {
         "upcoming": {
           "title": "Coming soon:",
-          "hours": "Opening hours",
           "floor": "Floor plan",
           "menu": "Menu",
           "team": "Team",
@@ -1502,6 +1501,10 @@
           "billing": "Billing",
           "privacy": "Privacy",
           "account": "Account"
+        },
+        "links": {
+          "hours": "Opening hours",
+          "hoursDesc": "Weekly schedule and hours per service."
         }
       },
       "confirmPause": {
@@ -1509,6 +1512,52 @@
         "body": "Guests won't be able to book or order until you resume. Existing bookings and active orders stay visible.",
         "confirm": "Yes, pause",
         "cancel": "Cancel"
+      },
+      "hours": {
+        "title": "Opening hours",
+        "subtitle": "When guests can book, order, and drop in.",
+        "back": "Back to settings",
+        "perServiceOverride": {
+          "label": "Per-service hours",
+          "help": "By default the same hours apply to every service. Turn this on to set separate hours for reservations, takeaway, and table ordering."
+        },
+        "cards": {
+          "all": "All services",
+          "reservations": "Reservations",
+          "takeaway": "Takeaway",
+          "qr": "Table ordering"
+        },
+        "days": {
+          "1": "Monday",
+          "2": "Tuesday",
+          "3": "Wednesday",
+          "4": "Thursday",
+          "5": "Friday",
+          "6": "Saturday",
+          "7": "Sunday"
+        },
+        "row": {
+          "closed": "Closed",
+          "openTime": "Open",
+          "closeTime": "Close",
+          "closesNextDay": "+1 day",
+          "tagBrunch": "Brunch",
+          "tagLunch": "Lunch",
+          "tagDinner": "Dinner"
+        },
+        "actions": {
+          "save": "Save",
+          "saving": "Saving…",
+          "cancel": "Cancel"
+        },
+        "confirmSwitchOff": "Are you sure you want to go back to a single schedule for all services? The per-service hours will be replaced with the shared hours.",
+        "savedToast": "Opening hours saved.",
+        "errors": {
+          "invalidTime": "Enter both an opening and closing time.",
+          "closeEqualsOpen": "Opening and closing time can't be equal.",
+          "scopeEmpty": "Each service must have at least one open day.",
+          "saveFailed": "Save failed. Please try again."
+        }
       }
     },
     "placeholder": {

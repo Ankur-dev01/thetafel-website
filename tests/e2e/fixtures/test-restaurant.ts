@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { resetTestRestaurantPauseState } from './resetTestRestaurantPauseState'
+import { resetTestRestaurantHours } from './resetTestRestaurantHours'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_PROD_URL
 const SERVICE_ROLE = process.env.SUPABASE_PROD_SERVICE_ROLE_KEY
@@ -82,10 +83,10 @@ export async function wipeTestRestaurantPhotos(): Promise<void> {
 
 /**
  * Deletes ALL bookings, orders, tabs, order-items, audit logs, magic links,
- * and payment intents scoped to the test restaurant, resets pause state, and
- * anonymises any `e2e-*@e2e.thetafel.invalid` guest rows. Safe to run
- * whenever — the test restaurant has no real guests, ever. Children deleted
- * before parents to satisfy FKs.
+ * and payment intents scoped to the test restaurant, resets pause state and
+ * opening hours, and anonymises any `e2e-*@e2e.thetafel.invalid` guest rows.
+ * Safe to run whenever — the test restaurant has no real guests, ever.
+ * Children deleted before parents to satisfy FKs.
  */
 export async function wipeTestRestaurant(): Promise<void> {
   const supabase = adminClient()
@@ -95,6 +96,7 @@ export async function wipeTestRestaurant(): Promise<void> {
   // helper) assumes an unpaused restaurant. Load-bearing fix for the
   // pause.spec.ts leak — see resetTestRestaurantPauseState's own comment.
   await resetTestRestaurantPauseState()
+  await resetTestRestaurantHours()
 
   await wipeTestRestaurantPhotos()
 
