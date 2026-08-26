@@ -1438,7 +1438,8 @@
       "action": {
         "markAttended": "Aangekomen",
         "markReady": "Markeer klaar",
-        "pickedUp": "Opgehaald"
+        "pickedUp": "Opgehaald",
+        "comingSoonTooltip": "Binnenkort beschikbaar"
       },
       "disconnected": "Verbinding verbroken",
       "disconnectedRetry": "Opnieuw proberen",
@@ -1824,7 +1825,7 @@
       },
       "guests": {
         "title": "Gasten",
-        "subtitle": "Nog niet gebouwd — komt in D7.1."
+        "subtitle": "Deze pagina komt binnenkort."
       },
       "menu": {
         "title": "Menu",
@@ -1832,7 +1833,7 @@
       },
       "analytics": {
         "title": "Inzichten",
-        "subtitle": "Nog niet gebouwd — komt in D7.3."
+        "subtitle": "Deze pagina komt binnenkort."
       }
     },
     "bookings": {
@@ -1894,7 +1895,7 @@
           "title": "Notitie van restaurant",
           "empty": "Geen notitie",
           "addStub": "+ Voeg notitie toe",
-          "addStubTooltip": "Beschikbaar in D7.1",
+          "addStubTooltip": "Binnenkort beschikbaar",
           "meta": "Bijgewerkt op {date} door {name}",
           "defaultAuthor": "restaurant"
         },
@@ -2355,7 +2356,7 @@
         },
         "unavailable": {
           "title": "Momenteel niet beschikbaar",
-          "body": "Zet aan in D4.3."
+          "body": "Deze knop staat op '86'. Zet 'm weer aan om gasten dit item te laten bestellen."
         },
         "modifiers": "Extra keuzes",
         "action": {

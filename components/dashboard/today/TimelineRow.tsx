@@ -67,7 +67,7 @@ export default function TimelineRow({ item }: TimelineRowProps) {
           <button
             type="button"
             disabled
-            title="Beschikbaar in D2.3"
+            title={t('action.comingSoonTooltip')}
             data-testid="timeline-mark-attended-stub"
             className="tafel-tap px-3.5 py-2 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f5ede0] text-[#1e1508]"
             style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
@@ -117,7 +117,7 @@ export default function TimelineRow({ item }: TimelineRowProps) {
         <button
           type="button"
           disabled
-          title="Beschikbaar in D3.2"
+          title={t('action.comingSoonTooltip')}
           data-testid="timeline-mark-ready-stub"
           className="tafel-tap px-3.5 py-2 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f5ede0] text-[#1e1508]"
           style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
@@ -129,7 +129,7 @@ export default function TimelineRow({ item }: TimelineRowProps) {
         <button
           type="button"
           disabled
-          title="Beschikbaar in D3.2"
+          title={t('action.comingSoonTooltip')}
           data-testid="timeline-picked-up-stub"
           className="tafel-tap px-3.5 py-2 rounded-full text-[12px] uppercase tracking-[0.08em] bg-[#f5ede0] text-[#1e1508]"
           style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}

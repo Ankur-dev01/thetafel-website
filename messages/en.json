@@ -1438,7 +1438,8 @@
       "action": {
         "markAttended": "Arrived",
         "markReady": "Mark ready",
-        "pickedUp": "Picked up"
+        "pickedUp": "Picked up",
+        "comingSoonTooltip": "Coming soon"
       },
       "disconnected": "Connection lost",
       "disconnectedRetry": "Retry",
@@ -1824,7 +1825,7 @@
       },
       "guests": {
         "title": "Guests",
-        "subtitle": "Not built yet — coming in D7.1."
+        "subtitle": "This page is coming soon."
       },
       "menu": {
         "title": "Menu",
@@ -1832,7 +1833,7 @@
       },
       "analytics": {
         "title": "Insights",
-        "subtitle": "Not built yet — coming in D7.3."
+        "subtitle": "This page is coming soon."
       }
     },
     "bookings": {
@@ -1894,7 +1895,7 @@
           "title": "Restaurant's note",
           "empty": "No note",
           "addStub": "+ Add note",
-          "addStubTooltip": "Available in D7.1",
+          "addStubTooltip": "Coming soon",
           "meta": "Updated on {date} by {name}",
           "defaultAuthor": "the restaurant"
         },
@@ -2355,7 +2356,7 @@
         },
         "unavailable": {
           "title": "Currently unavailable",
-          "body": "Turn on in D4.3."
+          "body": "This item is marked 86. Turn it back on to let guests order it."
         },
         "modifiers": "Options",
         "action": {
