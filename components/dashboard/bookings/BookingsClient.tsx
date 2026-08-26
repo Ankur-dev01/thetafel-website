@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, usePathname } from '@/i18n/routing';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { usePolling } from '@/lib/dashboard/usePolling';
 import DateNav from '@/components/dashboard/ui/DateNav';
+import DisconnectedStrip from '@/components/dashboard/ui/DisconnectedStrip';
 import EmptyState from '@/components/dashboard/ui/EmptyState';
 import DetailPanel from '@/components/dashboard/ui/DetailPanel';
 import DetailSheet from '@/components/dashboard/ui/DetailSheet';
@@ -30,6 +32,7 @@ import {
 } from '@/lib/dashboard/bookings/filters';
 
 const GROUP_ORDER: ServiceGroupKey[] = ['brunch', 'lunch', 'dinner', 'other'];
+const DEFAULT_POLL_MS = 30_000;
 
 type BookingsClientProps = {
   civilDate: string;
@@ -38,6 +41,12 @@ type BookingsClientProps = {
   selectedBookingDetail: BookingDetailPayload | null;
   zones: BookableZoneOption[];
   locale: 'nl' | 'en';
+};
+
+type BookingsDayPayload = {
+  civilDate: string;
+  windows: ServiceWindow[];
+  bookings: DayBooking[];
 };
 
 // Local (browser) date construction/formatting — DELIBERATELY not UTC.
@@ -62,8 +71,8 @@ function toCivilDateString(date: Date): string {
 
 export default function BookingsClient({
   civilDate,
-  windows,
-  bookings,
+  windows: initialWindows,
+  bookings: initialBookings,
   selectedBookingDetail,
   zones,
   locale,
@@ -76,6 +85,46 @@ export default function BookingsClient({
 
   const filter = parseFilterParam(searchParams.get('filter'));
   const now = useMemo(() => new Date(), []);
+
+  // Reserveringen never got its own live-polling route (unlike Orders/Tabs) —
+  // a new booking or cancellation only showed up on a manual reload. State is
+  // seeded from the server-rendered props and reset whenever `civilDate`
+  // changes (DateNav triggers a real navigation with fresh server props);
+  // polling then keeps it current in between. civilDateRef guards against a
+  // slow in-flight response for a since-abandoned date overwriting the view
+  // after the user has already switched days.
+  const [liveWindows, setLiveWindows] = useState(initialWindows);
+  const [liveBookings, setLiveBookings] = useState(initialBookings);
+  const civilDateRef = useRef(civilDate);
+
+  useEffect(() => {
+    civilDateRef.current = civilDate;
+    setLiveWindows(initialWindows);
+    setLiveBookings(initialBookings);
+  }, [civilDate, initialWindows, initialBookings]);
+
+  const pollMsParam = searchParams.get('pollMs');
+  const intervalMs =
+    process.env.NODE_ENV !== 'production' && pollMsParam ? Number(pollMsParam) : DEFAULT_POLL_MS;
+
+  const { isDisconnected, retry } = usePolling<BookingsDayPayload>(
+    async () => {
+      const res = await fetch(`/api/dashboard/bookings?date=${civilDate}`, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`bookings fetch failed: ${res.status}`);
+      return res.json();
+    },
+    {
+      intervalMs,
+      onData: (payload) => {
+        if (payload.civilDate !== civilDateRef.current) return;
+        setLiveWindows(payload.windows);
+        setLiveBookings(payload.bookings);
+      },
+    },
+  );
+
+  const windows = liveWindows;
+  const bookings = liveBookings;
 
   const [walkInOpen, setWalkInOpen] = useState(searchParams.get('walkin') === '1');
 
@@ -161,6 +210,8 @@ export default function BookingsClient({
 
   return (
     <div className="flex flex-col gap-4 pt-2">
+      {isDisconnected && <DisconnectedStrip onRetry={retry} locale={locale} />}
+
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <DateNav
           date={parseCivilDate(civilDate)}
@@ -176,7 +227,7 @@ export default function BookingsClient({
         />
       </div>
 
-      <div className={selectedBookingDetail ? 'grid md:grid-cols-[60%_40%] gap-4 items-start' : ''}>
+      <div>
         <div className="flex flex-col gap-5">
           {!hasAnyGroupedBookings ? (
             bookings.length === 0 ? (
@@ -226,6 +277,7 @@ export default function BookingsClient({
                     ? t('anonymisedGuest')
                     : selectedBookingDetail.booking.guest_name || '—'
                 }
+                onClose={closeDetail}
               >
                 <BookingDetail payload={selectedBookingDetail} zones={zones} locale={locale} />
               </DetailPanel>
