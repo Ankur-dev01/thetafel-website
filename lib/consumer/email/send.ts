@@ -28,6 +28,39 @@ function getResend(): Resend {
   return _resend
 }
 
+// Error names the Resend API returns for a genuinely bad request — retrying
+// these wastes time since the same input fails the same way every time. A
+// booking confirmation (TFL-0BBSUZ, 2026-08-08) was lost to a single
+// "Unable to fetch data. The request could not be resolved." failure — a
+// raw fetch/DNS error from the SDK's transport layer, not one of these
+// codes — surrounded by weeks of otherwise-successful sends. That shape is
+// exactly what a retry is for: anything NOT in this set (thrown exceptions
+// included) gets retried a couple of times with backoff before giving up.
+const NON_RETRYABLE_ERROR_NAMES = new Set([
+  'validation_error',
+  'missing_api_key',
+  'restricted_api_key',
+  'invalid_api_key',
+  'not_found',
+  'method_not_allowed',
+  'invalid_idempotency_key',
+  'invalid_idempotent_request',
+  'concurrent_idempotent_requests',
+  'invalid_attachment',
+  'invalid_from_address',
+  'invalid_access',
+  'invalid_parameter',
+  'invalid_region',
+  'missing_required_field',
+  'security_error',
+])
+
+const RETRY_DELAYS_MS = [400, 1200]
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 export type SendConsumerEmailInput = {
   to: string
   subject: string
@@ -84,72 +117,74 @@ export async function sendConsumerEmail(
     ? (input.extraBcc ?? [])
     : ['hello@thetafel.nl', ...(input.extraBcc ?? [])]
 
-  try {
-    const { data, error } = await resend.emails.send({
-      from: 'The Tafel <hallo@thetafel.nl>',
-      to: [input.to],
-      bcc,
-      subject: input.subject,
-      html: input.html,
-      text: input.text,
-      attachments: input.attachments,
-      ...(input.replyTo ? { replyTo: input.replyTo } : {}),
-    })
+  let lastFailure: { reason: 'resend_error' | 'exception'; message: string | undefined } | null = null
 
-    if (error || !data) {
-      console.error('[sendConsumerEmail] resend error', {
-        templateKey: input.templateKey,
-        to: input.to.replace(/(.).+(@.+)/, '$1***$2'),
-        error: error?.message ?? 'no data returned',
+  for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt++) {
+    if (attempt > 0) await sleep(RETRY_DELAYS_MS[attempt - 1])
+
+    try {
+      const { data, error } = await resend.emails.send({
+        from: 'The Tafel <hallo@thetafel.nl>',
+        to: [input.to],
+        bcc,
+        subject: input.subject,
+        html: input.html,
+        text: input.text,
+        attachments: input.attachments,
+        ...(input.replyTo ? { replyTo: input.replyTo } : {}),
       })
+
+      if (error || !data) {
+        const retryable = !error?.name || !NON_RETRYABLE_ERROR_NAMES.has(error.name)
+        console.error('[sendConsumerEmail] resend error', {
+          templateKey: input.templateKey,
+          to: input.to.replace(/(.).+(@.+)/, '$1***$2'),
+          error: error?.message ?? 'no data returned',
+          attempt,
+          willRetry: retryable && attempt < RETRY_DELAYS_MS.length,
+        })
+        lastFailure = { reason: 'resend_error', message: error?.message }
+        if (retryable && attempt < RETRY_DELAYS_MS.length) continue
+        break
+      }
+
+      console.log('[sendConsumerEmail] sent', {
+        templateKey: input.templateKey,
+        resendId: data.id,
+        attempt,
+      })
+
       await auditLog({
         restaurantId: input.restaurantId,
-        eventType: 'email.send_failed',
-        eventData: {
-          templateKey: input.templateKey,
-          reason: 'resend_error',
-          message: error?.message ?? null,
-        },
+        eventType: 'email.sent',
+        eventData: { templateKey: input.templateKey, resendId: data.id, attempt },
         actorType: 'system',
         bookingId: input.bookingId ?? null,
         orderId: input.orderId ?? null,
       })
-      return { ok: false, reason: 'send_failed', error: error?.message }
-    }
 
-    console.log('[sendConsumerEmail] sent', {
-      templateKey: input.templateKey,
-      resendId: data.id,
-    })
-
-    await auditLog({
-      restaurantId: input.restaurantId,
-      eventType: 'email.sent',
-      eventData: { templateKey: input.templateKey, resendId: data.id },
-      actorType: 'system',
-      bookingId: input.bookingId ?? null,
-      orderId: input.orderId ?? null,
-    })
-
-    return { ok: true, resendId: data.id }
-  } catch (err) {
-    console.error('[sendConsumerEmail] unexpected error', err)
-    await auditLog({
-      restaurantId: input.restaurantId,
-      eventType: 'email.send_failed',
-      eventData: {
-        templateKey: input.templateKey,
-        reason: 'exception',
-        error: err instanceof Error ? err.message : String(err),
-      },
-      actorType: 'system',
-      bookingId: input.bookingId ?? null,
-      orderId: input.orderId ?? null,
-    })
-    return {
-      ok: false,
-      reason: 'send_failed',
-      error: err instanceof Error ? err.message : String(err),
+      return { ok: true, resendId: data.id }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      console.error('[sendConsumerEmail] unexpected error', { err, attempt })
+      lastFailure = { reason: 'exception', message }
+      if (attempt < RETRY_DELAYS_MS.length) continue
+      break
     }
   }
+
+  await auditLog({
+    restaurantId: input.restaurantId,
+    eventType: 'email.send_failed',
+    eventData: {
+      templateKey: input.templateKey,
+      reason: lastFailure?.reason ?? 'resend_error',
+      message: lastFailure?.message ?? null,
+      attempts: RETRY_DELAYS_MS.length + 1,
+    },
+    actorType: 'system',
+    bookingId: input.bookingId ?? null,
+    orderId: input.orderId ?? null,
+  })
+  return { ok: false, reason: 'send_failed', error: lastFailure?.message }
 }
