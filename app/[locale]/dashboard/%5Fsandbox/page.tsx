@@ -156,6 +156,7 @@ export default function SandboxPage() {
         </div>
         <DetailPanel
           title="Detail"
+          onClose={() => {}}
           footerAction={
             <button
               type="button"

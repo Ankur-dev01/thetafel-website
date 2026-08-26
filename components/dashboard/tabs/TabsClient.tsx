@@ -132,7 +132,7 @@ export default function TabsClient({ initial, locale, initialFilter, selectedTab
 
       <TabFilterChips value={initialFilter} onChange={pushFilter} counts={counts} />
 
-      <div className={selectedTab ? 'grid md:grid-cols-[60%_40%] gap-4 items-start' : ''}>
+      <div>
         <div className="flex flex-col gap-2.5">
           {filteredTabs.length === 0 ? (
             <EmptyState illustration={<Receipt width={48} height={48} />} heading={t('empty.title')} body={t('empty.body')} />
@@ -144,7 +144,7 @@ export default function TabsClient({ initial, locale, initialFilter, selectedTab
         {selectedTab && (
           <>
             <div className="hidden md:block" data-testid="tab-detail-desktop">
-              <DetailPanel title={t('card.table', { label: selectedTab.tab.table_label ?? '—' })}>
+              <DetailPanel title={t('card.table', { label: selectedTab.tab.table_label ?? '—' })} onClose={closeDetail}>
                 <TabDetail payload={selectedTab} now={now} locale={locale} />
               </DetailPanel>
             </div>

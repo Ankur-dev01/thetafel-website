@@ -282,7 +282,7 @@ export default function MenuClient({ categories, items, unavailableCount, active
       {selectedItem && (
         <>
           <div className="hidden md:block" data-testid="menu-item-detail-desktop">
-            <DetailPanel title={selectedItem.name}>
+            <DetailPanel title={selectedItem.name} onClose={closeDetail}>
               <ItemDetail
                 item={selectedItem}
                 locale={locale}

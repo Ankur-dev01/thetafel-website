@@ -172,7 +172,7 @@ export default function OrdersClient({
         ))}
       </div>
 
-      <div className={selectedOrder ? 'grid md:grid-cols-[60%_40%] gap-4 items-start' : ''}>
+      <div>
         <div className="md:grid md:grid-cols-2 md:gap-6 flex flex-col gap-4">
           <div className={initialTab === 'active' ? 'block' : 'hidden md:block'}>{activeSection}</div>
           <div className={initialTab === 'completed' ? 'block' : 'hidden md:block'}>{completedSection}</div>
@@ -181,7 +181,7 @@ export default function OrdersClient({
         {selectedOrder && (
           <>
             <div className="hidden md:block" data-testid="order-detail-desktop">
-              <DetailPanel title={`#${selectedOrder.order.order_ref}`}>
+              <DetailPanel title={`#${selectedOrder.order.order_ref}`} onClose={closeDetail}>
                 <OrderDetail payload={selectedOrder} locale={locale} />
               </DetailPanel>
             </div>
