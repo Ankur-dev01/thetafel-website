@@ -4,7 +4,7 @@
 //
 // Order: rate limit → parse → Zod → Turnstile → config (doorman) → createBooking → dispatcher → audit → response
 
-import { NextResponse, type NextRequest } from 'next/server';
+import { after, NextResponse, type NextRequest } from 'next/server';
 import { createBookingInputSchema } from '@/lib/booking/createBookingSchema';
 import { createBooking } from '@/lib/booking/createBooking';
 import { loadBookingConfig } from '@/lib/booking/config';
@@ -109,30 +109,38 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // 6. Dispatch notifications (fire-and-forget errors; dispatcher never throws).
+  // 6. Dispatch notifications AFTER the response is sent. `after()` guarantees
+  //    Vercel keeps this invocation alive until the promise settles, unlike a
+  //    bare `.catch()` chain which gets torn down on cold-start invocations
+  //    once the response is written (root cause of TFL-0YX13N's silent drop,
+  //    Sep 1 2026 — no email.sent, no notification.dispatched, no trail).
   if (!result.idempotentReplay) {
     const restaurantName =
       config.displayName ?? config.legalName ?? config.slug;
-    sendBookingConfirmationNotification({
-      locale: input.locale as 'nl' | 'en',
-      guestFullName: input.guest.name.trim(),
-      guestEmail: input.guest.email.trim(),
-      guestPhone: input.guest.phone.trim() || null,
-      restaurantId: config.restaurantId,
-      restaurantName,
-      restaurantSlug: config.slug,
-      restaurantPhone: null,
-      restaurantAddress: null,
-      bookingId: result.bookingId,
-      bookingRef: result.bookingRef,
-      slotTime: input.slotInstant,
-      partySize: input.partySize,
-      durationMinutes: result.occupancyMinutes,
-      depositAmountCents: null,
-      depositCurrency: null,
-      magicLinkToken: result.magicLinkPlaintext,
-    }).catch((e) => {
-      console.error('[booking/create] dispatcher error', { err: String(e) });
+    after(async () => {
+      try {
+        await sendBookingConfirmationNotification({
+          locale: input.locale as 'nl' | 'en',
+          guestFullName: input.guest.name.trim(),
+          guestEmail: input.guest.email.trim(),
+          guestPhone: input.guest.phone.trim() || null,
+          restaurantId: config.restaurantId,
+          restaurantName,
+          restaurantSlug: config.slug,
+          restaurantPhone: null,
+          restaurantAddress: null,
+          bookingId: result.bookingId,
+          bookingRef: result.bookingRef,
+          slotTime: input.slotInstant,
+          partySize: input.partySize,
+          durationMinutes: result.occupancyMinutes,
+          depositAmountCents: null,
+          depositCurrency: null,
+          magicLinkToken: result.magicLinkPlaintext,
+        });
+      } catch (e) {
+        console.error('[booking/create] dispatcher error', { err: String(e) });
+      }
     });
   }
 

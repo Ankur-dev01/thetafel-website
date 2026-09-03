@@ -7,7 +7,7 @@
 //   status → DELETE booking_tables → refund via Mollie if applicable →
 //   update payment_intent → release lock → audit → dispatch cancel email
 
-import { NextResponse, type NextRequest } from 'next/server';
+import { after, NextResponse, type NextRequest } from 'next/server';
 import { cancelBookingInputSchema } from '@/lib/consumer/schemas/cancelSchema';
 import { consumeBookingMagicLink } from '@/lib/consumer/magicLinks';
 import { assertConsumerWriteAllowed } from '@/lib/consumer/guards';
@@ -245,25 +245,32 @@ export async function POST(
       userAgent,
     }).catch(() => {});
 
-    // 13. Dispatch cancellation email (fire-and-forget — never fail the
-    //     cancel because the email couldn't be sent).
-    void sendBookingCancellationNotification({
-      locale: 'nl',
-      guestFullName: b.guestFullName,
-      guestEmail: b.guestEmail,
-      guestPhone: b.guestPhone,
-      restaurantId: b.restaurantId,
-      restaurantName: b.restaurantDisplayName ?? 'The Tafel',
-      restaurantSlug: b.restaurantSlug,
-      bookingId: b.bookingId,
-      bookingRef: b.bookingRef,
-      slotTime: b.slotTime,
-      partySize: b.partySize,
-      refundStatus,
-      refundCents: decision.refundCents,
-      refundCurrency: decision.refundCurrency,
-    }).catch((err) => {
-      console.error('[book/cancel] cancellation email dispatch failed', err);
+    // 13. Dispatch cancellation email AFTER the response is sent. `after()`
+    //     keeps this invocation alive until the promise settles — a bare
+    //     fire-and-forget lets cold-start invocations tear down before the
+    //     dispatcher runs, silently dropping the email (same root cause as
+    //     the Sep 1 2026 booking-confirmation drop fix in bookings/create).
+    after(async () => {
+      try {
+        await sendBookingCancellationNotification({
+          locale: 'nl',
+          guestFullName: b.guestFullName,
+          guestEmail: b.guestEmail,
+          guestPhone: b.guestPhone,
+          restaurantId: b.restaurantId,
+          restaurantName: b.restaurantDisplayName ?? 'The Tafel',
+          restaurantSlug: b.restaurantSlug,
+          bookingId: b.bookingId,
+          bookingRef: b.bookingRef,
+          slotTime: b.slotTime,
+          partySize: b.partySize,
+          refundStatus,
+          refundCents: decision.refundCents,
+          refundCurrency: decision.refundCurrency,
+        });
+      } catch (err) {
+        console.error('[book/cancel] cancellation email dispatch failed', err);
+      }
     });
 
     return NextResponse.json({

@@ -18,7 +18,7 @@
 // forever; the D1.2 alert strip already falls back to `updated_at` for that
 // case (lib/dashboard/queries/alerts.ts).
 
-import { NextResponse, type NextRequest } from 'next/server';
+import { after, NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServerClient, createSupabaseServerClientAdmin } from '@/lib/supabase/server';
 import { assertDashboardWriteAllowed } from '@/lib/dashboard/guards/assertDashboardWriteAllowed';
 import { dashboardMutationRateLimit } from '@/lib/dashboard/rateLimit';
@@ -156,10 +156,18 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
   invalidateConsumerPage(restaurant.slug);
 
   if (targetStatus === 'ready' && order.order_type === 'takeaway') {
-    // Fire-and-forget: never blocks the response, never fails the route.
-    // No `guests.locale` column exists yet — Dutch default (see D3.2 report).
-    sendTakeawayReadyEmail(order.id, 'nl').catch((err) => {
-      console.error('[orders/advance] ready email failed', err);
+    // Dispatched AFTER the response is sent. `after()` keeps this invocation
+    // alive until the promise settles — a bare fire-and-forget lets cold-start
+    // invocations tear down before the dispatcher runs, silently dropping the
+    // email (same root cause as the Sep 1 2026 booking-confirmation drop fix
+    // in bookings/create). No `guests.locale` column exists yet — Dutch
+    // default (see D3.2 report).
+    after(async () => {
+      try {
+        await sendTakeawayReadyEmail(order.id, 'nl');
+      } catch (err) {
+        console.error('[orders/advance] ready email failed', err);
+      }
     });
   }
 
