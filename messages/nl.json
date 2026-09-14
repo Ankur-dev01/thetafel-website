@@ -1567,6 +1567,13 @@
           "saveFailed": "Opslaan is niet gelukt. Probeer het opnieuw."
         }
       },
+      "payments": {
+        "title": "Betalingen",
+        "subtitle": "Beheer je betaalverbinding met Mollie.",
+        "back": "Terug naar instellingen",
+        "body": "Je Mollie-verbinding is nog niet volledig te beheren vanuit dit dashboard. We werken aan de zelfherstel-flow.",
+        "contact": "Werkt je Mollie-verbinding niet meer? Mail ons op"
+      },
       "floor": {
         "title": "Plattegrond",
         "subtitle": "Beheer je tafels, indeling en capaciteit.",

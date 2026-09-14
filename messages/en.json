@@ -1567,6 +1567,13 @@
           "saveFailed": "Save failed. Please try again."
         }
       },
+      "payments": {
+        "title": "Payments",
+        "subtitle": "Manage your Mollie payment connection.",
+        "back": "Back to settings",
+        "body": "The Mollie connection isn't yet fully manageable from this dashboard — we're building the self-serve reconnect flow.",
+        "contact": "Is your Mollie connection broken? Email us at"
+      },
       "floor": {
         "title": "Floor plan",
         "subtitle": "Manage your tables, layout and capacity.",
