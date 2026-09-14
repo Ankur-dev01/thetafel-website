@@ -8,6 +8,7 @@ import {
   ChefHat,
   ChartBars,
   Gear,
+  ShareArrow,
 } from '@/components/dashboard/icons'
 
 /**
@@ -34,6 +35,7 @@ const ICONS: Record<DashboardIconKey, (props: IconProps) => React.ReactElement> 
   guests: GuestBook,
   menu: ChefHat,
   analytics: ChartBars,
+  share: ShareArrow,
   settings: Gear,
   more: MoreDots,
 }

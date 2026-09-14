@@ -18,6 +18,7 @@ export type DashboardIconKey =
   | 'guests'
   | 'menu'
   | 'analytics'
+  | 'share'
   | 'settings'
   | 'more'
 
@@ -94,6 +95,15 @@ export const DASHBOARD_NAV_ITEMS: DashboardNavItem[] = [
     label_nl: 'Inzichten',
     label_en: 'Insights',
     icon: 'analytics',
+    roles: ['owner', 'manager'],
+    phoneTab: false,
+  },
+  {
+    key: 'share',
+    path: '/dashboard/share',
+    label_nl: 'Boekingslink',
+    label_en: 'Booking link',
+    icon: 'share',
     roles: ['owner', 'manager'],
     phoneTab: false,
   },

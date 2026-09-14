@@ -1825,6 +1825,22 @@
         }
       }
     },
+    "share": {
+      "title": "Booking link",
+      "subtitle": "Share your booking link on social media, WhatsApp, or your website. Guests click and book directly.",
+      "link": {
+        "heading": "Your link",
+        "description": "Paste this anywhere — Instagram bio, WhatsApp messages, Google Business Profile, email signature.",
+        "copy": "Copy",
+        "copied": "Copied!"
+      },
+      "qr": {
+        "heading": "QR code",
+        "description": "Print on menus, table tents, business cards, or flyers. Guests scan to book directly.",
+        "download": "Download PNG",
+        "downloading": "Working…"
+      }
+    },
     "placeholder": {
       "tabs": {
         "title": "Open tabs",

@@ -1825,6 +1825,22 @@
         }
       }
     },
+    "share": {
+      "title": "Boekingslink",
+      "subtitle": "Deel je boekingslink op social media, WhatsApp of je website. Guests klikken erop en boeken direct.",
+      "link": {
+        "heading": "Jouw link",
+        "description": "Plak deze overal — Instagram-bio, WhatsApp-berichten, Google Bedrijfsprofiel, e-mailhandtekening.",
+        "copy": "Kopieer",
+        "copied": "Gekopieerd!"
+      },
+      "qr": {
+        "heading": "QR-code",
+        "description": "Print op menu's, tafelkaartjes, visitekaartjes of flyers. Gasten scannen om direct te boeken.",
+        "download": "Download PNG",
+        "downloading": "Bezig…"
+      }
+    },
     "placeholder": {
       "tabs": {
         "title": "Open rekeningen",
