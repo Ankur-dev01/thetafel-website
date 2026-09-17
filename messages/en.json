@@ -1839,6 +1839,19 @@
         "description": "Print on menus, table tents, business cards, or flyers. Guests scan to book directly.",
         "download": "Download PNG",
         "downloading": "Working…"
+      },
+      "button": {
+        "heading": "Book-now button",
+        "description": "A button you paste straight into your website's HTML. Works on any site — no extra code needed.",
+        "textLabel": "Button text",
+        "textPlaceholder": "Book a table",
+        "defaultText": "Book a table",
+        "colorLabel": "Background colour",
+        "colorCustomLabel": "Custom colour",
+        "previewLabel": "Preview",
+        "snippetLabel": "HTML code",
+        "copy": "Copy",
+        "copied": "Copied!"
       }
     },
     "placeholder": {

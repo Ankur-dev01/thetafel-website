@@ -1839,6 +1839,19 @@
         "description": "Print op menu's, tafelkaartjes, visitekaartjes of flyers. Gasten scannen om direct te boeken.",
         "download": "Download PNG",
         "downloading": "Bezig…"
+      },
+      "button": {
+        "heading": "Boek-nu-knop",
+        "description": "Een knop die je direct in de HTML van je website plakt. Werkt op elke site — geen extra code nodig.",
+        "textLabel": "Tekst op de knop",
+        "textPlaceholder": "Reserveer een tafel",
+        "defaultText": "Reserveer een tafel",
+        "colorLabel": "Achtergrondkleur",
+        "colorCustomLabel": "Eigen kleur",
+        "previewLabel": "Voorbeeld",
+        "snippetLabel": "HTML-code",
+        "copy": "Kopieer",
+        "copied": "Gekopieerd!"
       }
     },
     "placeholder": {

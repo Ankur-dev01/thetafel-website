@@ -3,6 +3,7 @@ import QRCode from 'qrcode'
 import { resolveDashboardContext } from '@/lib/dashboard/resolveDashboardContext'
 import SectionHeader from '@/components/dashboard/ui/SectionHeader'
 import ShareActions from './ShareActions'
+import ButtonBuilder from './ButtonBuilder'
 
 export const dynamic = 'force-dynamic'
 
@@ -89,6 +90,37 @@ export default async function SharePage({
           className="mt-4 inline-block rounded-card border border-[#eae2d1] p-3 bg-white"
           data-qr-preview
           dangerouslySetInnerHTML={{ __html: qrSvg }}
+        />
+      </section>
+
+      {/* Card 3 — Book-now HTML button */}
+      <section className="mt-4 bg-white rounded-card p-5">
+        <h2
+          className="text-[15px] text-[#1e1508]"
+          style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
+        >
+          {t('button.heading')}
+        </h2>
+        <p
+          className="mt-1 text-[13px] text-[#6f6353] leading-relaxed"
+          style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 300 }}
+        >
+          {t('button.description')}
+        </p>
+
+        <ButtonBuilder
+          shareUrl={shareUrl}
+          defaultButtonText={t('button.defaultText')}
+          labels={{
+            textLabel: t('button.textLabel'),
+            textPlaceholder: t('button.textPlaceholder'),
+            colorLabel: t('button.colorLabel'),
+            colorCustomLabel: t('button.colorCustomLabel'),
+            previewLabel: t('button.previewLabel'),
+            snippetLabel: t('button.snippetLabel'),
+            copy: t('button.copy'),
+            copied: t('button.copied'),
+          }}
         />
       </section>
     </div>
