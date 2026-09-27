@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { ConsumerShellTopBar } from '@/components/consumer/ConsumerShellTopBar'
 import { ConsumerShellFooter } from '@/components/consumer/ConsumerShellFooter'
+import HideInEmbed from '@/components/consumer/HideInEmbed'
 
 /**
  * ISR baseline for all consumer pages under /r/[slug]/...
@@ -36,11 +37,15 @@ export default function ConsumerSlugLayout({
         flexDirection: 'column',
       }}
     >
-      <ConsumerShellTopBar />
+      <HideInEmbed>
+        <ConsumerShellTopBar />
+      </HideInEmbed>
       <main style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column' }}>
         {children}
       </main>
-      <ConsumerShellFooter />
+      <HideInEmbed>
+        <ConsumerShellFooter />
+      </HideInEmbed>
     </div>
   )
 }

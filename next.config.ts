@@ -37,6 +37,24 @@ const nextConfig: NextConfig = {
           { key: 'X-Frame-Options', value: 'DENY' },
         ],
       },
+      // W3: the booking page is the one route meant to be embedded — in a
+      // restaurant's own (third-party-origin) website via <iframe>, and in
+      // this dashboard's own same-origin share-page preview. X-Frame-Options
+      // has no "allow-listed origins" value, so we can't scope an exception
+      // through it; CSP's frame-ancestors supersedes X-Frame-Options in
+      // every modern browser (the spec requires CSP to win when both are
+      // present), so adding it here neutralizes the DENY above for this
+      // route without touching X-Frame-Options itself — every other route
+      // keeps DENY completely unchanged, including as a fallback for the
+      // handful of pre-CSP browsers on the booking page itself.
+      {
+        source: '/r/:slug/book',
+        headers: [{ key: 'Content-Security-Policy', value: 'frame-ancestors *' }],
+      },
+      {
+        source: '/en/r/:slug/book',
+        headers: [{ key: 'Content-Security-Policy', value: 'frame-ancestors *' }],
+      },
     ]
   },
 }

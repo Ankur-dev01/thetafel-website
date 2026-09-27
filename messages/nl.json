@@ -1852,6 +1852,15 @@
         "snippetLabel": "HTML-code",
         "copy": "Kopieer",
         "copied": "Gekopieerd!"
+      },
+      "iframe": {
+        "heading": "In je website inbouwen",
+        "description": "Plak deze code op je website. Gasten zien het volledige boekingsscherm zonder je site te verlaten. Hoogte kies je zelf — 720 pixels past op de meeste sites.",
+        "heightLabel": "Hoogte",
+        "previewLabel": "Voorbeeld",
+        "snippetLabel": "HTML-code",
+        "copy": "Kopieer",
+        "copied": "Gekopieerd!"
       }
     },
     "placeholder": {

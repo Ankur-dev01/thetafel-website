@@ -1852,6 +1852,15 @@
         "snippetLabel": "HTML code",
         "copy": "Copy",
         "copied": "Copied!"
+      },
+      "iframe": {
+        "heading": "Embed on your website",
+        "description": "Paste this code on your website. Guests see the full booking screen without leaving your site. Pick the height that fits — 720 pixels works for most sites.",
+        "heightLabel": "Height",
+        "previewLabel": "Preview",
+        "snippetLabel": "HTML code",
+        "copy": "Copy",
+        "copied": "Copied!"
       }
     },
     "placeholder": {

@@ -4,6 +4,7 @@ import { resolveDashboardContext } from '@/lib/dashboard/resolveDashboardContext
 import SectionHeader from '@/components/dashboard/ui/SectionHeader'
 import ShareActions from './ShareActions'
 import ButtonBuilder from './ButtonBuilder'
+import IframeEmbedBuilder from './IframeEmbedBuilder'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,6 +26,15 @@ export default async function SharePage({
   const t = await getTranslations({ locale, namespace: 'dashboard.share' })
 
   const shareUrl = `${PUBLIC_ORIGIN}/r/${context.restaurant.slug}`
+
+  // Locale-fixed embed URL. `locale === 'nl'` uses the bare origin (Dutch is
+  // the default and has no path prefix); `locale === 'en'` adds the `/en`
+  // prefix. Restaurant switches dashboard language and re-copies to get the
+  // other locale's embed.
+  const embedUrl =
+    locale === 'en'
+      ? `${PUBLIC_ORIGIN}/en/r/${context.restaurant.slug}/book?embed=1`
+      : `${PUBLIC_ORIGIN}/r/${context.restaurant.slug}/book?embed=1`
 
   // Generate an SVG QR server-side. Margin 1 = tight border; width 240 is
   // large enough for on-screen clarity and PNG downscaling looks fine.
@@ -120,6 +130,33 @@ export default async function SharePage({
             snippetLabel: t('button.snippetLabel'),
             copy: t('button.copy'),
             copied: t('button.copied'),
+          }}
+        />
+      </section>
+
+      {/* Card 4 — iframe embed */}
+      <section className="mt-4 bg-white rounded-card p-5">
+        <h2
+          className="text-[15px] text-[#1e1508]"
+          style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
+        >
+          {t('iframe.heading')}
+        </h2>
+        <p
+          className="mt-1 text-[13px] text-[#6f6353] leading-relaxed"
+          style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 300 }}
+        >
+          {t('iframe.description')}
+        </p>
+
+        <IframeEmbedBuilder
+          embedUrl={embedUrl}
+          labels={{
+            heightLabel: t('iframe.heightLabel'),
+            previewLabel: t('iframe.previewLabel'),
+            snippetLabel: t('iframe.snippetLabel'),
+            copy: t('iframe.copy'),
+            copied: t('iframe.copied'),
           }}
         />
       </section>
