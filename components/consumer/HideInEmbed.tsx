@@ -4,20 +4,34 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import type { ReactNode } from 'react'
 
 /**
- * Hides its children when the current request is the booking page in
- * iframe-embed mode (`?embed=1`).
+ * True when the current request is the booking journey (entry page or
+ * confirmation screen) in iframe-embed mode (`?embed=1`).
  *
- * Scoped to the booking entry page specifically (`.../r/[slug]/book`,
- * either locale) rather than to `embed=1` alone — `ConsumerSlugLayout`
- * wraps every route under `/r/[slug]/...` (menu, order, qr, bookings/manage,
- * this one), and chrome must stay visible on all of those even if someone
- * appends `?embed=1` to a URL that isn't the booking page. `endsWith('/book')`
- * deliberately excludes sibling routes like `.../book/confirmed`.
+ * Scoped to these two booking routes specifically rather than to
+ * `embed=1` alone — `ConsumerSlugLayout` wraps every route under
+ * `/r/[slug]/...` (menu, order, qr, bookings/manage, these two), and
+ * chrome must stay visible on all of those even if someone appends
+ * `?embed=1` to a URL that isn't part of the booking journey. Prefer
+ * explicit enumeration over a broad `/book` prefix match — any new
+ * booking sub-route added later must be listed here explicitly.
+ *
+ * Exported so both `HideInEmbed` (chrome) and `CookieBanner` (consent,
+ * rendered globally in the root layout, not scoped by route on its
+ * own) can share one definition instead of two copies that could
+ * drift apart.
  */
+export function isEmbedBookingPath(
+  pathname: string | null | undefined,
+  searchParams: URLSearchParams | null | undefined
+): boolean {
+  const isBookingPath =
+    pathname?.endsWith('/book') || pathname?.endsWith('/book/confirmed')
+  return !!isBookingPath && searchParams?.get('embed') === '1'
+}
+
 export default function HideInEmbed({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const isBookingEmbed = pathname?.endsWith('/book') && searchParams?.get('embed') === '1'
-  if (isBookingEmbed) return null
+  if (isEmbedBookingPath(pathname, searchParams)) return null
   return <>{children}</>
 }

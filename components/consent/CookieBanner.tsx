@@ -1,7 +1,9 @@
 'use client'
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
+import { isEmbedBookingPath } from '@/components/consumer/HideInEmbed'
 import {
   getHasConsentSnapshot,
   getServerHasConsentSnapshot,
@@ -64,6 +66,9 @@ function ToggleSwitch({
 export default function CookieBanner() {
   const t = useTranslations('cookieBanner')
   const locale = useLocale()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const isEmbed = isEmbedBookingPath(pathname, searchParams)
 
   // Whether any consent choice has been stored (and hasn't expired) — an
   // external-system value, synced via useSyncExternalStore rather than read
@@ -115,7 +120,7 @@ export default function CookieBanner() {
     dismiss()
   }
 
-  const visible = reopened || (!hasStoredConsent && !dismissedThisSession)
+  const visible = !isEmbed && (reopened || (!hasStoredConsent && !dismissedThisSession))
   if (!visible && !leaving) return null
 
   const privacyHref = locale === 'en' ? '/en/privacybeleid' : '/privacybeleid'

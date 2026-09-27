@@ -616,12 +616,8 @@ export default function BusinessVerificationPage() {
       await saveNow({ restaurant: restaurantPatch })
       if (nextPath) router.push(nextPath)
     } catch (err) {
-      // The PATCH route's 409 response includes the raw Postgres unique_violation
-      // message as `message` (see route.ts), which useDraftSave's patchDraft
-      // prefers over `error` when building the thrown Error — so we match on the
-      // constraint name substring rather than the `btw_already_linked` code itself.
-      const msg = (err as Error)?.message ?? ''
-      if (msg.includes('btw_number')) {
+      const code = (err as Error & { code?: string })?.code
+      if (code === 'btw_already_linked') {
         setBtwLinkedError(t('phase2.btwAlreadyLinked'))
       }
       // Other failures already surface via saveState.

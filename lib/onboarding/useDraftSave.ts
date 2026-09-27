@@ -68,13 +68,21 @@ async function patchDraft(patch: DraftPatch): Promise<unknown> {
   });
   if (!res.ok) {
     let message = `Save failed (${res.status})`;
+    let code: string | undefined;
     try {
       const body = (await res.json()) as { error?: string; message?: string };
-      message = body.message ?? body.error ?? message;
+      // Prefer the structured error code (`body.error`) over the raw
+      // Postgres text (`body.message`) so callers can do structured
+      // dispatch instead of substring-matching Postgres wording. The
+      // code is also attached as `.code` for type-safe checks.
+      message = body.error ?? body.message ?? message;
+      code = typeof body.error === 'string' ? body.error : undefined;
     } catch {
       /* not JSON */
     }
-    throw new Error(message);
+    const err = new Error(message) as Error & { code?: string };
+    err.code = code;
+    throw err;
   }
   return res.json();
 }
