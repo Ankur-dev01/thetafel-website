@@ -35,6 +35,7 @@ export type DashboardAction =
   | 'settings.hours.edit'
   | 'settings.floor.edit'
   | 'settings.booking.edit'
+  | 'settings.business.edit'
   | 'settings.ordering.edit'
   | 'settings.qr.edit'
   | 'settings.notifications.edit'

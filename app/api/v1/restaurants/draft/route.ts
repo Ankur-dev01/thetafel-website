@@ -34,6 +34,7 @@ import {
 } from '@/lib/onboarding/draftSchema'
 import { assertOnboardingMutationForUser } from '@/lib/onboarding/guards'
 import { invalidateOnboardingLayout } from '@/lib/onboarding/cache'
+import { isUniqueViolationOnColumn } from '@/lib/db/postgresErrors'
 
 // ---- Types ------------------------------------------------------------------
 
@@ -260,18 +261,16 @@ export async function PATCH(req: NextRequest) {
         // Postgres unique_violation (SQLSTATE 23505). Two UNIQUE constraints are
         // reachable via a client PATCH: restaurants.kvk_number and (as of BTW-1)
         // restaurants.btw_number. Disambiguate by column name in the error detail
-        // — Postgres' unique_violation detail is always
-        // `Key (column)=(value) already exists.` — so each collision surfaces its
-        // own 409 code instead of both being mislabelled "kvk_already_linked". If
-        // a future step allows clients to set `slug`, extend this same check.
-        if ((error as { code?: string }).code === '23505') {
-          const detail = (error as { details?: string }).details ?? ''
-          if (detail.includes('btw_number')) {
-            return NextResponse.json(
-              { error: 'btw_already_linked', message: error.message },
-              { status: 409 }
-            )
-          }
+        // so each collision surfaces its own 409 code instead of both being
+        // mislabelled "kvk_already_linked". If a future step allows clients to
+        // set `slug`, extend this same check.
+        if (isUniqueViolationOnColumn(error, 'btw_number')) {
+          return NextResponse.json(
+            { error: 'btw_already_linked', message: error.message },
+            { status: 409 }
+          )
+        }
+        if (isUniqueViolationOnColumn(error, 'kvk_number')) {
           return NextResponse.json(
             { error: 'kvk_already_linked', message: error.message },
             { status: 409 }

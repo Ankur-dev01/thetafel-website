@@ -17,6 +17,12 @@ import {
 import { stepPath } from '@/lib/onboarding/routes'
 import { useDraftSave } from '@/lib/onboarding/useDraftSave'
 import type { DraftSaveState } from '@/lib/onboarding/useDraftSave'
+import {
+  isValidDutchBtw,
+  isValidDutchPhone,
+  isValidEmail,
+  isValidWebsite,
+} from '@/lib/validation/dutch'
 
 // ---- Types ------------------------------------------------------------------
 
@@ -58,35 +64,11 @@ type SearchStatus =
 const CLIENT_MIN_QUERY_LENGTH = 3
 const DEBOUNCE_MS = 400
 
-function isValidDutchPhone(p: string): boolean {
-  if (!p.trim()) return true
-  return /^(\+31|0)[0-9\s\-.()]{7,14}$/.test(p.trim())
-}
-
-function isValidEmail(e: string): boolean {
-  if (!e.trim()) return true
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim())
-}
-
 function normalizeWebsite(url: string): string {
   const trimmed = url.trim()
   if (!trimmed) return ''
   if (/^https?:\/\//i.test(trimmed)) return trimmed
   return `https://${trimmed}`
-}
-
-function isValidWebsite(url: string): boolean {
-  if (!url.trim()) return true
-  try {
-    new URL(url)
-    return true
-  } catch {
-    return false
-  }
-}
-
-function isValidDutchBtw(value: string): boolean {
-  return /^NL[0-9]{9}B[0-9]{2}$/i.test(value.trim())
 }
 
 // ---- Eyebrow label for form fields ------------------------------------------
