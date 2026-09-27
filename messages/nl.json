@@ -220,6 +220,7 @@
         "verifiedPill": "KVK geverifieerd",
         "changeBusiness": "Wijzig bedrijf",
         "kvkAlreadyLinked": "Dit KVK-nummer is al gekoppeld aan een ander account.",
+        "btwAlreadyLinked": "Dit BTW-nummer is al gekoppeld aan een ander restaurant.",
         "fields": {
           "legalName": "Bedrijfsnaam",
           "tradeName": "Handelsnaam",
@@ -241,7 +242,9 @@
           "cuisineLabel": "Keukenstijl",
           "cuisinePlaceholder": "Kies een keukenstijl",
           "websiteLabel": "Website",
-          "websitePlaceholder": "https://www.restaurant.nl"
+          "websitePlaceholder": "https://www.restaurant.nl",
+          "btwLabel": "BTW-nummer",
+          "btwPlaceholder": "NL123456789B01"
         }
       },
       "errors": {
@@ -252,7 +255,9 @@
         "phoneInvalid": "Ongeldig telefoonnummer. Gebruik bijv. +31 6 12345678.",
         "emailInvalid": "Ongeldig e-mailadres.",
         "websiteInvalid": "Ongeldige website-URL. Gebruik bijv. https://www.restaurant.nl.",
-        "cuisineRequired": "Kies een keukenstijl om door te gaan."
+        "cuisineRequired": "Kies een keukenstijl om door te gaan.",
+        "btwRequired": "BTW-nummer is verplicht.",
+        "btwInvalid": "Ongeldig BTW-nummer (verwacht formaat: NL123456789B01)."
       },
       "cuisineOptions": {
         "italian": "Italiaans",

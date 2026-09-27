@@ -85,6 +85,10 @@ function isValidWebsite(url: string): boolean {
   }
 }
 
+function isValidDutchBtw(value: string): boolean {
+  return /^NL[0-9]{9}B[0-9]{2}$/i.test(value.trim())
+}
+
 // ---- Eyebrow label for form fields ------------------------------------------
 
 function FieldLabel({
@@ -197,12 +201,15 @@ export default function BusinessVerificationPage() {
   const [email, setEmail] = useState('')
   const [cuisine, setCuisine] = useState('')
   const [website, setWebsite] = useState('')
+  const [btwNumber, setBtwNumber] = useState('')
+  const [btwTouched, setBtwTouched] = useState(false)
 
   const [displayNameError, setDisplayNameError] = useState<string | null>(null)
   const [phoneError, setPhoneError] = useState<string | null>(null)
   const [emailError, setEmailError] = useState<string | null>(null)
   const [cuisineError, setCuisineError] = useState<string | null>(null)
   const [websiteError, setWebsiteError] = useState<string | null>(null)
+  const [btwLinkedError, setBtwLinkedError] = useState<string | null>(null)
 
   const [isContinuing, setIsContinuing] = useState(false)
 
@@ -274,6 +281,7 @@ export default function BusinessVerificationPage() {
             setEmail(r.contact_email ?? '')
             setCuisine(r.cuisine_type ?? '')
             setWebsite(r.website ?? '')
+            setBtwNumber(r.btw_number ?? '')
           }
         }
       } catch {
@@ -455,11 +463,14 @@ export default function BusinessVerificationPage() {
         setPhone('')
         setEmail('')
         setCuisine('')
+        setBtwNumber('')
+        setBtwTouched(false)
         setDisplayNameError(null)
         setPhoneError(null)
         setEmailError(null)
         setCuisineError(null)
         setWebsiteError(null)
+        setBtwLinkedError(null)
 
         setQuery('')
         setResults([])
@@ -518,11 +529,14 @@ export default function BusinessVerificationPage() {
     setEmail('')
     setCuisine('')
     setWebsite('')
+    setBtwNumber('')
+    setBtwTouched(false)
     setDisplayNameError(null)
     setPhoneError(null)
     setEmailError(null)
     setCuisineError(null)
     setWebsiteError(null)
+    setBtwLinkedError(null)
     setTimeout(() => searchInputRef.current?.focus(), 0)
   }, [])
 
@@ -593,9 +607,11 @@ export default function BusinessVerificationPage() {
   const handleContinue = useCallback(async () => {
     if (!profile) return
     if (!displayName.trim() || !cuisine) return
+    if (!isValidDutchBtw(btwNumber)) return
     if (displayNameError || phoneError || emailError || cuisineError || websiteError) return
     if (isContinuing) return
 
+    setBtwLinkedError(null)
     setIsContinuing(true)
     try {
       const currIdx = visibleStepIds.indexOf(1)
@@ -609,6 +625,7 @@ export default function BusinessVerificationPage() {
         display_name: displayName.trim(),
         cuisine_type: cuisine,
         current_onboarding_step: nextStepId,
+        btw_number: btwNumber.trim().toUpperCase(),
       }
       if (phone.trim()) restaurantPatch.contact_phone = phone.trim()
       if (email.trim()) restaurantPatch.contact_email = email.trim()
@@ -616,8 +633,16 @@ export default function BusinessVerificationPage() {
 
       await saveNow({ restaurant: restaurantPatch })
       if (nextPath) router.push(nextPath)
-    } catch {
-      // saveNow already surfaces error via saveState
+    } catch (err) {
+      // The PATCH route's 409 response includes the raw Postgres unique_violation
+      // message as `message` (see route.ts), which useDraftSave's patchDraft
+      // prefers over `error` when building the thrown Error — so we match on the
+      // constraint name substring rather than the `btw_already_linked` code itself.
+      const msg = (err as Error)?.message ?? ''
+      if (msg.includes('btw_number')) {
+        setBtwLinkedError(t('phase2.btwAlreadyLinked'))
+      }
+      // Other failures already surface via saveState.
     } finally {
       setIsContinuing(false)
     }
@@ -625,6 +650,7 @@ export default function BusinessVerificationPage() {
     profile,
     displayName,
     cuisine,
+    btwNumber,
     phone,
     email,
     website,
@@ -638,15 +664,25 @@ export default function BusinessVerificationPage() {
     locale,
     saveNow,
     router,
+    t,
   ])
 
   // ---- Derived helpers ----------------------------------------------------
   const inPhase2 = profile !== null
 
+  const btwFieldError = !btwTouched
+    ? null
+    : !btwNumber
+      ? t('errors.btwRequired')
+      : !isValidDutchBtw(btwNumber)
+        ? t('errors.btwInvalid')
+        : null
+
   const canContinue =
     inPhase2 &&
     displayName.trim().length > 0 &&
     cuisine.length > 0 &&
+    isValidDutchBtw(btwNumber) &&
     !displayNameError &&
     !phoneError &&
     !emailError &&
@@ -1105,6 +1141,49 @@ export default function BusinessVerificationPage() {
 
           {/* ── Editable form fields ──────────────────────────────────────── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '26px' }}>
+
+            {/* BTW number */}
+            <div>
+              <FieldLabel htmlFor="field-btw" text={t('phase2.form.btwLabel')} required />
+              <div style={{ position: 'relative' }}>
+                <InputIconTile bg="var(--sage-bg)" color="var(--sage)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="4" width="18" height="16" rx="2" />
+                    <line x1="7" y1="9" x2="17" y2="9" />
+                    <line x1="7" y1="13" x2="13" y2="13" />
+                  </svg>
+                </InputIconTile>
+                <input
+                  id="field-btw"
+                  type="text"
+                  inputMode="text"
+                  autoComplete="off"
+                  value={btwNumber}
+                  onChange={(e) => {
+                    setBtwNumber(e.target.value.trim())
+                    setBtwLinkedError(null)
+                  }}
+                  onFocus={() => setFocusedField('btw')}
+                  onBlur={() => {
+                    setFocusedField(null)
+                    setBtwTouched(true)
+                  }}
+                  maxLength={14}
+                  placeholder={t('phase2.form.btwPlaceholder')}
+                  aria-invalid={!!btwFieldError}
+                  style={{
+                    ...inputBase,
+                    border: fieldBorder('btw', btwFieldError),
+                    boxShadow: fieldShadow('btw', btwFieldError),
+                  }}
+                />
+              </div>
+              {(btwLinkedError || btwFieldError) && (
+                <p style={{ margin: '7px 0 0', fontFamily: 'var(--font-jost), Jost, sans-serif', fontSize: '13px', color: '#dc2626' }}>
+                  {btwLinkedError || btwFieldError}
+                </p>
+              )}
+            </div>
 
             {/* Display name */}
             <div>

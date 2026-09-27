@@ -220,6 +220,7 @@
         "verifiedPill": "KVK verified",
         "changeBusiness": "Change business",
         "kvkAlreadyLinked": "This KVK number is already linked to another account.",
+        "btwAlreadyLinked": "This BTW number is already linked to another restaurant.",
         "fields": {
           "legalName": "Legal name",
           "tradeName": "Trade name",
@@ -241,7 +242,9 @@
           "cuisineLabel": "Cuisine type",
           "cuisinePlaceholder": "Choose a cuisine type",
           "websiteLabel": "Website",
-          "websitePlaceholder": "https://www.restaurant.com"
+          "websitePlaceholder": "https://www.restaurant.com",
+          "btwLabel": "BTW number",
+          "btwPlaceholder": "NL123456789B01"
         }
       },
       "errors": {
@@ -252,7 +255,9 @@
         "phoneInvalid": "Invalid phone number. Use e.g. +31 6 12345678.",
         "emailInvalid": "Invalid email address.",
         "websiteInvalid": "Invalid website URL. Use e.g. https://www.restaurant.com.",
-        "cuisineRequired": "Please choose a cuisine type to continue."
+        "cuisineRequired": "Please choose a cuisine type to continue.",
+        "btwRequired": "BTW number is required.",
+        "btwInvalid": "Invalid BTW number (expected format: NL123456789B01)."
       },
       "cuisineOptions": {
         "italian": "Italian",

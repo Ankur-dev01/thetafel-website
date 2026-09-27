@@ -57,6 +57,19 @@ export const restaurantPatchSchema = z
       .string()
       .regex(/^\d{8}$/, 'KVK number must be exactly 8 digits')
       .optional(),
+    // BTW (Step 1) — optional at the zod level so PATCH stays
+    // partial-safe; requiredness is enforced at the onboarding page's
+    // completion gate. Normalised to uppercase so it satisfies the
+    // restaurants_btw_number_format_chk CHECK constraint regardless of
+    // input casing.
+    btw_number: z
+      .string()
+      .regex(
+        /^NL[0-9]{9}B[0-9]{2}$/i,
+        'BTW number must be in the format NL123456789B01'
+      )
+      .transform((v) => v.toUpperCase())
+      .optional(),
     legal_name: z.string().max(300).optional(),
     trade_name: z.string().max(300).optional(),
     display_name: z.string().max(300).optional(),

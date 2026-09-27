@@ -75,6 +75,7 @@ function addDays(isoDate: string, days: number): string {
 type RestaurantForContext = {
   legal_name: string | null
   kvk_number: string | null
+  btw_number: string | null
   legal_address_street: string | null
   legal_address_house_number: string | null
   legal_address_house_letter: string | null
@@ -219,7 +220,7 @@ export function buildContext(args: {
     dpa_version: CURRENT_DPA_VERSION,
     restaurant_legal_name: restaurant.legal_name ?? '—',
     restaurant_kvk: restaurant.kvk_number ?? '—',
-    restaurant_btw_or_dash: '—',
+    restaurant_btw_or_dash: restaurant.btw_number ?? '—',
     restaurant_address: buildAddress(restaurant),
     services_nl: services.nl.join(', ') || '—',
     services_en: services.en.join(', ') || '—',

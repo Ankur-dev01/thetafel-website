@@ -44,7 +44,7 @@ export async function POST(
       .from('restaurants')
       .select(
         `id, user_id, current_onboarding_step,
-         legal_name, kvk_number,
+         legal_name, kvk_number, btw_number,
          legal_address_street, legal_address_house_number, legal_address_house_letter,
          legal_address_house_number_addition, legal_address_postcode, legal_address_city,
          service_reservations_enabled, service_takeaway_enabled, service_qr_enabled,
