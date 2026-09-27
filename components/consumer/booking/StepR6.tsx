@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import type { BookingConfig } from '@/lib/booking/types';
 import type { ConsumerZone } from '@/lib/booking/zones';
 import { useBookingFlow } from '@/lib/booking/state';
@@ -32,6 +32,7 @@ export function StepR6({ config, zones }: Props) {
   const t = useTranslations('booking.r6');
   const locale = useLocale();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { draft, setCanContinue } = useBookingFlow();
 
   const [submitting, setSubmitting] = useState(false);
@@ -111,7 +112,11 @@ export function StepR6({ config, zones }: Props) {
       const ref = encodeURIComponent(json.bookingRef);
       const tok = encodeURIComponent(json.magicLinkToken ?? '');
       const localePath = locale === 'nl' ? '' : `/${locale}`;
-      router.push(`${localePath}/r/${config.slug}/book/confirmed?ref=${ref}&t=${tok}`);
+      // Preserve ?embed=1 across the redirect — otherwise an embedded
+      // booking loses its chrome-hidden state the moment it lands on the
+      // confirmation screen, even though HideInEmbed matches this route.
+      const embedSuffix = searchParams?.get('embed') === '1' ? '&embed=1' : '';
+      router.push(`${localePath}/r/${config.slug}/book/confirmed?ref=${ref}&t=${tok}${embedSuffix}`);
     } catch (e) {
       setError(t('errors.generic'));
       setErrorDetail({ stage: 'network', message: e instanceof Error ? e.message : String(e) });
