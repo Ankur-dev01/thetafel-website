@@ -20,6 +20,7 @@ import type { EmailLocale } from '../email/layout'
 
 export type DispatchResult =
   | { ok: true; emailId: string }
+  | { ok: true; skipped: true }
   | { ok: false; error: string }
 
 function formatAddress(r: {
@@ -68,7 +69,7 @@ export async function sendTakeawayReadyEmail(
     admin
       .from('restaurants')
       .select(
-        'slug, display_name, legal_name, contact_phone, legal_address_street, legal_address_house_number, legal_address_house_letter, legal_address_house_number_addition, legal_address_postcode, legal_address_city',
+        'slug, display_name, legal_name, contact_phone, legal_address_street, legal_address_house_number, legal_address_house_letter, legal_address_house_number_addition, legal_address_postcode, legal_address_city, notify_order_ready',
       )
       .eq('id', order.restaurant_id)
       .maybeSingle(),
@@ -78,6 +79,19 @@ export async function sendTakeawayReadyEmail(
     const error = 'guest or restaurant not found'
     console.error('[dispatchTakeawayReady]', error, { orderId })
     return { ok: false, error }
+  }
+
+  // Restaurant has this event's toggle off — skip silently, counts as
+  // success (no email.send_failed row, no Today-page alert).
+  if ((restaurant as { notify_order_ready?: boolean }).notify_order_ready === false) {
+    await auditLog({
+      restaurantId: order.restaurant_id,
+      eventType: 'email.skipped',
+      eventData: { templateKey: 'takeaway.ready_for_pickup', reason: 'restaurant_disabled' },
+      actorType: 'system',
+      orderId: order.id,
+    }).catch(() => {})
+    return { ok: true, skipped: true }
   }
 
   // Anonymous walk-in-style guests (or any guest who simply didn't give an

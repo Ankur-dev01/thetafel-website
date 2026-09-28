@@ -137,6 +137,7 @@ export async function POST(req: NextRequest) {
           depositAmountCents: null,
           depositCurrency: null,
           magicLinkToken: result.magicLinkPlaintext,
+          restaurantNotifyBookingConfirmed: config.notifyBookingConfirmed,
         });
       } catch (e) {
         console.error('[booking/create] dispatcher error', { err: String(e) });

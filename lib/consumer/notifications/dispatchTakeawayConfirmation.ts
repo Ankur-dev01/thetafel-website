@@ -22,6 +22,8 @@ export type DispatchResult = {
   ok: boolean
   emailId?: string
   error?: string
+  /** True when the restaurant has this event's toggle off — not a failure. */
+  skipped?: boolean
 }
 
 function formatAddress(r: {
@@ -67,7 +69,7 @@ export async function sendTakeawayOrderConfirmedEmail(
     admin
       .from('restaurants')
       .select(
-        'display_name, legal_name, contact_phone, legal_address_street, legal_address_house_number, legal_address_house_letter, legal_address_house_number_addition, legal_address_postcode, legal_address_city',
+        'display_name, legal_name, contact_phone, legal_address_street, legal_address_house_number, legal_address_house_letter, legal_address_house_number_addition, legal_address_postcode, legal_address_city, notify_order_confirmed',
       )
       .eq('id', order.restaurant_id)
       .maybeSingle(),
@@ -81,6 +83,21 @@ export async function sendTakeawayOrderConfirmedEmail(
     const error = 'guest or restaurant not found'
     console.error('[dispatchTakeawayConfirmation]', error, { orderId })
     return { ok: false, error }
+  }
+
+  // Restaurant has this event's toggle off — skip silently. Not the
+  // same as a send failure: no email.send_failed row, no Today-page
+  // alert. auditLog uses email.skipped so it's still visible for
+  // debugging/support.
+  if ((restaurant as { notify_order_confirmed?: boolean }).notify_order_confirmed === false) {
+    await auditLog({
+      restaurantId: order.restaurant_id,
+      eventType: 'email.skipped',
+      eventData: { templateKey: 'takeaway.order_confirmed', reason: 'restaurant_disabled' },
+      actorType: 'system',
+      orderId: order.id,
+    }).catch(() => {})
+    return { ok: true, skipped: true }
   }
 
   const restaurantName = restaurant.display_name ?? restaurant.legal_name ?? 'Restaurant'

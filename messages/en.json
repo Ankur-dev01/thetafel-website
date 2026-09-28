@@ -1519,7 +1519,9 @@
           "ordering": "Ordering & takeaway",
           "orderingDesc": "Prep time, pickup intervals and minimum order.",
           "qr": "QR settings",
-          "qrDesc": "Auto-accept, payment methods, colour and menu language."
+          "qrDesc": "Auto-accept, payment methods, colour and menu language.",
+          "notifications": "Notifications",
+          "notificationsDesc": "Which emails guests get and delivery status."
         }
       },
       "confirmPause": {
@@ -1561,6 +1563,49 @@
         "saved": "Saved",
         "saveError": "Save failed — please try again",
         "cancel": "Cancel"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "subtitle": "Control which emails your guests receive and see which messages failed to deliver in the last 7 days.",
+        "back": "Back to settings",
+        "failures": {
+          "title": "Delivery over the last 7 days",
+          "allDelivered": "All messages were delivered successfully in the last 7 days.",
+          "eventColumn": "Notification type",
+          "countColumn": "Failed",
+          "latestColumn": "Latest"
+        },
+        "events": {
+          "bookingConfirmed": "Booking confirmation",
+          "bookingCancelled": "Cancellation confirmation",
+          "orderConfirmed": "Order confirmed",
+          "orderReady": "Order ready for pickup",
+          "magicLink": "Access link",
+          "other": "Other"
+        },
+        "guestNotificationsSectionTitle": "Guest notifications",
+        "guestNotificationsSectionDescription": "Choose which emails your guests receive. All notifications are on by default.",
+        "eventBookingConfirmed": "Booking confirmation",
+        "eventBookingConfirmedDesc": "Guest gets an email with their booking details and a link to change or cancel.",
+        "eventBookingCancelled": "Cancellation confirmation",
+        "eventBookingCancelledDesc": "Guest gets an email when a booking is cancelled, including any refund status.",
+        "eventOrderConfirmed": "Order confirmed",
+        "eventOrderConfirmedDesc": "Guest gets an email as soon as their takeaway payment succeeds.",
+        "eventOrderReady": "Order ready",
+        "eventOrderReadyDesc": "Guest gets an email when you mark their order ready for pickup.",
+        "emailChannel": "Email",
+        "whatsappChannel": "WhatsApp",
+        "comingSoon": "Coming soon",
+        "offWarning": "Off: guests will not receive this notification, including the link to manage their booking. Only turn off if you're sending your own.",
+        "save": "Save",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "saveError": "Save failed — try again",
+        "cancel": "Cancel",
+        "restaurantNotifications": {
+          "title": "Notifications to you",
+          "comingSoon": "Coming soon: get notified yourself when a new booking or order comes in. Building this in a future update."
+        }
       },
       "hours": {
         "title": "Opening hours",

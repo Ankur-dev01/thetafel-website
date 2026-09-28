@@ -1519,7 +1519,9 @@
           "ordering": "Bestellen & afhalen",
           "orderingDesc": "Voorbereidingstijd, afhaalintervallen en minimumbedrag.",
           "qr": "QR-instellingen",
-          "qrDesc": "Auto-accept, betaalmethodes, kleur en menutaal."
+          "qrDesc": "Auto-accept, betaalmethodes, kleur en menutaal.",
+          "notifications": "Meldingen",
+          "notificationsDesc": "Welke e-mails gasten krijgen en bezorgstatus."
         }
       },
       "confirmPause": {
@@ -1561,6 +1563,49 @@
         "saved": "Opgeslagen",
         "saveError": "Opslaan mislukt — probeer het opnieuw",
         "cancel": "Annuleren"
+      },
+      "notifications": {
+        "title": "Meldingen",
+        "subtitle": "Beheer welke e-mails je gasten ontvangen en zie welke berichten de afgelopen week niet zijn afgeleverd.",
+        "back": "Terug naar instellingen",
+        "failures": {
+          "title": "Bezorging afgelopen 7 dagen",
+          "allDelivered": "Alle berichten zijn de afgelopen 7 dagen succesvol afgeleverd.",
+          "eventColumn": "Type melding",
+          "countColumn": "Mislukt",
+          "latestColumn": "Laatste"
+        },
+        "events": {
+          "bookingConfirmed": "Reserveringsbevestiging",
+          "bookingCancelled": "Annuleringsbevestiging",
+          "orderConfirmed": "Bestelling bevestigd",
+          "orderReady": "Bestelling klaar om af te halen",
+          "magicLink": "Toegangslink",
+          "other": "Overig"
+        },
+        "guestNotificationsSectionTitle": "Meldingen aan gasten",
+        "guestNotificationsSectionDescription": "Kies welke e-mails je gasten krijgen. Standaard staan alle meldingen aan.",
+        "eventBookingConfirmed": "Reserveringsbevestiging",
+        "eventBookingConfirmedDesc": "Gast krijgt een e-mail met de reserveringsgegevens en een link om te wijzigen of te annuleren.",
+        "eventBookingCancelled": "Annuleringsbevestiging",
+        "eventBookingCancelledDesc": "Gast krijgt een e-mail als een reservering wordt geannuleerd, met eventuele terugbetaalstatus.",
+        "eventOrderConfirmed": "Bestelling bevestigd",
+        "eventOrderConfirmedDesc": "Gast krijgt een e-mail zodra de betaling voor een afhaalbestelling is gelukt.",
+        "eventOrderReady": "Bestelling klaar",
+        "eventOrderReadyDesc": "Gast krijgt een e-mail wanneer je de bestelling markeert als klaar om af te halen.",
+        "emailChannel": "E-mail",
+        "whatsappChannel": "WhatsApp",
+        "comingSoon": "Binnenkort",
+        "offWarning": "Uit: gasten ontvangen deze melding niet, ook geen link om hun reservering te beheren. Alleen uitzetten als je zelf berichten stuurt.",
+        "save": "Opslaan",
+        "saving": "Bezig…",
+        "saved": "Opgeslagen",
+        "saveError": "Opslaan mislukt — probeer opnieuw",
+        "cancel": "Annuleren",
+        "restaurantNotifications": {
+          "title": "Meldingen aan jou",
+          "comingSoon": "Binnenkort: krijg zelf een bericht bij een nieuwe reservering of bestelling. Dit bouwen we in een volgende update."
+        }
       },
       "hours": {
         "title": "Openingstijden",

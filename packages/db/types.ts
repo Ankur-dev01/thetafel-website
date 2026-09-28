@@ -1472,6 +1472,10 @@ export type Database = {
           noshow_reconfirmation_enabled: boolean
           noshow_reminders_email_enabled: boolean
           noshow_reminders_whatsapp_enabled: boolean
+          notify_booking_cancelled: boolean
+          notify_booking_confirmed: boolean
+          notify_order_confirmed: boolean
+          notify_order_ready: boolean
           occupancy_duration_by_party: Json | null
           occupancy_duration_minutes: number | null
           pause_reason: string | null
@@ -1578,6 +1582,10 @@ export type Database = {
           noshow_reconfirmation_enabled?: boolean
           noshow_reminders_email_enabled?: boolean
           noshow_reminders_whatsapp_enabled?: boolean
+          notify_booking_cancelled?: boolean
+          notify_booking_confirmed?: boolean
+          notify_order_confirmed?: boolean
+          notify_order_ready?: boolean
           occupancy_duration_by_party?: Json | null
           occupancy_duration_minutes?: number | null
           pause_reason?: string | null
@@ -1684,6 +1692,10 @@ export type Database = {
           noshow_reconfirmation_enabled?: boolean
           noshow_reminders_email_enabled?: boolean
           noshow_reminders_whatsapp_enabled?: boolean
+          notify_booking_cancelled?: boolean
+          notify_booking_confirmed?: boolean
+          notify_order_confirmed?: boolean
+          notify_order_ready?: boolean
           occupancy_duration_by_party?: Json | null
           occupancy_duration_minutes?: number | null
           pause_reason?: string | null

@@ -26,53 +26,69 @@ export type BookingCancellationNotificationInput = {
   refundStatus: 'not_applicable' | 'refunded' | 'refund_failed'
   refundCents: number
   refundCurrency: string
+  /** restaurants.notify_booking_cancelled. False = skip silently. */
+  restaurantNotifyBookingCancelled: boolean
 }
 
 export type DispatchResult = {
   ok: boolean
   emailId?: string
   error?: string
+  skipped?: boolean
 }
 
 export async function sendBookingCancellationNotification(
   input: BookingCancellationNotificationInput
 ): Promise<DispatchResult> {
+  const skippedByRestaurant = input.restaurantNotifyBookingCancelled === false
+
   let result: DispatchResult
-  try {
-    const rendered = renderBookingCancellation({
-      locale: input.locale,
-      guestFullName: input.guestFullName,
-      restaurantName: input.restaurantName,
-      restaurantSlug: input.restaurantSlug,
-      bookingRef: input.bookingRef,
-      slotTime: input.slotTime,
-      partySize: input.partySize,
-      refundStatus: input.refundStatus,
-      refundCents: input.refundCents,
-      refundCurrency: input.refundCurrency,
-    })
-
-    const send = await sendConsumerEmail({
-      to: input.guestEmail,
-      subject: rendered.subject,
-      html: rendered.html,
-      text: rendered.text,
-      templateKey: 'booking.cancellation',
+  if (skippedByRestaurant) {
+    await auditLog({
       restaurantId: input.restaurantId,
+      eventType: 'email.skipped',
+      eventData: { templateKey: 'booking.cancellation', reason: 'restaurant_disabled' },
+      actorType: 'system',
       bookingId: input.bookingId,
-      skipAdminBcc: true,
-    })
+    }).catch(() => {})
+    result = { ok: true, skipped: true }
+  } else {
+    try {
+      const rendered = renderBookingCancellation({
+        locale: input.locale,
+        guestFullName: input.guestFullName,
+        restaurantName: input.restaurantName,
+        restaurantSlug: input.restaurantSlug,
+        bookingRef: input.bookingRef,
+        slotTime: input.slotTime,
+        partySize: input.partySize,
+        refundStatus: input.refundStatus,
+        refundCents: input.refundCents,
+        refundCurrency: input.refundCurrency,
+      })
 
-    if (send.ok) {
-      result = { ok: true, emailId: send.resendId }
-    } else {
-      result = { ok: false, error: send.error ?? send.reason }
-    }
-  } catch (err) {
-    console.error('[dispatchCancellation] failed', err)
-    result = {
-      ok: false,
-      error: err instanceof Error ? err.message : String(err),
+      const send = await sendConsumerEmail({
+        to: input.guestEmail,
+        subject: rendered.subject,
+        html: rendered.html,
+        text: rendered.text,
+        templateKey: 'booking.cancellation',
+        restaurantId: input.restaurantId,
+        bookingId: input.bookingId,
+        skipAdminBcc: true,
+      })
+
+      if (send.ok) {
+        result = { ok: true, emailId: send.resendId }
+      } else {
+        result = { ok: false, error: send.error ?? send.reason }
+      }
+    } catch (err) {
+      console.error('[dispatchCancellation] failed', err)
+      result = {
+        ok: false,
+        error: err instanceof Error ? err.message : String(err),
+      }
     }
   }
 
@@ -84,6 +100,7 @@ export async function sendBookingCancellationNotification(
       locale: input.locale,
       bookingRef: input.bookingRef,
       refundStatus: input.refundStatus,
+      skippedByRestaurant,
       email: {
         ok: result.ok,
         id: result.emailId ?? null,

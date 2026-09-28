@@ -87,6 +87,9 @@ export interface BookingConfig {
   /** Whether the restaurant uses per-service hours overrides. */
   hoursPerServiceOverride: boolean;
 
+  /** restaurants.notify_booking_confirmed — D5.6a guest-email toggle. */
+  notifyBookingConfirmed: boolean;
+
   /**
    * Non-null while paused (manual or billing_suspended — D1.3). This is
    * display-only data on an otherwise-successful config load, not a new

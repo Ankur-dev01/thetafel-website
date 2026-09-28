@@ -252,6 +252,17 @@ export async function POST(
     //     the Sep 1 2026 booking-confirmation drop fix in bookings/create).
     after(async () => {
       try {
+        // Read fresh at cancel time rather than trusting anything baked
+        // into the magic-link payload at booking-creation time — the
+        // restaurant's toggle could have changed since. Fail-open (true)
+        // if the lookup itself fails, matching every other column's
+        // "preserve existing behaviour" default.
+        const { data: restaurantRow } = await admin
+          .from('restaurants')
+          .select('notify_booking_cancelled')
+          .eq('id', b.restaurantId)
+          .maybeSingle<{ notify_booking_cancelled: boolean }>();
+
         await sendBookingCancellationNotification({
           locale: 'nl',
           guestFullName: b.guestFullName,
@@ -267,6 +278,7 @@ export async function POST(
           refundStatus,
           refundCents: decision.refundCents,
           refundCurrency: decision.refundCurrency,
+          restaurantNotifyBookingCancelled: restaurantRow?.notify_booking_cancelled ?? true,
         });
       } catch (err) {
         console.error('[book/cancel] cancellation email dispatch failed', err);

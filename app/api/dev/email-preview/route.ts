@@ -81,6 +81,7 @@ export async function GET(request: NextRequest) {
       depositAmountCents: 2000,
       depositCurrency: 'EUR',
       magicLinkToken: 'dev_preview_token',
+      restaurantNotifyBookingConfirmed: true,
     })
 
     return NextResponse.json(

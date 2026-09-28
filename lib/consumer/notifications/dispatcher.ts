@@ -59,6 +59,16 @@ export type BookingConfirmationNotificationInput = {
 
   /** Optional override for the base URL (test / staging only). */
   baseUrl?: string
+
+  /**
+   * restaurants.notify_booking_confirmed. False = skip the email
+   * silently (counts as success, no email.send_failed row, no
+   * Today-page alert). Email-only — does not gate the WhatsApp branch
+   * below, which stays governed solely by the global
+   * isWhatsAppEnabled() flag (D5.6a scope; WhatsApp isn't live in prod
+   * regardless).
+   */
+  restaurantNotifyBookingConfirmed: boolean
 }
 
 export type ChannelResult =
@@ -89,15 +99,27 @@ export async function sendBookingConfirmationNotification(
   // reformats from the raw Date internally (C3.1).
   const slotTimeString = formatSlotTimeForLocale(input.slotTime, input.locale)
 
+  const emailSkippedByRestaurant = input.restaurantNotifyBookingConfirmed === false
+
   // Fire both channels in parallel.
   const [emailResult, whatsappResult] = await Promise.all([
-    dispatchEmail(input, manageUrl),
+    emailSkippedByRestaurant ? Promise.resolve<ChannelResult>(NOT_ATTEMPTED) : dispatchEmail(input, manageUrl),
     isWhatsAppEnabled() && input.guestPhone
       ? dispatchWhatsApp(input, slotTimeString)
       : Promise.resolve<ChannelResult>(NOT_ATTEMPTED),
   ])
 
-  const ok = emailResult.attempted && emailResult.ok
+  if (emailSkippedByRestaurant) {
+    await auditLog({
+      restaurantId: input.restaurantId,
+      eventType: 'email.skipped',
+      eventData: { templateKey: 'booking.confirmation', reason: 'restaurant_disabled' },
+      actorType: 'system',
+      bookingId: input.bookingId,
+    }).catch(() => {})
+  }
+
+  const ok = emailSkippedByRestaurant ? true : emailResult.attempted && emailResult.ok
 
   await auditLog({
     restaurantId: input.restaurantId,
@@ -110,6 +132,7 @@ export async function sendBookingConfirmationNotification(
       whatsapp: summariseChannel(whatsappResult),
       whatsappEnabled: isWhatsAppEnabled(),
       hadGuestPhone: !!input.guestPhone,
+      emailSkippedByRestaurant,
     },
     actorType: 'system',
     bookingId: input.bookingId,
