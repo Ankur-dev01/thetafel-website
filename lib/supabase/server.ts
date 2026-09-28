@@ -1,14 +1,27 @@
 import { createServerClient } from '@supabase/ssr'
 import { createClient } from '@supabase/supabase-js'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 
 /**
  * User-scoped server client.
  * Reads the auth cookie and operates as the logged-in user.
  * RLS applies normally.
+ *
+ * Also accepts `Authorization: Bearer <access_token>` for callers that
+ * cannot use cookies (native mobile). When a Bearer header is present it
+ * wins over any cookie session: the token is forwarded to Supabase on every
+ * outgoing request via `global.headers`, so both `auth.getUser()` and
+ * RLS-scoped queries authorize as the token's user. The cookie adapter is
+ * still attached so the returned client shape is identical for callers,
+ * and `persistSession`/refresh are disabled to keep the Bearer branch
+ * stateless (the mobile client refreshes its own token).
  */
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies()
+  const headerStore = await headers()
+  const authHeader = headerStore.get('authorization')
+  const bearer =
+    authHeader && /^Bearer\s+\S+/i.test(authHeader) ? authHeader : null
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_PROD_URL!,
@@ -28,6 +41,16 @@ export async function createSupabaseServerClient() {
           }
         },
       },
+      ...(bearer
+        ? {
+            global: { headers: { Authorization: bearer } },
+            auth: {
+              persistSession: false,
+              autoRefreshToken: false,
+              detectSessionInUrl: false,
+            },
+          }
+        : {}),
     }
   )
 }
