@@ -13,6 +13,7 @@ import { verifyTurnstileToken } from '@/lib/consumer/turnstile';
 import { assertConsumerWriteAllowed, rejectionPayload } from '@/lib/consumer/guards';
 import { auditLog } from '@/lib/consumer/audit';
 import { sendBookingConfirmationNotification } from '@/lib/consumer/notifications/dispatcher';
+import { sendRestaurantNewBookingEmail } from '@/lib/notifications/restaurant/dispatchNewBooking';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -141,6 +142,30 @@ export async function POST(req: NextRequest) {
         });
       } catch (e) {
         console.error('[booking/create] dispatcher error', { err: String(e) });
+      }
+    });
+
+    // Restaurant-facing "new booking" email — separate after() so a
+    // failure here never skips the guest confirmation above, or vice
+    // versa (D5.6b).
+    after(async () => {
+      try {
+        await sendRestaurantNewBookingEmail({
+          restaurantId: config.restaurantId,
+          bookingId: result.bookingId,
+          bookingRef: result.bookingRef,
+          guestFullName: input.guest.name.trim(),
+          guestEmail: input.guest.email.trim(),
+          guestPhone: input.guest.phone.trim() || null,
+          slotTime: input.slotInstant,
+          partySize: input.partySize,
+          allergies: input.allergies,
+          occasion: input.occasion,
+          requests: input.requests,
+          guestNote: input.guest.note,
+        });
+      } catch (e) {
+        console.error('[booking/create] restaurant notify dispatcher error', { err: String(e) });
       }
     });
   }

@@ -2,14 +2,18 @@
 //
 // Shared notifications-payload validation, imported by BOTH the client
 // form and the mutating route — same posture as businessValidation.ts.
-// No uniqueness checks, no format regexes: four required booleans, no
-// defaults (every save must state all four explicitly).
+// No uniqueness checks, no format regexes: seven required booleans, no
+// defaults (every save must state all seven explicitly). D5.6b added the
+// three notify_restaurant_* fields alongside D5.6a's four guest-facing ones.
 
 export type NotificationsPayload = {
   notify_booking_confirmed: boolean
   notify_booking_cancelled: boolean
   notify_order_confirmed: boolean
   notify_order_ready: boolean
+  notify_restaurant_new_booking: boolean
+  notify_restaurant_new_order: boolean
+  notify_restaurant_booking_cancelled: boolean
 }
 
 /**
@@ -25,11 +29,17 @@ export function parseNotificationsPayload(raw: unknown): NotificationsPayload | 
   if (typeof b.notify_booking_cancelled !== 'boolean') return null
   if (typeof b.notify_order_confirmed !== 'boolean') return null
   if (typeof b.notify_order_ready !== 'boolean') return null
+  if (typeof b.notify_restaurant_new_booking !== 'boolean') return null
+  if (typeof b.notify_restaurant_new_order !== 'boolean') return null
+  if (typeof b.notify_restaurant_booking_cancelled !== 'boolean') return null
 
   return {
     notify_booking_confirmed: b.notify_booking_confirmed,
     notify_booking_cancelled: b.notify_booking_cancelled,
     notify_order_confirmed: b.notify_order_confirmed,
     notify_order_ready: b.notify_order_ready,
+    notify_restaurant_new_booking: b.notify_restaurant_new_booking,
+    notify_restaurant_new_order: b.notify_restaurant_new_order,
+    notify_restaurant_booking_cancelled: b.notify_restaurant_booking_cancelled,
   }
 }

@@ -20,7 +20,7 @@
 // once the local lookup fails to find one of our payment_intents, so Mollie
 // doesn't retry forever on something that isn't ours.
 
-import { NextResponse, type NextRequest } from 'next/server'
+import { after, NextResponse, type NextRequest } from 'next/server'
 import type { Payment } from '@mollie/api-client'
 import { createSupabaseServerClientAdmin } from '@/lib/supabase/server'
 import { getMollieOAuthClient } from '@/lib/mollie/client'
@@ -28,6 +28,7 @@ import { getValidAccessTokenForRestaurant } from '@/lib/mollie/webhook'
 import { canTransitionOrderStatus, type OrderStatus } from '@/lib/orders/transitionOrderStatus'
 import { auditLog } from '@/lib/consumer/audit'
 import { sendTakeawayOrderConfirmedEmail } from '@/lib/consumer/notifications/dispatchTakeawayConfirmation'
+import { sendRestaurantNewOrderEmail } from '@/lib/notifications/restaurant/dispatchNewOrder'
 
 export const runtime = 'nodejs'
 
@@ -186,6 +187,19 @@ async function handlePaid(
         orderId: order.id,
       })
     }
+
+    // Restaurant-facing "new order" email — separate after() so a failure
+    // here never affects the guest confirmation email above, or vice versa
+    // (D5.6b). handlePaid() already early-returns when
+    // order.payment_status === 'paid', so a Mollie webhook retry can't
+    // double-send this.
+    after(async () => {
+      try {
+        await sendRestaurantNewOrderEmail(order.id)
+      } catch (err) {
+        console.error('[webhooks/mollie/consumer] restaurant notify dispatcher error', err)
+      }
+    })
   }
   // QR order-paid notifications (email/WhatsApp) are deliberately not wired
   // in C5.5 — deferred to C7 / the notification-brief hardening pass.

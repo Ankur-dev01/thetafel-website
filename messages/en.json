@@ -1583,6 +1583,9 @@
           "orderConfirmed": "Order confirmed",
           "orderReady": "Order ready for pickup",
           "magicLink": "Access link",
+          "restaurantNewBooking": "New booking (to you)",
+          "restaurantNewOrder": "New order (to you)",
+          "restaurantBookingCancelled": "Cancellation (to you)",
           "other": "Other"
         },
         "guestNotificationsSectionTitle": "Guest notifications",
@@ -1606,7 +1609,16 @@
         "cancel": "Cancel",
         "restaurantNotifications": {
           "title": "Notifications to you",
-          "comingSoon": "Coming soon: get notified yourself when a new booking or order comes in. Building this in a future update."
+          "description": "We email you as soon as something comes in.",
+          "sentTo": "Sent to <b>{email}</b>.",
+          "change": "Change",
+          "noEmail": "No email address set — add one in Business details to receive these.",
+          "eventNewBooking": "New booking",
+          "eventNewBookingDesc": "An email as soon as a guest books online.",
+          "eventNewOrder": "New takeaway order",
+          "eventNewOrderDesc": "An email as soon as a takeaway order is paid.",
+          "eventBookingCancelled": "Booking cancelled",
+          "eventBookingCancelledDesc": "An email as soon as a guest cancels their booking."
         }
       },
       "branding": {

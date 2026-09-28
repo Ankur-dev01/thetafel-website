@@ -10,7 +10,9 @@
 //
 // D5.6a: per-restaurant on/off toggles for the four guest-facing
 // notification events already wired (booking confirmed/cancelled,
-// takeaway order confirmed/ready). Unlike settings/business, there's no
+// takeaway order confirmed/ready). D5.6b added the three restaurant-facing
+// toggles (new booking, new order, booking cancelled by guest) — same
+// route, same form, one Save button. Unlike settings/business, there's no
 // uniqueness check and no invalidateConsumerPage call — these columns
 // are read only by server-side dispatchers, never rendered on any
 // consumer-facing page, so there's nothing in the consumer cache to bust.
@@ -34,6 +36,9 @@ const WRITE_COLUMNS = [
   'notify_booking_cancelled',
   'notify_order_confirmed',
   'notify_order_ready',
+  'notify_restaurant_new_booking',
+  'notify_restaurant_new_order',
+  'notify_restaurant_booking_cancelled',
 ] as const satisfies readonly (keyof NotificationsPayload)[];
 
 type CurrentRow = Record<(typeof WRITE_COLUMNS)[number], unknown>;
@@ -59,7 +64,9 @@ export async function POST(req: NextRequest) {
 
   const { data: current, error: loadError } = await admin
     .from('restaurants')
-    .select('notify_booking_confirmed, notify_booking_cancelled, notify_order_confirmed, notify_order_ready')
+    .select(
+      'notify_booking_confirmed, notify_booking_cancelled, notify_order_confirmed, notify_order_ready, notify_restaurant_new_booking, notify_restaurant_new_order, notify_restaurant_booking_cancelled'
+    )
     .eq('id', restaurant.id)
     .single<CurrentRow>();
   if (loadError || !current) {

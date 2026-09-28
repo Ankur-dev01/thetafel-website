@@ -1583,6 +1583,9 @@
           "orderConfirmed": "Bestelling bevestigd",
           "orderReady": "Bestelling klaar om af te halen",
           "magicLink": "Toegangslink",
+          "restaurantNewBooking": "Nieuwe reservering (aan jou)",
+          "restaurantNewOrder": "Nieuwe bestelling (aan jou)",
+          "restaurantBookingCancelled": "Annulering (aan jou)",
           "other": "Overig"
         },
         "guestNotificationsSectionTitle": "Meldingen aan gasten",
@@ -1606,7 +1609,16 @@
         "cancel": "Annuleren",
         "restaurantNotifications": {
           "title": "Meldingen aan jou",
-          "comingSoon": "Binnenkort: krijg zelf een bericht bij een nieuwe reservering of bestelling. Dit bouwen we in een volgende update."
+          "description": "We sturen je een e-mail zodra er iets binnenkomt.",
+          "sentTo": "Verstuurd naar <b>{email}</b>.",
+          "change": "Wijzigen",
+          "noEmail": "Geen e-mailadres ingesteld — voeg er een toe bij Bedrijfsgegevens om deze meldingen te ontvangen.",
+          "eventNewBooking": "Nieuwe reservering",
+          "eventNewBookingDesc": "Een e-mail zodra een gast online reserveert.",
+          "eventNewOrder": "Nieuwe afhaalbestelling",
+          "eventNewOrderDesc": "Een e-mail zodra een afhaalbestelling is betaald.",
+          "eventBookingCancelled": "Reservering geannuleerd",
+          "eventBookingCancelledDesc": "Een e-mail zodra een gast zijn reservering annuleert."
         }
       },
       "branding": {

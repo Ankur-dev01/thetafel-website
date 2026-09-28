@@ -19,6 +19,7 @@ import { verifyTurnstileToken } from '@/lib/consumer/turnstile';
 import { auditLog } from '@/lib/consumer/audit';
 import { createSupabaseServerClientAdmin } from '@/lib/supabase/server';
 import { sendBookingCancellationNotification } from '@/lib/consumer/notifications/dispatchCancellation';
+import { sendRestaurantBookingCancelledEmail } from '@/lib/notifications/restaurant/dispatchBookingCancelled';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -282,6 +283,29 @@ export async function POST(
         });
       } catch (err) {
         console.error('[book/cancel] cancellation email dispatch failed', err);
+      }
+    });
+
+    // Restaurant-facing "booking cancelled" email — separate after() so a
+    // failure here never skips the guest cancellation email above, or vice
+    // versa (D5.6b). Guest-initiated cancellation only; staff-cancelled
+    // bookings never reach this route.
+    after(async () => {
+      try {
+        await sendRestaurantBookingCancelledEmail({
+          restaurantId: b.restaurantId,
+          bookingId: b.bookingId,
+          bookingRef: b.bookingRef,
+          guestFullName: b.guestFullName,
+          guestEmail: b.guestEmail,
+          slotTime: b.slotTime,
+          partySize: b.partySize,
+          refundStatus,
+          refundCents: decision.refundCents,
+          refundCurrency: decision.refundCurrency,
+        });
+      } catch (err) {
+        console.error('[book/cancel] restaurant notify dispatcher error', err);
       }
     });
 

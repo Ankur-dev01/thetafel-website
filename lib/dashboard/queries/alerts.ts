@@ -296,7 +296,7 @@ async function checkNotificationsFailedToday(
     const supabase = await createSupabaseServerClient()
     const { data, error } = await supabase
       .from('consumer_audit_logs')
-      .select('id, event_type, booking_id, order_id, created_at')
+      .select('id, event_type, event_data, booking_id, order_id, created_at')
       .eq('restaurant_id', restaurantId)
       .in('event_type', ['email.sent', 'email.send_failed', 'whatsapp.sent', 'whatsapp.send_failed'])
       .gte('created_at', startOfTodayIso)
@@ -310,7 +310,19 @@ async function checkNotificationsFailedToday(
     const groups = new Map<string, Row[]>()
     for (const row of rows) {
       const channel = row.event_type.startsWith('email') ? 'email' : 'whatsapp'
-      const key = `${channel}:${row.booking_id ?? row.order_id ?? row.id}`
+      // Group by templateKey, not just booking/order id — restaurant-facing
+      // and guest-facing sends now share a booking_id (D5.6b), and a
+      // successful send of one would otherwise hide a failed send of the
+      // other (the same bug booking.change_request already had). WhatsApp
+      // templateKeys carry a locale suffix ('booking_confirmation_en' /
+      // '_nl') for what's really one event — strip it so retries in either
+      // locale still pair up.
+      const rawTemplateKey = (row.event_data as Record<string, unknown> | null)?.templateKey
+      const templateKey =
+        typeof rawTemplateKey === 'string'
+          ? rawTemplateKey.replace(/_(nl|en)$/, '')
+          : 'unknown'
+      const key = `${channel}:${templateKey}:${row.booking_id ?? row.order_id ?? row.id}`
       const existing = groups.get(key)
       if (existing) existing.push(row)
       else groups.set(key, [row])

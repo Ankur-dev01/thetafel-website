@@ -8,11 +8,13 @@
 // with values matching the templateKey strings passed into
 // sendConsumerEmail/sendWhatsAppMessage at each call site:
 // 'booking.confirmation', 'booking.cancellation',
-// 'takeaway.order_confirmed', 'takeaway.ready_for_pickup'. Magic-link
-// emails are sent via raw resend.emails.send() in the signup /
-// resend-magic-link routes, entirely outside sendConsumerEmail, so no
-// audit row for them will ever carry a magic-link templateKey — the
-// magicLink bucket below is defensive, not currently reachable.
+// 'takeaway.order_confirmed', 'takeaway.ready_for_pickup',
+// 'restaurant.new_booking', 'restaurant.new_order',
+// 'restaurant.booking_cancelled' (D5.6b). Magic-link emails are sent via
+// raw resend.emails.send() in the signup / resend-magic-link routes,
+// entirely outside sendConsumerEmail, so no audit row for them will ever
+// carry a magic-link templateKey — the magicLink bucket below is
+// defensive, not currently reachable.
 
 type Labels = {
   sectionTitle: string
@@ -25,6 +27,9 @@ type Labels = {
   orderConfirmedLabel: string
   orderReadyLabel: string
   magicLinkLabel: string
+  restaurantNewBookingLabel: string
+  restaurantNewOrderLabel: string
+  restaurantBookingCancelledLabel: string
   otherLabel: string
 }
 
@@ -55,6 +60,9 @@ function inferEventKind(row: FailureRow): string {
   if (templateKey === 'booking.cancellation') return 'bookingCancelled'
   if (templateKey === 'takeaway.order_confirmed') return 'orderConfirmed'
   if (templateKey === 'takeaway.ready_for_pickup') return 'orderReady'
+  if (templateKey === 'restaurant.new_booking') return 'restaurantNewBooking'
+  if (templateKey === 'restaurant.new_order') return 'restaurantNewOrder'
+  if (templateKey === 'restaurant.booking_cancelled') return 'restaurantBookingCancelled'
   // No email currently routes through sendConsumerEmail with a
   // magic-link templateKey — magic-link mail is sent via raw
   // resend.emails.send() in the signup/resend-magic-link routes,
@@ -105,6 +113,12 @@ export default function FailureHistory({ failures, labels, locale }: Props) {
         return labels.orderReadyLabel
       case 'magicLink':
         return labels.magicLinkLabel
+      case 'restaurantNewBooking':
+        return labels.restaurantNewBookingLabel
+      case 'restaurantNewOrder':
+        return labels.restaurantNewOrderLabel
+      case 'restaurantBookingCancelled':
+        return labels.restaurantBookingCancelledLabel
       default:
         return labels.otherLabel
     }

@@ -12,6 +12,9 @@ export type NotificationsPayload = {
   notify_booking_cancelled: boolean;
   notify_order_confirmed: boolean;
   notify_order_ready: boolean;
+  notify_restaurant_new_booking: boolean;
+  notify_restaurant_new_order: boolean;
+  notify_restaurant_booking_cancelled: boolean;
 };
 
 export type SaveNotificationsResult = { ok: true } | { ok: false; code: string; message?: string };
