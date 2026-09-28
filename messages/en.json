@@ -1521,7 +1521,9 @@
           "qr": "QR settings",
           "qrDesc": "Auto-accept, payment methods, colour and menu language.",
           "notifications": "Notifications",
-          "notificationsDesc": "Which emails guests get and delivery status."
+          "notificationsDesc": "Which emails guests get and delivery status.",
+          "branding": "Branding",
+          "brandingDesc": "Logo, brand colour and cover photo."
         }
       },
       "confirmPause": {
@@ -1606,6 +1608,35 @@
           "title": "Notifications to you",
           "comingSoon": "Coming soon: get notified yourself when a new booking or order comes in. Building this in a future update."
         }
+      },
+      "branding": {
+        "title": "Branding",
+        "subtitle": "Manage your logo, brand colour, and cover photo.",
+        "back": "Back to settings",
+        "colorSectionTitle": "Brand colour",
+        "colorSectionDescription": "Used on the Add-to-cart button and accents when guests order via QR or takeaway. Doesn't affect the booking page (yet).",
+        "colorPresetLabel": "Pick a colour",
+        "colorCustomLabel": "Custom colour",
+        "colorPreviewLabel": "Preview",
+        "colorContrastWarning": "Heads up: white text on this colour is hard to read. Pick a darker shade.",
+        "logoSectionTitle": "Logo",
+        "logoSectionDescription": "Shown on your QR menu welcome screen. Supports JPEG, PNG, and WebP (max 5MB).",
+        "logoNoneSet": "No logo",
+        "logoUploadLabel": "Upload logo",
+        "logoUploading": "Uploading…",
+        "logoUploadError": "Upload failed — try again",
+        "logoRemoveLabel": "Remove",
+        "logoRemoveConfirm": "Are you sure you want to remove your logo?",
+        "heroSectionTitle": "Cover photo",
+        "heroSectionDescription": "Shown at the top of your booking and takeaway pages. A landscape photo works best.",
+        "heroNoneSet": "No cover photo",
+        "heroUploadLabel": "Upload cover photo",
+        "heroUploading": "Uploading…",
+        "heroUploadError": "Upload failed — try again",
+        "save": "Save",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "saveError": "Save failed — try again"
       },
       "hours": {
         "title": "Opening hours",

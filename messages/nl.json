@@ -1521,7 +1521,9 @@
           "qr": "QR-instellingen",
           "qrDesc": "Auto-accept, betaalmethodes, kleur en menutaal.",
           "notifications": "Meldingen",
-          "notificationsDesc": "Welke e-mails gasten krijgen en bezorgstatus."
+          "notificationsDesc": "Welke e-mails gasten krijgen en bezorgstatus.",
+          "branding": "Branding",
+          "brandingDesc": "Logo, huisstijlkleur en omslagfoto."
         }
       },
       "confirmPause": {
@@ -1606,6 +1608,35 @@
           "title": "Meldingen aan jou",
           "comingSoon": "Binnenkort: krijg zelf een bericht bij een nieuwe reservering of bestelling. Dit bouwen we in een volgende update."
         }
+      },
+      "branding": {
+        "title": "Branding",
+        "subtitle": "Beheer je logo, huisstijlkleur en omslagfoto.",
+        "back": "Terug naar instellingen",
+        "colorSectionTitle": "Huisstijlkleur",
+        "colorSectionDescription": "Wordt gebruikt op de bestelknop en accenten wanneer gasten via QR of afhaal bestellen. Werkt (nog) niet op de reserveringspagina.",
+        "colorPresetLabel": "Kies een kleur",
+        "colorCustomLabel": "Eigen kleur",
+        "colorPreviewLabel": "Voorbeeld",
+        "colorContrastWarning": "Let op: witte tekst op deze kleur is moeilijk leesbaar. Kies een donkerdere tint.",
+        "logoSectionTitle": "Logo",
+        "logoSectionDescription": "Wordt getoond op je QR-menu welkomstscherm. Ondersteunt JPEG, PNG en WebP (max 5MB).",
+        "logoNoneSet": "Geen logo",
+        "logoUploadLabel": "Logo uploaden",
+        "logoUploading": "Bezig…",
+        "logoUploadError": "Upload mislukt — probeer opnieuw",
+        "logoRemoveLabel": "Verwijderen",
+        "logoRemoveConfirm": "Weet je zeker dat je je logo wilt verwijderen?",
+        "heroSectionTitle": "Omslagfoto",
+        "heroSectionDescription": "Wordt getoond bovenaan je reserverings- en afhaalpagina. Kies een landschapsfoto voor het beste resultaat.",
+        "heroNoneSet": "Geen omslagfoto",
+        "heroUploadLabel": "Omslagfoto uploaden",
+        "heroUploading": "Bezig…",
+        "heroUploadError": "Upload mislukt — probeer opnieuw",
+        "save": "Opslaan",
+        "saving": "Bezig…",
+        "saved": "Opgeslagen",
+        "saveError": "Opslaan mislukt — probeer opnieuw"
       },
       "hours": {
         "title": "Openingstijden",
