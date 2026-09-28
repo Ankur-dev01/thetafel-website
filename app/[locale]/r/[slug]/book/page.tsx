@@ -12,6 +12,9 @@ import { BookingFlowProvider } from '@/lib/booking/state';
 import { BookingStepShell } from '@/components/consumer/booking/BookingStepShell';
 import { StepRenderer } from '@/components/consumer/booking/StepRenderer';
 import { PausedBanner } from '@/components/consumer/PausedBanner';
+import { HeroBand } from '@/components/consumer/HeroBand';
+import HideInEmbed from '@/components/consumer/HideInEmbed';
+import { resolveRestaurantBySlug } from '@/lib/consumer/resolveRestaurant';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,28 +66,40 @@ export default async function BookingEntryPage({ params }: PageProps) {
   if (config.pausedAt !== null) {
     const displayName = config.displayName ?? config.legalName ?? config.slug;
     const restaurantHref = `/${locale}/r/${config.slug}`;
+    const restaurant = await resolveRestaurantBySlug(config.slug);
     return (
-      <BookingFlowProvider config={config}>
-        <BookingStepShell restaurantName={displayName} restaurantHref={restaurantHref}>
-          <PausedBanner />
-        </BookingStepShell>
-      </BookingFlowProvider>
+      <>
+        <HideInEmbed>
+          <HeroBand photo={restaurant?.hero_image_url ?? null} name={displayName} />
+        </HideInEmbed>
+        <BookingFlowProvider config={config}>
+          <BookingStepShell restaurantName={displayName} restaurantHref={restaurantHref}>
+            <PausedBanner />
+          </BookingStepShell>
+        </BookingFlowProvider>
+      </>
     );
   }
 
-  const [openDaysOfWeek, zones] = await Promise.all([
+  const [openDaysOfWeek, zones, restaurant] = await Promise.all([
     loadOpenDaysOfWeek(config.restaurantId, config.hoursPerServiceOverride),
     loadBookableZones(config.restaurantId),
+    resolveRestaurantBySlug(config.slug),
   ]);
 
   const displayName = config.displayName ?? config.legalName ?? config.slug;
   const restaurantHref = `/${locale}/r/${config.slug}`;
 
   return (
-    <BookingFlowProvider config={config}>
-      <BookingStepShell restaurantName={displayName} restaurantHref={restaurantHref}>
-        <StepRenderer config={config} openDaysOfWeek={openDaysOfWeek} zones={zones} />
-      </BookingStepShell>
-    </BookingFlowProvider>
+    <>
+      <HideInEmbed>
+        <HeroBand photo={restaurant?.hero_image_url ?? null} name={displayName} />
+      </HideInEmbed>
+      <BookingFlowProvider config={config}>
+        <BookingStepShell restaurantName={displayName} restaurantHref={restaurantHref}>
+          <StepRenderer config={config} openDaysOfWeek={openDaysOfWeek} zones={zones} />
+        </BookingStepShell>
+      </BookingFlowProvider>
+    </>
   );
 }

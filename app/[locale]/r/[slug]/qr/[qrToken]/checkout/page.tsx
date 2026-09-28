@@ -7,6 +7,7 @@ import { QrHeader } from '@/components/consumer/qr/QrHeader'
 import { QrWelcome } from '@/components/consumer/qr/QrWelcome'
 import { PayModeChooser } from '@/components/consumer/qr/PayModeChooser'
 import { buildRestaurantMetadata } from '@/lib/consumer/metadata'
+import { resolveBrandTokens } from '@/lib/consumer/brandTokens'
 
 export const revalidate = 60
 
@@ -70,10 +71,13 @@ export default async function QrCheckoutPage({
         redirect(`/r/${slug}/qr/${qrToken}/pay?mode=${payModes.soleMode}`)
       }
 
+      const brand = resolveBrandTokens(restaurant)
+      const restaurantName = restaurant.display_name || restaurant.legal_name || ''
+
       if (payModes.modes.length === 0) {
         return (
           <>
-            <QrHeader restaurant={restaurant} tableLabel={table.label} />
+            <QrHeader restaurantName={restaurantName} brand={brand} tableLabel={table.label} />
             <NotAvailableState slug={slug} />
           </>
         )
@@ -81,7 +85,7 @@ export default async function QrCheckoutPage({
 
       return (
         <>
-          <QrHeader restaurant={restaurant} tableLabel={table.label} />
+          <QrHeader restaurantName={restaurantName} brand={brand} tableLabel={table.label} />
           <PayModeChooser
             slug={slug}
             qrToken={qrToken}

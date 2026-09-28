@@ -8,6 +8,7 @@ import { QrWelcome } from '@/components/consumer/qr/QrWelcome'
 import { MenuBrowser } from '@/components/consumer/menu/MenuBrowser'
 import { buildRestaurantMetadata } from '@/lib/consumer/metadata'
 import { auditLog } from '@/lib/consumer/audit'
+import { resolveBrandTokens } from '@/lib/consumer/brandTokens'
 
 export const revalidate = 60
 
@@ -88,9 +89,12 @@ export default async function QrMenuPage({
         console.error('[QrMenuPage] audit log failed', err)
       }
 
+      const brand = resolveBrandTokens(restaurant)
+      const restaurantName = restaurant.display_name || restaurant.legal_name || ''
+
       return (
         <>
-          <QrHeader restaurant={restaurant} tableLabel={table.label} />
+          <QrHeader restaurantName={restaurantName} brand={brand} tableLabel={table.label} />
           {menuData.categories.length === 0 ? (
             <EmptyState />
           ) : (

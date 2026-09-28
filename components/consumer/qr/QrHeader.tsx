@@ -1,14 +1,19 @@
 import { getTranslations } from 'next-intl/server'
+import type { ResolvedBrand } from '@/lib/consumer/brandTokens'
 
 type Props = {
-  restaurant: {
-    display_name: string | null
-    legal_name: string | null
-    brand_logo_url: string | null
-    brand_display_font_family: string | null
-  }
+  restaurantName: string
+  brand: ResolvedBrand
   tableLabel: string
 }
+
+// Must match `DEFAULT_HEADLINE_FONT` in lib/consumer/brandTokens.ts. QrHeader's
+// own default (below) is intentionally a smaller sans body font, not the
+// resolver's display headline font — this sentinel lets us tell "no custom
+// font resolved" apart from "restaurant actually set a custom font" without
+// reading `brand_display_font_family` off the raw restaurant row.
+const RESOLVER_DEFAULT_HEADLINE_FONT = 'var(--font-raleway), Raleway, sans-serif'
+const QR_HEADER_DEFAULT_FONT = 'var(--font-jost), sans-serif'
 
 /**
  * Slim sticky header for QR routes (welcome + menu). Replaces the Phase 1
@@ -16,9 +21,12 @@ type Props = {
  * already knows where they are, so this skips hours/address/phone and just
  * confirms identity + table.
  */
-export async function QrHeader({ restaurant, tableLabel }: Props) {
+export async function QrHeader({ restaurantName, brand, tableLabel }: Props) {
   const t = await getTranslations('consumer.menu')
-  const name = restaurant.display_name || restaurant.legal_name || ''
+  const fontFamily =
+    brand.headlineFontFamily === RESOLVER_DEFAULT_HEADLINE_FONT
+      ? QR_HEADER_DEFAULT_FONT
+      : brand.headlineFontFamily
 
   return (
     <div
@@ -41,11 +49,11 @@ export async function QrHeader({ restaurant, tableLabel }: Props) {
           justifyContent: 'space-between',
         }}
       >
-        {restaurant.brand_logo_url ? (
+        {brand.logoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={restaurant.brand_logo_url}
-            alt={name}
+            src={brand.logoUrl}
+            alt={restaurantName}
             style={{
               height: '32px',
               objectFit: 'contain',
@@ -55,13 +63,13 @@ export async function QrHeader({ restaurant, tableLabel }: Props) {
         ) : (
           <span
             style={{
-              fontFamily: restaurant.brand_display_font_family || 'var(--font-jost), sans-serif',
+              fontFamily,
               fontWeight: 700,
               fontSize: '18px',
               color: 'var(--night, #0f0d08)',
             }}
           >
-            {name}
+            {restaurantName}
           </span>
         )}
 

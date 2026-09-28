@@ -3,6 +3,7 @@ import { resolveTable } from '@/lib/qr/resolveTable'
 import { CartProvider } from '@/lib/cart/CartContext'
 import { PausedBanner } from '@/components/consumer/PausedBanner'
 import { QrHeader } from '@/components/consumer/qr/QrHeader'
+import { resolveBrandTokens } from '@/lib/consumer/brandTokens'
 
 const TOKEN_RE = /^[A-Za-z0-9_-]{20,32}$/
 
@@ -42,9 +43,11 @@ export default async function QrTokenLayout({
   // at the doorman regardless, but there's no reason to let a guest build a
   // cart they can't submit.
   if (restaurant.paused_at !== null) {
+    const brand = resolveBrandTokens(restaurant)
+    const restaurantName = restaurant.display_name || restaurant.legal_name || ''
     return (
       <>
-        <QrHeader restaurant={restaurant} tableLabel={table.label} />
+        <QrHeader restaurantName={restaurantName} brand={brand} tableLabel={table.label} />
         <PausedBanner />
       </>
     )

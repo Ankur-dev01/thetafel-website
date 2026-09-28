@@ -80,12 +80,13 @@ export default async function QrPayPage({
         rawMethod === 'card' ? 'card' : rawMethod === 'ideal' ? 'ideal' : undefined
 
       const brand = resolveBrandTokens(restaurant)
+      const restaurantName = restaurant.display_name || restaurant.legal_name || ''
       const t = await getTranslations({ locale, namespace: 'consumer.qr.orderSubmit' })
       const tChooser = await getTranslations({ locale, namespace: 'consumer.qr.payModeChooser' })
 
       return (
         <>
-          <QrHeader restaurant={restaurant} tableLabel={table.label} />
+          <QrHeader restaurantName={restaurantName} brand={brand} tableLabel={table.label} />
           <section style={{ maxWidth: '480px', margin: '0 auto', padding: '32px 20px 100px' }}>
             <h1
               style={{
