@@ -118,18 +118,24 @@ export async function POST(req: NextRequest) {
   if (!result.idempotentReplay) {
     const restaurantName =
       config.displayName ?? config.legalName ?? config.slug;
+    const bookingLocale = input.locale as 'nl' | 'en';
+    const rawTemplate =
+      bookingLocale === 'en' ? cfgResult.confirmationTemplateEn : cfgResult.confirmationTemplateNl;
+    const customMessageTemplate = rawTemplate?.trim() ? rawTemplate : null;
     after(async () => {
       try {
         await sendBookingConfirmationNotification({
-          locale: input.locale as 'nl' | 'en',
+          locale: bookingLocale,
           guestFullName: input.guest.name.trim(),
           guestEmail: input.guest.email.trim(),
           guestPhone: input.guest.phone.trim() || null,
           restaurantId: config.restaurantId,
           restaurantName,
           restaurantSlug: config.slug,
-          restaurantPhone: null,
-          restaurantAddress: null,
+          restaurantPhone: config.contactPhone ?? null,
+          restaurantAddress: config.addressBlock ?? null,
+          restaurantAddressLine: config.addressLine ?? null,
+          customMessageTemplate,
           bookingId: result.bookingId,
           bookingRef: result.bookingRef,
           slotTime: input.slotInstant,

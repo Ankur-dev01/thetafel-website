@@ -97,6 +97,14 @@ export interface BookingConfig {
    * pause check regardless of whether the page reads this field.
    */
   pausedAt: string | null;
+
+  // ── D5.6c — confirmation-email content ──────────────────────────────────
+  /** restaurants.contact_phone. Not sensitive — safe on the client-bound config. */
+  contactPhone: string | null;
+  /** Single-line address for {adres} substitution, e.g. "Street 12A, 1012XR City". */
+  addressLine: string | null;
+  /** Two-line address for the email's structured address block. Same source columns as addressLine. */
+  addressBlock: { line1: string; line2: string } | null;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -108,8 +116,21 @@ export interface BookingConfig {
  * loader must handle all four cases. We model errors as values (not thrown)
  * because the booking page needs to render different copy per failure mode.
  */
+/**
+ * D5.6c: confirmation_template_nl/_en live OUTSIDE `config` deliberately.
+ * `config` gets passed wholesale into the client component
+ * `BookingFlowProvider` (see app/[locale]/r/[slug]/book/page.tsx), which
+ * serializes it to the browser — the restaurant's custom message text must
+ * never leak there. Only server-side callers (the booking-create route)
+ * read these two fields.
+ */
 export type BookingConfigResult =
-  | { ok: true; config: BookingConfig }
+  | {
+      ok: true;
+      config: BookingConfig;
+      confirmationTemplateNl: string | null;
+      confirmationTemplateEn: string | null;
+    }
   | { ok: false; error: BookingConfigError };
 
 export type BookingConfigError =

@@ -1813,7 +1813,8 @@
             "enLabel": "Confirmation email (English)",
             "help": "Use the variables below to personalize the email. '{restaurant}' is required.",
             "placeholders": "Available variables: {vars}",
-            "previewLabel": "Preview"
+            "previewLabel": "Preview",
+            "messagePreviewHelp": "This message appears at the top of the confirmation email your guest receives. The booking details and the link to change or cancel always appear below it."
           },
           "questions": {
             "label": "Questions during booking",

@@ -43,6 +43,10 @@ export type BookingConfirmationNotificationInput = {
     line1: string
     line2: string
   } | null
+  /** D5.6c — single-line address for {adres} substitution in customMessageTemplate. */
+  restaurantAddressLine?: string | null
+  /** D5.6c — restaurants.confirmation_template_nl/_en for this booking's locale, trimmed, or null. */
+  customMessageTemplate?: string | null
 
   // ── Booking ──────────────────────────────────────────────────────────
   bookingId: string
@@ -156,6 +160,8 @@ async function dispatchEmail(
       restaurantSlug: input.restaurantSlug,
       restaurantPhone: input.restaurantPhone,
       restaurantAddress: input.restaurantAddress,
+      restaurantAddressLine: input.restaurantAddressLine ?? null,
+      customMessageTemplate: input.customMessageTemplate ?? null,
       bookingRef: input.bookingRef,
       slotTime: input.slotTime,
       partySize: input.partySize,

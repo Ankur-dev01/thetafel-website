@@ -1813,7 +1813,8 @@
             "enLabel": "Bevestigingsmail Engels",
             "help": "Gebruik onderstaande variabelen om de mail te personaliseren. '{restaurant}' is verplicht.",
             "placeholders": "Beschikbare variabelen: {vars}",
-            "previewLabel": "Voorbeeld"
+            "previewLabel": "Voorbeeld",
+            "messagePreviewHelp": "Dit bericht staat bovenaan de bevestigingsmail die je gast ontvangt. De details en de link om te wijzigen of annuleren staan er altijd onder."
           },
           "questions": {
             "label": "Vragen tijdens het boeken",

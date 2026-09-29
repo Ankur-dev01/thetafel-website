@@ -13,7 +13,6 @@ import type { BookingRulesInitialData } from '@/lib/dashboard/queries/bookingRul
 type BookingRulesEditorProps = {
   initialData: BookingRulesInitialData;
   restaurantName: string;
-  restaurantAddress: string;
 };
 
 const ERROR_CODE_KEYS: Record<string, string> = {
@@ -31,7 +30,7 @@ const ERROR_CODE_KEYS: Record<string, string> = {
 const labelStyle = { fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 } as const;
 const bodyStyle = { fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 400 } as const;
 
-export default function BookingRulesEditor({ initialData, restaurantName, restaurantAddress }: BookingRulesEditorProps) {
+export default function BookingRulesEditor({ initialData, restaurantName }: BookingRulesEditorProps) {
   const t = useTranslations('dashboard.settings.booking');
   const { pending, saveBookingRules } = useBookingRulesActions();
 
@@ -140,7 +139,6 @@ export default function BookingRulesEditor({ initialData, restaurantName, restau
         onChangeQuestionRequests={(v) => patch({ booking_question_requests: v })}
         disabled={pending}
         restaurantName={restaurantName}
-        restaurantAddress={restaurantAddress}
       />
 
       {displayedError && (

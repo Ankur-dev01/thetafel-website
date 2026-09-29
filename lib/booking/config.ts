@@ -5,6 +5,7 @@
 
 import { createSupabaseServerClientAdmin } from '@/lib/supabase/server';
 import type { BookingConfig, BookingConfigResult, OccupancyDurationMap } from './types';
+import { formatRestaurantAddressLine } from './confirmationTemplate';
 
 /**
  * Columns we select from `restaurants`. Keep this list explicit so a schema
@@ -39,6 +40,15 @@ const BOOKING_CONFIG_COLUMNS = [
   'hours_per_service_override',
   'notify_booking_confirmed',
   'paused_at',
+  'contact_phone',
+  'legal_address_street',
+  'legal_address_house_number',
+  'legal_address_house_letter',
+  'legal_address_house_number_addition',
+  'legal_address_postcode',
+  'legal_address_city',
+  'confirmation_template_nl',
+  'confirmation_template_en',
 ].join(', ');
 
 interface RawRestaurantRow {
@@ -70,6 +80,32 @@ interface RawRestaurantRow {
   hours_per_service_override: boolean;
   notify_booking_confirmed: boolean;
   paused_at: string | null;
+  contact_phone: string | null;
+  legal_address_street: string | null;
+  legal_address_house_number: string | null;
+  legal_address_house_letter: string | null;
+  legal_address_house_number_addition: string | null;
+  legal_address_postcode: string | null;
+  legal_address_city: string | null;
+  confirmation_template_nl: string | null;
+  confirmation_template_en: string | null;
+}
+
+/** Two-line address block for the email's structured address section — same
+ * source columns as formatRestaurantAddressLine, different shape. Null if
+ * street or city is missing (Step 3's contract). */
+function buildAddressBlock(data: RawRestaurantRow): { line1: string; line2: string } | null {
+  const street = data.legal_address_street ?? '';
+  const city = data.legal_address_city ?? '';
+  if (!street.trim() || !city.trim()) return null;
+
+  const num = data.legal_address_house_number ?? '';
+  const letter = data.legal_address_house_letter ?? '';
+  const addition = data.legal_address_house_number_addition ?? '';
+  const numWithSuffix = `${num}${letter}${addition ? `-${addition}` : ''}`.trim();
+  const line1 = [street, numWithSuffix].filter(Boolean).join(' ').trim();
+  const line2 = [data.legal_address_postcode, data.legal_address_city].filter(Boolean).join(' ').trim();
+  return { line1, line2 };
 }
 
 /**
@@ -183,7 +219,16 @@ export async function loadBookingConfig(slug: string): Promise<BookingConfigResu
     notifyBookingConfirmed: data.notify_booking_confirmed,
 
     pausedAt: data.paused_at,
+
+    contactPhone: data.contact_phone,
+    addressLine: formatRestaurantAddressLine(data),
+    addressBlock: buildAddressBlock(data),
   };
 
-  return { ok: true, config };
+  return {
+    ok: true,
+    config,
+    confirmationTemplateNl: data.confirmation_template_nl,
+    confirmationTemplateEn: data.confirmation_template_en,
+  };
 }

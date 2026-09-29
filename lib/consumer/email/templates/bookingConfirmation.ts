@@ -1,6 +1,7 @@
 import 'server-only'
 import { escapeHtml, firstNameOf } from '../escape'
 import { wrapEmailLayout, type EmailLocale } from '../layout'
+import { buildConfirmationVars, renderConfirmationTemplate } from '@/lib/booking/confirmationTemplate'
 
 /**
  * Booking confirmation email — sent immediately after a guest creates a
@@ -26,6 +27,15 @@ export type BookingConfirmationInput = {
   depositCurrency: string | null
   /** Full URL including the magic-link token. */
   manageUrl: string
+  /**
+   * D5.6c — restaurants.confirmation_template_nl/_en for this booking's
+   * locale, already trimmed by the caller. Null/empty → today's fixed
+   * greeting + intro (unchanged output). Non-empty → replaces the greeting
+   * + intro entries only; details table, phone, button, note line untouched.
+   */
+  customMessageTemplate?: string | null
+  /** D5.6c — single-line address for {adres} substitution. Independent of restaurantAddress's {line1,line2} shape. */
+  restaurantAddressLine?: string | null
 }
 
 export type RenderedEmail = {
@@ -95,6 +105,22 @@ function formatSlotTime(slot: Date | string, locale: EmailLocale): string {
   return `${datePart}, ${timePart}`
 }
 
+/**
+ * Escapes and splits the substituted custom message into HTML paragraphs.
+ * Blank line = new <p>; single newline within a paragraph = <br>. Same
+ * paragraph styling as the greeting/intro lines it replaces (Decision 5).
+ */
+function renderMessageParagraphsHtml(message: string): string {
+  const paragraphs = message.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
+  return paragraphs
+    .map((p, i) => {
+      const escaped = escapeHtml(p).replace(/\n/g, '<br />')
+      const marginBottom = i === paragraphs.length - 1 ? 22 : 16
+      return `<p style="margin:0 0 ${marginBottom}px;font-size:15px;line-height:1.55;color:#0f0d08;">${escaped}</p>`
+    })
+    .join('\n')
+}
+
 function formatMoney(cents: number, currency: string, locale: EmailLocale): string {
   const fmtLocale = locale === 'en' ? 'en-GB' : 'nl-NL'
   return new Intl.NumberFormat(fmtLocale, {
@@ -115,6 +141,28 @@ export function renderBookingConfirmation(
   const subject = t.subjectTemplate(input.restaurantName)
   const preheader = t.preheader(input.partySize, when)
 
+  // ── D5.6c — restaurant's custom message, replaces greeting + intro only ──
+  const rawTemplate = input.customMessageTemplate?.trim() || null
+  let customMessageText: string | null = null
+  let templateReferencesAddress = false
+  if (rawTemplate) {
+    const vars = buildConfirmationVars({
+      locale: input.locale,
+      guestFullName: input.guestFullName,
+      restaurantName: input.restaurantName,
+      slotTime: input.slotTime,
+      partySize: input.partySize,
+      address: input.restaurantAddressLine ?? null,
+    })
+    customMessageText = renderConfirmationTemplate(rawTemplate, vars)
+    templateReferencesAddress = rawTemplate.includes('{adres}')
+  }
+  // Decision 4: the address is only shown once. If the custom message
+  // already contains {adres} and an address is actually available, the
+  // separate structured address block is skipped.
+  const suppressAddressBlock =
+    templateReferencesAddress && !!input.restaurantAddressLine && input.restaurantAddressLine.trim().length > 0
+
   // ── HTML body ────────────────────────────────────────────────────────────
 
   const depositRow =
@@ -130,7 +178,7 @@ export function renderBookingConfirmation(
         ].join('\n')
       : ''
 
-  const addressBlock = input.restaurantAddress
+  const addressBlock = input.restaurantAddress && !suppressAddressBlock
     ? [
         `<div style="margin-top:16px;font-size:13px;color:#9c8b6a;">${t.whereLabel}</div>`,
         '<div style="font-size:14px;color:#0f0d08;line-height:1.5;margin-top:4px;">',
@@ -149,9 +197,15 @@ export function renderBookingConfirmation(
       ].join('\n')
     : ''
 
+  const greetingIntroHtml = customMessageText
+    ? renderMessageParagraphsHtml(customMessageText)
+    : [
+        `<p style="margin:0 0 16px;font-size:16px;line-height:1.55;color:#0f0d08;">${escapeHtml(t.greeting(firstName))}</p>`,
+        `<p style="margin:0 0 22px;font-size:15px;line-height:1.55;color:#0f0d08;">${escapeHtml(t.intro)}</p>`,
+      ].join('\n')
+
   const bodyHtml = [
-    `<p style="margin:0 0 16px;font-size:16px;line-height:1.55;color:#0f0d08;">${escapeHtml(t.greeting(firstName))}</p>`,
-    `<p style="margin:0 0 22px;font-size:15px;line-height:1.55;color:#0f0d08;">${escapeHtml(t.intro)}</p>`,
+    greetingIntroHtml,
     '',
     '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f8f2e6;padding:18px 20px;margin:0 0 22px;">',
     '  <tr>',
@@ -194,9 +248,13 @@ export function renderBookingConfirmation(
 
   // ── Plain-text body ──────────────────────────────────────────────────────
   const textLines: string[] = []
-  textLines.push(t.greeting(firstName))
-  textLines.push('')
-  textLines.push(t.intro)
+  if (customMessageText) {
+    textLines.push(customMessageText)
+  } else {
+    textLines.push(t.greeting(firstName))
+    textLines.push('')
+    textLines.push(t.intro)
+  }
   textLines.push('')
   textLines.push(`${t.partyLabel}: ${input.partySize}`)
   textLines.push(`${t.whenLabel}: ${when}`)
@@ -207,7 +265,7 @@ export function renderBookingConfirmation(
       `${t.depositLabel}: ${formatMoney(input.depositAmountCents, input.depositCurrency || 'EUR', input.locale)} (${t.depositPaid})`
     )
   }
-  if (input.restaurantAddress) {
+  if (input.restaurantAddress && !suppressAddressBlock) {
     textLines.push('')
     textLines.push(
       `${t.whereLabel}: ${input.restaurantAddress.line1}, ${input.restaurantAddress.line2}`

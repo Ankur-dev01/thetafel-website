@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react'
 import { useParams, useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import StepFrame from '@/components/onboarding/shell/StepFrame'
@@ -12,6 +12,13 @@ import {
 } from '@/lib/onboarding/steps'
 import { stepPath, previousStepPath } from '@/lib/onboarding/routes'
 import { useDraftSave } from '@/lib/onboarding/useDraftSave'
+import {
+  buildConfirmationVars,
+  type ConfirmationVars,
+  subscribeSampleSlotTime,
+  getSampleSlotTimeSnapshot,
+  getServerSampleSlotTimeSnapshot,
+} from '@/lib/booking/confirmationTemplate'
 
 // ── Default templates ─────────────────────────────────────────────────────────
 
@@ -34,24 +41,21 @@ See you soon,
 {restaurant}`
 
 // ── Sample preview values ─────────────────────────────────────────────────────
+//
+// D5.6c: fixed sample inputs, shared with the dashboard editor's preview
+// (GuestExperienceSection.tsx) via buildConfirmationVars, so both previews
+// show identical placeholder output — matching what the real email would
+// render. Only the restaurant name varies (uses the real draft value).
 
-const SAMPLE_VARS_NL: Record<string, string> = {
-  '{naam}': 'Maria',
-  '{restaurant}': 'Trattoria Roma',
-  '{datum}': 'Vrijdag 9 mei',
-  '{tijd}': '19:30',
-  '{gasten}': '2 gasten',
-  '{adres}': 'Ceintuurbaan 28',
-}
+const SAMPLE_GUEST_NAME = 'Jan'
+const SAMPLE_PARTY_SIZE = 4
+const SAMPLE_ADDRESS = 'Dommelstraat 36D, 5611CL Eindhoven'
 
-const SAMPLE_VARS_EN: Record<string, string> = {
-  '{naam}': 'Maria',
-  '{restaurant}': 'Trattoria Roma',
-  '{datum}': 'Friday 9 May',
-  '{tijd}': '19:30',
-  '{gasten}': '2 guests',
-  '{adres}': 'Ceintuurbaan 28',
-}
+// Sample slot time comes from a useSyncExternalStore snapshot (see
+// confirmationTemplate.ts) rather than a plain `new Date()` call — avoids a
+// hydration mismatch when the SSR and client-hydration renders straddle a
+// calendar-day boundary (caught by tests/e2e/dashboard-settings-booking.spec.ts,
+// same fix applied in GuestExperienceSection.tsx).
 
 const TEMPLATE_TOKENS = ['{naam}', '{restaurant}', '{datum}', '{tijd}', '{gasten}', '{adres}']
 
@@ -80,21 +84,21 @@ function parseBool(v: unknown, fallback: boolean): boolean {
   return fallback
 }
 
-function buildHighlightedPreview(template: string, vars: Record<string, string>): React.ReactNode {
-  const tokens = Object.keys(vars)
-  const pattern = new RegExp(
-    tokens.map((t) => t.replace(/[{}]/g, '\\$&')).join('|'),
-    'g'
-  )
+const HIGHLIGHT_PLACEHOLDER_RE = /\{(naam|restaurant|datum|tijd|gasten|adres)\}/g
+
+function buildHighlightedPreview(template: string, vars: ConfirmationVars | null): React.ReactNode {
+  if (!vars) return template
   const nodes: React.ReactNode[] = []
   let last = 0
   let key = 0
   let m: RegExpExecArray | null
-  while ((m = pattern.exec(template)) !== null) {
+  HIGHLIGHT_PLACEHOLDER_RE.lastIndex = 0
+  while ((m = HIGHLIGHT_PLACEHOLDER_RE.exec(template)) !== null) {
     if (m.index > last) nodes.push(template.slice(last, m.index))
+    const token = m[1] as keyof ConfirmationVars
     nodes.push(
       <span key={key++} style={{ color: '#8a5208', fontWeight: 700 }}>
-        {vars[m[0]] ?? m[0]}
+        {vars[token] ?? m[0]}
       </span>
     )
     last = m.index + m[0].length
@@ -139,6 +143,11 @@ export default function GuestsPage() {
   // UI-only state (not persisted)
   const [previewChannel, setPreviewChannel] = useState<'Email' | 'WhatsApp'>('Email')
   const [restaurantName, setRestaurantName] = useState('Trattoria Roma')
+  const sampleDate = useSyncExternalStore(
+    subscribeSampleSlotTime,
+    getSampleSlotTimeSnapshot,
+    getServerSampleSlotTimeSnapshot,
+  )
 
   // Submit / misc
   const [hydrated, setHydrated] = useState(false)
@@ -280,7 +289,16 @@ export default function GuestsPage() {
   // ── Derived ───────────────────────────────────────────────────────────────
 
   const activeTemplate = editingLocale === 'nl' ? templateNl : templateEn
-  const sampleVars = editingLocale === 'nl' ? SAMPLE_VARS_NL : SAMPLE_VARS_EN
+  const sampleVars = sampleDate
+    ? buildConfirmationVars({
+        locale: editingLocale,
+        guestFullName: SAMPLE_GUEST_NAME,
+        restaurantName,
+        slotTime: sampleDate,
+        partySize: SAMPLE_PARTY_SIZE,
+        address: SAMPLE_ADDRESS,
+      })
+    : null
   const backHref = previousStepPath(6, visibleStepIds, locale) ?? stepPath(5, locale)
   const questionsOnCount = [questionAllergies, questionOccasion, questionRequests].filter(Boolean).length
   const initials = getInitials(restaurantName)
@@ -605,7 +623,7 @@ export default function GuestsPage() {
                     <div style={{
                       fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 400,
                       fontSize: 12.5, color: '#9a8e7b', marginTop: 1,
-                    }}>to {sampleVars['{naam}']}</div>
+                    }}>to {SAMPLE_GUEST_NAME}</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#a8997c', fontSize: 12, flexShrink: 0 }}>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
