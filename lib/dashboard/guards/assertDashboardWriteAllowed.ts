@@ -1,9 +1,10 @@
 import 'server-only'
 
 import type { User } from '@supabase/supabase-js'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createSupabaseServerClient, createSupabaseServerClientAdmin } from '@/lib/supabase/server'
 import type { Database } from '@/packages/db/types'
 import { can, type DashboardAction } from '@/lib/dashboard/permissions'
+import { ensureOwnerStaffRow } from '@/lib/dashboard/staff/ensureOwnerStaffRow'
 
 type RestaurantStaffRow = Database['public']['Tables']['restaurant_staff']['Row']
 
@@ -60,13 +61,51 @@ export async function assertDashboardWriteAllowed(
   let staff = staffRow
 
   if (!staff) {
-    // Unlike resolveDashboardContext (read-side), this guard does not
-    // synthesize a fallback staff row for the owner-without-backfill race:
-    // every caller expects a real staff.id (e.g. for audit attribution), and
-    // the D0.1 backfill guarantees the row exists for every live restaurant.
-    // If this ever fires for a genuine owner, resolveDashboardContext's
-    // 'staff.missing_owner_row' audit event will have already flagged it.
-    return { ok: false, reason: 'not_staff', httpStatus: 403 }
+    // STAFF-1: the D0.1 backfill was one-time only and nothing created
+    // restaurant_staff rows for restaurants made afterward — draft creation
+    // now calls ensureOwnerStaffRow() up front (see
+    // app/api/v1/restaurants/draft/route.ts), but this is the safety net
+    // for any restaurant that still slips through. If the caller genuinely
+    // owns this restaurant, self-repair by creating the missing row instead
+    // of 403ing them out of their own dashboard.
+    const { data: restaurantRow } = await supabase
+      .from('restaurants')
+      .select('user_id')
+      .eq('id', restaurantId)
+      .maybeSingle<{ user_id: string }>()
+
+    if (restaurantRow?.user_id === user.id) {
+      const repaired = await ensureOwnerStaffRow({
+        restaurantId,
+        userId: user.id,
+        email: user.email ?? null,
+      })
+
+      if (repaired) {
+        const { data: refetched } = await supabase
+          .from('restaurant_staff')
+          .select('*')
+          .eq('id', repaired.id)
+          .maybeSingle()
+        staff = refetched
+
+        try {
+          const admin = await createSupabaseServerClientAdmin()
+          await admin.from('dashboard_audit_logs').insert({
+            restaurant_id: restaurantId,
+            staff_id: repaired.id,
+            event_type: 'staff.owner_row_repaired',
+            event_data: { restaurantId, userId: user.id },
+          })
+        } catch (err) {
+          console.error('[assertDashboardWriteAllowed] owner-row-repaired audit failed', err)
+        }
+      }
+    }
+
+    if (!staff) {
+      return { ok: false, reason: 'not_staff', httpStatus: 403 }
+    }
   }
 
   if (!can(staff.role, action)) {

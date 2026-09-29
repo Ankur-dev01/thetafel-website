@@ -35,6 +35,7 @@ import {
 import { assertOnboardingMutationForUser } from '@/lib/onboarding/guards'
 import { invalidateOnboardingLayout } from '@/lib/onboarding/cache'
 import { isUniqueViolationOnColumn } from '@/lib/db/postgresErrors'
+import { ensureOwnerStaffRow } from '@/lib/dashboard/staff/ensureOwnerStaffRow'
 
 // ---- Types ------------------------------------------------------------------
 
@@ -66,7 +67,8 @@ function generateSlugFromUserId(userId: string): string {
 
 async function getOrCreateDraftRestaurant(
   supabase: SupabaseUserClient,
-  userId: string
+  userId: string,
+  userEmail: string | null
 ) {
   const { data: existing, error: findErr } = await supabase
     .from('restaurants')
@@ -90,6 +92,24 @@ async function getOrCreateDraftRestaurant(
     .single()
 
   if (insertErr) throw insertErr
+
+  // STAFF-1: create the owner's restaurant_staff row right away, not just
+  // via a one-time migration backfill. Awaited (not fire-and-forget) so we
+  // know whether it succeeded, but a failure here must never fail draft
+  // creation itself — assertDashboardWriteAllowed self-repairs as a
+  // safety net if this somehow doesn't land.
+  const ownerRow = await ensureOwnerStaffRow({
+    restaurantId: created.id,
+    userId,
+    email: userEmail,
+  })
+  if (!ownerRow) {
+    console.error('[getOrCreateDraftRestaurant] ensureOwnerStaffRow failed', {
+      restaurantId: created.id,
+      userId,
+    })
+  }
+
   return created
 }
 
@@ -141,7 +161,7 @@ export async function GET() {
   }
 
   try {
-    const restaurant = await getOrCreateDraftRestaurant(supabase, user.id)
+    const restaurant = await getOrCreateDraftRestaurant(supabase, user.id, user.email ?? null)
 
     const [zonesRes, tablesRes, availabilityRes, uploadsRes] =
       await Promise.all([
