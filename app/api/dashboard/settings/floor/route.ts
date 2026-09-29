@@ -18,16 +18,42 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { randomUUID } from 'node:crypto';
-import { createSupabaseServerClientAdmin } from '@/lib/supabase/server';
+import { createSupabaseServerClient, createSupabaseServerClientAdmin } from '@/lib/supabase/server';
 import { dashboardAudit } from '@/lib/dashboard/audit/dashboardAudit';
 import { invalidateConsumerPage } from '@/lib/consumer/cache';
 import { resolveMenuMutationContext } from '@/lib/dashboard/menu/resolveMenuMutationContext';
+import { getFloorPlanInitialData } from '@/lib/dashboard/queries/floorPlan';
 import { parseFloorSavePayload, validateFloorSavePayload } from '@/lib/dashboard/settings/floorPlanValidation';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const NO_STORE = { 'Cache-Control': 'no-store' } as const;
+
+export async function GET() {
+  const supabase = await createSupabaseServerClient();
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+  if (authError || !user) {
+    return NextResponse.json({ error: 'not_authenticated' }, { status: 401, headers: NO_STORE });
+  }
+
+  const { data: restaurant } = await supabase
+    .from('restaurants')
+    .select('id, slug')
+    .eq('user_id', user.id)
+    .is('deleted_at', null)
+    .maybeSingle();
+  if (!restaurant) {
+    return NextResponse.json({ error: 'not_staff' }, { status: 403, headers: NO_STORE });
+  }
+
+  const data = await getFloorPlanInitialData(restaurant.id, restaurant.slug);
+  return NextResponse.json(data, { status: 200, headers: NO_STORE });
+}
 
 export async function POST(req: NextRequest) {
   const resolved = await resolveMenuMutationContext('settings.floor.edit');

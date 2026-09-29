@@ -9,10 +9,11 @@
 // re-fetched fresh on every save and used purely as a gate, never written.
 
 import { NextResponse, type NextRequest } from 'next/server';
-import { createSupabaseServerClientAdmin } from '@/lib/supabase/server';
+import { createSupabaseServerClient, createSupabaseServerClientAdmin } from '@/lib/supabase/server';
 import { dashboardAudit } from '@/lib/dashboard/audit/dashboardAudit';
 import { invalidateConsumerPage } from '@/lib/consumer/cache';
 import { resolveMenuMutationContext } from '@/lib/dashboard/menu/resolveMenuMutationContext';
+import { getOrderingInitialData } from '@/lib/dashboard/queries/ordering';
 import {
   parseOrderingPayload,
   validateOrderingPayload,
@@ -36,6 +37,31 @@ const WRITE_COLUMNS = [
 type CurrentRow = Record<(typeof WRITE_COLUMNS)[number], unknown> & {
   service_takeaway_enabled: boolean;
 };
+
+export async function GET() {
+  const supabase = await createSupabaseServerClient();
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+  if (authError || !user) {
+    return NextResponse.json({ error: 'not_authenticated' }, { status: 401, headers: NO_STORE });
+  }
+
+  const { data: restaurant } = await supabase
+    .from('restaurants')
+    .select('id')
+    .eq('user_id', user.id)
+    .is('deleted_at', null)
+    .maybeSingle();
+  if (!restaurant) {
+    return NextResponse.json({ error: 'not_staff' }, { status: 403, headers: NO_STORE });
+  }
+
+  const data = await getOrderingInitialData(restaurant.id);
+  return NextResponse.json(data, { status: 200, headers: NO_STORE });
+}
 
 export async function POST(req: NextRequest) {
   const resolved = await resolveMenuMutationContext('settings.ordering.edit');
