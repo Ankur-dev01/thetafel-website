@@ -16,7 +16,7 @@ export async function GET() {
     return NextResponse.json({ ok: false, reason: 'not_authenticated' }, { status: 401 })
   }
 
-  const { data: restaurant } = await selectActingRestaurant(supabase, user.id, 'id')
+  const { data: restaurant } = await selectActingRestaurant(supabase, user.id, 'id, slug')
 
   if (!restaurant) {
     return NextResponse.json({ ok: false, reason: 'no_restaurant' }, { status: 404 })
@@ -30,9 +30,12 @@ export async function GET() {
     .is('deactivated_at', null)
     .maybeSingle()
 
+  // `slug` is the public consumer surface (thetafel.nl/r/<slug>). Exposed so
+  // the mobile Share tab can build the venue QR without a dedicated endpoint.
   return NextResponse.json({
     ok: true,
     restaurant_id: restaurant.id,
     staff_role: staffRow?.role ?? null,
+    slug: restaurant.slug,
   })
 }
