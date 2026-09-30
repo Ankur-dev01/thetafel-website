@@ -1501,8 +1501,7 @@
         "upcoming": {
           "title": "Binnenkort:",
           "menu": "Menu",
-          "team": "Team",
-          "billing": "Facturatie"
+          "team": "Team"
         },
         "links": {
           "business": "Bedrijfsgegevens",
@@ -1526,7 +1525,9 @@
           "account": "Account",
           "accountDesc": "Naam, e-mailadres, wachtwoord en taal van jouw login.",
           "privacy": "Privacyverzoeken",
-          "privacyDesc": "Overzicht van gastverzoeken om gegevens op te vragen of te verwijderen."
+          "privacyDesc": "Overzicht van gastverzoeken om gegevens op te vragen of te verwijderen.",
+          "billing": "Abonnement & facturen",
+          "billingDesc": "Je abonnement, betaalmethode en betaalbewijzen."
         }
       },
       "confirmPause": {
@@ -2058,6 +2059,77 @@
         "pagination": "Paginering",
         "prev": "Vorige",
         "next": "Volgende"
+      },
+      "billing": {
+        "title": "Abonnement & facturen",
+        "subtitle": "Je abonnement, betaalmethode en betaalbewijzen.",
+        "back": "Terug naar instellingen",
+        "noSubscription": "Geen abonnement.",
+        "tier": {
+          "starter": "Starter",
+          "plus": "Plus",
+          "premium": "Premium"
+        },
+        "status": {
+          "trialing": "Proefperiode",
+          "active": "Actief",
+          "past_due": "Betaling achterstallig",
+          "suspended": "Opgeschort",
+          "cancelled": "Opgezegd",
+          "unknown": "Onbekend"
+        },
+        "free": "Gratis",
+        "perMonthExVat": "per maand excl. btw",
+        "exVatShort": "excl. btw",
+        "inclVat": "{amount} per maand incl. btw",
+        "trialCountdown": "Nog {n, plural, one {# dag} other {# dagen}} gratis — daarna {price} per maand",
+        "endsOn": "Eindigt op {date}",
+        "endsSoon": "Eindigt aan het einde van de huidige periode.",
+        "method": {
+          "title": "Betaalmethode",
+          "unavailable": "We kunnen je betaalmethode nu niet ophalen bij Mollie. Probeer het later opnieuw.",
+          "none": "Geen betaalmethode gekoppeld.",
+          "card": "Kaart",
+          "other": "Betaalmethode gekoppeld",
+          "change": "Wijzigen? Mail hello@thetafel.nl"
+        },
+        "invoices": {
+          "title": "Betalingen",
+          "empty": "Nog geen betalingen.",
+          "date": "Datum",
+          "description": "Omschrijving",
+          "amount": "Bedrag incl. btw",
+          "status": "Status",
+          "statuses": {
+            "paid": "Betaald",
+            "pending": "In afwachting",
+            "failed": "Mislukt",
+            "expired": "Verlopen",
+            "canceled": "Geannuleerd"
+          }
+        },
+        "cancel": {
+          "button": "Abonnement opzeggen",
+          "title": "Abonnement opzeggen?",
+          "statement": "Je abonnement stopt aan het einde van de huidige periode. Je restaurant gaat daarna offline voor gasten. Je gegevens bewaren we volgens ons bewaarbeleid.",
+          "reasonLegend": "Waarom zeg je op? (verplicht)",
+          "reasons": {
+            "too_expensive": "Te duur",
+            "missing_features": "Functies ontbreken",
+            "closing_or_pausing": "Ik stop of pauzeer mijn bedrijf",
+            "switching_provider": "Ik stap over naar een andere aanbieder",
+            "other": "Anders"
+          },
+          "detailsLabel": "Toelichting (optioneel, verplicht bij 'Anders')",
+          "reasonRequired": "Kies een reden.",
+          "detailsRequired": "Vul een toelichting in.",
+          "confirm": "Definitief opzeggen",
+          "working": "Bezig…",
+          "keep": "Niet opzeggen",
+          "errorGeneric": "Opzeggen is niet gelukt. Er is niets gewijzigd. Probeer het later opnieuw.",
+          "errorMollie": "We konden je abonnement niet stopzetten bij Mollie. Er is niets gewijzigd. Probeer het later opnieuw of mail hello@thetafel.nl.",
+          "errorAlready": "Dit abonnement is al opgezegd."
+        }
       }
     },
     "share": {

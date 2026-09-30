@@ -1501,8 +1501,7 @@
         "upcoming": {
           "title": "Coming soon:",
           "menu": "Menu",
-          "team": "Team",
-          "billing": "Billing"
+          "team": "Team"
         },
         "links": {
           "business": "Business details",
@@ -1526,7 +1525,9 @@
           "account": "Account",
           "accountDesc": "Your login's name, email, password and language.",
           "privacy": "Privacy requests",
-          "privacyDesc": "Guest requests to export or delete their data."
+          "privacyDesc": "Guest requests to export or delete their data.",
+          "billing": "Subscription & invoices",
+          "billingDesc": "Your plan, payment method and payment receipts."
         }
       },
       "confirmPause": {
@@ -2058,6 +2059,77 @@
         "pagination": "Pagination",
         "prev": "Previous",
         "next": "Next"
+      },
+      "billing": {
+        "title": "Subscription & invoices",
+        "subtitle": "Your plan, payment method and payment receipts.",
+        "back": "Back to settings",
+        "noSubscription": "No subscription.",
+        "tier": {
+          "starter": "Starter",
+          "plus": "Plus",
+          "premium": "Premium"
+        },
+        "status": {
+          "trialing": "Trial",
+          "active": "Active",
+          "past_due": "Past due",
+          "suspended": "Suspended",
+          "cancelled": "Cancelled",
+          "unknown": "Unknown"
+        },
+        "free": "Free",
+        "perMonthExVat": "per month excl. VAT",
+        "exVatShort": "excl. VAT",
+        "inclVat": "{amount} per month incl. VAT",
+        "trialCountdown": "{n, plural, one {# day} other {# days}} free left — then {price} per month",
+        "endsOn": "Ends on {date}",
+        "endsSoon": "Ends at the end of the current period.",
+        "method": {
+          "title": "Payment method",
+          "unavailable": "We can't fetch your payment method from Mollie right now. Please try again later.",
+          "none": "No payment method on file.",
+          "card": "Card",
+          "other": "Payment method on file",
+          "change": "Need to change it? Email hello@thetafel.nl"
+        },
+        "invoices": {
+          "title": "Payments",
+          "empty": "No payments yet.",
+          "date": "Date",
+          "description": "Description",
+          "amount": "Amount incl. VAT",
+          "status": "Status",
+          "statuses": {
+            "paid": "Paid",
+            "pending": "Pending",
+            "failed": "Failed",
+            "expired": "Expired",
+            "canceled": "Cancelled"
+          }
+        },
+        "cancel": {
+          "button": "Cancel subscription",
+          "title": "Cancel subscription?",
+          "statement": "Your subscription ends at the end of the current period. Your restaurant then goes offline for guests. We keep your data according to our retention policy.",
+          "reasonLegend": "Why are you cancelling? (required)",
+          "reasons": {
+            "too_expensive": "Too expensive",
+            "missing_features": "Missing features",
+            "closing_or_pausing": "Closing or pausing my business",
+            "switching_provider": "Switching to another provider",
+            "other": "Other"
+          },
+          "detailsLabel": "Details (optional, required for 'Other')",
+          "reasonRequired": "Choose a reason.",
+          "detailsRequired": "Please add a few words.",
+          "confirm": "Cancel for good",
+          "working": "Working…",
+          "keep": "Keep subscription",
+          "errorGeneric": "Couldn't cancel. Nothing was changed. Please try again later.",
+          "errorMollie": "We couldn't stop your subscription at Mollie. Nothing was changed. Please try again later or email hello@thetafel.nl.",
+          "errorAlready": "This subscription is already cancelled."
+        }
       }
     },
     "share": {

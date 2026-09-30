@@ -45,6 +45,7 @@ export type DashboardAction =
   | 'settings.staff.role_change'
   | 'settings.payments.reconnect'
   | 'settings.billing.change_tier'
+  | 'settings.billing.cancel'
   | 'settings.privacy.act'
   | 'guest.note.edit'
   | 'guest.export'
