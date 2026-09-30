@@ -6,6 +6,8 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { buildAuthorizeUrl } from '@/lib/mollie/oauth'
 import { assertOnboardingMutationForUser } from '@/lib/onboarding/guards'
 import { invalidateOnboardingLayout } from '@/lib/onboarding/cache'
+import { assertDashboardWriteAllowed } from '@/lib/dashboard/guards/assertDashboardWriteAllowed'
+import { MOLLIE_RETURN_TO_COOKIE, parseMollieReturnTo } from '@/lib/mollie/returnTo'
 
 const STATE_COOKIE_NAME = 'mollie_oauth_state'
 const STATE_COOKIE_MAX_AGE_SECONDS = 600 // 10 minutes — covers the OAuth round-trip
@@ -13,12 +15,14 @@ const STATE_COOKIE_MAX_AGE_SECONDS = 600 // 10 minutes — covers the OAuth roun
 const bodySchema = z
   .object({
     locale: z.enum(['nl', 'en']).optional().default('nl'),
+    // Dashboard reconnect only; whitelisted by parseMollieReturnTo below.
+    returnTo: z.string().optional(),
   })
   .strict()
 
 export async function POST(req: NextRequest) {
   // 1. Parse body (optional locale only)
-  let parsedBody: { locale: 'nl' | 'en' } = { locale: 'nl' }
+  let parsedBody: { locale: 'nl' | 'en'; returnTo?: string } = { locale: 'nl' }
   try {
     const raw = await req.json()
     const parsed = bodySchema.safeParse(raw)
@@ -27,11 +31,43 @@ export async function POST(req: NextRequest) {
     // Empty body or non-JSON — default locale, fall through.
   }
 
-  // 2. Auth + onboarding status guard
+  // 2. Auth + guard. Two modes:
+  //    - onboarding (default): restaurant must still be in 'onboarding'.
+  //    - dashboard reconnect (returnTo present + whitelisted): the live
+  //      restaurant's owner re-runs the OAuth handshake from
+  //      /dashboard/settings/payments. A returnTo that isn't on the whitelist
+  //      is rejected rather than silently falling back to onboarding.
   const supabase = await createSupabaseServerClient()
-  const guard = await assertOnboardingMutationForUser(supabase)
-  if (!guard.ok) return guard.response
-  const { restaurant } = guard
+  const returnTo = parsedBody.returnTo === undefined ? null : parseMollieReturnTo(parsedBody.returnTo)
+  if (parsedBody.returnTo !== undefined && !returnTo) {
+    return NextResponse.json({ error: 'invalid_return_to' }, { status: 400 })
+  }
+
+  let restaurant: { id: string; mollie_initiated_at: string | null; mollie_status?: string | null }
+  if (returnTo) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+
+    const { data: owned } = await supabase
+      .from('restaurants')
+      .select('id, mollie_initiated_at, mollie_status')
+      .eq('user_id', user.id)
+      .is('deleted_at', null)
+      .maybeSingle()
+    if (!owned) return NextResponse.json({ error: 'restaurant_not_found' }, { status: 404 })
+
+    const allowed = await assertDashboardWriteAllowed(owned.id, 'settings.payments.reconnect', user)
+    if (!allowed.ok) {
+      return NextResponse.json({ error: allowed.reason }, { status: allowed.httpStatus })
+    }
+    restaurant = owned
+  } else {
+    const guard = await assertOnboardingMutationForUser(supabase)
+    if (!guard.ok) return guard.response
+    restaurant = guard.restaurant
+  }
 
   // 3. Generate CSRF state and encode the locale so the callback can
   //    redirect to the right /<locale>/ path.
@@ -50,6 +86,43 @@ export async function POST(req: NextRequest) {
     path: '/',
     maxAge: STATE_COOKIE_MAX_AGE_SECONDS,
   })
+
+  if (returnTo) {
+    cookieStore.set(MOLLIE_RETURN_TO_COOKIE, returnTo, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: STATE_COOKIE_MAX_AGE_SECONDS,
+    })
+    // Reconnect leaves mollie_status alone: a verified restaurant whose tokens
+    // went stale must not be downgraded to 'pending' just for re-authorising.
+    // Only a restaurant that never started is moved to 'pending' (as onboarding does).
+    if (!restaurant.mollie_status || restaurant.mollie_status === 'not_started') {
+      const { error: pendingErr } = await supabase
+        .from('restaurants')
+        .update({
+          mollie_status: 'pending',
+          ...(restaurant.mollie_initiated_at == null
+            ? { mollie_initiated_at: new Date().toISOString() }
+            : {}),
+        })
+        .eq('id', restaurant.id)
+      if (pendingErr) {
+        return NextResponse.json({ error: 'restaurant_update_failed' }, { status: 500 })
+      }
+    }
+    let reconnectUrl: string
+    try {
+      reconnectUrl = buildAuthorizeUrl({ state })
+    } catch (err) {
+      return NextResponse.json(
+        { error: 'mollie_config_missing', detail: err instanceof Error ? err.message : 'unknown_config_error' },
+        { status: 500 }
+      )
+    }
+    return NextResponse.json({ authorize_url: reconnectUrl }, { status: 200 })
+  }
 
   // 6. Flip mollie_status to 'pending'. Stamp mollie_initiated_at only
   //    if this is the first initiation — re-clicks of the button leave

@@ -1502,7 +1502,6 @@
           "title": "Binnenkort:",
           "menu": "Menu",
           "team": "Team",
-          "payments": "Betalingen",
           "billing": "Facturatie",
           "privacy": "Privacy",
           "account": "Account"
@@ -1523,7 +1522,9 @@
           "notifications": "Meldingen",
           "notificationsDesc": "Welke e-mails gasten krijgen en bezorgstatus.",
           "branding": "Branding",
-          "brandingDesc": "Logo, huisstijlkleur en omslagfoto."
+          "brandingDesc": "Logo, huisstijlkleur en omslagfoto.",
+          "payments": "Betalingen",
+          "paymentsDesc": "Status van je Mollie-verbinding en opnieuw verbinden."
         }
       },
       "confirmPause": {
@@ -1587,7 +1588,8 @@
           "restaurantNewOrder": "Nieuwe bestelling (aan jou)",
           "restaurantBookingCancelled": "Annulering (aan jou)",
           "bookingReminder": "Herinnering",
-          "other": "Overig"
+          "other": "Overig",
+          "restaurantMollieBroken": "Mollie-verbinding verbroken (aan jou)"
         },
         "guestNotificationsSectionTitle": "Meldingen aan gasten",
         "guestNotificationsSectionDescription": "Kies welke e-mails je gasten krijgen. Standaard staan alle meldingen aan.",
@@ -1699,10 +1701,37 @@
       },
       "payments": {
         "title": "Betalingen",
-        "subtitle": "Beheer je betaalverbinding met Mollie.",
+        "subtitle": "Bekijk en herstel je betaalverbinding met Mollie.",
         "back": "Terug naar instellingen",
-        "body": "Je Mollie-verbinding is nog niet volledig te beheren vanuit dit dashboard. We werken aan de zelfherstel-flow.",
-        "contact": "Werkt je Mollie-verbinding niet meer? Mail ons op"
+        "connect": "Mollie verbinden",
+        "reconnect": "Opnieuw verbinden",
+        "reconnecting": "Bezig met verbinden…",
+        "reconnectError": "Verbinden is niet gelukt. Probeer het opnieuw.",
+        "liveCheckUnavailable": "Kon nu niet live controleren — we tonen de laatst bekende status.",
+        "organization": "Organisatie",
+        "lastVerified": "Laatst geverifieerd",
+        "flash": {
+          "connected": "Mollie is verbonden.",
+          "error": "Verbinden met Mollie is niet gelukt. Probeer het opnieuw."
+        },
+        "state": {
+          "connected": {
+            "label": "Verbonden",
+            "guests": "Gasten kunnen met iDEAL en kaart betalen."
+          },
+          "expired": {
+            "label": "Verlopen",
+            "guests": "Gasten kunnen nu niet vooruitbetalen bij afhalen en QR-bestellingen."
+          },
+          "actionNeeded": {
+            "label": "Actie nodig",
+            "guests": "Rond je Mollie-aanmelding af om betalingen te kunnen ontvangen. Tot die tijd kunnen gasten niet vooruitbetalen."
+          },
+          "notConnected": {
+            "label": "Niet verbonden",
+            "guests": "Gasten kunnen nog niet vooruitbetalen bij afhalen en QR-bestellingen. Verbind Mollie om betalingen te ontvangen."
+          }
+        }
       },
       "floor": {
         "title": "Plattegrond",

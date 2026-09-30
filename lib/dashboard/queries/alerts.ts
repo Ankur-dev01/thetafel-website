@@ -1,6 +1,9 @@
 import 'server-only'
 
+import { after } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { isMollieBrokenRow } from '@/lib/dashboard/payments/connectionStatus'
+import { notifyMollieBrokenOnce } from '@/lib/dashboard/payments/notifyMollieBrokenOnce'
 import type { StaffRole } from '@/lib/dashboard/nav'
 import type { DashboardAlert } from '@/lib/dashboard/alerts/types'
 
@@ -55,17 +58,12 @@ async function checkMollieBroken(
       return null
     }
 
-    const tokenExpired =
-      restaurant.mollie_token_expires_at !== null &&
-      new Date(restaurant.mollie_token_expires_at).getTime() < now.getTime()
-
-    const broken =
-      restaurant.mollie_status === 'rejected' ||
-      restaurant.mollie_status === 'needs_action' ||
-      (restaurant.mollie_status === 'verified' &&
-        (restaurant.mollie_access_token === null || tokenExpired))
+    const broken = isMollieBrokenRow(restaurant, now)
 
     if (!broken) return null
+
+    // Owner email, max 1 per 24h (deduped inside). Off the render path.
+    after(() => notifyMollieBrokenOnce(restaurantId))
 
     return {
       id: 'mollie_broken',

@@ -1502,7 +1502,6 @@
           "title": "Coming soon:",
           "menu": "Menu",
           "team": "Team",
-          "payments": "Payments",
           "billing": "Billing",
           "privacy": "Privacy",
           "account": "Account"
@@ -1523,7 +1522,9 @@
           "notifications": "Notifications",
           "notificationsDesc": "Which emails guests get and delivery status.",
           "branding": "Branding",
-          "brandingDesc": "Logo, brand colour and cover photo."
+          "brandingDesc": "Logo, brand colour and cover photo.",
+          "payments": "Payments",
+          "paymentsDesc": "Your Mollie connection status and reconnecting."
         }
       },
       "confirmPause": {
@@ -1587,7 +1588,8 @@
           "restaurantNewOrder": "New order (to you)",
           "restaurantBookingCancelled": "Cancellation (to you)",
           "bookingReminder": "Reminder",
-          "other": "Other"
+          "other": "Other",
+          "restaurantMollieBroken": "Mollie connection broken (to you)"
         },
         "guestNotificationsSectionTitle": "Guest notifications",
         "guestNotificationsSectionDescription": "Choose which emails your guests receive. All notifications are on by default.",
@@ -1699,10 +1701,37 @@
       },
       "payments": {
         "title": "Payments",
-        "subtitle": "Manage your Mollie payment connection.",
+        "subtitle": "View and repair your payment connection with Mollie.",
         "back": "Back to settings",
-        "body": "The Mollie connection isn't yet fully manageable from this dashboard — we're building the self-serve reconnect flow.",
-        "contact": "Is your Mollie connection broken? Email us at"
+        "connect": "Connect Mollie",
+        "reconnect": "Reconnect",
+        "reconnecting": "Connecting…",
+        "reconnectError": "Couldn't connect. Please try again.",
+        "liveCheckUnavailable": "Couldn't check live just now — showing the last known status.",
+        "organization": "Organisation",
+        "lastVerified": "Last verified",
+        "flash": {
+          "connected": "Mollie is connected.",
+          "error": "Couldn't connect to Mollie. Please try again."
+        },
+        "state": {
+          "connected": {
+            "label": "Connected",
+            "guests": "Guests can pay with iDEAL and card."
+          },
+          "expired": {
+            "label": "Expired",
+            "guests": "Guests can't pay upfront for takeaway and QR orders right now."
+          },
+          "actionNeeded": {
+            "label": "Action needed",
+            "guests": "Finish your Mollie sign-up to receive payments. Until then guests can't pay upfront."
+          },
+          "notConnected": {
+            "label": "Not connected",
+            "guests": "Guests can't pay upfront for takeaway and QR orders yet. Connect Mollie to receive payments."
+          }
+        }
       },
       "floor": {
         "title": "Floor plan",

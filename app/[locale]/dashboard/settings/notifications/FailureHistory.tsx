@@ -32,6 +32,7 @@ type Labels = {
   restaurantNewOrderLabel: string
   restaurantBookingCancelledLabel: string
   bookingReminderLabel: string
+  restaurantMollieBrokenLabel: string
   otherLabel: string
 }
 
@@ -65,6 +66,7 @@ function inferEventKind(row: FailureRow): string {
   if (templateKey === 'restaurant.new_booking') return 'restaurantNewBooking'
   if (templateKey === 'restaurant.new_order') return 'restaurantNewOrder'
   if (templateKey === 'restaurant.booking_cancelled') return 'restaurantBookingCancelled'
+  if (templateKey === 'restaurant.mollie_broken') return 'restaurantMollieBroken'
   if (templateKey === 'booking.reminder_24h' || templateKey === 'booking.reminder_2h') return 'bookingReminder'
   // No email currently routes through sendConsumerEmail with a
   // magic-link templateKey — magic-link mail is sent via raw
@@ -122,6 +124,8 @@ export default function FailureHistory({ failures, labels, locale }: Props) {
         return labels.restaurantNewOrderLabel
       case 'restaurantBookingCancelled':
         return labels.restaurantBookingCancelledLabel
+      case 'restaurantMollieBroken':
+        return labels.restaurantMollieBrokenLabel
       case 'bookingReminder':
         return labels.bookingReminderLabel
       default:

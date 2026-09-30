@@ -6,6 +6,7 @@ import {
   fetchConnectedOrganizationId,
 } from '@/lib/mollie/oauth'
 import { invalidateOnboardingLayout } from '@/lib/onboarding/cache'
+import { MOLLIE_RETURN_TO_COOKIE, parseMollieReturnTo } from '@/lib/mollie/returnTo'
 
 const STATE_COOKIE_NAME = 'mollie_oauth_state'
 
@@ -26,9 +27,13 @@ function parseState(state: string | null): { nonce: string; locale: 'nl' | 'en' 
 function redirectToPayments(
   req: NextRequest,
   locale: 'nl' | 'en',
-  params: Record<string, string>
+  params: Record<string, string>,
+  returnTo: string | null = null
 ) {
-  const url = new URL(`/${locale}/onboarding/payments`, req.url)
+  // returnTo is already whitelisted (/dashboard/settings/payments or its /en
+  // form) — dashboard reconnects land back there, everything else goes to
+  // the onboarding payments step as before.
+  const url = new URL(returnTo ?? `/${locale}/onboarding/payments`, req.url)
   for (const [key, value] of Object.entries(params)) {
     url.searchParams.set(key, value)
   }
@@ -49,6 +54,8 @@ export async function GET(req: NextRequest) {
   const cookieStore = await cookies()
   const expectedNonce = cookieStore.get(STATE_COOKIE_NAME)?.value
   cookieStore.delete(STATE_COOKIE_NAME)
+  const returnTo = parseMollieReturnTo(cookieStore.get(MOLLIE_RETURN_TO_COOKIE)?.value)
+  cookieStore.delete(MOLLIE_RETURN_TO_COOKIE)
 
   // 1. Did Mollie report an error in the redirect?
   if (oauthError) {
@@ -56,17 +63,17 @@ export async function GET(req: NextRequest) {
       mollie: 'error',
       reason: oauthError,
       detail: (oauthErrorDesc ?? '').slice(0, 200),
-    })
+    }, returnTo)
   }
 
   // 2. Required params present?
   if (!code || !parsed) {
-    return redirectToPayments(req, locale, { mollie: 'error', reason: 'missing_params' })
+    return redirectToPayments(req, locale, { mollie: 'error', reason: 'missing_params' }, returnTo)
   }
 
   // 3. State matches?
   if (!expectedNonce || parsed.nonce !== expectedNonce) {
-    return redirectToPayments(req, locale, { mollie: 'error', reason: 'state_mismatch' })
+    return redirectToPayments(req, locale, { mollie: 'error', reason: 'state_mismatch' }, returnTo)
   }
 
   // 4. Still logged in?
@@ -76,7 +83,7 @@ export async function GET(req: NextRequest) {
     error: authErr,
   } = await supabase.auth.getUser()
   if (authErr || !user) {
-    return redirectToPayments(req, locale, { mollie: 'error', reason: 'unauthorized' })
+    return redirectToPayments(req, locale, { mollie: 'error', reason: 'unauthorized' }, returnTo)
   }
 
   // 5. Restaurant present?
@@ -86,7 +93,7 @@ export async function GET(req: NextRequest) {
     .eq('user_id', user.id)
     .maybeSingle()
   if (restErr || !restaurant) {
-    return redirectToPayments(req, locale, { mollie: 'error', reason: 'restaurant_not_found' })
+    return redirectToPayments(req, locale, { mollie: 'error', reason: 'restaurant_not_found' }, returnTo)
   }
 
   // 6. Exchange code for tokens.
@@ -97,7 +104,7 @@ export async function GET(req: NextRequest) {
     if (process.env.NODE_ENV !== 'production') {
       console.error('[mollie/oauth/callback] token exchange failed:', err instanceof Error ? err.message : err)
     }
-    return redirectToPayments(req, locale, { mollie: 'error', reason: 'token_exchange_failed' })
+    return redirectToPayments(req, locale, { mollie: 'error', reason: 'token_exchange_failed' }, returnTo)
   }
 
   // 7. Look up the connected organization id.
@@ -108,7 +115,7 @@ export async function GET(req: NextRequest) {
     if (process.env.NODE_ENV !== 'production') {
       console.error('[mollie/oauth/callback] org lookup failed:', err instanceof Error ? err.message : err)
     }
-    return redirectToPayments(req, locale, { mollie: 'error', reason: 'organization_fetch_failed' })
+    return redirectToPayments(req, locale, { mollie: 'error', reason: 'organization_fetch_failed' }, returnTo)
   }
 
   // 8. Persist everything. mollie_status stays at 'pending' here.
@@ -129,10 +136,10 @@ export async function GET(req: NextRequest) {
     if (process.env.NODE_ENV !== 'production') {
       console.error('[mollie/oauth/callback] persist failed:', persistErr.message)
     }
-    return redirectToPayments(req, locale, { mollie: 'error', reason: 'persist_failed' })
+    return redirectToPayments(req, locale, { mollie: 'error', reason: 'persist_failed' }, returnTo)
   }
 
   invalidateOnboardingLayout()
 
-  return redirectToPayments(req, locale, { mollie: 'connected' })
+  return redirectToPayments(req, locale, { mollie: 'connected' }, returnTo)
 }
