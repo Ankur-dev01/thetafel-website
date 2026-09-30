@@ -38,10 +38,11 @@ export type PaymentRow = {
   paid_at: string | null
   created_at: string
   invoice_number: string | null
+  mollie_payment_id: string | null
 }
 
 export const PAYMENT_COLUMNS =
-  'id, kind, status, amount_cents, currency, description, vat_rate_bps, paid_at, created_at, invoice_number'
+  'id, kind, status, amount_cents, currency, description, vat_rate_bps, paid_at, created_at, invoice_number, mollie_payment_id'
 
 /** Split a VAT-inclusive amount into net + VAT at the snapshotted rate. */
 export function splitGross(grossCents: number, vatRateBps: number): { net: number; vat: number; gross: number } {
@@ -193,4 +194,14 @@ export async function cancelSubscription(args: {
   }
 
   return { ok: true, endsOn: sub.current_period_end ?? sub.trial_ends_at, subscriptionId: sub.id }
+}
+
+/** 'live' | 'test' from Mollie's own record of the payment; null when it can't be determined. */
+export async function lookupPaymentMode(molliePaymentId: string): Promise<'live' | 'test' | null> {
+  try {
+    const p = await withTimeout(getMolliePlatformClient().payments.get(molliePaymentId), MANDATE_TIMEOUT_MS)
+    return p.mode === 'live' ? 'live' : p.mode === 'test' ? 'test' : null
+  } catch {
+    return null
+  }
 }

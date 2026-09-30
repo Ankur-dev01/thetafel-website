@@ -18,12 +18,14 @@ import {
   formatMollieAmount,
   type SubscriptionTier,
 } from '@/lib/pricing/subscription'
+import { syncMollieMandate } from '@/lib/billing/tierChange'
 import {
   handleMandateRevokedEvent,
   handleRecurringPayment,
   handleSubscriptionCancelledEvent,
   isRecurringPayment,
 } from '@/lib/billing/recurringPayment'
+import { publicOrigin, redirectOrigin } from '@/lib/url/publicOrigin'
 
 // Force Node.js runtime — crypto.createHmac and Buffer aren't available on Edge.
 export const runtime = 'nodejs'
@@ -132,6 +134,31 @@ async function processPaymentStatusChange(
     }
 
     if (subscription.mollie_mandate_id && subscription.mollie_subscription_id) {
+      // The restaurant paid a NEW first payment (e.g. changed plan / card during
+      // onboarding): the subscription must bill through the newest valid mandate.
+      try {
+        const latest = await fetchLatestValidMandate(subscription.mollie_customer_id as string)
+        const synced = await syncMollieMandate({
+          row: {
+            mollie_customer_id: subscription.mollie_customer_id as string,
+            mollie_subscription_id: subscription.mollie_subscription_id as string,
+            mollie_mandate_id: subscription.mollie_mandate_id as string,
+          },
+          newMandateId: latest,
+        })
+        if (synced.ok && synced.changed && latest) {
+          await admin.from('subscriptions').update({ mollie_mandate_id: latest }).eq('id', subscription.id)
+          void admin.from('audit_logs').insert({
+            restaurant_id: subscription.restaurant_id,
+            event_type: 'subscription.mandate_switched',
+            event_data: { from: subscription.mollie_mandate_id, to: latest },
+          }).then(() => {}, () => {})
+        } else if (!synced.ok) {
+          console.error('[webhook] mandate sync failed:', synced.error)
+        }
+      } catch (mandateErr) {
+        console.error('[webhook] mandate alignment failed:', mandateErr)
+      }
       await admin.from('restaurants')
         .update({ current_onboarding_step: 13 })
         .eq('id', subscription.restaurant_id as string)
@@ -167,7 +194,7 @@ async function processPaymentStatusChange(
         locale: 'nl',
         tier: subscription.tier as SubscriptionTier,
       })
-      const webhookUrl = `${process.env.QR_BASE_URL || 'https://thetafel.nl'}/api/mollie/webhook`
+      const webhookUrl = `${publicOrigin()}/api/mollie/webhook`
 
       try {
         mollieSubscriptionId = await createRecurringSubscription({

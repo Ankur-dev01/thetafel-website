@@ -169,7 +169,11 @@ export async function handleRecurringPayment(
   payment: Payment,
   deps: RecurringDeps = {},
 ): Promise<string | null> {
-  const assignInvoice = deps.assignInvoice ?? ((id: string) => assignInvoiceNumber(admin, id))
+  // Legal invoice numbers are sequential and never reused: only LIVE-mode money
+  // may consume the sequence. Test-mode charges stay unnumbered ("Betaalbewijs").
+  const isLive = payment.mode === 'live'
+  const assignInvoiceImpl = deps.assignInvoice ?? ((id: string) => assignInvoiceNumber(admin, id))
+  const assignInvoice = async (id: string) => (isLive ? assignInvoiceImpl(id) : null)
   const fetchNext = deps.fetchNextDate ?? fetchNextPaymentDate
   const sub = await findSubscriptionForPayment(admin, payment)
   if (!sub) {

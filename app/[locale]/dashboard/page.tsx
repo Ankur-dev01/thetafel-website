@@ -31,7 +31,9 @@ export default async function TodayPage({ params }: { params: Promise<Params> })
         <div className="pt-4">
           <PauseBanner
             pausedAt={pausedAt}
-            pauseReason={(pauseReason as 'manual' | 'billing_suspended' | null) ?? 'manual'}
+            pauseReason={
+              (pauseReason as 'manual' | 'billing_suspended' | 'subscription_cancelled' | null) ?? 'manual'
+            }
           />
         </div>
       )}

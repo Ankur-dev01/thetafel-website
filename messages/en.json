@@ -1474,6 +1474,11 @@
           "title": "This location is paused for billing.",
           "body": "Complete the outstanding payment to make the guest side available again.",
           "action": "Go to billing"
+        },
+        "ended": {
+          "title": "Subscription ended",
+          "body": "Your subscription has ended. Your restaurant is offline for guests.",
+          "action": "Go to billing"
         }
       }
     },
@@ -1494,6 +1499,11 @@
         "billing": {
           "title": "Restaurant is paused for billing",
           "body": "Complete the outstanding payment to make the guest side available again.",
+          "action": "Go to billing"
+        },
+        "ended": {
+          "title": "Your subscription has ended",
+          "body": "Your subscription has ended. Your restaurant is offline for guests.",
           "action": "Go to billing"
         }
       },

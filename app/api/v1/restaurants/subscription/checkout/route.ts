@@ -19,6 +19,7 @@ import {
   syncMollieForTierChange,
   type SubscriptionRowForTier,
 } from '@/lib/billing/tierChange';
+import { publicOrigin, redirectOrigin } from '@/lib/url/publicOrigin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -182,7 +183,13 @@ export async function POST(req: NextRequest) {
     // A tier/amount change on an existing subscription must update the Mollie
     // subscription FIRST (else it keeps billing the old amount). Done before
     // any payment is created so a Mollie failure leaves everything untouched.
-    const nextPlan = { tier, monthlyAmountCents: subscriptionGross };
+    const trialEndsAtIso = new Date(Date.now() + TRIAL_DAYS * 24 * 3600 * 1000).toISOString();
+    const nextPlan = {
+      tier,
+      monthlyAmountCents: subscriptionGross,
+      // Mollie must not bill before OUR trial ends.
+      startDate: trialEndsAtIso.slice(0, 10),
+    };
     let mollieSynced = false;
     if (subRow) {
       const sync = await syncMollieForTierChange({
@@ -220,11 +227,10 @@ export async function POST(req: NextRequest) {
     // Webhook target: must be publicly reachable for Mollie to deliver events.
     // In dev this points at the production webhook handler — the prod handler
     // treats unknown mollie_payment_id values as no-ops, so it's safe.
-    const publicBaseUrl = process.env.QR_BASE_URL || 'http://localhost:3000';
+    const publicBaseUrl = publicOrigin();
     // Redirect target: where the customer's browser lands after Mollie.
     // In dev, override to localhost so the flow returns to the running dev server.
-    const redirectBaseUrl =
-      process.env.NODE_ENV === 'production' ? publicBaseUrl : 'http://localhost:3000';
+    const redirectBaseUrl = redirectOrigin();
     const redirectUrl = `${redirectBaseUrl}/${locale}/onboarding/subscription/return?id=${ourPaymentId}`;
     const webhookUrl = `${publicBaseUrl}/api/mollie/webhook`;
 
@@ -274,7 +280,7 @@ export async function POST(req: NextRequest) {
           vat_rate_bps: VAT_RATE_BPS,
           mollie_customer_id: mollieCustomerId,
           trial_started_at: new Date().toISOString(),
-          trial_ends_at: new Date(Date.now() + TRIAL_DAYS * 24 * 3600 * 1000).toISOString(),
+          trial_ends_at: trialEndsAtIso,
         })
         .eq('id', subRow.id);
       subscriptionId = subRow.id as string;
@@ -289,7 +295,7 @@ export async function POST(req: NextRequest) {
           vat_rate_bps: VAT_RATE_BPS,
           mollie_customer_id: mollieCustomerId,
           trial_started_at: new Date().toISOString(),
-          trial_ends_at: new Date(Date.now() + TRIAL_DAYS * 24 * 3600 * 1000).toISOString(),
+          trial_ends_at: trialEndsAtIso,
         })
         .select('id')
         .single();

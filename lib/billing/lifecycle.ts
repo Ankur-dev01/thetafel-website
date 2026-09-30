@@ -49,15 +49,12 @@ export type Transition = {
 }
 
 /**
- * pause_reason written when a cancelled subscription reaches period end.
- * The spec calls for 'subscription_cancelled', but restaurants_pause_reason_check
- * only allows ('manual', 'billing_suspended') and this batch may not migrate —
- * so the ended restaurant is paused as 'billing_suspended'. The subscription's
- * own status ('cancelled') is the discriminator, and onRecurringPaid never
- * un-pauses a cancelled subscription. Once the CHECK is extended, change this
- * one constant (resume route + PauseControl already understand both values).
+ * pause_reason written when a cancelled subscription reaches period end
+ * (allowed by restaurants_pause_reason_check since migration 030). Like
+ * 'billing_suspended', it is never lifted from the dashboard — the resume route
+ * refuses it — and a payment never un-pauses a cancelled subscription.
  */
-export const ENDED_PAUSE_REASON = 'billing_suspended'
+export const ENDED_PAUSE_REASON = 'subscription_cancelled'
 
 export const GRACE_DAYS_TO_SUSPEND = 14
 export const GRACE_EMAIL_DAYS = [1, 7, 12] as const

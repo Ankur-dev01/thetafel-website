@@ -9,7 +9,7 @@ import { resumeRestaurant } from '@/lib/dashboard/actions/pauseResume';
 
 type PauseBannerProps = {
   pausedAt: string;
-  pauseReason: 'manual' | 'billing_suspended';
+  pauseReason: 'manual' | 'billing_suspended' | 'subscription_cancelled';
 };
 
 export default function PauseBanner({ pausedAt, pauseReason }: PauseBannerProps) {
@@ -19,7 +19,8 @@ export default function PauseBanner({ pausedAt, pauseReason }: PauseBannerProps)
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const ns = pauseReason === 'manual' ? 'manual' : 'billing';
+  const ns =
+    pauseReason === 'manual' ? 'manual' : pauseReason === 'subscription_cancelled' ? 'ended' : 'billing';
 
   const handleResume = async () => {
     setPending(true);

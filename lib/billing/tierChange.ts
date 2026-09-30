@@ -20,15 +20,30 @@ import {
  */
 
 export type SubscriptionRowForTier = {
+  mollie_mandate_id?: string | null
   tier: SubscriptionTier
   monthly_amount_cents: number
   mollie_customer_id: string | null
   mollie_subscription_id: string | null
 }
 
-export type NextPlan = { tier: SubscriptionTier; monthlyAmountCents: number }
+export type NextPlan = {
+  tier: SubscriptionTier
+  monthlyAmountCents: number
+  /**
+   * New first-charge date (YYYY-MM-DD) = our trial end. Sent with the amount so
+   * Mollie can't bill before the trial ends. Ignored unless in the future.
+   */
+  startDate?: string | null
+}
 
 export type TierChangePlan = 'none' | 'db_only' | 'update_mollie' | 'cancel_mollie'
+
+/** True for a YYYY-MM-DD date strictly after today (UTC). */
+export function isFutureDate(d: string | null | undefined, now: Date = new Date()): boolean {
+  if (!d || !/^\d{4}-\d{2}-\d{2}$/.test(d)) return false
+  return d > now.toISOString().slice(0, 10)
+}
 
 /** Pure: what has to happen at Mollie for this change. */
 export function planTierChange(row: SubscriptionRowForTier, next: NextPlan): TierChangePlan {
@@ -64,17 +79,23 @@ export type MollieSubscriptionOps = {
     subscriptionId: string
     amountValue: string
     description: string
+    startDate?: string
   }) => Promise<void>
+  updateMandate: (args: { customerId: string; subscriptionId: string; mandateId: string }) => Promise<void>
   cancel: (args: { customerId: string; subscriptionId: string }) => Promise<void>
 }
 
 export const platformSubscriptionOps: MollieSubscriptionOps = {
-  async updateAmount({ customerId, subscriptionId, amountValue, description }) {
+  async updateAmount({ customerId, subscriptionId, amountValue, description, startDate }) {
     await getMolliePlatformClient().customerSubscriptions.update(subscriptionId, {
       customerId,
       amount: { currency: 'EUR', value: amountValue },
       description,
+      ...(startDate ? { startDate } : {}),
     })
+  },
+  async updateMandate({ customerId, subscriptionId, mandateId }) {
+    await getMolliePlatformClient().customerSubscriptions.update(subscriptionId, { customerId, mandateId })
   },
   async cancel({ customerId, subscriptionId }) {
     await getMolliePlatformClient().customerSubscriptions.cancel(subscriptionId, { customerId })
@@ -107,11 +128,38 @@ export async function syncMollieForTierChange(args: {
         subscriptionId: row.mollie_subscription_id,
         amountValue: formatMollieAmount(next.monthlyAmountCents),
         description: buildRecurringDescription({ locale: args.locale ?? 'nl', tier: next.tier }),
+        ...(isFutureDate(next.startDate) ? { startDate: next.startDate as string } : {}),
       })
     }
     return { ok: true, plan }
   } catch (err) {
     console.error('[tierChange] Mollie sync failed', err instanceof Error ? err.message : err)
     return { ok: false, plan, error: err instanceof Error ? err.message : 'mollie_failed' }
+  }
+}
+
+/**
+ * A new first payment created a (possibly different) valid mandate while a
+ * Mollie subscription already exists: point the subscription at it, Mollie
+ * first. No-op when there is no subscription or the mandate is unchanged.
+ */
+export async function syncMollieMandate(args: {
+  row: { mollie_customer_id: string | null; mollie_subscription_id: string | null; mollie_mandate_id: string | null }
+  newMandateId: string | null
+  ops?: MollieSubscriptionOps
+}): Promise<{ ok: true; changed: boolean } | { ok: false; error: string }> {
+  const { row, newMandateId } = args
+  if (!newMandateId || !row.mollie_subscription_id || !row.mollie_customer_id) return { ok: true, changed: false }
+  if (row.mollie_mandate_id === newMandateId) return { ok: true, changed: false }
+  try {
+    await (args.ops ?? platformSubscriptionOps).updateMandate({
+      customerId: row.mollie_customer_id,
+      subscriptionId: row.mollie_subscription_id,
+      mandateId: newMandateId,
+    })
+    return { ok: true, changed: true }
+  } catch (err) {
+    console.error('[tierChange] Mollie mandate sync failed', err instanceof Error ? err.message : err)
+    return { ok: false, error: err instanceof Error ? err.message : 'mollie_failed' }
   }
 }

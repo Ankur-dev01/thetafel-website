@@ -28,6 +28,7 @@ import { assertConsumerWriteAllowed, rejectionPayload } from '@/lib/consumer/gua
 import { createSupabaseServerClientAdmin } from '@/lib/supabase/server'
 import { createPayNowOrder, createPayAtTableOrder } from '@/lib/orders/transactionalInsert'
 import { createConnectedPayment } from '@/lib/mollie/createConnectedPayment'
+import { publicOrigin, redirectOrigin } from '@/lib/url/publicOrigin'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -263,8 +264,8 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: stri
   // Link order → intent.
   await admin.from('orders').update({ payment_intent_id: intent.id }).eq('id', orderResult.orderId)
 
-  const publicBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://thetafel.nl'
-  const redirectBaseUrl = process.env.NODE_ENV === 'production' ? publicBaseUrl : 'http://localhost:3000'
+  const publicBaseUrl = publicOrigin()
+  const redirectBaseUrl = redirectOrigin()
   const redirectUrl = `${redirectBaseUrl}${localePrefix}/r/${input.slug}/qr/order/${orderResult.magicLinkPlaintext}`
   const webhookUrl = `${publicBaseUrl}/api/webhooks/mollie/consumer`
   const description =

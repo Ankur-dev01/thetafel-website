@@ -11,6 +11,7 @@ import {
   type PaymentRow,
 } from '@/lib/dashboard/billing/billing'
 import { receiptReference, renderReceiptPdf } from '@/lib/dashboard/billing/receiptPdf'
+import { lookupPaymentMode } from '@/lib/dashboard/billing/billing'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -51,15 +52,20 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ paymentId: 
     return new NextResponse('Not found', { status: 404 })
   }
 
-  // Paid, non-verification rows get (or already have) a sequential invoice
-  // number; the RPC is idempotent and never reuses a number.
+  // Only LIVE-mode payments may consume the legal invoice sequence. Stored rows
+  // don't record the mode, so ask Mollie; if we can't tell (test key can't see
+  // live payments, Mollie down, no payment id) the row stays unnumbered and the
+  // PDF is a "Betaalbewijs". The RPC is idempotent and never reuses a number.
   let invoiceNumber = payment.invoice_number
-  if (!invoiceNumber) {
-    const { data: assigned, error: assignError } = await admin.rpc('assign_invoice_number', {
-      p_payment_id: payment.id,
-    })
-    if (assignError) console.error('[billing] assign_invoice_number failed', assignError.message)
-    invoiceNumber = typeof assigned === 'string' ? assigned : null
+  if (!invoiceNumber && payment.mollie_payment_id) {
+    const mode = await lookupPaymentMode(payment.mollie_payment_id)
+    if (mode === 'live') {
+      const { data: assigned, error: assignError } = await admin.rpc('assign_invoice_number', {
+        p_payment_id: payment.id,
+      })
+      if (assignError) console.error('[billing] assign_invoice_number failed', assignError.message)
+      invoiceNumber = typeof assigned === 'string' ? assigned : null
+    }
   }
 
   const locale: 'nl' | 'en' = req.nextUrl.searchParams.get('locale') === 'en' ? 'en' : 'nl'

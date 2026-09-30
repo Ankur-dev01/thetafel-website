@@ -21,11 +21,13 @@ export default function PauseControl({ initialPausedAt, initialPauseReason }: Pa
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const state: 'live' | 'paused' | 'billing' =
+  const state: 'live' | 'paused' | 'billing' | 'ended' =
     initialPausedAt === null
       ? 'live'
-      : initialPauseReason === 'billing_suspended' || initialPauseReason === 'subscription_cancelled'
-        ? 'billing'
+      : initialPauseReason === 'subscription_cancelled'
+        ? 'ended'
+        : initialPauseReason === 'billing_suspended'
+          ? 'billing'
         : 'paused';
 
   const handlePauseConfirm = async () => {
@@ -119,26 +121,26 @@ export default function PauseControl({ initialPausedAt, initialPauseReason }: Pa
         </>
       )}
 
-      {state === 'billing' && (
+      {(state === 'billing' || state === 'ended') && (
         <>
           <h3
             className="text-[16px] text-[#1e1508]"
             style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
           >
-            {t('status.billing.title')}
+            {t(`status.${state}.title`)}
           </h3>
           <p
             className="mt-1.5 text-[14px] text-[#6f6353] leading-relaxed"
             style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 400 }}
           >
-            {t('status.billing.body')}
+            {t(`status.${state}.body`)}
           </p>
           <Link
             href="/dashboard/settings/billing"
             className="tafel-tap inline-block mt-4 px-4 py-2.5 rounded-full text-[12px] uppercase tracking-[0.08em] bg-amber text-[#1e1508]"
             style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
           >
-            {t('status.billing.action')}
+            {t(`status.${state}.action`)}
           </Link>
         </>
       )}

@@ -25,6 +25,7 @@ import { verifyTurnstileToken } from '@/lib/consumer/turnstile';
 import { assertConsumerWriteAllowed, rejectionPayload } from '@/lib/consumer/guards';
 import { auditLog } from '@/lib/consumer/audit';
 import { createSupabaseServerClientAdmin } from '@/lib/supabase/server';
+import { publicOrigin, redirectOrigin } from '@/lib/url/publicOrigin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -192,9 +193,8 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: stri
     const intentId = intentRow.id as string;
 
     // 10. Build redirect + webhook URLs.
-    const publicBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://thetafel.nl';
-    const redirectBaseUrl =
-      process.env.NODE_ENV === 'production' ? publicBaseUrl : 'http://localhost:3000';
+    const publicBaseUrl = publicOrigin();
+    const redirectBaseUrl = redirectOrigin();
     const localePrefix = input.locale === 'en' ? '/en' : '';
     const redirectUrl = `${redirectBaseUrl}${localePrefix}/r/${input.slug}/book/return/${intentId}`;
     const webhookUrl = `${publicBaseUrl}/api/webhooks/mollie/consumer`;

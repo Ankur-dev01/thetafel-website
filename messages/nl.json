@@ -1474,6 +1474,11 @@
           "title": "Deze locatie is gepauzeerd wegens openstaande facturatie.",
           "body": "Rond de betaling af om de gastenkant weer beschikbaar te maken.",
           "action": "Naar facturatie"
+        },
+        "ended": {
+          "title": "Abonnement beëindigd",
+          "body": "Je abonnement is beëindigd. Je restaurant is offline voor gasten.",
+          "action": "Naar facturatie"
         }
       }
     },
@@ -1494,6 +1499,11 @@
         "billing": {
           "title": "Restaurant is gepauzeerd wegens facturatie",
           "body": "Rond de openstaande betaling af om de gastenkant weer beschikbaar te maken.",
+          "action": "Naar facturatie"
+        },
+        "ended": {
+          "title": "Je abonnement is beëindigd",
+          "body": "Je abonnement is beëindigd. Je restaurant is offline voor gasten.",
           "action": "Naar facturatie"
         }
       },
