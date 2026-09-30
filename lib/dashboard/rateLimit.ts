@@ -88,3 +88,26 @@ export async function dashboardAccountSecurityRateLimit(userId: string): Promise
   const retryAfter = Math.max(1, Math.ceil((result.reset - Date.now()) / 1000));
   return { ok: false, retryAfter };
 }
+
+let _acceptLimiter: Ratelimit | null = null;
+function getAcceptLimiter(): Ratelimit {
+  if (_acceptLimiter) return _acceptLimiter;
+  _acceptLimiter = new Ratelimit({
+    redis: getRedis(),
+    limiter: Ratelimit.slidingWindow(10, '15 m'),
+    prefix: 'staff:accept',
+    analytics: false,
+  });
+  return _acceptLimiter;
+}
+
+/** Public staff-invite acceptance: 10 attempts per IP per 15 minutes (dev bypass as elsewhere). */
+export async function staffAcceptRateLimit(ip: string): Promise<DashboardRateLimitResult> {
+  if (process.env.NODE_ENV === 'development') {
+    return { ok: true };
+  }
+  const result = await getAcceptLimiter().limit(`ip:${ip}`);
+  if (result.success) return { ok: true };
+  const retryAfter = Math.max(1, Math.ceil((result.reset - Date.now()) / 1000));
+  return { ok: false, retryAfter };
+}

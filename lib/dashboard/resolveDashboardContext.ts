@@ -2,6 +2,7 @@ import 'server-only'
 
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
+import { after } from 'next/server'
 import {
   createSupabaseServerClient,
   createSupabaseServerClientAdmin,
@@ -92,6 +93,7 @@ export async function resolveDashboardContext(
 
   if (staffRow) {
     staff = toDashboardStaff(staffRow)
+    stampLastActive(staffRow.id, staffRow.last_active_at)
   } else if (restaurant.user_id === user.id) {
     // Belt-and-braces for a race with the D0.1 backfill: the owner always
     // gets in; the missing row is flagged for investigation.
@@ -135,4 +137,19 @@ async function logMissingOwnerRow(restaurantId: string, userId: string) {
   } catch (err) {
     console.error('[resolveDashboardContext] missing-owner-row audit failed', err)
   }
+}
+
+const LAST_ACTIVE_STAMP_INTERVAL_MS = 10 * 60 * 1000
+
+/** Team page "last active": stamped at most once per 10 minutes, off the render path. */
+function stampLastActive(staffId: string, lastActiveAt: string | null) {
+  if (lastActiveAt && Date.now() - new Date(lastActiveAt).getTime() < LAST_ACTIVE_STAMP_INTERVAL_MS) return
+  after(async () => {
+    try {
+      const admin = await createSupabaseServerClientAdmin()
+      await admin.from('restaurant_staff').update({ last_active_at: new Date().toISOString() }).eq('id', staffId)
+    } catch (err) {
+      console.error('[resolveDashboardContext] last_active stamp failed', err)
+    }
+  })
 }

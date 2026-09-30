@@ -7,6 +7,7 @@ import {
   dashboardAccountSecurityRateLimit,
   dashboardMutationRateLimit,
 } from '@/lib/dashboard/rateLimit'
+import { findActingRestaurantId } from '@/lib/dashboard/staff/actingRestaurant'
 import { assertDashboardWriteAllowed } from '@/lib/dashboard/guards/assertDashboardWriteAllowed'
 import type { Database } from '@/packages/db/types'
 
@@ -58,24 +59,7 @@ export async function resolveAccountContext(
     : dashboardMutationRateLimit(user.id))
   if (!rl.ok) return fail('rate_limited', 429, { 'Retry-After': String(rl.retryAfter ?? 60) })
 
-  const { data: staffMembership } = await supabase
-    .from('restaurant_staff')
-    .select('restaurant_id')
-    .eq('user_id', user.id)
-    .is('deactivated_at', null)
-    .limit(1)
-    .maybeSingle()
-
-  let restaurantId = staffMembership?.restaurant_id ?? null
-  if (!restaurantId) {
-    const { data: owned } = await supabase
-      .from('restaurants')
-      .select('id')
-      .eq('user_id', user.id)
-      .is('deleted_at', null)
-      .maybeSingle()
-    restaurantId = owned?.id ?? null
-  }
+  const restaurantId = await findActingRestaurantId(supabase, user.id)
   if (!restaurantId) return fail('restaurant_not_found', 404)
 
   const guard = await assertDashboardWriteAllowed(restaurantId, 'account.self_edit', user)

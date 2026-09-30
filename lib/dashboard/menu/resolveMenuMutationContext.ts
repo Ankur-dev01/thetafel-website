@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { dashboardMutationRateLimit } from '@/lib/dashboard/rateLimit'
 import { assertDashboardWriteAllowed } from '@/lib/dashboard/guards/assertDashboardWriteAllowed'
+import { findActingRestaurantId } from '@/lib/dashboard/staff/actingRestaurant'
 import type { DashboardAction } from '@/lib/dashboard/permissions'
 import type { Database } from '@/packages/db/types'
 
@@ -51,7 +52,10 @@ export async function resolveMenuMutationContext(
   // No data dependency between these two — run them concurrently.
   const [rl, { data: restaurant, error: restaurantError }] = await Promise.all([
     dashboardMutationRateLimit(user.id),
-    supabase.from('restaurants').select('id, slug').eq('user_id', user.id).is('deleted_at', null).maybeSingle(),
+    // Membership-based (owner + staff), then the slug for the caller.
+    findActingRestaurantId(supabase, user.id).then(async (id) =>
+      id ? supabase.from('restaurants').select('id, slug').eq('id', id).maybeSingle() : { data: null, error: null },
+    ),
   ])
   if (!rl.ok) {
     return {

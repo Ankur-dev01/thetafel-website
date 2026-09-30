@@ -1510,8 +1510,7 @@
       "hub": {
         "upcoming": {
           "title": "Binnenkort:",
-          "menu": "Menu",
-          "team": "Team"
+          "menu": "Menu"
         },
         "links": {
           "business": "Bedrijfsgegevens",
@@ -1537,7 +1536,9 @@
           "privacy": "Privacyverzoeken",
           "privacyDesc": "Overzicht van gastverzoeken om gegevens op te vragen of te verwijderen.",
           "billing": "Abonnement & facturen",
-          "billingDesc": "Je abonnement, betaalmethode en betaalbewijzen."
+          "billingDesc": "Je abonnement, betaalmethode en betaalbewijzen.",
+          "staff": "Team",
+          "staffDesc": "Teamleden, rollen en uitnodigingen."
         }
       },
       "confirmPause": {
@@ -2140,6 +2141,51 @@
           "errorGeneric": "Opzeggen is niet gelukt. Er is niets gewijzigd. Probeer het later opnieuw.",
           "errorMollie": "We konden je abonnement niet stopzetten bij Mollie. Er is niets gewijzigd. Probeer het later opnieuw of mail hello@thetafel.nl.",
           "errorAlready": "Dit abonnement is al opgezegd."
+        }
+      },
+      "staff": {
+        "title": "Team",
+        "subtitle": "Wie heeft toegang tot het dashboard, en met welke rol.",
+        "back": "Terug naar instellingen",
+        "membersTitle": "Teamleden",
+        "invitesTitle": "Openstaande uitnodigingen",
+        "inviteTitle": "Iemand uitnodigen",
+        "emailLabel": "E-mailadres",
+        "roleLabel": "Rol",
+        "sendInvite": "Uitnodiging sturen",
+        "sending": "Bezig…",
+        "inviteSent": "Uitnodiging verstuurd.",
+        "inviteSentNoEmail": "Uitnodiging aangemaakt, maar de e-mail kon niet worden verstuurd. Probeer opnieuw te versturen.",
+        "active": "Actief",
+        "deactivated": "Gedeactiveerd",
+        "you": "jij",
+        "lastActive": "Laatst actief",
+        "never": "nog nooit",
+        "expiresOn": "Verloopt op {date}",
+        "expired": "Verlopen",
+        "deactivate": "Deactiveren",
+        "reactivate": "Heractiveren",
+        "revoke": "Intrekken",
+        "resend": "Opnieuw sturen",
+        "noInvites": "Geen openstaande uitnodigingen.",
+        "roleChangeLabel": "Rol wijzigen",
+        "roles": {
+          "owner": "Eigenaar",
+          "manager": "Manager",
+          "service": "Bediening",
+          "kitchen": "Keuken"
+        },
+        "errors": {
+          "invalid_email": "Vul een geldig e-mailadres in.",
+          "invalid_role": "Kies een geldige rol.",
+          "role_not_allowed": "Je mag dit niet doen met deze rol.",
+          "already_member": "Dit e-mailadres is al teamlid.",
+          "rate_limited": "Je hebt vandaag het maximum aantal uitnodigingen bereikt.",
+          "not_found": "Niet gevonden.",
+          "already_deactivated": "Dit teamlid is al gedeactiveerd.",
+          "already_active": "Dit teamlid is al actief.",
+          "not_pending": "Deze uitnodiging is niet meer openstaand.",
+          "generic": "Er ging iets mis. Probeer het opnieuw."
         }
       }
     },
@@ -2913,6 +2959,56 @@
           "db_error": "Er ging iets mis.",
           "unknown_error": "Er ging iets mis."
         }
+      }
+    }
+  },
+  "staffAccept": {
+    "title": "Uitnodiging voor {restaurant}",
+    "intro": "Je bent uitgenodigd als {role} met {email}.",
+    "roles": {
+      "manager": "manager",
+      "service": "bediening",
+      "kitchen": "keuken"
+    },
+    "loginRequired": "Er bestaat al een account voor {email}. Log eerst in met dat account en open daarna deze link opnieuw.",
+    "loginCta": "Inloggen",
+    "wrongAccount": "Je bent ingelogd met een ander account. Log uit en log in met {email} om deze uitnodiging te accepteren.",
+    "form": {
+      "name": "Je naam",
+      "password": "Kies een wachtwoord (min. 8 tekens)",
+      "confirmPassword": "Herhaal wachtwoord",
+      "create": "Account aanmaken",
+      "accept": "Uitnodiging accepteren",
+      "working": "Bezig…"
+    },
+    "errors": {
+      "nameInvalid": "Vul een naam in van 1 tot 80 tekens.",
+      "passwordShort": "Kies een wachtwoord van minimaal 8 tekens.",
+      "passwordMismatch": "De wachtwoorden komen niet overeen.",
+      "loginRequired": "Log eerst in met het account van dit e-mailadres.",
+      "wrongAccount": "Je bent met een ander account ingelogd.",
+      "elsewhere": "Dit account is al gekoppeld aan een ander restaurant. In deze versie hoort een login bij één restaurant.",
+      "alreadyMember": "Je bent al lid van dit restaurant.",
+      "weakPassword": "Dit wachtwoord is te zwak. Kies een sterker wachtwoord.",
+      "rateLimited": "Te veel pogingen. Probeer het over een paar minuten opnieuw.",
+      "generic": "Er ging iets mis. Probeer het opnieuw."
+    },
+    "problem": {
+      "invalid": {
+        "title": "Ongeldige uitnodiging",
+        "body": "Deze uitnodigingslink is ongeldig. Vraag om een nieuwe uitnodiging."
+      },
+      "expired": {
+        "title": "Uitnodiging verlopen",
+        "body": "Deze uitnodiging is verlopen. Vraag om een nieuwe uitnodiging."
+      },
+      "accepted": {
+        "title": "Uitnodiging al gebruikt",
+        "body": "Deze uitnodiging is al geaccepteerd. Log in om verder te gaan."
+      },
+      "revoked": {
+        "title": "Uitnodiging ingetrokken",
+        "body": "Deze uitnodiging is ingetrokken. Vraag om een nieuwe uitnodiging."
       }
     }
   }

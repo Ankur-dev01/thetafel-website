@@ -1510,8 +1510,7 @@
       "hub": {
         "upcoming": {
           "title": "Coming soon:",
-          "menu": "Menu",
-          "team": "Team"
+          "menu": "Menu"
         },
         "links": {
           "business": "Business details",
@@ -1537,7 +1536,9 @@
           "privacy": "Privacy requests",
           "privacyDesc": "Guest requests to export or delete their data.",
           "billing": "Subscription & invoices",
-          "billingDesc": "Your plan, payment method and payment receipts."
+          "billingDesc": "Your plan, payment method and payment receipts.",
+          "staff": "Team",
+          "staffDesc": "Team members, roles and invitations."
         }
       },
       "confirmPause": {
@@ -2140,6 +2141,51 @@
           "errorGeneric": "Couldn't cancel. Nothing was changed. Please try again later.",
           "errorMollie": "We couldn't stop your subscription at Mollie. Nothing was changed. Please try again later or email hello@thetafel.nl.",
           "errorAlready": "This subscription is already cancelled."
+        }
+      },
+      "staff": {
+        "title": "Team",
+        "subtitle": "Who has access to the dashboard, and with which role.",
+        "back": "Back to settings",
+        "membersTitle": "Team members",
+        "invitesTitle": "Pending invitations",
+        "inviteTitle": "Invite someone",
+        "emailLabel": "Email address",
+        "roleLabel": "Role",
+        "sendInvite": "Send invitation",
+        "sending": "Working…",
+        "inviteSent": "Invitation sent.",
+        "inviteSentNoEmail": "Invitation created, but the email couldn't be sent. Try resending.",
+        "active": "Active",
+        "deactivated": "Deactivated",
+        "you": "you",
+        "lastActive": "Last active",
+        "never": "never",
+        "expiresOn": "Expires {date}",
+        "expired": "Expired",
+        "deactivate": "Deactivate",
+        "reactivate": "Reactivate",
+        "revoke": "Revoke",
+        "resend": "Resend",
+        "noInvites": "No pending invitations.",
+        "roleChangeLabel": "Change role",
+        "roles": {
+          "owner": "Owner",
+          "manager": "Manager",
+          "service": "Service",
+          "kitchen": "Kitchen"
+        },
+        "errors": {
+          "invalid_email": "Enter a valid email address.",
+          "invalid_role": "Choose a valid role.",
+          "role_not_allowed": "Your role doesn't allow this.",
+          "already_member": "That email address is already a team member.",
+          "rate_limited": "You've reached today's invitation limit.",
+          "not_found": "Not found.",
+          "already_deactivated": "This member is already deactivated.",
+          "already_active": "This member is already active.",
+          "not_pending": "This invitation is no longer pending.",
+          "generic": "Something went wrong. Please try again."
         }
       }
     },
@@ -2913,6 +2959,56 @@
           "db_error": "Something went wrong.",
           "unknown_error": "Something went wrong."
         }
+      }
+    }
+  },
+  "staffAccept": {
+    "title": "Invitation to {restaurant}",
+    "intro": "You've been invited as {role} with {email}.",
+    "roles": {
+      "manager": "manager",
+      "service": "service",
+      "kitchen": "kitchen"
+    },
+    "loginRequired": "An account already exists for {email}. Log in with that account first, then open this link again.",
+    "loginCta": "Log in",
+    "wrongAccount": "You're logged in with a different account. Log out and log in with {email} to accept this invitation.",
+    "form": {
+      "name": "Your name",
+      "password": "Choose a password (min. 8 characters)",
+      "confirmPassword": "Repeat password",
+      "create": "Create account",
+      "accept": "Accept invitation",
+      "working": "Working…"
+    },
+    "errors": {
+      "nameInvalid": "Enter a name of 1 to 80 characters.",
+      "passwordShort": "Choose a password of at least 8 characters.",
+      "passwordMismatch": "The passwords don't match.",
+      "loginRequired": "Log in with this email address's account first.",
+      "wrongAccount": "You're logged in with a different account.",
+      "elsewhere": "This account is already linked to another restaurant. In this version a login belongs to one restaurant.",
+      "alreadyMember": "You're already a member of this restaurant.",
+      "weakPassword": "That password is too weak. Choose a stronger one.",
+      "rateLimited": "Too many attempts. Please try again in a few minutes.",
+      "generic": "Something went wrong. Please try again."
+    },
+    "problem": {
+      "invalid": {
+        "title": "Invalid invitation",
+        "body": "This invitation link isn't valid. Ask for a new invitation."
+      },
+      "expired": {
+        "title": "Invitation expired",
+        "body": "This invitation has expired. Ask for a new invitation."
+      },
+      "accepted": {
+        "title": "Invitation already used",
+        "body": "This invitation was already accepted. Log in to continue."
+      },
+      "revoked": {
+        "title": "Invitation revoked",
+        "body": "This invitation was revoked. Ask for a new invitation."
       }
     }
   }
