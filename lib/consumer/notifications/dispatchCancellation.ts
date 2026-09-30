@@ -28,6 +28,8 @@ export type BookingCancellationNotificationInput = {
   refundCurrency: string
   /** restaurants.notify_booking_cancelled. False = skip silently. */
   restaurantNotifyBookingCancelled: boolean
+  /** D5.6e — restaurants.contact_email, trimmed. Reply-To so a guest hitting Reply reaches the restaurant. */
+  restaurantContactEmail?: string | null
 }
 
 export type DispatchResult = {
@@ -67,6 +69,8 @@ export async function sendBookingCancellationNotification(
         refundCurrency: input.refundCurrency,
       })
 
+      const replyTo = input.restaurantContactEmail?.trim() || undefined
+
       const send = await sendConsumerEmail({
         to: input.guestEmail,
         subject: rendered.subject,
@@ -76,6 +80,7 @@ export async function sendBookingCancellationNotification(
         restaurantId: input.restaurantId,
         bookingId: input.bookingId,
         skipAdminBcc: true,
+        ...(replyTo ? { replyTo } : {}),
       })
 
       if (send.ok) {

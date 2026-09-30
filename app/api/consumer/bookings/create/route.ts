@@ -136,6 +136,7 @@ export async function POST(req: NextRequest) {
           restaurantAddress: config.addressBlock ?? null,
           restaurantAddressLine: config.addressLine ?? null,
           customMessageTemplate,
+          restaurantContactEmail: cfgResult.contactEmail ?? null,
           bookingId: result.bookingId,
           bookingRef: result.bookingRef,
           slotTime: input.slotInstant,

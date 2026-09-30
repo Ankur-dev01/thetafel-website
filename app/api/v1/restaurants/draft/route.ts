@@ -267,6 +267,11 @@ export async function PATCH(req: NextRequest) {
       // A user navigating back to an earlier step and clicking Continue would
       // otherwise lower the counter and erase sidebar checkmarks for later steps.
       const restaurantPatch = { ...body.restaurant }
+      // D5.6e: reconfirmation is "Coming soon" — was never built. Force off
+      // rather than reject, so the draft PATCH keeps working either way.
+      if (typeof restaurantPatch.noshow_reconfirmation_enabled === 'boolean') {
+        restaurantPatch.noshow_reconfirmation_enabled = false
+      }
       if (typeof restaurantPatch.current_onboarding_step === 'number') {
         restaurantPatch.current_onboarding_step = Math.max(
           (restaurant.current_onboarding_step as number) ?? 0,

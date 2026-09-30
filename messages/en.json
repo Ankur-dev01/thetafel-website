@@ -1795,7 +1795,7 @@
           "whatsappNeedsPremium": "Available on Premium.",
           "reconfirmation": {
             "label": "Reconfirmation 24 hours ahead",
-            "help": "The guest must reconfirm the reservation via a link — otherwise the reservation is released."
+            "help": "Coming soon: guests confirm their booking again 24 hours ahead."
           },
           "prepaid": {
             "label": "Prepaid bookings",

@@ -260,9 +260,9 @@ export async function POST(
         // "preserve existing behaviour" default.
         const { data: restaurantRow } = await admin
           .from('restaurants')
-          .select('notify_booking_cancelled')
+          .select('notify_booking_cancelled, contact_email')
           .eq('id', b.restaurantId)
-          .maybeSingle<{ notify_booking_cancelled: boolean }>();
+          .maybeSingle<{ notify_booking_cancelled: boolean; contact_email: string | null }>();
 
         await sendBookingCancellationNotification({
           locale: 'nl',
@@ -280,6 +280,7 @@ export async function POST(
           refundCents: decision.refundCents,
           refundCurrency: decision.refundCurrency,
           restaurantNotifyBookingCancelled: restaurantRow?.notify_booking_cancelled ?? true,
+          restaurantContactEmail: restaurantRow?.contact_email ?? null,
         });
       } catch (err) {
         console.error('[book/cancel] cancellation email dispatch failed', err);

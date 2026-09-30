@@ -47,6 +47,8 @@ export type BookingConfirmationNotificationInput = {
   restaurantAddressLine?: string | null
   /** D5.6c — restaurants.confirmation_template_nl/_en for this booking's locale, trimmed, or null. */
   customMessageTemplate?: string | null
+  /** D5.6e — restaurants.contact_email, trimmed. Reply-To so a guest hitting Reply reaches the restaurant, not hallo@thetafel.nl. */
+  restaurantContactEmail?: string | null
 
   // ── Booking ──────────────────────────────────────────────────────────
   bookingId: string
@@ -171,6 +173,8 @@ async function dispatchEmail(
       manageUrl,
     })
 
+    const replyTo = input.restaurantContactEmail?.trim() || undefined
+
     const result = await sendConsumerEmail({
       to: input.guestEmail,
       subject: rendered.subject,
@@ -179,6 +183,7 @@ async function dispatchEmail(
       templateKey: 'booking.confirmation',
       restaurantId: input.restaurantId,
       bookingId: input.bookingId,
+      ...(replyTo ? { replyTo } : {}),
     })
 
     if (result.ok) return { attempted: true, ok: true, id: result.resendId }

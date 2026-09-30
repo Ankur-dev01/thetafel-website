@@ -69,7 +69,7 @@ export async function sendTakeawayOrderConfirmedEmail(
     admin
       .from('restaurants')
       .select(
-        'display_name, legal_name, contact_phone, legal_address_street, legal_address_house_number, legal_address_house_letter, legal_address_house_number_addition, legal_address_postcode, legal_address_city, notify_order_confirmed',
+        'display_name, legal_name, contact_phone, contact_email, legal_address_street, legal_address_house_number, legal_address_house_letter, legal_address_house_number_addition, legal_address_postcode, legal_address_city, notify_order_confirmed',
       )
       .eq('id', order.restaurant_id)
       .maybeSingle(),
@@ -123,6 +123,8 @@ export async function sendTakeawayOrderConfirmedEmail(
       viewOrderUrl,
     })
 
+    const replyTo = (restaurant as { contact_email?: string | null }).contact_email?.trim() || undefined
+
     const send = await sendConsumerEmail({
       to: guest.email,
       subject: rendered.subject,
@@ -131,6 +133,7 @@ export async function sendTakeawayOrderConfirmedEmail(
       templateKey: 'takeaway.order_confirmed',
       restaurantId: order.restaurant_id,
       orderId: order.id,
+      ...(replyTo ? { replyTo } : {}),
     })
 
     result = send.ok

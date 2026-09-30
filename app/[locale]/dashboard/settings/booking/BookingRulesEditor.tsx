@@ -61,7 +61,9 @@ export default function BookingRulesEditor({ initialData, restaurantName }: Book
   async function handleSave() {
     if (!canSave) return;
     setSaveError(null);
-    const result = await saveBookingRules(rules);
+    // Reconfirmation is "Coming soon" — never actually send true, regardless
+    // of whatever value the initial load or draft carried.
+    const result = await saveBookingRules({ ...rules, noshow_reconfirmation_enabled: false });
     if (result.ok) {
       setBaseline(rules);
       setSavedToast(true);
@@ -104,7 +106,6 @@ export default function BookingRulesEditor({ initialData, restaurantName }: Book
       <NoShowSection
         emailEnabled={rules.noshow_reminders_email_enabled}
         whatsappEnabled={rules.noshow_reminders_whatsapp_enabled}
-        reconfirmationEnabled={rules.noshow_reconfirmation_enabled}
         prepaidEnabled={rules.noshow_prepaid_enabled}
         prepaidAmountCents={rules.noshow_prepaid_amount_cents}
         prepaidThreshold={rules.noshow_prepaid_threshold}
@@ -113,7 +114,6 @@ export default function BookingRulesEditor({ initialData, restaurantName }: Book
         hasAdvancedPrepaidWindow={initialData.hasAdvancedPrepaidWindow}
         onChangeEmail={(v) => patch({ noshow_reminders_email_enabled: v })}
         onChangeWhatsapp={(v) => patch({ noshow_reminders_whatsapp_enabled: v })}
-        onChangeReconfirmation={(v) => patch({ noshow_reconfirmation_enabled: v })}
         onChangePrepaidEnabled={(v) =>
           patch(
             v

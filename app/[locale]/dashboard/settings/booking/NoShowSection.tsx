@@ -7,7 +7,6 @@ import { PREPAID_THRESHOLD_OPTIONS } from '@/lib/dashboard/settings/bookingRules
 type NoShowSectionProps = {
   emailEnabled: boolean;
   whatsappEnabled: boolean;
-  reconfirmationEnabled: boolean;
   prepaidEnabled: boolean;
   prepaidAmountCents: number | null;
   prepaidThreshold: number | null;
@@ -16,7 +15,6 @@ type NoShowSectionProps = {
   hasAdvancedPrepaidWindow: boolean;
   onChangeEmail: (v: boolean) => void;
   onChangeWhatsapp: (v: boolean) => void;
-  onChangeReconfirmation: (v: boolean) => void;
   onChangePrepaidEnabled: (v: boolean) => void;
   onChangePrepaidAmountCents: (v: number | null) => void;
   onChangePrepaidThreshold: (v: number) => void;
@@ -32,7 +30,6 @@ const selectClass =
 export default function NoShowSection({
   emailEnabled,
   whatsappEnabled,
-  reconfirmationEnabled,
   prepaidEnabled,
   prepaidAmountCents,
   prepaidThreshold,
@@ -41,7 +38,6 @@ export default function NoShowSection({
   hasAdvancedPrepaidWindow,
   onChangeEmail,
   onChangeWhatsapp,
-  onChangeReconfirmation,
   onChangePrepaidEnabled,
   onChangePrepaidAmountCents,
   onChangePrepaidThreshold,
@@ -105,9 +101,9 @@ export default function NoShowSection({
       <label className="flex items-center gap-2 tafel-tap mb-1">
         <input
           type="checkbox"
-          checked={reconfirmationEnabled}
-          onChange={(e) => onChangeReconfirmation(e.target.checked)}
-          disabled={disabled}
+          checked={false}
+          onChange={() => {}}
+          disabled
           data-testid="booking-noshow-reconfirmation"
           className="w-4 h-4 accent-amber"
         />

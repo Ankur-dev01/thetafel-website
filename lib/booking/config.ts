@@ -49,6 +49,7 @@ const BOOKING_CONFIG_COLUMNS = [
   'legal_address_city',
   'confirmation_template_nl',
   'confirmation_template_en',
+  'contact_email',
 ].join(', ');
 
 interface RawRestaurantRow {
@@ -89,6 +90,7 @@ interface RawRestaurantRow {
   legal_address_city: string | null;
   confirmation_template_nl: string | null;
   confirmation_template_en: string | null;
+  contact_email: string | null;
 }
 
 /** Two-line address block for the email's structured address section — same
@@ -230,5 +232,6 @@ export async function loadBookingConfig(slug: string): Promise<BookingConfigResu
     config,
     confirmationTemplateNl: data.confirmation_template_nl,
     confirmationTemplateEn: data.confirmation_template_en,
+    contactEmail: data.contact_email,
   };
 }

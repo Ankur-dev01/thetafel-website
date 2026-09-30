@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { createSupabaseServerClientAdmin } from '@/lib/supabase/server';
 import { hashMagicLinkToken } from '@/lib/consumer/magicLinks';
 import { StepR7 } from '@/components/consumer/booking/StepR7';
+import { formatRestaurantAddressLine } from '@/lib/booking/confirmationTemplate';
 
 export const dynamic = 'force-dynamic';
 
@@ -96,6 +97,8 @@ async function loadBookingByToken(slug: string, token: string): Promise<LoadedBo
         contact_phone,
         legal_address_street,
         legal_address_house_number,
+        legal_address_house_letter,
+        legal_address_house_number_addition,
         legal_address_postcode,
         legal_address_city,
         occupancy_duration_minutes
@@ -113,6 +116,8 @@ async function loadBookingByToken(slug: string, token: string): Promise<LoadedBo
     contact_phone: string | null;
     legal_address_street: string | null;
     legal_address_house_number: string | null;
+    legal_address_house_letter: string | null;
+    legal_address_house_number_addition: string | null;
     legal_address_postcode: string | null;
     legal_address_city: string | null;
     occupancy_duration_minutes: number | null;
@@ -124,7 +129,7 @@ async function loadBookingByToken(slug: string, token: string): Promise<LoadedBo
     restaurantSlug: restaurant.slug,
     restaurantDisplayName:
       restaurant.display_name || restaurant.legal_name || 'The Tafel',
-    restaurantAddressLine: buildAddressLine(restaurant),
+    restaurantAddressLine: formatRestaurantAddressLine(restaurant),
     restaurantPhone: restaurant.contact_phone,
     bookingRef: data.booking_ref as string,
     slotStartUtc: new Date(data.slot_time as string),
@@ -160,6 +165,8 @@ async function loadBookingByRef(slug: string, ref: string): Promise<LoadedBookin
         contact_phone,
         legal_address_street,
         legal_address_house_number,
+        legal_address_house_letter,
+        legal_address_house_number_addition,
         legal_address_postcode,
         legal_address_city,
         occupancy_duration_minutes
@@ -177,6 +184,8 @@ async function loadBookingByRef(slug: string, ref: string): Promise<LoadedBookin
     contact_phone: string | null;
     legal_address_street: string | null;
     legal_address_house_number: string | null;
+    legal_address_house_letter: string | null;
+    legal_address_house_number_addition: string | null;
     legal_address_postcode: string | null;
     legal_address_city: string | null;
     occupancy_duration_minutes: number | null;
@@ -188,7 +197,7 @@ async function loadBookingByRef(slug: string, ref: string): Promise<LoadedBookin
     restaurantSlug: restaurant.slug,
     restaurantDisplayName:
       restaurant.display_name || restaurant.legal_name || 'The Tafel',
-    restaurantAddressLine: buildAddressLine(restaurant),
+    restaurantAddressLine: formatRestaurantAddressLine(restaurant),
     restaurantPhone: restaurant.contact_phone,
     bookingRef: data.booking_ref as string,
     slotStartUtc: new Date(data.slot_time as string),
@@ -198,26 +207,6 @@ async function loadBookingByRef(slug: string, ref: string): Promise<LoadedBookin
     depositCurrency: (data.deposit_currency as string | null) ?? null,
     magicLinkToken: '', // no token available in ref-fallback path
   };
-}
-
-function buildAddressLine(r: {
-  legal_address_street: string | null;
-  legal_address_house_number: string | null;
-  legal_address_postcode: string | null;
-  legal_address_city: string | null;
-}): string | null {
-  const parts: string[] = [];
-  const streetLine = [r.legal_address_street, r.legal_address_house_number]
-    .filter(Boolean)
-    .join(' ')
-    .trim();
-  if (streetLine) parts.push(streetLine);
-  const cityLine = [r.legal_address_postcode, r.legal_address_city]
-    .filter(Boolean)
-    .join(' ')
-    .trim();
-  if (cityLine) parts.push(cityLine);
-  return parts.length > 0 ? parts.join(', ') : null;
 }
 
 function NotFoundState({ locale, slug }: { locale: 'nl' | 'en'; slug: string }) {

@@ -167,7 +167,6 @@ export default function NoShowsPage() {
   // Field state
   const [mollieConnected, setMollieConnected] = useState(false)
   const [remindersEmailEnabled, setRemindersEmailEnabled] = useState(true)
-  const [reconfirmationEnabled, setReconfirmationEnabled] = useState(false)
   const [prepaidEnabled, setPrepaidEnabled] = useState(false)
   const [prepaidAmountCents, setPrepaidAmountCents] = useState<number | null>(null)
   const [prepaidAmountInput, setPrepaidAmountInput] = useState('')
@@ -213,7 +212,6 @@ export default function NoShowsPage() {
             r.mollie_organization_id.length > 0
         )
         setRemindersEmailEnabled(parseBool(r.noshow_reminders_email_enabled, true))
-        setReconfirmationEnabled(parseBool(r.noshow_reconfirmation_enabled, false))
         setPrepaidEnabled(parseBool(r.noshow_prepaid_enabled, false))
 
         const cents = parseNullableInt(r.noshow_prepaid_amount_cents)
@@ -238,7 +236,7 @@ export default function NoShowsPage() {
     return {
       noshow_reminders_email_enabled: remindersEmailEnabled,
       noshow_reminders_whatsapp_enabled: false,
-      noshow_reconfirmation_enabled: reconfirmationEnabled,
+      noshow_reconfirmation_enabled: false,
       noshow_prepaid_enabled: prepaidEnabled,
       noshow_prepaid_amount_cents: prepaidEnabled ? prepaidAmountCents : null,
     }
@@ -251,13 +249,6 @@ export default function NoShowsPage() {
     const next = !remindersEmailEnabled
     setRemindersEmailEnabled(next)
     save({ restaurant: { ...buildNoshowPatch(), noshow_reminders_email_enabled: next } })
-  }
-
-  function handleReconfirmationToggle() {
-    if (!hydrated) return
-    const next = !reconfirmationEnabled
-    setReconfirmationEnabled(next)
-    save({ restaurant: { ...buildNoshowPatch(), noshow_reconfirmation_enabled: next } })
   }
 
   function handlePrepaidToggle() {
@@ -429,9 +420,9 @@ export default function NoShowsPage() {
             </div>
           </Tile>
 
-          {/* 2 — Reconfirmation */}
+          {/* 2 — Reconfirmation (coming soon — never built, see D5.6e) */}
           <Tile
-            status={reconfirmationEnabled ? 'active-selected' : 'active-unselected'}
+            status="coming-soon"
             icon={
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -440,7 +431,7 @@ export default function NoShowsPage() {
             }
             title={t('reconfirmation.title')}
             description={t('reconfirmation.description')}
-            onClick={handleReconfirmationToggle}
+            badge={t('comingSoonBadge')}
           />
 
           {/* 3 — Prepaid */}

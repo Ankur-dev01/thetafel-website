@@ -123,6 +123,11 @@ export interface BookingConfig {
  * serializes it to the browser — the restaurant's custom message text must
  * never leak there. Only server-side callers (the booking-create route)
  * read these two fields.
+ *
+ * D5.6e: contactEmail joins them for the same reason — it's harmless public
+ * info (unlike the templates), but kept off the client-bound `config` object
+ * anyway for consistency with that precedent, since its only use
+ * (guest-email Reply-To) is itself server-side only.
  */
 export type BookingConfigResult =
   | {
@@ -130,6 +135,7 @@ export type BookingConfigResult =
       config: BookingConfig;
       confirmationTemplateNl: string | null;
       confirmationTemplateEn: string | null;
+      contactEmail: string | null;
     }
   | { ok: false; error: BookingConfigError };
 

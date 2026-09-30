@@ -68,6 +68,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, code: 'invalid_body' }, { status: 400, headers: NO_STORE });
   }
 
+  // D5.6e: reconfirmation is "Coming soon" — was never built. Force off
+  // rather than reject, so the client never has to special-case this field.
+  payload.noshow_reconfirmation_enabled = false;
+
   const admin = await createSupabaseServerClientAdmin();
 
   type CurrentRow = Record<(typeof WRITE_COLUMNS)[number], unknown> & {

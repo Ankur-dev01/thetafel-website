@@ -80,6 +80,7 @@ type RestaurantRow = {
   legal_name: string | null
   slug: string
   contact_phone: string | null
+  contact_email: string | null
   legal_address_street: string | null
   legal_address_house_number: string | null
   legal_address_house_letter: string | null
@@ -147,7 +148,7 @@ export async function runBookingReminders(now: Date = new Date()): Promise<RunBo
     .select(
       `id, restaurant_id, booking_ref, slot_time, party_size, created_at,
        reminder_24h_sent_at, reminder_2h_sent_at,
-       restaurant:restaurants(status, deleted_at, noshow_reminders_email_enabled, display_name, legal_name, slug, contact_phone, legal_address_street, legal_address_house_number, legal_address_house_letter, legal_address_house_number_addition, legal_address_postcode, legal_address_city),
+       restaurant:restaurants(status, deleted_at, noshow_reminders_email_enabled, display_name, legal_name, slug, contact_phone, contact_email, legal_address_street, legal_address_house_number, legal_address_house_letter, legal_address_house_number_addition, legal_address_postcode, legal_address_city),
        guest:guests(email, full_name, anonymised_at)`,
     )
     .eq('status', 'confirmed')
@@ -254,6 +255,8 @@ export async function runBookingReminders(now: Date = new Date()): Promise<RunBo
         manageUrl,
       })
 
+      const replyTo = restaurant.contact_email?.trim() || undefined
+
       const send = await sendConsumerEmail({
         to: guest.email,
         subject: rendered.subject,
@@ -263,6 +266,7 @@ export async function runBookingReminders(now: Date = new Date()): Promise<RunBo
         restaurantId: row.restaurant_id,
         bookingId: row.id,
         skipAdminBcc: true,
+        ...(replyTo ? { replyTo } : {}),
       })
 
       if (send.ok) {
