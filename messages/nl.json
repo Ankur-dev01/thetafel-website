@@ -1502,8 +1502,7 @@
           "title": "Binnenkort:",
           "menu": "Menu",
           "team": "Team",
-          "billing": "Facturatie",
-          "privacy": "Privacy"
+          "billing": "Facturatie"
         },
         "links": {
           "business": "Bedrijfsgegevens",
@@ -1525,7 +1524,9 @@
           "payments": "Betalingen",
           "paymentsDesc": "Status van je Mollie-verbinding en opnieuw verbinden.",
           "account": "Account",
-          "accountDesc": "Naam, e-mailadres, wachtwoord en taal van jouw login."
+          "accountDesc": "Naam, e-mailadres, wachtwoord en taal van jouw login.",
+          "privacy": "Privacyverzoeken",
+          "privacyDesc": "Overzicht van gastverzoeken om gegevens op te vragen of te verwijderen."
         }
       },
       "confirmPause": {
@@ -2026,6 +2027,37 @@
         "saved": "Opgeslagen.",
         "genericError": "Er ging iets mis. Probeer het opnieuw.",
         "rateLimited": "Te veel pogingen. Probeer het over een paar minuten opnieuw."
+      },
+      "privacy": {
+        "title": "Privacyverzoeken",
+        "subtitle": "Verzoeken van gasten die jouw restaurant raakten.",
+        "back": "Terug naar instellingen",
+        "explainer": "Gasten kunnen The Tafel om een kopie van hun gegevens vragen of om verwijdering. Wij handelen deze verzoeken automatisch af. Deze pagina is jouw overzicht van verzoeken die jouw restaurant raakten. Je hoeft zelf niets te doen.",
+        "requestsTitle": "Verzoeken van de afgelopen 12 maanden",
+        "empty": "Er zijn de afgelopen 12 maanden geen privacyverzoeken geweest die jouw restaurant raakten.",
+        "columns": {
+          "date": "Datum",
+          "type": "Type",
+          "status": "Status",
+          "reference": "Referentie"
+        },
+        "type": {
+          "export": "Gegevensexport",
+          "deletion": "Gegevensverwijdering"
+        },
+        "status": {
+          "completed": "Afgerond",
+          "blocked": "Geblokkeerd"
+        },
+        "reason": {
+          "upcoming_booking": "aankomende reservering",
+          "active_order": "lopende bestelling",
+          "payment_in_flight": "betaling onderweg",
+          "other": "andere reden"
+        },
+        "pagination": "Paginering",
+        "prev": "Vorige",
+        "next": "Volgende"
       }
     },
     "share": {

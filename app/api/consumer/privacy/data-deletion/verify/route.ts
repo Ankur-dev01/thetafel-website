@@ -14,6 +14,7 @@ import { checkConsumerRateLimit, getCallerIp } from '@/lib/consumer/rateLimit'
 import { consumePrivacyMagicLink } from '@/lib/consumer/magicLinks'
 import { auditLog, PLATFORM_RESTAURANT_ID } from '@/lib/consumer/audit'
 import { checkDeletionBlockers } from '@/lib/consumer/privacy/checkDeletionBlockers'
+import { fanOutPrivacyAudit, getGuestRestaurantIds } from '@/lib/consumer/privacy/fanOutPrivacyAudit'
 import { anonymiseGuest } from '@/lib/consumer/privacy/anonymiseGuest'
 import { renderDataDeletionPdf } from '@/lib/consumer/privacy/renderDataDeletionPdf'
 import { sendDataDeletionFileEmail } from '@/lib/consumer/notifications/dispatchDataDeletion'
@@ -68,6 +69,9 @@ export async function POST(req: NextRequest) {
   }
   const { guestId, locale } = consumed.payload
 
+  // Affected restaurants, resolved before anonymisation can break the join.
+  const restaurantIds = await getGuestRestaurantIds(guestId)
+
   // 4. Blocking checks — no writes happen if any block hits.
   const blockers = await checkDeletionBlockers(guestId)
   if (!blockers.ok) {
@@ -80,6 +84,11 @@ export async function POST(req: NextRequest) {
       ipAddress: ip,
       userAgent,
     }).catch(() => {})
+    await fanOutPrivacyAudit({
+      eventType: 'privacy.data_deletion_blocked',
+      restaurantIds,
+      reason: blockers.reason,
+    })
 
     return NextResponse.json(
       { ok: false, error: 'blocked', reason: blockers.reason, details: blockers.details },
@@ -103,6 +112,11 @@ export async function POST(req: NextRequest) {
         ipAddress: ip,
         userAgent,
       }).catch(() => {})
+      await fanOutPrivacyAudit({
+        eventType: 'privacy.data_deletion_blocked',
+        restaurantIds,
+        reason: result.reason,
+      })
       return NextResponse.json(
         { ok: false, error: 'blocked', reason: result.reason },
         { status: 409 }
@@ -145,6 +159,11 @@ export async function POST(req: NextRequest) {
     ipAddress: ip,
     userAgent,
   }).catch(() => {})
+  await fanOutPrivacyAudit({
+    eventType: 'privacy.data_deletion_completed',
+    restaurantIds,
+    requestReference,
+  })
 
   return NextResponse.json({ ok: true })
 }

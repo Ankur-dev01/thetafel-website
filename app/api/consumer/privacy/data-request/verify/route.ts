@@ -11,6 +11,7 @@ import { checkConsumerRateLimit, getCallerIp } from '@/lib/consumer/rateLimit'
 import { consumePrivacyMagicLink } from '@/lib/consumer/magicLinks'
 import { auditLog, PLATFORM_RESTAURANT_ID } from '@/lib/consumer/audit'
 import { createSupabaseServerClientAdmin } from '@/lib/supabase/server'
+import { fanOutPrivacyAudit, getGuestRestaurantIds } from '@/lib/consumer/privacy/fanOutPrivacyAudit'
 import { buildDataExport } from '@/lib/consumer/privacy/buildDataExport'
 import { renderDataExportPdf } from '@/lib/consumer/privacy/renderDataExportPdf'
 import { sendDataExportFileEmail } from '@/lib/consumer/notifications/dispatchDataExport'
@@ -97,6 +98,11 @@ export async function POST(req: NextRequest) {
     ipAddress: ip,
     userAgent,
   }).catch(() => {})
+  await fanOutPrivacyAudit({
+    eventType: 'privacy.data_export_completed',
+    restaurantIds: await getGuestRestaurantIds(guestId),
+    requestReference: payload.request_reference,
+  })
 
   return NextResponse.json({ ok: true })
 }

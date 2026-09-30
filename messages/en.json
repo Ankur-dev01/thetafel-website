@@ -1502,8 +1502,7 @@
           "title": "Coming soon:",
           "menu": "Menu",
           "team": "Team",
-          "billing": "Billing",
-          "privacy": "Privacy"
+          "billing": "Billing"
         },
         "links": {
           "business": "Business details",
@@ -1525,7 +1524,9 @@
           "payments": "Payments",
           "paymentsDesc": "Your Mollie connection status and reconnecting.",
           "account": "Account",
-          "accountDesc": "Your login's name, email, password and language."
+          "accountDesc": "Your login's name, email, password and language.",
+          "privacy": "Privacy requests",
+          "privacyDesc": "Guest requests to export or delete their data."
         }
       },
       "confirmPause": {
@@ -2026,6 +2027,37 @@
         "saved": "Saved.",
         "genericError": "Something went wrong. Please try again.",
         "rateLimited": "Too many attempts. Please try again in a few minutes."
+      },
+      "privacy": {
+        "title": "Privacy requests",
+        "subtitle": "Guest requests that touched your restaurant.",
+        "back": "Back to settings",
+        "explainer": "Guests can ask The Tafel for a copy of their data or to have it deleted. We handle these requests automatically. This page is your record of requests that touched your restaurant. You don't need to do anything.",
+        "requestsTitle": "Requests in the last 12 months",
+        "empty": "No privacy requests touched your restaurant in the last 12 months.",
+        "columns": {
+          "date": "Date",
+          "type": "Type",
+          "status": "Status",
+          "reference": "Reference"
+        },
+        "type": {
+          "export": "Data export",
+          "deletion": "Data deletion"
+        },
+        "status": {
+          "completed": "Completed",
+          "blocked": "Blocked"
+        },
+        "reason": {
+          "upcoming_booking": "upcoming booking",
+          "active_order": "active order",
+          "payment_in_flight": "payment in progress",
+          "other": "other reason"
+        },
+        "pagination": "Pagination",
+        "prev": "Previous",
+        "next": "Next"
       }
     },
     "share": {
