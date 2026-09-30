@@ -27,6 +27,9 @@ fixture only. Never point `PLAYWRIGHT_BASE_URL` at the real deployed site.
 ## Run locally
 
 Prerequisites: `NEXT_PUBLIC_SUPABASE_PROD_URL` and `SUPABASE_PROD_SERVICE_ROLE_KEY` in `.env.local`.
+Dashboard specs additionally need `E2E_DASHBOARD_EMAIL` and `E2E_DASHBOARD_PASSWORD` (the
+`_e2e_test_restaurant` owner's login; the fixture fails fast with a clear message if either is
+missing). Never commit their values.
 The `beforeAll` wipe hook runs on every suite, so these are needed even for tests that don't touch
 the DB themselves.
 
