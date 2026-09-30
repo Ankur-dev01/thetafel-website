@@ -37,10 +37,11 @@ export type PaymentRow = {
   vat_rate_bps: number | null
   paid_at: string | null
   created_at: string
+  invoice_number: string | null
 }
 
 export const PAYMENT_COLUMNS =
-  'id, kind, status, amount_cents, currency, description, vat_rate_bps, paid_at, created_at'
+  'id, kind, status, amount_cents, currency, description, vat_rate_bps, paid_at, created_at, invoice_number'
 
 /** Split a VAT-inclusive amount into net + VAT at the snapshotted rate. */
 export function splitGross(grossCents: number, vatRateBps: number): { net: number; vat: number; gross: number } {

@@ -18,6 +18,12 @@ import {
   formatMollieAmount,
   type SubscriptionTier,
 } from '@/lib/pricing/subscription'
+import {
+  handleMandateRevokedEvent,
+  handleRecurringPayment,
+  handleSubscriptionCancelledEvent,
+  isRecurringPayment,
+} from '@/lib/billing/recurringPayment'
 
 // Force Node.js runtime — crypto.createHmac and Buffer aren't available on Edge.
 export const runtime = 'nodejs'
@@ -26,6 +32,8 @@ interface MollieEventPayload {
   id?: string
   type?: string
   createdAt?: string
+  /** Id of the resource the event is about (sub_… / mdt_… / tr_…), when sent at top level. */
+  entityId?: string
   _embedded?: {
     organization?: { id?: string }
     payment?: { id?: string }
@@ -36,7 +44,9 @@ interface MollieEventPayload {
 
 type AdminClient = Awaited<ReturnType<typeof createSupabaseServerClientAdmin>>
 
-type DomainPaymentStatus = 'pending' | 'paid' | 'failed' | 'expired' | 'canceled'
+// payment_status has no 'expired' / 'canceled' value — both are stored as 'failed'
+// (the exact Mollie status is kept in failure_reason).
+type DomainPaymentStatus = 'pending' | 'paid' | 'failed'
 
 interface PaymentRow {
   id: string
@@ -51,9 +61,9 @@ interface PaymentRow {
 function mapMolliePaymentStatusToOurs(mollieStatus: string): DomainPaymentStatus {
   switch (mollieStatus) {
     case 'paid': return 'paid'
-    case 'failed': return 'failed'
-    case 'expired': return 'expired'
-    case 'canceled': return 'canceled'
+    case 'failed':
+    case 'expired':
+    case 'canceled': return 'failed'
     default: return 'pending'
   }
 }
@@ -207,7 +217,7 @@ async function processPaymentStatusChange(
     await admin.from('payments').update({
       status: newStatus,
       failed_at: new Date().toISOString(),
-      failure_reason: `mollie_status_${newStatus}`,
+      failure_reason: `mollie_status_${molliePayment.status}`,
     }).eq('id', paymentRow.id)
 
     void admin.from('audit_logs').insert({
@@ -215,7 +225,7 @@ async function processPaymentStatusChange(
       event_type: 'subscription.payment_failed',
       event_data: {
         mollie_payment_id: paymentRow.mollie_payment_id,
-        mollie_status: newStatus,
+        mollie_status: molliePayment.status,
         our_payment_id: paymentRow.id,
       },
     }).then(() => {}, () => {})
@@ -256,6 +266,21 @@ async function handleLegacyWebhook(rawBody: string) {
   }
 
   const admin = await createSupabaseServerClientAdmin()
+
+  // Recurring charge of a platform subscription (no first-payment row exists).
+  if (isRecurringPayment(molliePayment)) {
+    try {
+      const restaurantId = await handleRecurringPayment(admin, molliePayment)
+      return NextResponse.json(
+        restaurantId ? { ok: true, recurring: true } : { ok: true, recurring: true, unknown_subscription: true },
+        { status: 200 }
+      )
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'unknown_processing_error'
+      console.error(`[mollie/webhook][legacy] recurring processing failed for ${mollieId}:`, message)
+      return NextResponse.json({ ok: false, error: message }, { status: 500 })
+    }
+  }
 
   const { data: paymentRow } = await admin
     .from('payments')
@@ -387,10 +412,20 @@ async function handleNextGenWebhook(req: NextRequest, rawBody: string) {
       }
       // organization.updated: no-op — Mollie is deprecating this event.
       // Event is persisted above; KYC status is now polled via /api/v1/restaurants/mollie/kyc-status.
+      case 'subscription.cancelled': {
+        const subId = payload._embedded?.subscription?.id ?? payload.entityId
+        if (subId) restaurantId = await handleSubscriptionCancelledEvent(admin, subId)
+        break
+      }
+      case 'mandate.revoked': {
+        const mandateId = payload._embedded?.mandate?.id ?? payload.entityId
+        if (mandateId) restaurantId = await handleMandateRevokedEvent(admin, mandateId)
+        break
+      }
+      // organization.updated / subscription.charged: stored above, no-op here
+      // (the charge itself arrives as a payment.paid / payment.failed event).
       case 'organization.updated':
       case 'subscription.charged':
-      case 'subscription.cancelled':
-      case 'mandate.revoked':
       default:
         break
     }
@@ -453,6 +488,10 @@ async function handleNextGenPaymentPaid(
     return null
   }
 
+  if (isRecurringPayment(molliePayment)) {
+    return handleRecurringPayment(admin, molliePayment)
+  }
+
   const { data: paymentRow } = await admin
     .from('payments')
     .select('id, restaurant_id, subscription_id, kind, status, amount_cents, mollie_payment_id')
@@ -483,6 +522,10 @@ async function handleNextGenPaymentFailed(
 
   if (!molliePayment) {
     return null
+  }
+
+  if (isRecurringPayment(molliePayment)) {
+    return handleRecurringPayment(admin, molliePayment)
   }
 
   const { data: paymentRow } = await admin

@@ -7,9 +7,11 @@ import fontkit from '@pdf-lib/fontkit'
 /**
  * Payment receipt PDF for a paid platform payment (The Tafel → restaurant).
  *
- * Deliberately a receipt ("Betaalbewijs"), not a VAT invoice: payments carry no
- * sequential invoice number, which a Dutch VAT invoice requires. The reference
- * shown is derived from the payment id. Reuses the bundled privacy-PDF fonts.
+ * With an invoice number (TFL-YYYY-NNNNNN, assigned sequentially by the
+ * assign_invoice_number RPC) it is titled "Factuur / Invoice" and shows that
+ * number. Without one it stays a "Betaalbewijs" receipt with a payment-derived
+ * reference — a VAT invoice needs a sequential number, so never fake one.
+ * Reuses the bundled privacy-PDF fonts.
  */
 
 const [PAGE_WIDTH, PAGE_HEIGHT] = PageSizes.A4
@@ -35,8 +37,11 @@ type Locale = 'nl' | 'en'
 const COPY = {
   nl: {
     title: 'Betaalbewijs',
+    invoiceTitle: 'Factuur',
     reference: 'Referentie',
+    invoiceNumber: 'Factuurnummer',
     date: 'Betaald op',
+    invoiceDate: 'Factuurdatum',
     from: 'Aanbieder',
     to: 'Restaurant',
     kvk: 'KVK',
@@ -45,13 +50,17 @@ const COPY = {
     net: 'Bedrag excl. btw',
     vat: (pct: string) => `Btw ${pct}%`,
     total: 'Totaal incl. btw',
-    note: 'Dit is een betaalbewijs van een betaling via The Tafel.',
+    note: 'Betaald via automatische incasso of kaart. Bedragen in euro.',
+    receiptNote: 'Dit is een betaalbewijs van een betaling via The Tafel.',
     concept: 'CONCEPT',
   },
   en: {
     title: 'Payment receipt',
+    invoiceTitle: 'Invoice',
     reference: 'Reference',
+    invoiceNumber: 'Invoice number',
     date: 'Paid on',
+    invoiceDate: 'Invoice date',
     from: 'Provider',
     to: 'Restaurant',
     kvk: 'KVK',
@@ -60,7 +69,8 @@ const COPY = {
     net: 'Amount excl. VAT',
     vat: (pct: string) => `VAT ${pct}%`,
     total: 'Total incl. VAT',
-    note: 'This is a receipt for a payment made through The Tafel.',
+    note: 'Paid by direct debit or card. Amounts in euro.',
+    receiptNote: 'This is a receipt for a payment made through The Tafel.',
     concept: 'CONCEPT',
   },
 } as const
@@ -68,6 +78,8 @@ const COPY = {
 export type ReceiptInput = {
   locale: Locale
   paymentId: string
+  /** Sequential invoice number; when present the document is an invoice. */
+  invoiceNumber?: string | null
   paidAt: string
   description: string
   currency: string
@@ -139,7 +151,7 @@ export async function renderReceiptPdf(input: ReceiptInput): Promise<Uint8Array>
 
   let y = PAGE_HEIGHT - MARGIN
   page.drawText('THE TAFEL', { x: MARGIN, y: (y -= 13), size: 13, font: bold, color: AMBER })
-  page.drawText(t.title, { x: MARGIN, y: (y -= 38), size: 26, font: black, color: NIGHT })
+  page.drawText(input.invoiceNumber ? t.invoiceTitle : t.title, { x: MARGIN, y: (y -= 38), size: 26, font: black, color: NIGHT })
   y -= 26
 
   const kv = (label: string, value: string) => {
@@ -147,8 +159,13 @@ export async function renderReceiptPdf(input: ReceiptInput): Promise<Uint8Array>
     page.drawText(value, { x: MARGIN + 130, y, size: 10.5, font: regular, color: NIGHT })
     y -= 18
   }
-  kv(t.reference, receiptReference(input.paymentId))
-  kv(t.date, dateStr)
+  if (input.invoiceNumber) {
+    kv(t.invoiceNumber, input.invoiceNumber)
+    kv(t.invoiceDate, dateStr)
+  } else {
+    kv(t.reference, receiptReference(input.paymentId))
+    kv(t.date, dateStr)
+  }
   y -= 14
 
   const party = (heading: string, lines: string[]) => {
@@ -193,7 +210,7 @@ export async function renderReceiptPdf(input: ReceiptInput): Promise<Uint8Array>
   amountRow(t.total, money(input.grossCents, input.currency, input.locale), true)
 
   y -= 20
-  page.drawText(t.note, { x: MARGIN, y, size: 9, font: regular, color: STONE })
+  page.drawText(input.invoiceNumber ? t.note : t.receiptNote, { x: MARGIN, y, size: 9, font: regular, color: STONE })
 
   if (input.concept) {
     page.drawText(t.concept, {

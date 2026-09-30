@@ -51,6 +51,17 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ paymentId: 
     return new NextResponse('Not found', { status: 404 })
   }
 
+  // Paid, non-verification rows get (or already have) a sequential invoice
+  // number; the RPC is idempotent and never reuses a number.
+  let invoiceNumber = payment.invoice_number
+  if (!invoiceNumber) {
+    const { data: assigned, error: assignError } = await admin.rpc('assign_invoice_number', {
+      p_payment_id: payment.id,
+    })
+    if (assignError) console.error('[billing] assign_invoice_number failed', assignError.message)
+    invoiceNumber = typeof assigned === 'string' ? assigned : null
+  }
+
   const locale: 'nl' | 'en' = req.nextUrl.searchParams.get('locale') === 'en' ? 'en' : 'nl'
   const vatRateBps = payment.vat_rate_bps ?? 2100
   const amounts = splitGross(payment.amount_cents, vatRateBps)
@@ -58,6 +69,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ paymentId: 
   const pdf = await renderReceiptPdf({
     locale,
     paymentId: payment.id,
+    invoiceNumber,
     paidAt: payment.paid_at,
     description: payment.description ?? '—',
     currency: payment.currency,
@@ -76,7 +88,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ paymentId: 
     status: 200,
     headers: {
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="${receiptReference(payment.id)}.pdf"`,
+      'Content-Disposition': `attachment; filename="${invoiceNumber ?? receiptReference(payment.id)}.pdf"`,
       'Cache-Control': 'private, no-store',
     },
   })

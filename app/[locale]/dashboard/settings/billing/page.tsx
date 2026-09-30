@@ -235,7 +235,14 @@ export default async function BillingSettingsPage({ params }: { params: Promise<
                     <td className="py-2 pr-2 text-[#6f6353] whitespace-nowrap">
                       {shortFmt.format(new Date(p.paid_at ?? p.created_at))}
                     </td>
-                    <td className="py-2 pr-2 text-[#1e1508]">{p.description ?? '—'}</td>
+                    <td className="py-2 pr-2 text-[#1e1508]">
+                      {p.description ?? '—'}
+                      {p.invoice_number && (
+                        <span className="block text-[12px] text-[#6f6353]" style={mutedStyle} data-testid="billing-invoice-number">
+                          {p.invoice_number}
+                        </span>
+                      )}
+                    </td>
                     <td className="py-2 pr-2 text-right text-[#1e1508] whitespace-nowrap">
                       {formatEuros(p.amount_cents, locale)}
                     </td>
