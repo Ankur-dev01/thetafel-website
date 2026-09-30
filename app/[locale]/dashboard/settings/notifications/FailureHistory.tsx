@@ -10,7 +10,8 @@
 // 'booking.confirmation', 'booking.cancellation',
 // 'takeaway.order_confirmed', 'takeaway.ready_for_pickup',
 // 'restaurant.new_booking', 'restaurant.new_order',
-// 'restaurant.booking_cancelled' (D5.6b). Magic-link emails are sent via
+// 'restaurant.booking_cancelled' (D5.6b), 'booking.reminder_24h',
+// 'booking.reminder_2h' (D5.6d). Magic-link emails are sent via
 // raw resend.emails.send() in the signup / resend-magic-link routes,
 // entirely outside sendConsumerEmail, so no audit row for them will ever
 // carry a magic-link templateKey — the magicLink bucket below is
@@ -30,6 +31,7 @@ type Labels = {
   restaurantNewBookingLabel: string
   restaurantNewOrderLabel: string
   restaurantBookingCancelledLabel: string
+  bookingReminderLabel: string
   otherLabel: string
 }
 
@@ -63,6 +65,7 @@ function inferEventKind(row: FailureRow): string {
   if (templateKey === 'restaurant.new_booking') return 'restaurantNewBooking'
   if (templateKey === 'restaurant.new_order') return 'restaurantNewOrder'
   if (templateKey === 'restaurant.booking_cancelled') return 'restaurantBookingCancelled'
+  if (templateKey === 'booking.reminder_24h' || templateKey === 'booking.reminder_2h') return 'bookingReminder'
   // No email currently routes through sendConsumerEmail with a
   // magic-link templateKey — magic-link mail is sent via raw
   // resend.emails.send() in the signup/resend-magic-link routes,
@@ -119,6 +122,8 @@ export default function FailureHistory({ failures, labels, locale }: Props) {
         return labels.restaurantNewOrderLabel
       case 'restaurantBookingCancelled':
         return labels.restaurantBookingCancelledLabel
+      case 'bookingReminder':
+        return labels.bookingReminderLabel
       default:
         return labels.otherLabel
     }

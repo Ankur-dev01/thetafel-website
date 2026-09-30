@@ -17,6 +17,7 @@ import type {
   BookingDetailPayload,
   DepositDeliveryState,
   EmailDeliveryState,
+  ReminderDeliveryState,
   BookableZoneOption,
 } from '@/lib/dashboard/bookings/types'
 
@@ -128,10 +129,15 @@ type BookingJoinRow = {
   guest: { id: string; full_name: string | null; phone: string | null; anonymised_at: string | null } | null
   zone: { name: string | null } | null
   booking_tables: { restaurant_tables: { id: string; label: string | null } | null }[] | null
+  // D5.6d — reminder state (getBookingDetail only; harmless on the other
+  // two BOOKING_SELECT callers, which don't read these fields).
+  created_at: string
+  reminder_24h_sent_at: string | null
+  reminder_2h_sent_at: string | null
 }
 
 const BOOKING_SELECT = `id, slot_time, party_size, status, source, duration_minutes, guest_note, attended_at,
-       deposit_amount_cents, deposit_intent_id, zone_id,
+       deposit_amount_cents, deposit_intent_id, zone_id, created_at, reminder_24h_sent_at, reminder_2h_sent_at,
        guest:guests(id, full_name, phone, anonymised_at),
        zone:zones(name),
        booking_tables(restaurant_tables(id, label))`
@@ -337,6 +343,61 @@ function deriveChannelState(
   return { state: 'failed', at: last.created_at, failureReason: reason }
 }
 
+const REMINDER_TEMPLATE_KEYS = ['booking.reminder_24h', 'booking.reminder_2h'] as const
+
+/**
+ * D5.6d — reminder delivery state for the booking-detail panel.
+ *
+ * Deliberately NOT reusing deriveChannelState: that helper picks the LAST
+ * email.sent/email.send_failed event on the booking regardless of which
+ * template sent it, which would be wrong here — a booking can carry
+ * confirmation, restaurant-notify (D5.6b), and reminder audit rows all
+ * under the same generic event_type, differentiated only by
+ * event_data.templateKey. Each reminder templateKey is checked on its own.
+ */
+function deriveReminderState(args: {
+  status: BookingStatus
+  slotTime: string
+  createdAt: string
+  now: Date
+  reminder24hSentAt: string | null
+  reminder2hSentAt: string | null
+  remindersEnabled: boolean
+  consumerEvents: { event_type: string; created_at: string; event_data: Record<string, unknown> }[]
+}): { state: ReminderDeliveryState; at: string | null } {
+  const { status, slotTime, createdAt, now, reminder24hSentAt, reminder2hSentAt, remindersEnabled, consumerEvents } =
+    args
+
+  const sentTimestamps = [reminder24hSentAt, reminder2hSentAt].filter((v): v is string => v !== null)
+
+  if (sentTimestamps.length > 0) {
+    const latestSentAt = sentTimestamps.reduce((a, b) => (a > b ? a : b))
+
+    const anyFailed = REMINDER_TEMPLATE_KEYS.some((key) => {
+      const rowsForKey = consumerEvents
+        .filter((e) => e.event_data?.templateKey === key)
+        .sort((a, b) => a.created_at.localeCompare(b.created_at))
+      if (rowsForKey.length === 0) return false
+      return rowsForKey[rowsForKey.length - 1].event_type === 'email.send_failed'
+    })
+
+    return { state: anyFailed ? 'failed' : 'sent', at: latestSentAt }
+  }
+
+  const slotMs = new Date(slotTime).getTime()
+  const leadTimeHours = (slotMs - new Date(createdAt).getTime()) / (60 * 60 * 1000)
+  const isFuture = slotMs > now.getTime()
+
+  if (status === 'confirmed' && isFuture && remindersEnabled) {
+    const next24h = slotMs - 24 * 60 * 60 * 1000
+    const next2h = slotMs - 2 * 60 * 60 * 1000
+    const at = next24h > now.getTime() && leadTimeHours >= 24 ? next24h : next2h
+    return { state: 'scheduled', at: new Date(at).toISOString() }
+  }
+
+  return { state: 'not_scheduled', at: null }
+}
+
 /**
  * The expanded reservation-detail payload — D2.2. Every sub-query is
  * restaurant-scoped explicitly (RLS is the belt, this is the braces); the
@@ -369,7 +430,7 @@ export async function getBookingDetail(
   )
   const booking = toDayBooking(row, intentStatusById)
 
-  const [guestBookingsResult, guestNoteResult, dashboardLogResult, consumerLogResult] =
+  const [guestBookingsResult, guestNoteResult, dashboardLogResult, consumerLogResult, restaurantRemindersResult] =
     await Promise.all([
       guestId
         ? supabase
@@ -399,12 +460,22 @@ export async function getBookingDetail(
         .eq('booking_id', bookingId)
         .in('event_type', CONSUMER_HISTORY_EVENT_TYPES)
         .order('created_at', { ascending: true }),
+      // D5.6d — noshow_reminders_email_enabled isn't part of BOOKING_SELECT
+      // (that select is shared with two other callers that don't need it);
+      // restaurantId is already a parameter here, so a light extra query is
+      // simpler than threading a restaurant join through the shared select.
+      supabase
+        .from('restaurants')
+        .select('noshow_reminders_email_enabled')
+        .eq('id', restaurantId)
+        .maybeSingle<{ noshow_reminders_email_enabled: boolean }>(),
     ])
 
   if (guestBookingsResult.error) throw guestBookingsResult.error
   if (guestNoteResult.error) throw guestNoteResult.error
   if (dashboardLogResult.error) throw dashboardLogResult.error
   if (consumerLogResult.error) throw consumerLogResult.error
+  if (restaurantRemindersResult.error) throw restaurantRemindersResult.error
 
   // Guest lifetime summary — ATTENDED visits only, this restaurant. An
   // "attended" reading answers "how many times has this guest actually
@@ -497,9 +568,16 @@ export async function getBookingDetail(
       at: emailState.at,
       failureReason: emailState.failureReason,
     },
-    // TODO: reminder scheduling not shipped (no notification_schedules table
-    // yet) — state stays dormant until that lands.
-    reminder: { state: 'not_scheduled', at: null },
+    reminder: deriveReminderState({
+      status: booking.status,
+      slotTime: row.slot_time,
+      createdAt: row.created_at,
+      now: new Date(),
+      reminder24hSentAt: row.reminder_24h_sent_at,
+      reminder2hSentAt: row.reminder_2h_sent_at,
+      remindersEnabled: restaurantRemindersResult.data?.noshow_reminders_email_enabled ?? false,
+      consumerEvents: consumerRows,
+    }),
     whatsapp: whatsappEnabled
       ? { state: whatsappState!.state === 'sent' ? 'sent' : whatsappState!.state === 'failed' ? 'failed' : 'not_sent', at: whatsappState!.at }
       : { state: 'disabled', at: null },
