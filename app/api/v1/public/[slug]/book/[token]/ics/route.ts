@@ -11,6 +11,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServerClientAdmin } from '@/lib/supabase/server';
 import { hashMagicLinkToken } from '@/lib/consumer/magicLinks';
 import { buildIcs } from '@/lib/booking/icsExport';
+import { formatRestaurantAddressLine } from '@/lib/booking/confirmationTemplate';
 import { auditLog } from '@/lib/consumer/audit';
 import { getCallerIp, checkConsumerRateLimit } from '@/lib/consumer/rateLimit';
 
@@ -53,6 +54,8 @@ export async function GET(
         legal_name,
         legal_address_street,
         legal_address_house_number,
+        legal_address_house_letter,
+        legal_address_house_number_addition,
         legal_address_postcode,
         legal_address_city
       )
@@ -70,6 +73,8 @@ export async function GET(
     legal_name: string | null;
     legal_address_street: string | null;
     legal_address_house_number: string | null;
+    legal_address_house_letter: string | null;
+    legal_address_house_number_addition: string | null;
     legal_address_postcode: string | null;
     legal_address_city: string | null;
   };
@@ -85,15 +90,7 @@ export async function GET(
   const restaurantName =
     restaurant.display_name || restaurant.legal_name || 'The Tafel';
 
-  const addressParts = [
-    [restaurant.legal_address_street, restaurant.legal_address_house_number]
-      .filter(Boolean)
-      .join(' '),
-    [restaurant.legal_address_postcode, restaurant.legal_address_city]
-      .filter(Boolean)
-      .join(' '),
-  ].filter(Boolean);
-  const locationLine = addressParts.length > 0 ? addressParts.join(', ') : null;
+  const locationLine = formatRestaurantAddressLine(restaurant);
 
   const startUtc = new Date(booking.slot_time as string);
 
