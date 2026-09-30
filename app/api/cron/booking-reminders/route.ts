@@ -27,9 +27,15 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('authorization')
-  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice('Bearer '.length).trim() : null
+
+  // Accept the header with or without a "Bearer " prefix — the caller is a
+  // pg_net job configured outside this repo, and a strict `startsWith('Bearer ')`
+  // check would silently reject (zero log lines) a header sent as the bare
+  // secret. Never log the header value itself, on any path below.
+  const token = authHeader ? authHeader.replace(/^Bearer\s+/i, '').trim() : null
 
   if (!token) {
+    console.error('[cron/booking-reminders] missing or empty authorization header')
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
 
@@ -39,12 +45,17 @@ export async function POST(req: NextRequest) {
     p_token: token,
   })
 
-  // Never log the token itself, on success or failure.
   if (verifyErr) {
-    console.error('[cron/booking-reminders] verify_cron_secret rpc error', verifyErr.message)
+    console.error('[cron/booking-reminders] verify_cron_secret rpc error', {
+      code: verifyErr.code,
+      message: verifyErr.message,
+    })
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
   if (verified !== true) {
+    console.error('[cron/booking-reminders] verify_cron_secret returned non-true', {
+      typeofVerified: typeof verified,
+    })
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
 

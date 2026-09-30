@@ -336,6 +336,10 @@ export async function createBooking(
       purpose: 'manage_booking',
       booking_id: bookingId,
       expires_at: expiresAt,
+      // D5.6d-fix: without this, reminders (and anything else needing the
+      // guest's booking locale) had no live source to read it from —
+      // magic_links.locale was NULL for every booking-created row.
+      locale: input.locale,
     });
     if (mlErr) {
       // Non-fatal: booking is confirmed; magic_links row is supplementary.

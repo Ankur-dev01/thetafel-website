@@ -12,12 +12,14 @@
 // via createMagicLink() never breaks the one already sent in the
 // confirmation email. No STOP condition.
 //
-// Guest locale (Step 0.8 finding): the `magic_links` row inserted at
-// booking-creation time (lib/booking/createBooking.ts) never sets `locale`
-// — it's NULL today, and `bookings` itself has no locale column at all.
-// There is currently no live source for "which language did this guest
-// book in" by the time a reminder fires. Falls back to 'nl' always, per
-// the explicit fallback this unit's brief allows.
+// Guest locale (Step 0.8 finding, fixed in D5.6d-fix): the `magic_links`
+// row inserted at booking-creation time (lib/booking/createBooking.ts) used
+// to omit `locale` entirely, so it was NULL for every booking made before
+// this fix — those older bookings fall back to 'nl' here, permanently
+// (there's nothing to backfill from). Bookings made after the fix land with
+// a real locale on their original manage_booking row, read below via
+// resolveGuestLocale (oldest manage_booking row for the booking, so a
+// later-issued reminder token never shadows the guest's actual choice).
 
 import 'server-only'
 import { createSupabaseServerClientAdmin } from '@/lib/supabase/server'
@@ -110,6 +112,28 @@ function firstOf<T>(v: T | T[] | null): T | null {
   return Array.isArray(v) ? (v[0] ?? null) : v
 }
 
+type SupabaseAdminClient = Awaited<ReturnType<typeof createSupabaseServerClientAdmin>>
+
+/**
+ * The booking's original manage_booking magic_links row, oldest first, is
+ * the earliest real record of which language the guest booked in. Falls
+ * back to 'nl' when there's no row or no locale on it (older bookings, or
+ * the rare insert-failed case createBooking.ts already tolerates).
+ */
+async function resolveGuestLocale(admin: SupabaseAdminClient, bookingId: string): Promise<'nl' | 'en'> {
+  const { data, error } = await admin
+    .from('magic_links')
+    .select('locale')
+    .eq('booking_id', bookingId)
+    .eq('purpose', 'manage_booking')
+    .order('created_at', { ascending: true })
+    .limit(1)
+    .maybeSingle<{ locale: string | null }>()
+
+  if (error || !data) return 'nl'
+  return data.locale === 'en' ? 'en' : 'nl'
+}
+
 export async function runBookingReminders(now: Date = new Date()): Promise<RunBookingRemindersResult> {
   const result: RunBookingRemindersResult = { scanned: 0, sent24h: 0, sent2h: 0, skipped: 0, failed: 0 }
 
@@ -196,12 +220,13 @@ export async function runBookingReminders(now: Date = new Date()): Promise<RunBo
 
       const restaurantName = restaurant.display_name ?? restaurant.legal_name ?? restaurant.slug
       const addressLine = formatRestaurantAddressLine(restaurant)
+      const guestLocale = await resolveGuestLocale(admin, row.id)
 
       const link = await createMagicLink({
         purpose: 'manage_booking',
         bookingId: row.id,
         restaurantId: row.restaurant_id,
-        locale: 'nl',
+        locale: guestLocale,
       })
 
       if (!link.ok) {
@@ -213,11 +238,11 @@ export async function runBookingReminders(now: Date = new Date()): Promise<RunBo
       const manageUrl = buildManageBookingUrl({
         slug: restaurant.slug,
         magicLinkToken: link.token,
-        locale: 'nl',
+        locale: guestLocale,
       })
 
       const rendered = renderBookingReminder({
-        locale: 'nl',
+        locale: guestLocale,
         kind,
         guestFullName: guest.full_name ?? '',
         restaurantName,
