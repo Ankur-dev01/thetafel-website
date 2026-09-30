@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server'
 import { Link } from '@/i18n/routing'
 import { resolveDashboardContext } from '@/lib/dashboard/resolveDashboardContext'
+import { canViewPath } from '@/lib/dashboard/permissions'
 import SectionHeader from '@/components/dashboard/ui/SectionHeader'
 import PauseControl from '@/components/dashboard/settings/PauseControl'
 
@@ -36,6 +37,7 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
         />
       </div>
 
+      {canViewPath(context.staff.role, '/dashboard/settings/business') && (
       <div className="mt-8">
         <Link
           href="/dashboard/settings/business"
@@ -55,7 +57,9 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
           </span>
         </Link>
       </div>
+      )}
 
+      {canViewPath(context.staff.role, '/dashboard/settings/hours') && (
       <div className="mt-2">
         <Link
           href="/dashboard/settings/hours"
@@ -75,7 +79,9 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
           </span>
         </Link>
       </div>
+      )}
 
+      {canViewPath(context.staff.role, '/dashboard/settings/floor') && (
       <div className="mt-2">
         <Link
           href="/dashboard/settings/floor"
@@ -95,7 +101,9 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
           </span>
         </Link>
       </div>
+      )}
 
+      {canViewPath(context.staff.role, '/dashboard/settings/booking') && (
       <div className="mt-2">
         <Link
           href="/dashboard/settings/booking"
@@ -115,7 +123,9 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
           </span>
         </Link>
       </div>
+      )}
 
+      {canViewPath(context.staff.role, '/dashboard/settings/ordering') && (
       <div className="mt-2">
         <Link
           href="/dashboard/settings/ordering"
@@ -135,7 +145,9 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
           </span>
         </Link>
       </div>
+      )}
 
+      {canViewPath(context.staff.role, '/dashboard/settings/qr') && (
       <div className="mt-2">
         <Link
           href="/dashboard/settings/qr"
@@ -155,7 +167,9 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
           </span>
         </Link>
       </div>
+      )}
 
+      {canViewPath(context.staff.role, '/dashboard/settings/branding') && (
       <div className="mt-2">
         <Link
           href="/dashboard/settings/branding"
@@ -175,7 +189,9 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
           </span>
         </Link>
       </div>
+      )}
 
+      {canViewPath(context.staff.role, '/dashboard/settings/notifications') && (
       <div className="mt-2">
         <Link
           href="/dashboard/settings/notifications"
@@ -195,7 +211,9 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
           </span>
         </Link>
       </div>
+      )}
 
+      {canViewPath(context.staff.role, '/dashboard/settings/payments') && (
       <div className="mt-2">
         <Link
           href="/dashboard/settings/payments"
@@ -215,7 +233,9 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
           </span>
         </Link>
       </div>
+      )}
 
+      {canViewPath(context.staff.role, '/dashboard/settings/account') && (
       <div className="mt-2">
         <Link
           href="/dashboard/settings/account"
@@ -235,7 +255,9 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
           </span>
         </Link>
       </div>
+      )}
 
+      {canViewPath(context.staff.role, '/dashboard/settings/privacy') && (
       <div className="mt-2">
         <Link
           href="/dashboard/settings/privacy"
@@ -255,7 +277,9 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
           </span>
         </Link>
       </div>
+      )}
 
+      {canViewPath(context.staff.role, '/dashboard/settings/billing') && (
       <div className="mt-2">
         <Link
           href="/dashboard/settings/billing"
@@ -275,7 +299,9 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
           </span>
         </Link>
       </div>
+      )}
 
+      {canViewPath(context.staff.role, '/dashboard/settings/staff') && (
       <div className="mt-2">
         <Link
           href="/dashboard/settings/staff"
@@ -295,6 +321,7 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
           </span>
         </Link>
       </div>
+      )}
 
       <div className="mt-8">
         <p

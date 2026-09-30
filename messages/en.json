@@ -178,7 +178,8 @@
     "submitting": "Signing in...",
     "errorInvalid": "Invalid credentials.",
     "errorRateLimit": "Too many attempts. Please try again in a few minutes.",
-    "errorGeneral": "Something went wrong. Please try again."
+    "errorGeneral": "Something went wrong. Please try again.",
+    "deactivated": "Your access has been deactivated. Please contact the restaurant owner or manager."
   },
   "forgotPassword": {
     "heading": "Forgot password?",

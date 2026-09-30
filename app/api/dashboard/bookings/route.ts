@@ -9,6 +9,8 @@
 // limit needed. Missing/invalid `date` falls back to "today" in
 // Europe/Amsterdam, matching the page's own default.
 
+import { assertDashboardWriteAllowed } from '@/lib/dashboard/guards/assertDashboardWriteAllowed'
+import { selectActingRestaurant } from '@/lib/dashboard/staff/actingRestaurant'
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { getServiceWindowsForDay, getBookingsForDay } from '@/lib/dashboard/queries/bookings'
@@ -29,17 +31,21 @@ export async function GET(req: NextRequest) {
     )
   }
 
-  const { data: restaurant } = await supabase
-    .from('restaurants')
-    .select('id')
-    .eq('user_id', user.id)
-    .is('deleted_at', null)
-    .maybeSingle()
+  const { data: restaurant } = await selectActingRestaurant(supabase, user.id, 'id')
 
   if (!restaurant) {
     return NextResponse.json(
       { error: 'not_staff' },
       { status: 403, headers: { 'Cache-Control': 'private, no-store' } },
+    )
+  }
+
+  // Role check: booking.read (service/kitchen/manager/owner per lib/dashboard/permissions.ts).
+  const readGuard = await assertDashboardWriteAllowed(restaurant.id, 'booking.read', user)
+  if (!readGuard.ok) {
+    return NextResponse.json(
+      { error: readGuard.reason },
+      { status: readGuard.httpStatus, headers: { 'Cache-Control': 'private, no-store' } },
     )
   }
 

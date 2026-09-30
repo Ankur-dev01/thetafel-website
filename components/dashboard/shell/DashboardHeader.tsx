@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from '@/i18n/routing';
+import { Link, usePathname } from '@/i18n/routing';
 import LanguageToggle from './LanguageToggle';
 import ChimeToggle from './ChimeToggle';
 import { useChimeEnabledState } from '@/components/dashboard/orders/useOrderChime';
@@ -15,12 +15,15 @@ type DashboardHeaderProps = {
   locale: 'nl' | 'en';
   restaurantName: string;
   paused: boolean;
+  /** Kitchen gets the single-purpose shell: language + account + log out only. */
+  showLogout?: boolean;
 };
 
 export default function DashboardHeader({
   locale,
   restaurantName,
   paused,
+  showLogout = false,
 }: DashboardHeaderProps) {
   const statusLabel = paused
     ? locale === 'nl'
@@ -71,6 +74,31 @@ export default function DashboardHeader({
           </span>
           {showChimeToggle && <ChimeToggle enabled={chimeEnabled} onToggle={setChimeEnabled} />}
           <LanguageToggle locale={locale} />
+          <Link
+            href="/dashboard/settings/account"
+            data-testid="header-account"
+            className="tafel-tap text-[12px] uppercase tracking-[0.1em] text-[#6f6353] hover:text-[#1e1508]"
+            style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
+          >
+            {locale === 'en' ? 'Account' : 'Account'}
+          </Link>
+          {showLogout && (
+            <button
+              type="button"
+              data-testid="header-logout"
+              onClick={async () => {
+                try {
+                  await fetch('/api/auth/logout', { method: 'POST' });
+                } finally {
+                  window.location.assign(locale === 'en' ? '/en/login' : '/login');
+                }
+              }}
+              className="tafel-tap text-[12px] uppercase tracking-[0.1em] text-[#6f6353] hover:text-[#1e1508]"
+              style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
+            >
+              {locale === 'en' ? 'Log out' : 'Uitloggen'}
+            </button>
+          )}
         </div>
       </div>
     </header>

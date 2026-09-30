@@ -1,6 +1,7 @@
 // GET /api/dashboard/billing/receipt/{paymentId}?locale=nl|en
 // Owner-only PDF receipt for one PAID payment of the caller's own restaurant.
 
+import { selectActingRestaurant } from '@/lib/dashboard/staff/actingRestaurant'
 import { NextResponse, type NextRequest } from 'next/server'
 import { createSupabaseServerClient, createSupabaseServerClientAdmin } from '@/lib/supabase/server'
 import { assertDashboardWriteAllowed } from '@/lib/dashboard/guards/assertDashboardWriteAllowed'
@@ -28,12 +29,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ paymentId: 
   } = await supabase.auth.getUser()
   if (!user) return new NextResponse('Unauthorized', { status: 401 })
 
-  const { data: restaurant } = await supabase
-    .from('restaurants')
-    .select('id, legal_name, display_name, kvk_number, btw_number')
-    .eq('user_id', user.id)
-    .is('deleted_at', null)
-    .maybeSingle()
+  const { data: restaurant } = await selectActingRestaurant(supabase, user.id, 'id, legal_name, display_name, kvk_number, btw_number')
   if (!restaurant) return new NextResponse('Not found', { status: 404 })
 
   // Billing is owner-only; 'settings.billing.cancel' is owner-only in the map.

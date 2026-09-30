@@ -10,9 +10,11 @@ import { resumeRestaurant } from '@/lib/dashboard/actions/pauseResume';
 type PauseBannerProps = {
   pausedAt: string;
   pauseReason: 'manual' | 'billing_suspended' | 'subscription_cancelled';
+  /** Only roles that may resume (owner, manager) get the button. */
+  canResume?: boolean;
 };
 
-export default function PauseBanner({ pausedAt, pauseReason }: PauseBannerProps) {
+export default function PauseBanner({ pausedAt, pauseReason, canResume = true }: PauseBannerProps) {
   void pausedAt;
   const t = useTranslations('dashboard.pause.banner');
   const router = useRouter();
@@ -60,7 +62,7 @@ export default function PauseBanner({ pausedAt, pauseReason }: PauseBannerProps)
         )}
       </div>
       {pauseReason === 'manual' ? (
-        <button
+        canResume ? <button
           type="button"
           onClick={handleResume}
           disabled={pending}
@@ -68,7 +70,7 @@ export default function PauseBanner({ pausedAt, pauseReason }: PauseBannerProps)
           style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
         >
           {pending ? '…' : t(`${ns}.action`)}
-        </button>
+        </button> : null
       ) : (
         <Link
           href="/dashboard/settings/billing"

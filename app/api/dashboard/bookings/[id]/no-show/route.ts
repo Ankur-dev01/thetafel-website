@@ -7,6 +7,7 @@
 // minutes late must not get flagged prematurely. No slot lock: this has no
 // capacity implication, just a status flip.
 
+import { selectActingRestaurant } from '@/lib/dashboard/staff/actingRestaurant'
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServerClient, createSupabaseServerClientAdmin } from '@/lib/supabase/server';
 import { assertDashboardWriteAllowed } from '@/lib/dashboard/guards/assertDashboardWriteAllowed';
@@ -40,12 +41,7 @@ export async function POST(_req: NextRequest, ctx: { params: Promise<{ id: strin
     );
   }
 
-  const { data: restaurant, error: restaurantError } = await supabase
-    .from('restaurants')
-    .select('id, slug')
-    .eq('user_id', user.id)
-    .is('deleted_at', null)
-    .maybeSingle();
+  const { data: restaurant, error: restaurantError } = await selectActingRestaurant(supabase, user.id, 'id, slug');
   if (restaurantError || !restaurant) {
     return NextResponse.json({ error: 'restaurant_not_found' }, { status: 404, headers: { 'Cache-Control': 'no-store' } });
   }

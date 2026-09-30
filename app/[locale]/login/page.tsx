@@ -216,6 +216,26 @@ export default function LoginPage() {
             {t('sub')}
           </p>
 
+          {/* Staff access deactivated (redirected here after a forced sign-out) */}
+          {searchParams.get('deactivated') === '1' && (
+            <div
+              role="alert"
+              data-testid="login-deactivated"
+              style={{
+                backgroundColor: 'rgba(212,130,10,0.12)',
+                border: '1px solid rgba(212,130,10,0.35)',
+                borderRadius: '12px',
+                padding: '12px 16px',
+                marginBottom: '20px',
+                fontFamily: 'var(--font-jost), sans-serif',
+                fontSize: '13px',
+                color: '#d4820a',
+              }}
+            >
+              {t('deactivated')}
+            </div>
+          )}
+
           {/* Server error banner */}
           {serverError && (
             <div

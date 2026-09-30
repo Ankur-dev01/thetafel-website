@@ -178,7 +178,8 @@
     "submitting": "Bezig...",
     "errorInvalid": "Ongeldige inloggegevens.",
     "errorRateLimit": "Te veel pogingen. Probeer het over enkele minuten opnieuw.",
-    "errorGeneral": "Er is iets misgegaan. Probeer het opnieuw."
+    "errorGeneral": "Er is iets misgegaan. Probeer het opnieuw.",
+    "deactivated": "Je toegang is gedeactiveerd. Neem contact op met de eigenaar of manager van het restaurant."
   },
   "forgotPassword": {
     "heading": "Wachtwoord vergeten?",

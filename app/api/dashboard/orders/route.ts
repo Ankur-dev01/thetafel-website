@@ -6,6 +6,8 @@
 // than bookings — see D1.1's 60s cadence on /api/dashboard/today for
 // contrast). Read-only, RLS-scoped throughout. No rate limit needed.
 
+import { assertDashboardWriteAllowed } from '@/lib/dashboard/guards/assertDashboardWriteAllowed'
+import { selectActingRestaurant } from '@/lib/dashboard/staff/actingRestaurant'
 import { NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { getOrdersPayload } from '@/lib/dashboard/queries/orders'
@@ -25,17 +27,21 @@ export async function GET() {
     )
   }
 
-  const { data: restaurant } = await supabase
-    .from('restaurants')
-    .select('id')
-    .eq('user_id', user.id)
-    .is('deleted_at', null)
-    .maybeSingle()
+  const { data: restaurant } = await selectActingRestaurant(supabase, user.id, 'id')
 
   if (!restaurant) {
     return NextResponse.json(
       { error: 'not_staff' },
       { status: 403, headers: { 'Cache-Control': 'private, no-store' } },
+    )
+  }
+
+  // Role check: order.read (service/kitchen/manager/owner per lib/dashboard/permissions.ts).
+  const readGuard = await assertDashboardWriteAllowed(restaurant.id, 'order.read', user)
+  if (!readGuard.ok) {
+    return NextResponse.json(
+      { error: readGuard.reason },
+      { status: readGuard.httpStatus, headers: { 'Cache-Control': 'private, no-store' } },
     )
   }
 

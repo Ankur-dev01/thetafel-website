@@ -1,4 +1,5 @@
 import { resolveDashboardContext } from '@/lib/dashboard/resolveDashboardContext'
+import { can } from '@/lib/dashboard/permissions'
 import { getTodayPayload, amsterdamCivilDate } from '@/lib/dashboard/queries/today'
 import TodayClient from '@/components/dashboard/today/TodayClient'
 import PauseBanner from '@/components/dashboard/today/PauseBanner'
@@ -31,6 +32,7 @@ export default async function TodayPage({ params }: { params: Promise<Params> })
         <div className="pt-4">
           <PauseBanner
             pausedAt={pausedAt}
+            canResume={can(context.staff.role, 'restaurant.resume')}
             pauseReason={
               (pauseReason as 'manual' | 'billing_suspended' | 'subscription_cancelled' | null) ?? 'manual'
             }

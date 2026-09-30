@@ -1,6 +1,7 @@
 // No rate limit: session-authenticated only, low cost, called by the
 // dashboard polling hook's "Verbinding verbroken" retry path.
 
+import { selectActingRestaurant } from '@/lib/dashboard/staff/actingRestaurant'
 import { NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
@@ -15,12 +16,7 @@ export async function GET() {
     return NextResponse.json({ ok: false, reason: 'not_authenticated' }, { status: 401 })
   }
 
-  const { data: restaurant } = await supabase
-    .from('restaurants')
-    .select('id')
-    .eq('user_id', user.id)
-    .is('deleted_at', null)
-    .maybeSingle()
+  const { data: restaurant } = await selectActingRestaurant(supabase, user.id, 'id')
 
   if (!restaurant) {
     return NextResponse.json({ ok: false, reason: 'no_restaurant' }, { status: 404 })

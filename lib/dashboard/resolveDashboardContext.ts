@@ -9,6 +9,7 @@ import {
 } from '@/lib/supabase/server'
 import type { Database } from '@/packages/db/types'
 import type { StaffRole } from '@/lib/dashboard/nav'
+import { canViewPath, homePathFor } from '@/lib/dashboard/permissions'
 
 type Restaurant = Database['public']['Tables']['restaurants']['Row']
 type RestaurantStaffRow = Database['public']['Tables']['restaurant_staff']['Row']
@@ -61,40 +62,59 @@ export async function resolveDashboardContext(
     redirect(`${localePrefix}/login?next=${encodeURIComponent(pathname)}`)
   }
 
-  const { data: restaurant } = await supabase
-    .from('restaurants')
-    .select('*')
-    .eq('user_id', user.id)
-    .is('deleted_at', null)
-    .maybeSingle()
+  // The restaurant is resolved through the caller's ACTIVE restaurant_staff row
+  // (owner and staff alike; RLS staff-membership policies, migration 031, make
+  // the read work for non-owners). An owner without a staff row (STAFF-1 race)
+  // still resolves via restaurants.user_id.
+  const { data: memberships } = await supabase.from('restaurant_staff').select('*').eq('user_id', user.id)
+  const staffRow = (memberships ?? []).find((m) => m.deactivated_at === null) ?? null
+
+  let restaurant = null
+  if (staffRow) {
+    const { data } = await supabase
+      .from('restaurants')
+      .select('*')
+      .eq('id', staffRow.restaurant_id)
+      .is('deleted_at', null)
+      .maybeSingle()
+    restaurant = data
+  }
+  if (!restaurant) {
+    const { data } = await supabase
+      .from('restaurants')
+      .select('*')
+      .eq('user_id', user.id)
+      .is('deleted_at', null)
+      .maybeSingle()
+    restaurant = data
+  }
 
   if (!restaurant) {
+    // Had dashboard access once but every membership is deactivated:
+    // sign out and explain (a Server Component can't clear cookies itself).
+    if ((memberships ?? []).length > 0) {
+      redirect(`/api/auth/access-deactivated?locale=${locale}`)
+    }
     redirect(`${localePrefix}/onboarding`)
   }
+
+  const isOwner = restaurant.user_id === user.id
   if (restaurant.status === 'onboarding') {
-    redirect(`${localePrefix}/onboarding`)
+    redirect(isOwner ? `${localePrefix}/onboarding` : `${localePrefix}/login`)
   }
   if (restaurant.status === 'pending_review') {
-    redirect(`${localePrefix}/onboarding/submitted`)
+    redirect(isOwner ? `${localePrefix}/onboarding/submitted` : `${localePrefix}/login`)
   }
   if (restaurant.status === 'suspended' || restaurant.status === 'cancelled') {
     redirect(`${localePrefix}/login`)
   }
 
-  const { data: staffRow } = await supabase
-    .from('restaurant_staff')
-    .select('*')
-    .eq('restaurant_id', restaurant.id)
-    .eq('user_id', user.id)
-    .is('deactivated_at', null)
-    .maybeSingle()
-
   let staff: DashboardStaff
 
-  if (staffRow) {
+  if (staffRow && staffRow.restaurant_id === restaurant.id) {
     staff = toDashboardStaff(staffRow)
     stampLastActive(staffRow.id, staffRow.last_active_at)
-  } else if (restaurant.user_id === user.id) {
+  } else if (isOwner) {
     // Belt-and-braces for a race with the D0.1 backfill: the owner always
     // gets in; the missing row is flagged for investigation.
     staff = {
@@ -105,7 +125,19 @@ export async function resolveDashboardContext(
     }
     void logMissingOwnerRow(restaurant.id, user.id)
   } else {
-    redirect(`${localePrefix}/login`)
+    redirect(`/api/auth/access-deactivated?locale=${locale}`)
+  }
+
+  // Page-level role gate: every dashboard page resolves its context first, so a
+  // role that may not view this path is bounced BEFORE any data is fetched
+  // (kitchen → the orders queue, everyone else → Today). The proxy sets
+  // x-pathname on every request, including client-side navigations.
+  const requestedPath = (await headers()).get('x-pathname')
+  if (requestedPath) {
+    const stripped = requestedPath.replace(/^\/(en|nl)(?=\/|$)/, '') || '/'
+    if (stripped.startsWith('/dashboard') && !canViewPath(staff.role, stripped)) {
+      redirect(`${localePrefix}${homePathFor(staff.role)}`)
+    }
   }
 
   return {

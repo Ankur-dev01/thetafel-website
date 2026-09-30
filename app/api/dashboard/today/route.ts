@@ -2,6 +2,8 @@
 // Payload includes the D1.2 alert set (mollie/payments/orders/tabs/deposits/
 // notifications) alongside the D1.1 tiles/timeline/queue data.
 
+import { assertDashboardWriteAllowed } from '@/lib/dashboard/guards/assertDashboardWriteAllowed'
+import { selectActingRestaurant } from '@/lib/dashboard/staff/actingRestaurant'
 import { NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { getTodayPayload } from '@/lib/dashboard/queries/today'
@@ -22,12 +24,7 @@ export async function GET() {
     )
   }
 
-  const { data: restaurant } = await supabase
-    .from('restaurants')
-    .select('id')
-    .eq('user_id', user.id)
-    .is('deleted_at', null)
-    .maybeSingle()
+  const { data: restaurant } = await selectActingRestaurant(supabase, user.id, 'id')
 
   if (!restaurant) {
     return NextResponse.json(
@@ -36,20 +33,16 @@ export async function GET() {
     )
   }
 
-  // `restaurant` was already resolved via .eq('user_id', user.id), so the
-  // caller is the owner by construction — no separate staff-row check
-  // needed for access, but the Mollie alert (D1.2) is role-gated, so we
-  // still need the role. Fall back to 'owner' if the D0.1 backfill row is
-  // somehow missing (mirrors resolveDashboardContext's synthetic fallback).
-  const { data: staffRow } = await supabase
-    .from('restaurant_staff')
-    .select('role')
-    .eq('restaurant_id', restaurant.id)
-    .eq('user_id', user.id)
-    .is('deactivated_at', null)
-    .maybeSingle()
+  // Role check: today.read (service/kitchen/manager/owner per lib/dashboard/permissions.ts).
+  const readGuard = await assertDashboardWriteAllowed(restaurant.id, 'today.read', user)
+  if (!readGuard.ok) {
+    return NextResponse.json(
+      { error: readGuard.reason },
+      { status: readGuard.httpStatus, headers: { 'Cache-Control': 'private, no-store' } },
+    )
+  }
 
-  const role: StaffRole = staffRow?.role ?? 'owner'
+  const role: StaffRole = readGuard.staff.role
 
   const payload = await getTodayPayload(restaurant.id, new Date(), role)
 

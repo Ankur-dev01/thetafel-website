@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { resolveDestination } from '@/lib/auth/resolveDestination'
+import { homePathFor } from '@/lib/dashboard/permissions'
 
 /**
  * GET /api/auth/me/destination
@@ -30,6 +31,34 @@ export async function GET(request: NextRequest) {
       { error: 'not_authenticated' },
       { status: 401 }
     )
+  }
+
+  // Staff accounts (manager / service / kitchen) belong to the dashboard of the
+  // restaurant they hold an active membership at — never to onboarding. A user
+  // whose only memberships are deactivated is signed out with a message.
+  const prefix = locale === 'en' ? '/en' : ''
+  const { data: memberships } = await supabase
+    .from('restaurant_staff')
+    .select('role, restaurant_id, deactivated_at')
+    .eq('user_id', user.id)
+  const activeStaff = (memberships ?? []).find((m) => m.deactivated_at === null && m.role !== 'owner')
+  if (activeStaff) {
+    const { data: staffRestaurant } = await supabase
+      .from('restaurants')
+      .select('status')
+      .eq('id', activeStaff.restaurant_id)
+      .maybeSingle()
+    if (staffRestaurant?.status === 'live') {
+      return NextResponse.json({ destination: `${prefix}${homePathFor(activeStaff.role)}` }, { status: 200 })
+    }
+    return NextResponse.json({ destination: `${prefix}/login?error=account_unavailable` }, { status: 200 })
+  }
+  if ((memberships ?? []).length > 0 && (memberships ?? []).every((m) => m.deactivated_at !== null)) {
+    const { data: owned } = await supabase.from('restaurants').select('id').eq('user_id', user.id).maybeSingle()
+    if (!owned) {
+      await supabase.auth.signOut()
+      return NextResponse.json({ destination: `${prefix}/login?deactivated=1` }, { status: 200 })
+    }
   }
 
   const { data: restaurant } = await supabase

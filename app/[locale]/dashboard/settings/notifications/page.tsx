@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { Link } from '@/i18n/routing'
 import { resolveDashboardContext } from '@/lib/dashboard/resolveDashboardContext'
+import { can } from '@/lib/dashboard/permissions'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import SectionHeader from '@/components/dashboard/ui/SectionHeader'
 import NotificationsForm from './NotificationsForm'
@@ -49,7 +50,7 @@ export default async function NotificationsSettingsPage({
   // Owner-only — matches BTW-2's business page exactly.
   // resolveDashboardContext doesn't gate by role (hours/floor/etc. are
   // open to managers), so this page enforces it directly.
-  if (context.staff.role !== 'owner') {
+  if (!can(context.staff.role, 'settings.notifications.edit')) {
     redirect(locale === 'en' ? '/en/dashboard/settings' : '/dashboard/settings')
   }
 

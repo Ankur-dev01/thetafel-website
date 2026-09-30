@@ -17,6 +17,7 @@
 // No Mollie call, no payment_status writes on either path — D6 owns money
 // reconciliation. This route is the operational close only.
 
+import { selectActingRestaurant } from '@/lib/dashboard/staff/actingRestaurant'
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServerClient, createSupabaseServerClientAdmin } from '@/lib/supabase/server';
 import { assertDashboardWriteAllowed } from '@/lib/dashboard/guards/assertDashboardWriteAllowed';
@@ -53,14 +54,17 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     );
   }
 
-  const { data: restaurant, error: restaurantError } = await supabase
-    .from('restaurants')
-    .select('id, slug')
-    .eq('user_id', user.id)
-    .is('deleted_at', null)
-    .maybeSingle();
+  const { data: restaurant, error: restaurantError } = await selectActingRestaurant(supabase, user.id, 'id, slug');
   if (restaurantError || !restaurant) {
     return NextResponse.json({ error: 'restaurant_not_found' }, { status: 404, headers: { 'Cache-Control': 'no-store' } });
+  }
+
+  // Base permission BEFORE reading the body (no validation oracle for
+  // roles that can't touch tabs at all); the write-off action is re-checked
+  // below once the settlement is known.
+  const baseGuard = await assertDashboardWriteAllowed(restaurant.id, 'tab.close');
+  if (!baseGuard.ok) {
+    return NextResponse.json({ error: baseGuard.reason }, { status: baseGuard.httpStatus, headers: { 'Cache-Control': 'no-store' } });
   }
 
   let rawBody: unknown;

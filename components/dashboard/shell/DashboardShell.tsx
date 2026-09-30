@@ -14,6 +14,7 @@ import DashboardSidebar from './DashboardSidebar';
 import PhoneTabBar from './PhoneTabBar';
 import DashboardHeader from './DashboardHeader';
 import BillingPastDueBanner from './BillingPastDueBanner';
+import StaffLanguageSync from './StaffLanguageSync';
 
 type DashboardShellProps = {
   locale: 'nl' | 'en';
@@ -40,6 +41,34 @@ export default function DashboardShell({
 
   const items = navItemsForRole(staff.role);
 
+  const banner = pastDueOfflineDate ? (
+    <div className="pt-4">
+      <BillingPastDueBanner locale={locale} offlineDate={pastDueOfflineDate} />
+    </div>
+  ) : null;
+
+  // Kitchen: single-purpose, full-screen order queue — no sidebar, no tab bar,
+  // no navigation; only language, account and log out in the header.
+  const languageSync = <StaffLanguageSync locale={locale} staffLanguage={staff.language} />;
+
+  if (staff.role === 'kitchen') {
+    return (
+      <div className="min-h-screen bg-cream text-[#1e1508]" data-testid="kitchen-shell">
+        {languageSync}
+        <DashboardHeader
+          locale={locale}
+          restaurantName={restaurantName}
+          paused={restaurant.paused_at !== null}
+          showLogout
+        />
+        <main className="px-4 md:px-8 pb-10">
+          {banner}
+          {children}
+        </main>
+      </div>
+    );
+  }
+
   return (
     <MobileShellWrapper
       sidebar={
@@ -58,11 +87,8 @@ export default function DashboardShell({
         />
       }
     >
-      {pastDueOfflineDate && (
-        <div className="pt-4">
-          <BillingPastDueBanner locale={locale} offlineDate={pastDueOfflineDate} />
-        </div>
-      )}
+      {languageSync}
+      {banner}
       {children}
     </MobileShellWrapper>
   );

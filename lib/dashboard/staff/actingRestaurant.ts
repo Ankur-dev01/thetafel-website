@@ -37,3 +37,17 @@ export async function findActingRestaurantId(supabase: SupabaseClient, userId: s
     .maybeSingle<{ id: string }>()
   return owned?.id ?? null
 }
+
+/**
+ * Drop-in for the old `supabase.from('restaurants').select(cols).eq('user_id', uid)
+ * .is('deleted_at', null).maybeSingle()` used by dashboard routes: resolves the
+ * restaurant through the caller's staff membership (owner included) and selects
+ * `columns` from it. Same `{ data, error }` shape; `data` is null when the user
+ * has no active membership and owns nothing.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function selectActingRestaurant(supabase: SupabaseClient, userId: string, columns: string): Promise<{ data: any; error: any }> {
+  const id = await findActingRestaurantId(supabase, userId)
+  if (!id) return { data: null, error: null }
+  return supabase.from('restaurants').select(columns).eq('id', id).maybeSingle()
+}

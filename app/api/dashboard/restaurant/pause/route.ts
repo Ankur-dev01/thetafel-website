@@ -1,5 +1,6 @@
 // Session-authenticated, human-triggered, rare — no rate limit.
 
+import { selectActingRestaurant } from '@/lib/dashboard/staff/actingRestaurant'
 import { NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { assertDashboardWriteAllowed } from '@/lib/dashboard/guards/assertDashboardWriteAllowed'
@@ -20,12 +21,7 @@ export async function POST() {
     )
   }
 
-  const { data: restaurant, error: fetchError } = await supabase
-    .from('restaurants')
-    .select('id, paused_at')
-    .eq('user_id', user.id)
-    .is('deleted_at', null)
-    .maybeSingle()
+  const { data: restaurant, error: fetchError } = await selectActingRestaurant(supabase, user.id, 'id, paused_at')
 
   if (fetchError || !restaurant) {
     return NextResponse.json(

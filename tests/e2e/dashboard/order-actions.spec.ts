@@ -291,17 +291,21 @@ test.describe('Order actions (D3.2)', () => {
     }
   })
 
-  test('permission gate exists (owner-passthrough stub documented)', async () => {
-    // D0.4's permission map is a stub: owner passes everything, every other
-    // role is denied, until D8.2 builds the real per-role matrix. There's no
-    // non-owner staff fixture in the e2e lifecycle to drive a real 403
-    // through the UI/API without standing up a second staff account, so this
-    // documents the gate at the unit level instead: assertDashboardWriteAllowed
-    // (called by the advance route with 'order.status.advance') delegates to
-    // this same `can()` function.
-    expect(can('owner', 'order.status.advance')).toBe(true)
-    expect(can('manager', 'order.status.advance')).toBe(false)
-    expect(can('kitchen', 'order.status.advance')).toBe(false)
+  test('permission gate follows the D8.2 role matrix', async () => {
+    // D8.2 replaced the owner-only stub with the real per-role map
+    // (lib/dashboard/permissions.ts). assertDashboardWriteAllowed and every
+    // dashboard route delegate to this same `can()`. The end-to-end 403s per
+    // role live in roles.spec.ts; this pins the order actions at unit level.
+    for (const role of ['owner', 'manager', 'service', 'kitchen'] as const) {
+      expect(can(role, 'order.status.advance')).toBe(true) // the whole kitchen flow
+      expect(can(role, 'order.read')).toBe(true)
+    }
+    expect(can('owner', 'order.refund')).toBe(true)
+    expect(can('manager', 'order.refund')).toBe(true)
+    expect(can('service', 'order.refund')).toBe(false)
+    expect(can('kitchen', 'order.refund')).toBe(false)
+    expect(can('kitchen', 'order.cancel')).toBe(false)
+    expect(can('service', 'order.cancel')).toBe(true)
   })
 
   // Cross-restaurant isolation (Test 9 in the unit spec) is not automated

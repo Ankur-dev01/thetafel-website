@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { Link } from '@/i18n/routing'
 import { resolveDashboardContext } from '@/lib/dashboard/resolveDashboardContext'
+import { can } from '@/lib/dashboard/permissions'
 import SectionHeader from '@/components/dashboard/ui/SectionHeader'
 import BrandingForm from './BrandingForm'
 
@@ -17,7 +18,7 @@ export default async function BrandingSettingsPage({ params }: { params: Promise
 
   // Owner-only surface, same escape as BTW-2's business page — every
   // knob here is a public-facing identity change, not a day-to-day op.
-  if (context.staff.role !== 'owner') {
+  if (!can(context.staff.role, 'settings.branding.edit')) {
     redirect(locale === 'en' ? '/en/dashboard/settings' : '/dashboard/settings')
   }
 

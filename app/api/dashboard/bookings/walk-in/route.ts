@@ -18,6 +18,7 @@
 // case, so a token is generated and hashed purely to satisfy the column —
 // the plaintext is discarded immediately and no `magic_links` row is created.
 
+import { selectActingRestaurant } from '@/lib/dashboard/staff/actingRestaurant'
 import { NextResponse, type NextRequest } from 'next/server';
 import { createSupabaseServerClient, createSupabaseServerClientAdmin } from '@/lib/supabase/server';
 import { assertDashboardWriteAllowed } from '@/lib/dashboard/guards/assertDashboardWriteAllowed';
@@ -141,12 +142,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { data: restaurant, error: restaurantError } = await supabase
-    .from('restaurants')
-    .select('id, slug')
-    .eq('user_id', user.id)
-    .is('deleted_at', null)
-    .maybeSingle();
+  const { data: restaurant, error: restaurantError } = await selectActingRestaurant(supabase, user.id, 'id, slug');
   if (restaurantError || !restaurant) {
     return NextResponse.json({ error: 'restaurant_not_found' }, { status: 404, headers: { 'Cache-Control': 'no-store' } });
   }
