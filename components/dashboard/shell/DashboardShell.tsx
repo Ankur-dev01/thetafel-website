@@ -13,16 +13,20 @@ import MobileShellWrapper from './MobileShellWrapper';
 import DashboardSidebar from './DashboardSidebar';
 import PhoneTabBar from './PhoneTabBar';
 import DashboardHeader from './DashboardHeader';
+import BillingPastDueBanner from './BillingPastDueBanner';
 
 type DashboardShellProps = {
   locale: 'nl' | 'en';
   context: DashboardContext;
+  /** Formatted offline date when the subscription is past_due, else null. */
+  pastDueOfflineDate?: string | null;
   children: React.ReactNode;
 };
 
 export default function DashboardShell({
   locale,
   context,
+  pastDueOfflineDate = null,
   children,
 }: DashboardShellProps) {
   const { restaurant, staff } = context;
@@ -54,6 +58,11 @@ export default function DashboardShell({
         />
       }
     >
+      {pastDueOfflineDate && (
+        <div className="pt-4">
+          <BillingPastDueBanner locale={locale} offlineDate={pastDueOfflineDate} />
+        </div>
+      )}
       {children}
     </MobileShellWrapper>
   );

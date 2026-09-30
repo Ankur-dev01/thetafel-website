@@ -1592,7 +1592,8 @@
           "restaurantBookingCancelled": "Cancellation (to you)",
           "bookingReminder": "Reminder",
           "other": "Other",
-          "restaurantMollieBroken": "Mollie connection broken (to you)"
+          "restaurantMollieBroken": "Mollie connection broken (to you)",
+          "restaurantBilling": "Payment failed (to you)"
         },
         "guestNotificationsSectionTitle": "Guest notifications",
         "guestNotificationsSectionDescription": "Choose which emails your guests receive. All notifications are on by default.",

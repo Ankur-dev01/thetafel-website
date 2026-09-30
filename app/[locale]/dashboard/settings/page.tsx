@@ -31,7 +31,7 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
         <PauseControl
           initialPausedAt={context.restaurant.paused_at}
           initialPauseReason={
-            context.restaurant.pause_reason as 'manual' | 'billing_suspended' | null
+            context.restaurant.pause_reason as 'manual' | 'billing_suspended' | 'subscription_cancelled' | null
           }
         />
       </div>

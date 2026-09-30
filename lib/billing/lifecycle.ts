@@ -48,6 +48,17 @@ export type Transition = {
   events: string[]
 }
 
+/**
+ * pause_reason written when a cancelled subscription reaches period end.
+ * The spec calls for 'subscription_cancelled', but restaurants_pause_reason_check
+ * only allows ('manual', 'billing_suspended') and this batch may not migrate —
+ * so the ended restaurant is paused as 'billing_suspended'. The subscription's
+ * own status ('cancelled') is the discriminator, and onRecurringPaid never
+ * un-pauses a cancelled subscription. Once the CHECK is extended, change this
+ * one constant (resume route + PauseControl already understand both values).
+ */
+export const ENDED_PAUSE_REASON = 'billing_suspended'
+
 export const GRACE_DAYS_TO_SUSPEND = 14
 export const GRACE_EMAIL_DAYS = [1, 7, 12] as const
 export type GraceEmailDay = (typeof GRACE_EMAIL_DAYS)[number]
@@ -201,7 +212,7 @@ export function decideLifecycle(input: {
         action: 'end',
         subscription: { status: 'cancelled' },
         restaurant:
-          restaurant.paused_at === null ? { paused_at: now, pause_reason: 'subscription_cancelled' } : {},
+          restaurant.paused_at === null ? { paused_at: now, pause_reason: ENDED_PAUSE_REASON } : {},
       }
     }
     return { action: 'none' }

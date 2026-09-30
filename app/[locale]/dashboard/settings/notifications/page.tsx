@@ -136,6 +136,7 @@ export default async function NotificationsSettingsPage({
           restaurantBookingCancelledLabel: t('events.restaurantBookingCancelled'),
           bookingReminderLabel: t('events.bookingReminder'),
           restaurantMollieBrokenLabel: t('events.restaurantMollieBroken'),
+          restaurantBillingLabel: t('events.restaurantBilling'),
           otherLabel: t('events.other'),
         }}
         locale={locale}

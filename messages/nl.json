@@ -1592,7 +1592,8 @@
           "restaurantBookingCancelled": "Annulering (aan jou)",
           "bookingReminder": "Herinnering",
           "other": "Overig",
-          "restaurantMollieBroken": "Mollie-verbinding verbroken (aan jou)"
+          "restaurantMollieBroken": "Mollie-verbinding verbroken (aan jou)",
+          "restaurantBilling": "Betaling mislukt (aan jou)"
         },
         "guestNotificationsSectionTitle": "Meldingen aan gasten",
         "guestNotificationsSectionDescription": "Kies welke e-mails je gasten krijgen. Standaard staan alle meldingen aan.",

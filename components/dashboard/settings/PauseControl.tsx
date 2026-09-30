@@ -9,7 +9,7 @@ import { pauseRestaurant, resumeRestaurant } from '@/lib/dashboard/actions/pause
 
 type PauseControlProps = {
   initialPausedAt: string | null;
-  initialPauseReason: 'manual' | 'billing_suspended' | null;
+  initialPauseReason: 'manual' | 'billing_suspended' | 'subscription_cancelled' | null;
 };
 
 export default function PauseControl({ initialPausedAt, initialPauseReason }: PauseControlProps) {
@@ -24,7 +24,7 @@ export default function PauseControl({ initialPausedAt, initialPauseReason }: Pa
   const state: 'live' | 'paused' | 'billing' =
     initialPausedAt === null
       ? 'live'
-      : initialPauseReason === 'billing_suspended'
+      : initialPauseReason === 'billing_suspended' || initialPauseReason === 'subscription_cancelled'
         ? 'billing'
         : 'paused';
 

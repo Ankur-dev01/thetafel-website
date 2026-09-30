@@ -1,7 +1,7 @@
 // Session-authenticated, human-triggered, rare — no rate limit.
 
 import { NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createSupabaseServerClient, createSupabaseServerClientAdmin } from '@/lib/supabase/server'
 import { assertDashboardWriteAllowed } from '@/lib/dashboard/guards/assertDashboardWriteAllowed'
 import { dashboardAudit } from '@/lib/dashboard/audit/dashboardAudit'
 
@@ -49,10 +49,29 @@ export async function POST() {
     )
   }
 
-  if (restaurant.pause_reason === 'billing_suspended') {
+  // Billing pauses are lifted ONLY by a successful payment (the webhook), never
+  // from the dashboard. Also refuse a manual pause that coexists with a
+  // suspended / cancelled subscription — resuming would put a non-paying
+  // restaurant back online.
+  if (restaurant.pause_reason === 'billing_suspended' || restaurant.pause_reason === 'subscription_cancelled') {
     return NextResponse.json(
-      { error: 'billing_suspended' },
-      { status: 409, headers: { 'Cache-Control': 'no-store' } }
+      { error: restaurant.pause_reason },
+      { status: 403, headers: { 'Cache-Control': 'no-store' } }
+    )
+  }
+
+  const admin = await createSupabaseServerClientAdmin()
+  const { data: sub } = await admin
+    .from('subscriptions')
+    .select('status')
+    .eq('restaurant_id', restaurant.id)
+    .in('status', ['suspended', 'cancelled'])
+    .limit(1)
+    .maybeSingle()
+  if (sub) {
+    return NextResponse.json(
+      { error: sub.status === 'cancelled' ? 'subscription_cancelled' : 'billing_suspended' },
+      { status: 403, headers: { 'Cache-Control': 'no-store' } }
     )
   }
 
@@ -62,7 +81,6 @@ export async function POST() {
       paused_at: null,
       paused_by: null,
       pause_reason: null,
-      grace_period_started_at: null,
     })
     .eq('id', restaurant.id)
 

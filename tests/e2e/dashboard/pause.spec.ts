@@ -214,7 +214,7 @@ test.describe('Pause / resume flow (D1.3)', () => {
       await expect(page.getByRole('link', { name: 'Naar facturatie' })).toBeVisible()
 
       const resumeRes = await page.request.post('/api/dashboard/restaurant/resume')
-      expect(resumeRes.status()).toBe(409)
+      expect(resumeRes.status()).toBe(403)
       expect((await resumeRes.json()).error).toBe('billing_suspended')
 
       await page.goto('/dashboard')
