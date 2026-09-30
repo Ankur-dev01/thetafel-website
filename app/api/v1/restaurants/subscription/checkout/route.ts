@@ -14,6 +14,11 @@ import {
   type QrPlan,
 } from '@/lib/pricing/subscription';
 import { invalidateOnboardingLayout } from '@/lib/onboarding/cache';
+import {
+  assertTierWriteSynced,
+  syncMollieForTierChange,
+  type SubscriptionRowForTier,
+} from '@/lib/billing/tierChange';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -63,7 +68,7 @@ export async function POST(req: NextRequest) {
     if (tier === 'starter') {
       const { data: existingSub } = await admin
         .from('subscriptions')
-        .select('id')
+        .select('id, tier, monthly_amount_cents, mollie_customer_id, mollie_subscription_id')
         .eq('restaurant_id', restaurant.id)
         .maybeSingle();
 
@@ -77,6 +82,27 @@ export async function POST(req: NextRequest) {
           trial_started_at: new Date().toISOString(),
           trial_ends_at: new Date().toISOString(),
         });
+      } else if (existingSub.tier !== 'starter') {
+        // Downgrade to Starter while a paid row exists: the Mollie subscription
+        // must stop billing BEFORE the row says Starter. Mollie first; on
+        // failure nothing is written.
+        const row = existingSub as unknown as SubscriptionRowForTier & { id: string };
+        const nextPlan = { tier: 'starter' as const, monthlyAmountCents: 0 };
+        const sync = await syncMollieForTierChange({ row, next: nextPlan, locale });
+        if (!sync.ok) {
+          return NextResponse.json({ error: 'mollie_subscription_update_failed' }, { status: 502 });
+        }
+        assertTierWriteSynced(row, nextPlan, true);
+        await admin
+          .from('subscriptions')
+          .update({
+            tier: 'starter',
+            status: 'active',
+            monthly_amount_cents: 0,
+            mollie_subscription_id: null,
+            trial_ends_at: new Date().toISOString(),
+          })
+          .eq('id', row.id);
       }
 
       await admin
@@ -149,9 +175,26 @@ export async function POST(req: NextRequest) {
 
     const { data: subRow } = await admin
       .from('subscriptions')
-      .select('id, mollie_customer_id')
+      .select('id, tier, monthly_amount_cents, mollie_customer_id, mollie_subscription_id')
       .eq('restaurant_id', restaurant.id)
       .maybeSingle();
+
+    // A tier/amount change on an existing subscription must update the Mollie
+    // subscription FIRST (else it keeps billing the old amount). Done before
+    // any payment is created so a Mollie failure leaves everything untouched.
+    const nextPlan = { tier, monthlyAmountCents: subscriptionGross };
+    let mollieSynced = false;
+    if (subRow) {
+      const sync = await syncMollieForTierChange({
+        row: subRow as unknown as SubscriptionRowForTier,
+        next: nextPlan,
+        locale,
+      });
+      if (!sync.ok) {
+        return NextResponse.json({ error: 'mollie_subscription_update_failed' }, { status: 502 });
+      }
+      mollieSynced = true;
+    }
 
     if (subRow?.mollie_customer_id) {
       mollieCustomerId = subRow.mollie_customer_id as string;
@@ -220,6 +263,8 @@ export async function POST(req: NextRequest) {
     // Persist subscription row (update if exists, insert if not)
     let subscriptionId: string;
     if (subRow) {
+      // Tripwire: never change tier/amount in the DB without the Mollie sync above.
+      assertTierWriteSynced(subRow as unknown as SubscriptionRowForTier, nextPlan, mollieSynced);
       await admin
         .from('subscriptions')
         .update({
