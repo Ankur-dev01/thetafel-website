@@ -1503,8 +1503,7 @@
           "menu": "Menu",
           "team": "Team",
           "billing": "Billing",
-          "privacy": "Privacy",
-          "account": "Account"
+          "privacy": "Privacy"
         },
         "links": {
           "business": "Business details",
@@ -1524,7 +1523,9 @@
           "branding": "Branding",
           "brandingDesc": "Logo, brand colour and cover photo.",
           "payments": "Payments",
-          "paymentsDesc": "Your Mollie connection status and reconnecting."
+          "paymentsDesc": "Your Mollie connection status and reconnecting.",
+          "account": "Account",
+          "accountDesc": "Your login's name, email, password and language."
         }
       },
       "confirmPause": {
@@ -1983,6 +1984,48 @@
           "qrNotEnabled": "QR ordering is not active for this restaurant.",
           "saveFailed": "Save failed. Please try again."
         }
+      },
+      "account": {
+        "title": "Account",
+        "subtitle": "Your personal details and sign-in settings.",
+        "back": "Back to settings",
+        "nameTitle": "Name",
+        "nameLabel": "Display name",
+        "nameInvalid": "Enter a name of 1 to 80 characters.",
+        "emailTitle": "Email",
+        "currentEmail": "Your login email:",
+        "newEmailLabel": "New email address",
+        "emailInvalid": "Enter a valid email address.",
+        "emailSame": "That's already your current email.",
+        "emailSent": "Check both inboxes to confirm the change.",
+        "emailFailed": "Couldn't change the email address. Please try again later.",
+        "emailBusinessNote": "This only changes your login. To change the restaurant's public and notification email, go to",
+        "emailBusinessLink": "Business details.",
+        "passwordTitle": "Password",
+        "currentPasswordLabel": "Current password",
+        "newPasswordLabel": "New password",
+        "confirmPasswordLabel": "Confirm new password",
+        "passwordTooShort": "Choose a password of at least 8 characters.",
+        "passwordMismatch": "The passwords don't match.",
+        "passwordWrong": "Your current password is incorrect.",
+        "passwordSame": "Choose a password different from your current one.",
+        "passwordWeak": "That password is too weak. Choose a stronger one.",
+        "passwordChanged": "Your password has been changed.",
+        "languageTitle": "Language",
+        "languageNl": "Nederlands",
+        "languageEn": "English",
+        "signOutTitle": "Log out everywhere",
+        "signOutDescription": "Sign out on all your devices, including this one. Useful if you lost a phone or computer.",
+        "signOutButton": "Log out everywhere",
+        "signOutConfirmTitle": "Log out everywhere?",
+        "signOutConfirmBody": "You'll be signed out on all devices and will need to log in again.",
+        "signOutConfirm": "Log out",
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Working…",
+        "saved": "Saved.",
+        "genericError": "Something went wrong. Please try again.",
+        "rateLimited": "Too many attempts. Please try again in a few minutes."
       }
     },
     "share": {

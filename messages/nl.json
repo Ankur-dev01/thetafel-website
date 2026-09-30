@@ -1503,8 +1503,7 @@
           "menu": "Menu",
           "team": "Team",
           "billing": "Facturatie",
-          "privacy": "Privacy",
-          "account": "Account"
+          "privacy": "Privacy"
         },
         "links": {
           "business": "Bedrijfsgegevens",
@@ -1524,7 +1523,9 @@
           "branding": "Branding",
           "brandingDesc": "Logo, huisstijlkleur en omslagfoto.",
           "payments": "Betalingen",
-          "paymentsDesc": "Status van je Mollie-verbinding en opnieuw verbinden."
+          "paymentsDesc": "Status van je Mollie-verbinding en opnieuw verbinden.",
+          "account": "Account",
+          "accountDesc": "Naam, e-mailadres, wachtwoord en taal van jouw login."
         }
       },
       "confirmPause": {
@@ -1983,6 +1984,48 @@
           "qrNotEnabled": "QR-bestellen is niet actief voor dit restaurant.",
           "saveFailed": "Opslaan is niet gelukt. Probeer het opnieuw."
         }
+      },
+      "account": {
+        "title": "Account",
+        "subtitle": "Jouw persoonlijke gegevens en inloggegevens.",
+        "back": "Terug naar instellingen",
+        "nameTitle": "Naam",
+        "nameLabel": "Weergavenaam",
+        "nameInvalid": "Vul een naam in van 1 tot 80 tekens.",
+        "emailTitle": "E-mailadres",
+        "currentEmail": "Huidig e-mailadres van je login:",
+        "newEmailLabel": "Nieuw e-mailadres",
+        "emailInvalid": "Vul een geldig e-mailadres in.",
+        "emailSame": "Dit is al je huidige e-mailadres.",
+        "emailSent": "Controleer beide inboxen om de wijziging te bevestigen.",
+        "emailFailed": "Het e-mailadres kon niet worden gewijzigd. Probeer het later opnieuw.",
+        "emailBusinessNote": "Dit wijzigt alleen je inlog. Het e-mailadres van het restaurant voor meldingen pas je aan bij",
+        "emailBusinessLink": "Bedrijfsgegevens.",
+        "passwordTitle": "Wachtwoord",
+        "currentPasswordLabel": "Huidig wachtwoord",
+        "newPasswordLabel": "Nieuw wachtwoord",
+        "confirmPasswordLabel": "Herhaal nieuw wachtwoord",
+        "passwordTooShort": "Kies een wachtwoord van minimaal 8 tekens.",
+        "passwordMismatch": "De wachtwoorden komen niet overeen.",
+        "passwordWrong": "Je huidige wachtwoord klopt niet.",
+        "passwordSame": "Kies een ander wachtwoord dan je huidige.",
+        "passwordWeak": "Dit wachtwoord is te zwak. Kies een sterker wachtwoord.",
+        "passwordChanged": "Je wachtwoord is gewijzigd.",
+        "languageTitle": "Taal",
+        "languageNl": "Nederlands",
+        "languageEn": "English",
+        "signOutTitle": "Overal uitloggen",
+        "signOutDescription": "Log op al je apparaten uit, ook op dit apparaat. Handig als je een telefoon of computer kwijt bent.",
+        "signOutButton": "Overal uitloggen",
+        "signOutConfirmTitle": "Overal uitloggen?",
+        "signOutConfirmBody": "Je wordt op alle apparaten uitgelogd en moet opnieuw inloggen.",
+        "signOutConfirm": "Uitloggen",
+        "cancel": "Annuleren",
+        "save": "Opslaan",
+        "saving": "Bezig…",
+        "saved": "Opgeslagen.",
+        "genericError": "Er ging iets mis. Probeer het opnieuw.",
+        "rateLimited": "Te veel pogingen. Probeer het over een paar minuten opnieuw."
       }
     },
     "share": {

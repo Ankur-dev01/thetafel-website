@@ -48,6 +48,7 @@ export type DashboardAction =
   | 'settings.privacy.act'
   | 'guest.note.edit'
   | 'guest.export'
+  | 'account.self_edit'
   | 'restaurant.pause'
   | 'restaurant.resume'
 
@@ -57,7 +58,9 @@ export type DashboardAction =
  * accidentally rely on staff-role gating that doesn't exist yet.
  */
 export function can(role: StaffRole, action: DashboardAction): boolean {
-  void action
+  // Self-service account settings (own name/email/password/language) are open
+  // to every active staff member, whatever their role.
+  if (action === 'account.self_edit') return true
   if (role === 'owner') return true
   return false
 }

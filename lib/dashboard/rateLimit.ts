@@ -58,3 +58,33 @@ export async function dashboardMutationRateLimit(userId: string): Promise<Dashbo
   const retryAfter = Math.max(1, Math.ceil((result.reset - Date.now()) / 1000));
   return { ok: false, retryAfter };
 }
+
+let _securityLimiter: Ratelimit | null = null;
+function getSecurityLimiter(): Ratelimit {
+  if (_securityLimiter) return _securityLimiter;
+  _securityLimiter = new Ratelimit({
+    redis: getRedis(),
+    limiter: Ratelimit.slidingWindow(5, '15 m'),
+    prefix: 'dash:account_security',
+    analytics: false,
+  });
+  return _securityLimiter;
+}
+
+/**
+ * 5 credential-sensitive account attempts (password change, email change) per
+ * 15 minutes per staff user — every attempt counts, including wrong current
+ * passwords, so the endpoint can't be used to guess a password. Same dev-mode
+ * bypass as dashboardMutationRateLimit.
+ */
+export async function dashboardAccountSecurityRateLimit(userId: string): Promise<DashboardRateLimitResult> {
+  if (process.env.NODE_ENV === 'development') {
+    return { ok: true };
+  }
+
+  const result = await getSecurityLimiter().limit(`user:${userId}:account_security`);
+  if (result.success) return { ok: true };
+
+  const retryAfter = Math.max(1, Math.ceil((result.reset - Date.now()) / 1000));
+  return { ok: false, retryAfter };
+}
