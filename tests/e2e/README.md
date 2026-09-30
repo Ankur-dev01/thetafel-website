@@ -30,6 +30,13 @@ Prerequisites: `NEXT_PUBLIC_SUPABASE_PROD_URL` and `SUPABASE_PROD_SERVICE_ROLE_K
 Dashboard specs additionally need `E2E_DASHBOARD_EMAIL` and `E2E_DASHBOARD_PASSWORD` (the
 `_e2e_test_restaurant` owner's login; the fixture fails fast with a clear message if either is
 missing). Never commit their values.
+
+The role matrix (`tests/e2e/dashboard/roles.spec.ts`) additionally needs
+`E2E_MANAGER_*`, `E2E_SERVICE_*` and `E2E_KITCHEN_*` (EMAIL + PASSWORD each). Generate them once with
+`node scripts/e2e-generate-role-passwords.mjs` (writes `.env.local`, never prints values; add
+`--rotate-owner` to also rotate `E2E_DASHBOARD_PASSWORD`). The first run provisions the three staff
+accounts on `_e2e_test_restaurant` through the real invite flow; later runs only re-assert them. The
+accounts stay in place between runs.
 The `beforeAll` wipe hook runs on every suite, so these are needed even for tests that don't touch
 the DB themselves.
 
