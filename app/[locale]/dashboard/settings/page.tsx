@@ -9,8 +9,6 @@ export const dynamic = 'force-dynamic'
 
 type Params = { locale: string }
 
-const UPCOMING_KEYS = ['menu'] as const
-
 export default async function SettingsPage({ params }: { params: Promise<Params> }) {
   const { locale: rawLocale } = await params
   const locale: 'nl' | 'en' = rawLocale === 'en' ? 'en' : 'nl'
@@ -322,26 +320,6 @@ export default async function SettingsPage({ params }: { params: Promise<Params>
         </Link>
       </div>
       )}
-
-      <div className="mt-8">
-        <p
-          className="text-[13px] uppercase tracking-[0.1em] text-[#8c8577] mb-2"
-          style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 600 }}
-        >
-          {t('hub.upcoming.title')}
-        </p>
-        <ul className="flex flex-col gap-1">
-          {UPCOMING_KEYS.map((key) => (
-            <li
-              key={key}
-              className="text-[14px] text-[#6f6353]"
-              style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 300 }}
-            >
-              {t(`hub.upcoming.${key}`)}
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   )
 }

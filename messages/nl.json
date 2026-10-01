@@ -1510,10 +1510,6 @@
         }
       },
       "hub": {
-        "upcoming": {
-          "title": "Binnenkort:",
-          "menu": "Menu"
-        },
         "links": {
           "business": "Bedrijfsgegevens",
           "businessDesc": "BTW-nummer, weergavenaam en contactgegevens.",

@@ -1510,10 +1510,6 @@
         }
       },
       "hub": {
-        "upcoming": {
-          "title": "Coming soon:",
-          "menu": "Menu"
-        },
         "links": {
           "business": "Business details",
           "businessDesc": "BTW number, display name and contact details.",
