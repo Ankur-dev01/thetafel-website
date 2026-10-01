@@ -358,3 +358,28 @@ export function computeNoShowCost(orders: InsightOrder[], bookings: InsightBooki
     estimateCents: avg !== null ? avg * noShowCovers : null,
   }
 }
+
+// ── Revenue period aggregation (client-side toggle) ─────────────────────────
+
+export type RevenuePeriod = 'day' | 'week' | 'month'
+export type RevenueBucket = { key: string; ordersGrossCents: number; ordersVatCents: number; depositsCents: number }
+
+/** Monday of the ISO week containing `day`. */
+export function weekStart(day: string): string {
+  const w = weekdayOf(day) // 0 = Sunday
+  return addDays(day, -((w + 6) % 7))
+}
+
+/** Sums daily revenue into days / ISO weeks (Monday start) / calendar months, in chronological order. */
+export function aggregateRevenue(days: RevenueDay[], period: RevenuePeriod): RevenueBucket[] {
+  const map = new Map<string, RevenueBucket>()
+  for (const d of days) {
+    const key = period === 'day' ? d.date : period === 'week' ? weekStart(d.date) : d.date.slice(0, 7)
+    const b = map.get(key) ?? { key, ordersGrossCents: 0, ordersVatCents: 0, depositsCents: 0 }
+    b.ordersGrossCents += d.ordersGrossCents
+    b.ordersVatCents += d.ordersVatCents
+    b.depositsCents += d.depositsCents
+    map.set(key, b)
+  }
+  return [...map.values()].sort((a, b) => a.key.localeCompare(b.key))
+}

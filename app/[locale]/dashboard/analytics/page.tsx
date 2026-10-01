@@ -4,17 +4,23 @@ import { resolveDashboardContext } from '@/lib/dashboard/resolveDashboardContext
 import { can, homePathFor } from '@/lib/dashboard/permissions'
 import { getRestaurantTier, tierAtLeast } from '@/lib/dashboard/tier'
 import { amsterdamCivilDate } from '@/lib/dashboard/date/amsterdamDay'
-import { loadInsightData, parseRange } from '@/lib/dashboard/insights/queries'
+import { loadInsightData, loadRevenueDims, parseRange } from '@/lib/dashboard/insights/queries'
 import {
   LEAD_BUCKETS,
   PARTY_BUCKETS,
   computeOccupancy,
   computeOrders,
   computePatterns,
+  computeNoShowCost,
+  computeRevenue,
   computeTopDishes,
+  revenueByCategory,
+  revenueByTable,
 } from '@/lib/dashboard/insights/compute'
 import SectionHeader from '@/components/dashboard/ui/SectionHeader'
 import InsightsTeaser from '@/components/dashboard/insights/InsightsTeaser'
+import RevenueSection from '@/components/dashboard/insights/RevenueSection'
+import RevenueLocked from '@/components/dashboard/insights/RevenueLocked'
 import RangePicker from '@/components/dashboard/insights/RangePicker'
 import { BarSeries, RankedBars } from '@/components/dashboard/insights/Charts'
 
@@ -92,6 +98,7 @@ export default async function InsightsPage({
   const patterns = computePatterns(data.bookings, data.previousBookings)
   const orders = computeOrders(data.orders)
   const dishes = computeTopDishes(data.orders)
+  const premium = tierAtLeast(tier, 'premium')
   const empty = t('empty')
 
   const noData = occ.totalBookings === 0 && orders.total === 0 && patterns.current.total === 0
@@ -236,6 +243,33 @@ export default async function InsightsPage({
           </div>
         )}
       </Card>
+
+      {/* 5. Revenue — Premium; Plus sees a locked teaser */}
+      {premium ? await revenueBlock() : <RevenueLocked locale={locale} isOwner={role === 'owner'} />}
     </div>
   )
+
+  async function revenueBlock() {
+    const dims = await loadRevenueDims(restaurantId, locale)
+    const revenue = computeRevenue(data.orders, data.bookings, range.from, range.to)
+    const tables = revenueByTable(data.orders, dims.tableLabel, dims.zoneOfTable)
+    const categories = revenueByCategory(data.orders, dims.categoryOfItem, dims.categoryLabel)
+    return (
+      <RevenueSection
+        locale={locale}
+        days={revenue.days}
+        totals={{
+          ordersGrossCents: revenue.ordersGrossCents,
+          ordersVatCents: revenue.ordersVatCents,
+          ordersNetCents: revenue.ordersNetCents,
+          depositsCents: revenue.depositsCents,
+          totalInclCents: revenue.totalInclCents,
+        }}
+        perZone={tables.perZone}
+        perTable={tables.perTable}
+        perCategory={categories}
+        noShow={computeNoShowCost(data.orders, data.bookings)}
+      />
+    )
+  }
 }
