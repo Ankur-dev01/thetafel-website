@@ -61,7 +61,7 @@ function isVisitBooking(b: { slot_time: string; status: string }, now: number): 
   return (b.status === 'confirmed' || b.status === 'pending') && new Date(b.slot_time).getTime() <= now
 }
 
-const ORDER_DEAD = new Set(['cancelled', 'refunded'])
+export const ORDER_DEAD = new Set(['cancelled', 'refunded'])
 
 /**
  * Spend definition (shown in the UI next to the number):
@@ -69,16 +69,16 @@ const ORDER_DEAD = new Set(['cancelled', 'refunded'])
  *   paid at the table — orders on a tab settled 'paid_at_table'
  *   deposits kept     — deposit paid and not refunded, booking finished (attended / no-show / cancelled)
  */
-function orderSpend(o: Pick<OrderLite, 'status' | 'payment_status' | 'total_cents' | 'tab_id'>, settledTabs: Set<string>): number {
+export function orderSpend(o: Pick<OrderLite, 'status' | 'payment_status' | 'total_cents' | 'tab_id'>, settledTabs: Set<string>): number {
   if (ORDER_DEAD.has(o.status)) return 0
   if (o.payment_status === 'paid') return o.total_cents
   if (o.tab_id && settledTabs.has(o.tab_id)) return o.total_cents
   return 0
 }
 
-type DepositIntent = { id: string; status: string; amount_cents: number; refunded_amount_cents: number }
+export type DepositIntent = { id: string; status: string; amount_cents: number; refunded_amount_cents: number }
 
-function depositKept(b: Pick<BookingLite, 'status' | 'deposit_intent_id'>, intents: Map<string, DepositIntent>): number {
+export function depositKept(b: Pick<BookingLite, 'status' | 'deposit_intent_id'>, intents: Map<string, DepositIntent>): number {
   if (!b.deposit_intent_id) return 0
   if (b.status === 'pending' || b.status === 'confirmed') return 0
   const i = intents.get(b.deposit_intent_id)

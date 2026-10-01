@@ -3055,6 +3055,121 @@
         "cta": "Upgrade je abonnement",
         "askOwner": "Vraag de eigenaar om te upgraden."
       }
+    },
+    "insights": {
+      "title": "Inzichten",
+      "subtitle": "Hoe druk is het, wanneer, en wat verkoopt? Eerlijke cijfers uit je eigen gegevens.",
+      "empty": "Nog geen gegevens in deze periode.",
+      "range": {
+        "days": "{n} dagen",
+        "custom": "Aangepast",
+        "from": "Van",
+        "to": "Tot en met",
+        "apply": "Toepassen",
+        "max": "Maximaal 366 dagen.",
+        "daysCount": "{n, plural, one {# dag} other {# dagen}}"
+      },
+      "occupancy": {
+        "title": "Bezetting",
+        "note": "Reserveringen en gasten per dag (zonder geannuleerde reserveringen).",
+        "bookings": "Reserveringen",
+        "covers": "Gasten",
+        "legend": "Amber: gasten · donker: reserveringen",
+        "busiest": "{weekday} is je drukste dag"
+      },
+      "patterns": {
+        "title": "Reserveringspatronen",
+        "lead": "Hoe ver van tevoren boeken gasten?",
+        "party": "Groepsgrootte",
+        "leadBuckets": {
+          "same_day": "Dezelfde dag",
+          "d1_2": "1–2 dagen",
+          "d3_7": "3–7 dagen",
+          "d8_30": "8–30 dagen",
+          "d30_plus": "Meer dan 30 dagen"
+        },
+        "partyBuckets": {
+          "1": "1 persoon",
+          "2": "2 personen",
+          "3": "3 personen",
+          "4": "4 personen",
+          "5": "5 personen",
+          "6": "6 personen",
+          "7_8": "7–8 personen",
+          "9_plus": "9 of meer"
+        },
+        "cancellationRate": "Annuleringen",
+        "noShowRate": "No-shows",
+        "cancelledOf": "{n} van {total} reserveringen",
+        "noShowsCount": "{n} no-shows (van afgeronde reserveringen)",
+        "vsPrevious": "{value} t.o.v. vorige periode",
+        "points": "procentpunt"
+      },
+      "orders": {
+        "title": "Bestellingen",
+        "qr": "QR-bestellingen",
+        "takeaway": "Afhaalbestellingen",
+        "aov": "Gemiddeld orderbedrag",
+        "aovNote": "Gemiddelde over {n} betaalde bestellingen.",
+        "hours": "Drukste bestelmomenten (uur van de dag)",
+        "ordersLabel": "Bestellingen",
+        "busiest": "Drukste uur: {hour}"
+      },
+      "dishes": {
+        "title": "Top gerechten",
+        "top": "Meest besteld",
+        "bottom": "Minst besteld",
+        "bottomHint": "Overweeg deze te vernieuwen of te schrappen"
+      },
+      "revenue": {
+        "title": "Omzet",
+        "note": "Alleen betaalde stromen: QR en afhaalbestellingen, plus behouden aanbetalingen.",
+        "day": "Dag",
+        "week": "Week",
+        "month": "Maand",
+        "toggle": "Periode",
+        "inclVat": "Totaal incl. btw",
+        "exclVat": "Bestellingen excl. btw",
+        "vat": "Btw over bestellingen",
+        "orders": "Bestellingen (incl. btw)",
+        "deposits": "Behouden aanbetalingen",
+        "depositsNote": "Voor aanbetalingen wordt geen btw vastgelegd; ze staan zoals betaald in het totaal.",
+        "vatNote": "Btw komt uit de bedragen die bij elke bestelling zijn opgeslagen; er worden geen tarieven geraden.",
+        "perZone": "Omzet per zone",
+        "perTable": "Omzet per tafel (QR)",
+        "perCategory": "Omzet per menucategorie",
+        "categoryNote": "Incl. btw, op basis van de bestelde regels. Regels zonder koppeling aan het menu staan onder 'Overig'.",
+        "other": "Overig",
+        "weekOf": "Week van {date}",
+        "noShowTitle": "Geschatte kosten van no-shows",
+        "estimate": "Schatting",
+        "noShowExplain": "{covers} gasten in {n} no-shows × gemiddeld {avg} besteed per aanwezige gast aan tafel (QR) in deze periode.",
+        "notEnough": "Niet genoeg gegevens",
+        "locked": {
+          "badge": "Premium",
+          "title": "Omzetinzichten",
+          "body": "Omzet per dag, week en maand, per zone, tafel en categorie, en de kosten van no-shows.",
+          "cta": "Upgrade naar Premium",
+          "askOwner": "Vraag de eigenaar om te upgraden.",
+          "sample": "Voorbeeld"
+        }
+      },
+      "teaser": {
+        "badge": "Plus",
+        "title": "Inzichten in je restaurant",
+        "body": "Zie wanneer het druk is, hoe gasten boeken en wat verkoopt. Beschikbaar vanaf Plus.",
+        "sample": "Voorbeeld",
+        "sampleSeries": "Voorbeeldgegevens",
+        "features": {
+          "occupancy": "Bezetting per dag en je drukste weekdag",
+          "patterns": "Boekpatronen, annuleringen en no-shows",
+          "orders": "QR vs. afhaal en drukste bestelmomenten",
+          "dishes": "Top en minst bestelde gerechten",
+          "revenue": "Omzet en no-showkosten (Premium)"
+        },
+        "cta": "Upgrade je abonnement",
+        "askOwner": "Vraag de eigenaar om te upgraden."
+      }
     }
   },
   "staffAccept": {

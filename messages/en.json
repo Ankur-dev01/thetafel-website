@@ -3055,6 +3055,121 @@
         "cta": "Upgrade your plan",
         "askOwner": "Ask the owner to upgrade."
       }
+    },
+    "insights": {
+      "title": "Insights",
+      "subtitle": "How busy are you, when, and what sells? Honest numbers from your own data.",
+      "empty": "No data in this period yet.",
+      "range": {
+        "days": "{n} days",
+        "custom": "Custom",
+        "from": "From",
+        "to": "To (inclusive)",
+        "apply": "Apply",
+        "max": "Maximum 366 days.",
+        "daysCount": "{n, plural, one {# day} other {# days}}"
+      },
+      "occupancy": {
+        "title": "Occupancy",
+        "note": "Bookings and guests per day (cancelled bookings excluded).",
+        "bookings": "Bookings",
+        "covers": "Guests",
+        "legend": "Amber: guests · dark: bookings",
+        "busiest": "{weekday} is your busiest day"
+      },
+      "patterns": {
+        "title": "Booking patterns",
+        "lead": "How far ahead do guests book?",
+        "party": "Party size",
+        "leadBuckets": {
+          "same_day": "Same day",
+          "d1_2": "1–2 days",
+          "d3_7": "3–7 days",
+          "d8_30": "8–30 days",
+          "d30_plus": "More than 30 days"
+        },
+        "partyBuckets": {
+          "1": "1 guest",
+          "2": "2 guests",
+          "3": "3 guests",
+          "4": "4 guests",
+          "5": "5 guests",
+          "6": "6 guests",
+          "7_8": "7–8 guests",
+          "9_plus": "9 or more"
+        },
+        "cancellationRate": "Cancellations",
+        "noShowRate": "No-shows",
+        "cancelledOf": "{n} of {total} bookings",
+        "noShowsCount": "{n} no-shows (of finished bookings)",
+        "vsPrevious": "{value} vs previous period",
+        "points": "percentage points"
+      },
+      "orders": {
+        "title": "Orders",
+        "qr": "QR orders",
+        "takeaway": "Takeaway orders",
+        "aov": "Average order value",
+        "aovNote": "Average over {n} paid orders.",
+        "hours": "Busiest ordering hours (hour of day)",
+        "ordersLabel": "Orders",
+        "busiest": "Busiest hour: {hour}"
+      },
+      "dishes": {
+        "title": "Top dishes",
+        "top": "Most ordered",
+        "bottom": "Least ordered",
+        "bottomHint": "Consider refreshing or dropping these"
+      },
+      "revenue": {
+        "title": "Revenue",
+        "note": "Paid flows only: QR and takeaway orders, plus deposits kept.",
+        "day": "Day",
+        "week": "Week",
+        "month": "Month",
+        "toggle": "Period",
+        "inclVat": "Total incl. VAT",
+        "exclVat": "Orders excl. VAT",
+        "vat": "VAT on orders",
+        "orders": "Orders (incl. VAT)",
+        "deposits": "Deposits kept",
+        "depositsNote": "No VAT is stored for deposits; they are included in the total as paid.",
+        "vatNote": "VAT comes from the amounts stored with each order; no rates are guessed.",
+        "perZone": "Revenue per zone",
+        "perTable": "Revenue per table (QR)",
+        "perCategory": "Revenue per menu category",
+        "categoryNote": "Incl. VAT, based on ordered lines. Lines not linked to the menu are under 'Other'.",
+        "other": "Other",
+        "weekOf": "Week of {date}",
+        "noShowTitle": "Estimated cost of no-shows",
+        "estimate": "Estimate",
+        "noShowExplain": "{covers} guests in {n} no-shows × average {avg} spent per attended guest at the table (QR) in this period.",
+        "notEnough": "Not enough data",
+        "locked": {
+          "badge": "Premium",
+          "title": "Revenue insights",
+          "body": "Revenue per day, week and month, per zone, table and category, and the cost of no-shows.",
+          "cta": "Upgrade to Premium",
+          "askOwner": "Ask the owner to upgrade.",
+          "sample": "Example"
+        }
+      },
+      "teaser": {
+        "badge": "Plus",
+        "title": "Insights into your restaurant",
+        "body": "See when you're busy, how guests book and what sells. Available from Plus.",
+        "sample": "Example",
+        "sampleSeries": "Example data",
+        "features": {
+          "occupancy": "Occupancy per day and your busiest weekday",
+          "patterns": "Booking patterns, cancellations and no-shows",
+          "orders": "QR vs takeaway and busiest ordering hours",
+          "dishes": "Top and least ordered dishes",
+          "revenue": "Revenue and no-show cost (Premium)"
+        },
+        "cta": "Upgrade your plan",
+        "askOwner": "Ask the owner to upgrade."
+      }
     }
   },
   "staffAccept": {
