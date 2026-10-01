@@ -14,6 +14,7 @@ import { createSupabaseServerClient, createSupabaseServerClientAdmin } from '@/l
 import { dashboardAudit } from '@/lib/dashboard/audit/dashboardAudit';
 import { invalidateConsumerPage } from '@/lib/consumer/cache';
 import { resolveMenuMutationContext } from '@/lib/dashboard/menu/resolveMenuMutationContext';
+import { selectActingRestaurant } from '@/lib/dashboard/staff/actingRestaurant';
 import { getHoursEditorInitialData } from '@/lib/dashboard/queries/availability';
 import { parseHoursSavePayload, validateHoursSavePayload } from '@/lib/dashboard/settings/hoursValidation';
 
@@ -33,12 +34,7 @@ export async function GET() {
     return NextResponse.json({ error: 'not_authenticated' }, { status: 401, headers: NO_STORE });
   }
 
-  const { data: restaurant } = await supabase
-    .from('restaurants')
-    .select('id, slug')
-    .eq('user_id', user.id)
-    .is('deleted_at', null)
-    .maybeSingle();
+  const { data: restaurant } = await selectActingRestaurant(supabase, user.id, 'id, slug');
   if (!restaurant) {
     return NextResponse.json({ error: 'not_staff' }, { status: 403, headers: NO_STORE });
   }
