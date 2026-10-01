@@ -6,23 +6,27 @@ import { Link as LocaleLink } from '@/i18n/routing'
 import { useLocale, useTranslations } from 'next-intl'
 import { useRouter, usePathname } from 'next/navigation'
 import { useModal } from '@/components/ui/ModalContext'
+import { TafelLogo } from '@/components/home/svgs'
+import s from './Nav.module.css'
 
 type Props = {
   /**
    * Pages without a dark hero at scroll position 0 (e.g. plain-cream content
    * pages like the privacy policy) must render the header solid from the
-   * start — otherwise the cream "TAFEL" wordmark and nav links render
-   * invisible against the cream page background until the user scrolls
-   * past the sticky-header threshold.
+   * start — otherwise the white logo and nav links render invisible against
+   * the cream page background until the user scrolls past the sticky-header
+   * threshold.
    */
   solid?: boolean
 }
+
+const WHATSAPP_HREF = 'https://wa.me/31634339839'
 
 export default function Nav({ solid = false }: Props) {
   const [scrolledState, setScrolled] = useState(false)
   const scrolled = solid || scrolledState
   const [menuOpen, setMenuOpen] = useState(false)
-  const t = useTranslations('nav')
+  const t = useTranslations('home.nav')
   const locale = useLocale()
   const router = useRouter()
   const pathname = usePathname()
@@ -59,302 +63,110 @@ export default function Nav({ solid = false }: Props) {
   }
 
   const navLinks = [
-    { label: t('howItWorks'), hash: 'how-it-works' },
-    { label: t('forRestaurants'), hash: 'solution' },
-    { label: t('pricing'), hash: 'proof' },
+    { label: t('product'), hash: 'products' },
+    { label: t('pricing'), hash: 'pricing' },
+    { label: t('about'), hash: 'ownership' },
   ]
 
   const loginHref = locale === 'nl' ? '/login' : '/en/login'
 
   return (
     <>
-      <nav
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 200,
-          height: '68px',
-          display: 'flex',
-          alignItems: 'center',
-          backgroundColor: scrolled ? 'rgba(253,250,245,0.94)' : 'transparent',
-          backdropFilter: scrolled ? 'blur(20px)' : 'none',
-          borderBottom: scrolled ? '1px solid rgba(156,139,106,0.18)' : 'none',
-          boxShadow: scrolled ? '0 4px 24px rgba(30,21,8,0.06)' : 'none',
-          transition: 'all 0.4s ease',
-        }}
-      >
-        <div
-          className="nav-inner"
-          style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-            padding: '0 64px',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Link
-            href={locale === 'nl' ? '/' : '/en'}
-            style={{ textDecoration: 'none', lineHeight: 1 }}
-          >
-            <div
-              style={{
-                fontFamily: 'var(--font-jost), sans-serif',
-                fontSize: '8px',
-                fontWeight: 700,
-                letterSpacing: '0.32em',
-                textTransform: 'uppercase',
-                color: 'var(--amber)',
-                marginBottom: '2px',
-              }}
-            >
-              THE
-            </div>
-            <div
-              style={{
-                fontFamily: 'var(--font-raleway), sans-serif',
-                fontSize: '22px',
-                fontWeight: 900,
-                letterSpacing: '-0.03em',
-                lineHeight: 1,
-                color: scrolled ? 'var(--earth)' : 'var(--cream)',
-                transition: 'color 0.4s ease',
-              }}
-            >
-              TAFEL
-            </div>
-          </Link>
-
-          <div
-            style={{ display: 'flex', alignItems: 'center', gap: '40px' }}
-            className="desktop-nav"
-          >
-            {navLinks.map((link) => (
-              <LocaleLink
-                key={link.hash}
-                href={{ pathname: '/', hash: link.hash }}
-                style={{
-                  fontFamily: 'var(--font-jost), sans-serif',
-                  fontSize: '13px',
-                  fontWeight: 400,
-                  letterSpacing: '0.02em',
-                  textDecoration: 'none',
-                  color: scrolled ? 'var(--stone)' : 'rgba(253,250,245,0.7)',
-                  transition: 'color 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = scrolled ? 'var(--earth)' : 'var(--cream)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = scrolled ? 'var(--stone)' : 'rgba(253,250,245,0.7)'
-                }}
-              >
-                {link.label}
-              </LocaleLink>
-            ))}
-          </div>
-
-          <div
-            style={{ display: 'flex', alignItems: 'center', gap: '16px' }}
-            className="desktop-nav"
-          >
-            <button
-              onClick={switchLocale}
-              style={{
-                fontFamily: 'var(--font-jost), sans-serif',
-                fontSize: '10px',
-                fontWeight: 600,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                padding: '6px 12px',
-                borderRadius: '100px',
-                border: 'none',
-                cursor: 'pointer',
-                backgroundColor: 'var(--amber)',
-                color: 'var(--cream)',
-                transition: 'opacity 0.2s ease',
-              }}
-            >
-              {locale === 'nl' ? 'EN' : 'NL'}
-            </button>
-
-            <Link
-              href={loginHref}
-              style={{
-                fontFamily: 'var(--font-jost), sans-serif',
-                fontSize: '13px',
-                fontWeight: 400,
-                letterSpacing: '0.02em',
-                textDecoration: 'none',
-                color: scrolled ? 'var(--stone)' : 'rgba(253,250,245,0.7)',
-                transition: 'color 0.2s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = scrolled ? 'var(--earth)' : 'var(--cream)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = scrolled ? 'var(--stone)' : 'rgba(253,250,245,0.7)'
-              }}
-            >
-              {t('restaurantLogin')}
+      <header className={`${s.nav} ${scrolled ? s.scrolled : ''}`}>
+        <div className={s.stage}>
+          <div className={s.pill}>
+            <Link href={locale === 'nl' ? '/' : '/en'} className={s.logo} aria-label={t('home')}>
+              <TafelLogo className={s.logoSvg} />
+              <span className={s.srOnly}>TAFEL</span>
             </Link>
 
+            <nav className={s.links} aria-label="Primary">
+              {navLinks.map((link) => (
+                <LocaleLink key={link.hash} href={{ pathname: '/', hash: link.hash }} className={s.link}>
+                  {link.label}
+                </LocaleLink>
+              ))}
+              <Link href={loginHref} className={s.link}>
+                {t('login')}
+              </Link>
+            </nav>
+
+            <div className={s.actions}>
+              <button type="button" onClick={switchLocale} className={s.locale}>
+                {locale === 'nl' ? 'EN' : 'NL'}
+              </button>
+
+              <a
+                href={WHATSAPP_HREF}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${s.btn} ${s.btnWhite} ${s.getInTouch}`}
+              >
+                {t('getInTouch')}
+              </a>
+
+              <button type="button" onClick={openModal} className={`${s.btn} ${s.btnBlack} ${s.bookCall}`}>
+                {t('bookCall')}
+              </button>
+            </div>
+
             <button
-              onClick={openModal}
-              className="btn-primary"
-              style={{ padding: '10px 24px', fontSize: '11px' }}
+              type="button"
+              onClick={() => setMenuOpen(!menuOpen)}
+              className={s.burger}
+              aria-label={t('menu')}
+              aria-expanded={menuOpen}
             >
-              {t('startFree')}
+              <span />
+              <span />
+              <span />
             </button>
           </div>
-
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="mobile-nav"
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '8px',
-              display: 'none',
-            }}
-            aria-label="Menu"
-          >
-            <div
-              style={{
-                width: '22px',
-                height: '2px',
-                backgroundColor: scrolled ? 'var(--earth)' : 'var(--cream)',
-                marginBottom: '5px',
-                transition: 'background-color 0.4s ease',
-              }}
-            />
-            <div
-              style={{
-                width: '22px',
-                height: '2px',
-                backgroundColor: scrolled ? 'var(--earth)' : 'var(--cream)',
-                marginBottom: '5px',
-                transition: 'background-color 0.4s ease',
-              }}
-            />
-            <div
-              style={{
-                width: '22px',
-                height: '2px',
-                backgroundColor: scrolled ? 'var(--earth)' : 'var(--cream)',
-                transition: 'background-color 0.4s ease',
-              }}
-            />
-          </button>
         </div>
-      </nav>
+      </header>
 
       {menuOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 199,
-            backgroundColor: 'var(--cream)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '32px',
-            animation: 'slideDown 0.25s ease',
-          }}
-        >
+        <div className={s.menu} role="dialog" aria-modal="true" aria-label={t('menu')}>
           {navLinks.map((link) => (
             <LocaleLink
               key={link.hash}
               href={{ pathname: '/', hash: link.hash }}
               onClick={() => setMenuOpen(false)}
-              style={{
-                fontFamily: 'var(--font-jost), sans-serif',
-                fontSize: '18px',
-                fontWeight: 400,
-                letterSpacing: '0.02em',
-                textDecoration: 'none',
-                color: 'var(--stone)',
-              }}
+              className={s.menuLink}
             >
               {link.label}
             </LocaleLink>
           ))}
-          <Link
-            href={loginHref}
-            onClick={() => setMenuOpen(false)}
-            style={{
-              fontFamily: 'var(--font-jost), sans-serif',
-              fontSize: '18px',
-              fontWeight: 400,
-              letterSpacing: '0.02em',
-              textDecoration: 'none',
-              color: 'var(--stone)',
-            }}
-          >
-            {t('restaurantLogin')}
+          <Link href={loginHref} onClick={() => setMenuOpen(false)} className={s.menuLink}>
+            {t('login')}
           </Link>
-          <button
-            onClick={switchLocale}
-            style={{
-              fontFamily: 'var(--font-jost), sans-serif',
-              fontSize: '10px',
-              fontWeight: 600,
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-              padding: '8px 16px',
-              borderRadius: '100px',
-              border: 'none',
-              cursor: 'pointer',
-              backgroundColor: 'var(--amber)',
-              color: 'var(--cream)',
-            }}
-          >
+          <button type="button" onClick={switchLocale} className={s.menuLocale}>
             {locale === 'nl' ? 'EN' : 'NL'}
           </button>
-          <button
-            onClick={() => { setMenuOpen(false); openModal() }}
-            className="btn-primary"
-          >
-            {t('startFree')}
-          </button>
-          <button
-            onClick={() => setMenuOpen(false)}
-            style={{
-              position: 'absolute',
-              top: '24px',
-              right: '24px',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '24px',
-              color: 'var(--earth)',
-              fontFamily: 'var(--font-jost), sans-serif',
-            }}
-            aria-label="Sluiten"
-          >
-            x
-          </button>
+          <div className={s.menuActions}>
+            <a
+              href={WHATSAPP_HREF}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${s.menuBtn} ${s.btnWhite}`}
+              onClick={() => setMenuOpen(false)}
+            >
+              {t('getInTouch')}
+            </a>
+            <button
+              type="button"
+              onClick={() => {
+                setMenuOpen(false)
+                openModal()
+              }}
+              className={`${s.menuBtn} ${s.btnBlack}`}
+            >
+              {t('bookCall')}
+            </button>
+          </div>
+          <button type="button" onClick={() => setMenuOpen(false)} className={s.close} aria-label={t('close')} />
         </div>
       )}
-
-      <style>{`
-        @media (max-width: 768px) {
-          .desktop-nav { display: none !important; }
-          .mobile-nav { display: block !important; }
-          .nav-inner { padding: 0 24px !important; }
-        }
-        @keyframes slideDown {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </>
   )
 }

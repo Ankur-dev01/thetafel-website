@@ -25,10 +25,12 @@ const listStyle = {
   ...bodyStyle,
   paddingLeft: '24px',
   marginBottom: '16px',
+  // Tailwind v4 preflight resets list-style; restore disc markers for readability.
+  listStyle: 'disc' as const,
 }
 
 const linkStyle = {
-  color: 'var(--amber)',
+  color: 'var(--tafel-primary-900)',
   textDecoration: 'underline',
 }
 
@@ -413,21 +415,8 @@ export default async function PrivacybeleidPage({ params }: Props) {
           </p>
           <Link
             href={isEn ? '/en/privacybeleid/data-request' : '/privacybeleid/data-request'}
-            className="tafel-tap privacy-data-request-cta"
-            style={{
-              display: 'inline-block',
-              marginBottom: '16px',
-              padding: '14px 32px',
-              borderRadius: '999px',
-              backgroundColor: 'var(--amber)',
-              color: 'var(--cream)',
-              fontFamily: 'var(--font-jost), sans-serif',
-              fontWeight: 600,
-              fontSize: '14px',
-              letterSpacing: '0.02em',
-              textDecoration: 'none',
-              textAlign: 'center',
-            }}
+            className="tafel-tap privacy-data-request-cta btn-primary"
+            style={{ marginBottom: '16px' }}
           >
             {isEn ? 'Request my data' : 'Vraag mijn gegevens op'}
           </Link>
@@ -439,21 +428,8 @@ export default async function PrivacybeleidPage({ params }: Props) {
           </p>
           <Link
             href={isEn ? '/en/privacybeleid/data-deletion' : '/privacybeleid/data-deletion'}
-            className="tafel-tap privacy-data-request-cta"
-            style={{
-              display: 'inline-block',
-              marginBottom: '16px',
-              padding: '14px 32px',
-              borderRadius: '999px',
-              backgroundColor: 'var(--amber)',
-              color: 'var(--cream)',
-              fontFamily: 'var(--font-jost), sans-serif',
-              fontWeight: 600,
-              fontSize: '14px',
-              letterSpacing: '0.02em',
-              textDecoration: 'none',
-              textAlign: 'center',
-            }}
+            className="tafel-tap privacy-data-request-cta btn-ghost"
+            style={{ marginBottom: '16px' }}
           >
             {isEn ? 'Delete your data' : 'Verwijder jouw gegevens'}
           </Link>

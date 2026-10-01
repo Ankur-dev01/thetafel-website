@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 
@@ -23,6 +23,27 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
   const [gdprAccepted, setGdprAccepted] = useState(false)
+  const firstFieldRef = useRef<HTMLInputElement | null>(null)
+  const closeBtnRef = useRef<HTMLButtonElement | null>(null)
+
+  // Body scroll lock + ESC-to-close + initial focus while open.
+  useEffect(() => {
+    if (!isOpen) return
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    // Focus the first field for keyboard users, without stealing focus away
+    // from anything that beat us to a click.
+    const t = window.setTimeout(() => firstFieldRef.current?.focus(), 0)
+    return () => {
+      document.body.style.overflow = prevOverflow
+      window.removeEventListener('keydown', onKey)
+      window.clearTimeout(t)
+    }
+  }, [isOpen, onClose])
 
   if (!isOpen) return null
 
@@ -77,12 +98,12 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
   const overlayStyle: React.CSSProperties = {
     position: 'fixed',
     inset: 0,
-    backgroundColor: 'rgba(30, 21, 8, 0.55)',
+    backgroundColor: 'rgba(30, 21, 8, 0.62)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
-    padding: '24px',
+    padding: '20px',
   }
 
   const modalStyle: React.CSSProperties = {
@@ -90,26 +111,27 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
     borderRadius: '24px',
     maxWidth: '520px',
     width: '100%',
-    maxHeight: '90vh',
+    maxHeight: 'calc(100dvh - 40px)',
     overflowY: 'auto',
-    padding: '40px',
+    padding: 'clamp(28px, 5vw, 40px)',
     position: 'relative',
-    boxShadow: '0 24px 60px rgba(30, 21, 8, 0.25)',
+    boxShadow: '0 24px 60px rgba(30, 21, 8, 0.28), 0 0 0 1px rgba(156, 139, 106, 0.08)',
+    WebkitOverflowScrolling: 'touch',
   }
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
-    padding: '14px 16px',
+    padding: '13px 16px',
     fontFamily: 'var(--font-jost), sans-serif',
     fontSize: '15px',
     fontWeight: 400,
     color: 'var(--earth)',
-    backgroundColor: 'var(--warm)',
-    border: '1px solid rgba(156,139,106,0.25)',
+    backgroundColor: '#fff',
+    border: '1.5px solid var(--cream-border)',
     borderRadius: '12px',
     outline: 'none',
     boxSizing: 'border-box',
-    transition: 'border-color 0.2s ease',
+    transition: 'border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease',
   }
 
   const labelStyle: React.CSSProperties = {
@@ -124,24 +146,41 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
   }
 
   return (
-    <div style={overlayStyle} onClick={onClose}>
-      <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
+    <div
+      style={overlayStyle}
+      onClick={onClose}
+      role="presentation"
+      className="tafel-signup-overlay"
+    >
+      <div
+        style={modalStyle}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tafel-signup-heading"
+        className="tafel-signup-card"
+      >
         <button
+          ref={closeBtnRef}
           onClick={onClose}
           aria-label="Close"
+          type="button"
+          className="tafel-signup-close"
           style={{
             position: 'absolute',
             top: '16px',
             right: '16px',
-            width: '32px',
-            height: '32px',
+            width: '36px',
+            height: '36px',
             border: 'none',
-            background: 'transparent',
+            background: 'rgba(30, 21, 8, 0.04)',
+            borderRadius: '999px',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: 'var(--stone)',
+            transition: 'background-color 180ms ease, color 180ms ease',
           }}
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -164,10 +203,11 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
         </p>
 
         <h2
+          id="tafel-signup-heading"
           style={{
             fontFamily: 'var(--font-raleway), sans-serif',
             fontWeight: 900,
-            fontSize: '28px',
+            fontSize: 'clamp(24px, 4vw, 28px)',
             letterSpacing: '-0.02em',
             color: 'var(--earth)',
             marginBottom: '12px',
@@ -193,14 +233,14 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
         {errorMessage && (
           <div
             style={{
-              backgroundColor: '#fef2f2',
-              border: '1px solid #fecaca',
+              backgroundColor: 'var(--burgundy-bg)',
+              border: '1px solid rgba(161, 52, 52, 0.25)',
               borderRadius: '12px',
               padding: '12px 16px',
               marginBottom: '16px',
               fontFamily: 'var(--font-jost), sans-serif',
               fontSize: '13px',
-              color: '#dc2626',
+              color: 'var(--burgundy)',
             }}
           >
             {errorMessage}
@@ -209,60 +249,71 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label style={labelStyle}>{t('labelNaam')}</label>
+            <label style={labelStyle} htmlFor="tafel-signup-naam">{t('labelNaam')}</label>
             <input
+              id="tafel-signup-naam"
+              ref={firstFieldRef}
               type="text"
               name="naam"
               value={formData.naam}
               onChange={handleChange}
               placeholder={t('placeholderNaam')}
+              className="tafel-signup-input"
               style={inputStyle}
               required
             />
           </div>
           <div>
-            <label style={labelStyle}>{t('labelEmail')}</label>
+            <label style={labelStyle} htmlFor="tafel-signup-email">{t('labelEmail')}</label>
             <input
+              id="tafel-signup-email"
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               placeholder={t('placeholderEmail')}
+              className="tafel-signup-input"
               style={inputStyle}
               required
             />
           </div>
           <div>
-            <label style={labelStyle}>{t('labelTelefoon')}</label>
+            <label style={labelStyle} htmlFor="tafel-signup-telefoon">{t('labelTelefoon')}</label>
             <input
+              id="tafel-signup-telefoon"
               type="tel"
               name="telefoon"
               value={formData.telefoon}
               onChange={handleChange}
               placeholder={t('placeholderTelefoon')}
+              className="tafel-signup-input"
               style={inputStyle}
             />
           </div>
           <div>
-            <label style={labelStyle}>{t('labelRestaurant')}</label>
+            <label style={labelStyle} htmlFor="tafel-signup-restaurant">{t('labelRestaurant')}</label>
             <input
+              id="tafel-signup-restaurant"
               type="text"
               name="restaurant"
               value={formData.restaurant}
               onChange={handleChange}
               placeholder={t('placeholderRestaurant')}
+              className="tafel-signup-input"
               style={inputStyle}
               required
             />
           </div>
           <div>
-            <label style={labelStyle}>{t('labelStad')}</label>
+            <label style={labelStyle} htmlFor="tafel-signup-stad">{t('labelStad')}</label>
             <input
+              id="tafel-signup-stad"
               type="text"
               name="stad"
               value={formData.stad}
               onChange={handleChange}
               placeholder={t('placeholderStad')}
+              className="tafel-signup-input"
               style={inputStyle}
               required
             />
@@ -353,6 +404,53 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
           </p>
         </div>
       </div>
+
+      <style>{`
+        .tafel-signup-overlay {
+          animation: tafelSignupOverlayIn 180ms ease-out;
+          -webkit-backdrop-filter: blur(2px);
+          backdrop-filter: blur(2px);
+        }
+        .tafel-signup-card {
+          animation: tafelSignupCardIn 240ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes tafelSignupOverlayIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes tafelSignupCardIn {
+          from { opacity: 0; transform: translateY(12px) scale(0.98); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .tafel-signup-input:focus {
+          border-color: var(--amber) !important;
+          box-shadow: 0 0 0 3px rgba(212, 130, 10, 0.18);
+          background-color: #fff !important;
+        }
+        .tafel-signup-input::placeholder {
+          color: var(--stone-light);
+        }
+        .tafel-signup-close:hover {
+          background-color: rgba(30, 21, 8, 0.08) !important;
+          color: var(--earth) !important;
+        }
+        .tafel-signup-close:focus-visible {
+          outline: 2px solid var(--amber);
+          outline-offset: 2px;
+        }
+        @media (max-width: 480px) {
+          .tafel-signup-card {
+            padding: 28px 22px !important;
+            border-radius: 20px !important;
+          }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .tafel-signup-overlay,
+          .tafel-signup-card {
+            animation: none !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }

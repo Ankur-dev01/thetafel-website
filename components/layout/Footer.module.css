@@ -1,0 +1,380 @@
+/* Footer — Figma black footer (1440px frame coordinates, scaled by --k). */
+
+.footer {
+  --k: min(1px, calc(100vw / 1440));
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+  font-family: var(--font-jost), sans-serif;
+}
+
+.main {
+  position: relative;
+  height: calc(var(--k) * 970);
+}
+
+.ring { object-fit: cover; }
+
+.stage {
+  position: relative;
+  width: calc(var(--k) * 1440);
+  height: 100%;
+  margin: 0 auto;
+}
+
+.abs {
+  position: absolute;
+  left: calc(var(--k) * var(--x));
+  top: calc(var(--k) * var(--y));
+}
+
+/* §11 Footer reveal: `.reveal` is the IO trigger anchor for a per-item
+ * stagger (newsletter → columns → actions → wordmark), matching the
+ * handoff's "footer links ty 30-40 → 0, keep stagger short" +
+ * "large TAFEL mark ty 30-60 → 0, subtle parallax optional". Each
+ * sub-block keeps its own initial state; the `.revealIn` toggle sets
+ * the settled state with a per-item transition-delay. Kept restrained
+ * — the handoff calls the footer a "quiet brand moment", not another
+ * hero. */
+.reveal .newsletter,
+.reveal .col,
+.reveal .actions,
+.reveal .wordmark {
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal .wordmark { transform: translateY(48px); }
+
+.revealIn .newsletter,
+.revealIn .col,
+.revealIn .actions,
+.revealIn .wordmark {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.revealIn .newsletter { transition-delay: 40ms; }
+.revealIn .col:nth-child(1) { transition-delay: 120ms; }
+.revealIn .col:nth-child(2) { transition-delay: 180ms; }
+.revealIn .col:nth-child(3) { transition-delay: 240ms; }
+.revealIn .actions { transition-delay: 320ms; }
+.revealIn .wordmark { transition-delay: 420ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal .newsletter,
+  .reveal .col,
+  .reveal .actions,
+  .reveal .wordmark {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Newsletter */
+
+.title {
+  margin: 0;
+  font-size: calc(var(--k) * 20.1);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.field {
+  display: flex;
+  width: calc(var(--k) * 480);
+  height: calc(var(--k) * 51.2);
+  border-radius: calc(var(--k) * 3.2);
+  background: #eaeaea;
+  overflow: hidden;
+}
+
+.input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0 calc(var(--k) * 12) 0 calc(var(--k) * 18);
+  border: 0;
+  background: transparent;
+  color: #201d1d;
+  font-family: inherit;
+  font-size: calc(var(--k) * 16.2);
+  line-height: 1;
+  outline: none;
+}
+
+.inputFirst {
+  flex: 0 0 calc(var(--k) * 224);
+  padding-left: calc(var(--k) * 20);
+}
+
+.input::placeholder { color: #b8b8b8; opacity: 1; }
+.input:focus-visible { box-shadow: inset 0 0 0 2px var(--tafel-primary-700); }
+
+.agree {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--k) * 13.9);
+  height: calc(var(--k) * 34.13);
+  cursor: pointer;
+  font-size: calc(var(--k) * 16.7);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.checkbox {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.check {
+  position: relative;
+  flex: 0 0 auto;
+  width: calc(var(--k) * 34.13);
+  height: calc(var(--k) * 34.13);
+  border-radius: 50%;
+  background: #eaeaea;
+}
+
+.checkbox:checked + .check::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: calc(var(--k) * 11);
+  height: calc(var(--k) * 6);
+  border-left: 2px solid #201d1d;
+  border-bottom: 2px solid #201d1d;
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.checkbox:focus-visible + .check { outline: 2px solid var(--tafel-primary-700); outline-offset: 2px; }
+
+.agreeLink {
+  color: #fff;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.submit {
+  width: calc(var(--k) * 139.94);
+  height: calc(var(--k) * 42.66);
+  border: 0;
+  background: #201d1d;
+  color: #f4f4f4;
+  font-family: inherit;
+  font-size: calc(var(--k) * 17);
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.submit:hover { background: #2e2929; }
+
+/* Link columns */
+
+.col { display: flex; flex-direction: column; }
+
+.colTitle {
+  margin: 0;
+  font-size: calc(var(--k) * 21);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.list {
+  margin: calc(var(--k) * 40) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list a {
+  display: block;
+  color: #fff;
+  font-size: calc(var(--k) * 16.6);
+  line-height: calc(var(--k) * 28);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+.list a:hover { opacity: 0.7; }
+
+/* Actions */
+
+.actions { display: flex; align-items: center; }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(var(--k) * 42.66);
+  border: 0;
+  border-radius: 999px;
+  color: #f4f4f4;
+  font-family: inherit;
+  font-size: calc(var(--k) * 18.3);
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+.pill:hover { filter: brightness(1.12); }
+
+.login { min-width: calc(var(--k) * 84.4); padding: 0 calc(var(--k) * 18); box-sizing: border-box; background: #201d1d; }
+.bookCall { min-width: calc(var(--k) * 125.4); padding: 0 calc(var(--k) * 18); box-sizing: border-box; margin-left: calc(var(--k) * 16); background: var(--tafel-primary-700); }
+
+.social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--k) * 42.66);
+  height: calc(var(--k) * 42.66);
+  margin-left: calc(var(--k) * 16);
+  background: #eaeaea;
+  color: #201d1d;
+}
+
+.socialFirst { margin-left: calc(var(--k) * 30.5); }
+.round { border-radius: 50%; }
+.socialIcon { width: calc(var(--k) * 17); height: calc(var(--k) * 17); }
+
+/* Blurred wordmark */
+
+.wordmark {
+  position: absolute;
+  left: calc(var(--k) * -17.6);
+  top: calc(var(--k) * 570.7);
+  width: calc(var(--k) * 1495);
+  height: calc(var(--k) * 404.2);
+  background: rgba(255, 255, 255, 0.2);
+  filter: blur(calc(var(--k) * 3));
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  -webkit-mask: url('/images/home/wordmark.svg') center / 100% 100% no-repeat;
+  mask: url('/images/home/wordmark.svg') center / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+/* Legal bar */
+
+.bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px calc(var(--k) * 64);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: var(--font-jost), sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.tags { display: flex; flex-wrap: wrap; gap: 2px; }
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 6px;
+  background: #201d1d;
+  color: #fff;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.tag:hover { background: #342e2e; }
+.tagOrange { background: var(--tafel-primary-900); }
+.tagOrange:hover { background: var(--tafel-primary-700); }
+
+.copy { margin: 0; }
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.footer a:focus-visible,
+.footer button:focus-visible {
+  outline: 2px solid var(--tafel-primary-700);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1199px) {
+  .footer { --k: 1px; }
+
+  .main { height: auto; padding: 64px 20px 0; }
+  .ring { object-position: 70% 0; }
+
+  .stage {
+    display: grid;
+    gap: 40px;
+    width: 100%;
+    max-width: 760px;
+    height: auto;
+  }
+
+  .abs { position: relative; left: auto; top: auto; }
+
+  .newsletter { display: grid; gap: 16px; justify-items: start; }
+  .field { width: 100%; max-width: 480px; }
+  .inputFirst { flex-basis: 44%; }
+  .agree { white-space: normal; height: auto; }
+
+  .cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .list { margin-top: 18px; }
+
+  .actions { flex-wrap: wrap; row-gap: 12px; }
+
+  .wordmark {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: calc(100% + 40px);
+    height: auto;
+    aspect-ratio: 1495 / 404.2;
+    margin: 8px -20px 0;
+  }
+
+  .bar { flex-direction: column; align-items: flex-start; padding: 18px 20px; }
+}
+
+@media (max-width: 559px) {
+  .cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .meta { flex-wrap: wrap; }
+}

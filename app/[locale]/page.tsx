@@ -1,26 +1,27 @@
 import Nav from '@/components/layout/Nav'
-import Hero from '@/components/sections/Hero'
-import TrustBar from '@/components/sections/TrustBar'
-import Problem from '@/components/sections/Problem'
-import Solution from '@/components/sections/Solution'
-import HowItWorks from '@/components/sections/HowItWorks'
-import Proof from '@/components/sections/Proof'
-import ComingSoon from '@/components/sections/ComingSoon'
-import FinalCTA from '@/components/sections/FinalCTA'
+import HomeHero from '@/components/home/HomeHero'
+import Commission from '@/components/home/Commission'
+import Products from '@/components/home/Products'
+import BrandOwnership from '@/components/home/BrandOwnership'
+import HowItStarts from '@/components/home/HowItStarts'
+import Pricing from '@/components/home/Pricing'
+import FinalCta from '@/components/home/FinalCta'
+import Faq from '@/components/home/Faq'
 import Footer from '@/components/layout/Footer'
+import styles from '@/components/home/home.module.css'
 
 export default function Home() {
   return (
-    <main>
+    <main className={styles.page}>
       <Nav />
-      <Hero />
-      <TrustBar />
-      <Problem />
-      <Solution />
-      <HowItWorks />
-      <Proof />
-      <ComingSoon />
-      <FinalCTA />
+      <HomeHero />
+      <Commission />
+      <Products />
+      <BrandOwnership />
+      <HowItStarts />
+      <Pricing />
+      <FinalCta />
+      <Faq />
       <Footer />
     </main>
   )

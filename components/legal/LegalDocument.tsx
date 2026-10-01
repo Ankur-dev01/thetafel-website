@@ -119,7 +119,7 @@ function renderInline(text: string): React.ReactNode[] {
     if (m.index > last) nodes.push(text.slice(last, m.index))
     if (m[1]) {
       nodes.push(
-        <strong key={m.index} style={{ color: 'var(--earth)', fontWeight: 500 }}>
+        <strong key={m.index} style={{ color: 'var(--earth)', fontWeight: 700 }}>
           {m[2]}
         </strong>
       )
@@ -143,7 +143,7 @@ function renderInline(text: string): React.ReactNode[] {
         <a
           key={m.index}
           href={m[7]}
-          style={{ color: 'var(--amber)', textDecoration: 'underline' }}
+          style={{ color: 'var(--tafel-primary-900)', textDecoration: 'underline' }}
         >
           {m[6]}
         </a>
@@ -247,7 +247,7 @@ export default function LegalDocument({ markdown }: { markdown: string; locale?:
             <blockquote
               key={idx}
               style={{
-                borderLeft: '3px solid var(--amber)',
+                borderLeft: '3px solid var(--tafel-primary-700)',
                 paddingLeft: '16px',
                 margin: '24px 0',
                 fontStyle: 'italic',
@@ -297,7 +297,15 @@ export default function LegalDocument({ markdown }: { markdown: string; locale?:
         }
         if (tok.t === 'table') {
           return (
-            <div key={idx} style={{ overflowX: 'auto', margin: '16px 0' }}>
+            <div
+              key={idx}
+              style={{
+                overflowX: 'auto',
+                margin: '24px 0',
+                border: '1px solid rgba(30,21,8,0.1)',
+                borderRadius: '12px',
+              }}
+            >
               <table
                 style={{
                   borderCollapse: 'collapse',
@@ -312,11 +320,11 @@ export default function LegalDocument({ markdown }: { markdown: string; locale?:
                       <th
                         key={hi}
                         style={{
-                          padding: '8px 12px',
+                          padding: '12px 14px',
                           textAlign: 'left',
-                          fontWeight: 500,
-                          border: '1px solid rgba(30,21,8,0.1)',
-                          background: 'var(--warm-surface, #f8f2e6)',
+                          fontWeight: 700,
+                          borderBottom: '1px solid rgba(30,21,8,0.1)',
+                          background: 'var(--warm)',
                           color: 'var(--earth)',
                         }}
                       >
@@ -332,8 +340,8 @@ export default function LegalDocument({ markdown }: { markdown: string; locale?:
                         <td
                           key={ci}
                           style={{
-                            padding: '8px 12px',
-                            border: '1px solid rgba(30,21,8,0.1)',
+                            padding: '12px 14px',
+                            borderTop: ri === 0 ? 'none' : '1px solid rgba(30,21,8,0.08)',
                             color: 'var(--stone)',
                             verticalAlign: 'top',
                           }}
