@@ -49,7 +49,7 @@ export type DashboardAction =
   | 'menu.category.delete'
   | 'menu.category.reorder'
   | 'today.read'
-  | 'analytics.read'
+  | 'insights.read'
   | 'settings.hours.edit'
   | 'settings.floor.edit'
   | 'settings.booking.edit'
@@ -65,9 +65,10 @@ export type DashboardAction =
   | 'settings.billing.change_tier'
   | 'settings.billing.cancel'
   | 'settings.privacy.act'
-  | 'guest.read'
-  | 'guest.note.edit'
-  | 'guest.export'
+  | 'guests.read'
+  | 'guests.note.edit'
+  | 'guests.vip.toggle'
+  | 'guests.export'
   | 'restaurant.pause'
   | 'restaurant.resume'
   | 'account.self_edit'
@@ -110,7 +111,7 @@ export const PERMISSIONS: Record<DashboardAction, readonly StaffRole[]> = {
   'menu.category.reorder': OM,
 
   'today.read': OMS,
-  'analytics.read': OM,
+  'insights.read': OM,
 
   'settings.hours.edit': OM,
   'settings.floor.edit': OM,
@@ -129,9 +130,12 @@ export const PERMISSIONS: Record<DashboardAction, readonly StaffRole[]> = {
   'settings.billing.cancel': O,
   'settings.privacy.act': OM,
 
-  'guest.read': OMS,
-  'guest.note.edit': OM,
-  'guest.export': OM,
+  // Guests: owner/manager full; service read-only; kitchen none. Tier gating
+  // (Plus+, VIP Premium) is enforced separately via getRestaurantTier.
+  'guests.read': OMS,
+  'guests.note.edit': OM,
+  'guests.vip.toggle': OM,
+  'guests.export': OM,
 
   'restaurant.pause': OM,
   'restaurant.resume': OM,

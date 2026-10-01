@@ -27,6 +27,8 @@ export type OrderListRow = {
   guest_id: string | null
   table_label: string | null
   guest_name: string | null
+  /** GDPR-anonymised guest: render "Verwijderde gast", never the placeholder name. */
+  guest_anonymised: boolean
   item_count: number
 }
 
@@ -70,14 +72,14 @@ type OrderListJoinRow = {
   tab_id: string | null
   guest_id: string | null
   table: { label: string | null } | null
-  guest: { full_name: string | null } | null
+  guest: { full_name: string | null; anonymised_at?: string | null } | null
   order_items: { count: number }[] | null
 }
 
 const ORDER_LIST_SELECT = `id, order_ref, order_type, status, payment_status, total_cents, subtotal_cents, vat_cents,
        created_at, pickup_time, table_id, tab_id, guest_id,
        table:restaurant_tables(label),
-       guest:guests(full_name),
+       guest:guests(full_name, anonymised_at),
        order_items(count)`
 
 function toOrderListRow(row: OrderListJoinRow): OrderListRow {
@@ -96,7 +98,8 @@ function toOrderListRow(row: OrderListJoinRow): OrderListRow {
     tab_id: row.tab_id,
     guest_id: row.guest_id,
     table_label: row.table?.label ?? null,
-    guest_name: row.guest?.full_name ?? null,
+    guest_name: row.guest?.anonymised_at ? null : row.guest?.full_name ?? null,
+    guest_anonymised: Boolean(row.guest?.anonymised_at),
     item_count: row.order_items?.[0]?.count ?? 0,
   }
 }
@@ -141,7 +144,7 @@ export async function getOrderById(restaurantId: string, orderId: string): Promi
       `id, order_ref, order_type, status, payment_status, total_cents, subtotal_cents, vat_cents,
        created_at, pickup_time, table_id, tab_id, guest_id, guest_note,
        table:restaurant_tables(label),
-       guest:guests(full_name, phone),
+       guest:guests(full_name, phone, anonymised_at),
        order_items(count)`,
     )
     .eq('restaurant_id', restaurantId)
@@ -151,7 +154,7 @@ export async function getOrderById(restaurantId: string, orderId: string): Promi
   if (orderError) throw orderError
   if (!orderRow) return null
 
-  type RawRow = OrderListJoinRow & { guest_note: string | null; guest: { full_name: string | null; phone: string | null } | null }
+  type RawRow = OrderListJoinRow & { guest_note: string | null; guest: { full_name: string | null; phone: string | null; anonymised_at?: string | null } | null }
   const row = orderRow as unknown as RawRow
 
   const { data: itemRows, error: itemsError } = await supabase
@@ -174,7 +177,7 @@ export async function getOrderById(restaurantId: string, orderId: string): Promi
   return {
     order: {
       ...toOrderListRow(row),
-      guest_phone: row.guest?.phone ?? null,
+      guest_phone: row.guest?.anonymised_at ? null : row.guest?.phone ?? null,
       guest_note: row.guest_note,
     },
     items,

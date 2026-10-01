@@ -71,7 +71,9 @@ export default function OrderCard({ order, now, locale }: OrderCardProps) {
             ? order.table_label
               ? t('card.table', { label: order.table_label })
               : '—'
-            : order.guest_name || '—'}
+            : order.guest_anonymised
+              ? t('anonymisedGuest')
+              : order.guest_name || '—'}
         </div>
 
         <div className="flex items-center justify-between gap-2">

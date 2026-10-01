@@ -42,6 +42,7 @@ export type TodayBooking = {
   guest_note: string | null
   attended_at: string | null
   guest_name: string
+  guest_anonymised: boolean
   guest_phone: string | null
   zone_name: string | null
   table_labels: string[]
@@ -69,6 +70,7 @@ export type TodayOrder = {
   table_id: string | null
   tab_id: string | null
   guest_name: string | null
+  guest_anonymised: boolean
   ready_notified_at: string | null
 }
 
@@ -107,7 +109,7 @@ type BookingJoinRow = {
   duration_minutes: number
   guest_note: string | null
   attended_at: string | null
-  guest: { full_name: string | null; phone: string | null } | null
+  guest: { full_name: string | null; phone: string | null; anonymised_at?: string | null } | null
   zone: { name: string | null } | null
   booking_tables: { restaurant_tables: { label: string | null } | null }[] | null
 }
@@ -123,7 +125,7 @@ export async function getTodayBookings(
     .from('bookings')
     .select(
       `id, slot_time, party_size, status, source, duration_minutes, guest_note, attended_at,
-       guest:guests(full_name, phone),
+       guest:guests(full_name, phone, anonymised_at),
        zone:zones(name),
        booking_tables(restaurant_tables(label))`
     )
@@ -144,8 +146,9 @@ export async function getTodayBookings(
     duration_minutes: row.duration_minutes,
     guest_note: row.guest_note,
     attended_at: row.attended_at,
-    guest_name: row.guest?.full_name ?? '',
-    guest_phone: row.guest?.phone ?? null,
+    guest_name: row.guest?.anonymised_at ? '' : row.guest?.full_name ?? '',
+    guest_phone: row.guest?.anonymised_at ? null : row.guest?.phone ?? null,
+    guest_anonymised: Boolean(row.guest?.anonymised_at),
     zone_name: row.zone?.name ?? null,
     table_labels: (row.booking_tables ?? [])
       .map((bt) => bt.restaurant_tables?.label)
@@ -165,7 +168,7 @@ type OrderJoinRow = {
   table_id: string | null
   tab_id: string | null
   ready_notified_at: string | null
-  guest: { full_name: string | null } | null
+  guest: { full_name: string | null; anonymised_at?: string | null } | null
 }
 
 export async function getTodayOrders(
@@ -180,7 +183,7 @@ export async function getTodayOrders(
     .select(
       `id, order_ref, order_type, status, payment_status, total_cents, pickup_time, created_at,
        table_id, tab_id, ready_notified_at,
-       guest:guests(full_name)`
+       guest:guests(full_name, anonymised_at)`
     )
     .eq('restaurant_id', restaurantId)
     .or(
@@ -201,7 +204,8 @@ export async function getTodayOrders(
     created_at: row.created_at,
     table_id: row.table_id,
     tab_id: row.tab_id,
-    guest_name: row.guest?.full_name ?? null,
+    guest_name: row.guest?.anonymised_at ? null : row.guest?.full_name ?? null,
+    guest_anonymised: Boolean(row.guest?.anonymised_at),
     ready_notified_at: row.ready_notified_at,
   }))
 }

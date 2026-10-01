@@ -49,7 +49,7 @@ export default function TimelineRow({ item }: TimelineRowProps) {
               className="text-[15px] text-[#1e1508] truncate"
               style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 500 }}
             >
-              {b.guest_name || '—'}
+              {b.guest_anonymised ? t('anonymisedGuest') : b.guest_name || '—'}
             </span>
             {b.source === 'walk_in' && (
               <StatusChip tone="neutral" label={t('walkinChip')} />
@@ -103,7 +103,7 @@ export default function TimelineRow({ item }: TimelineRowProps) {
           className="text-[13px] text-[#6f6353] truncate"
           style={{ fontFamily: 'var(--font-jost), Jost, sans-serif', fontWeight: 400 }}
         >
-          {o.guest_name ?? '—'}
+          {o.guest_anonymised ? t('anonymisedGuest') : o.guest_name ?? '—'}
         </div>
         <div
           className="text-[13px] text-[#6f6353] truncate"

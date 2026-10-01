@@ -1459,7 +1459,8 @@
         "title": "Er ging iets mis",
         "body": "We konden de gegevens niet laden. Probeer het opnieuw.",
         "action": "Opnieuw laden"
-      }
+      },
+      "anonymisedGuest": "Verwijderde gast"
     },
     "alerts": {
       "dismiss": "Sluiten"
@@ -2282,7 +2283,7 @@
       "deposit": {
         "pending": "Aanbetaling open"
       },
-      "anonymisedGuest": "Anonieme gast",
+      "anonymisedGuest": "Verwijderde gast",
       "detail": {
         "party": "{count} personen",
         "tables": "Tafel(s)",
@@ -2580,7 +2581,8 @@
           "confirm": "Ja, betaal terug",
           "back": "Terug"
         }
-      }
+      },
+      "anonymisedGuest": "Verwijderde gast"
     },
     "tabs": {
       "title": "Open rekeningen",
@@ -2960,6 +2962,98 @@
           "db_error": "Er ging iets mis.",
           "unknown_error": "Er ging iets mis."
         }
+      }
+    },
+    "guests": {
+      "title": "Gasten",
+      "subtitle": "Wie er bij je langs is geweest, hoe vaak, en wat je over ze weet.",
+      "searchLabel": "Zoek gasten",
+      "searchPlaceholder": "Zoek op naam, e-mail of telefoon",
+      "emptyTitle": "Nog geen gasten",
+      "emptyBody": "Zodra iemand reserveert of bestelt, verschijnt die gast hier.",
+      "emptySearch": "Geen gasten gevonden.",
+      "columns": {
+        "name": "Naam",
+        "visits": "Bezoeken",
+        "lastVisit": "Laatste bezoek"
+      },
+      "consentDotYes": "Marketingtoestemming gegeven",
+      "consentDotNo": "Geen marketingtoestemming",
+      "pagination": "Paginering",
+      "prev": "Vorige",
+      "next": "Volgende",
+      "total": "{count} gasten",
+      "export": {
+        "button": "Exporteer gastenlijst",
+        "working": "Bezig…",
+        "done": "Gastenlijst geëxporteerd ({count} gasten).",
+        "error": "Exporteren is niet gelukt.",
+        "rateLimited": "Je hebt vandaag het maximum aantal exports bereikt."
+      },
+      "detail": {
+        "title": "Gast",
+        "loading": "Laden…",
+        "notFound": "Deze gast is niet gevonden.",
+        "customerSince": "Gast sinds {date}",
+        "contact": "Contact",
+        "email": "E-mail",
+        "phone": "Telefoon",
+        "consent": "Marketing",
+        "consentYes": "Toestemming gegeven op {date}",
+        "consentNo": "Geen toestemming",
+        "consentHint": "Toestemming is van de gast zelf; alleen de gast kan die wijzigen.",
+        "visits": "Bezoeken",
+        "lastVisit": "Laatste bezoek",
+        "spend": "Besteed",
+        "spendExplainer": "Betaalde bestellingen {orders} + behouden aanbetalingen {deposits}, alleen bij jouw restaurant.",
+        "notes": "Notities",
+        "notePlaceholder": "Bijvoorbeeld: vegetarisch, altijd tafel bij het raam",
+        "noteHint": "Let op: deze notitie hoort bij de persoonsgegevens van de gast en zit in hun gegevensexport als ze die opvragen.",
+        "saveNote": "Notitie opslaan",
+        "saving": "Bezig…",
+        "noteSaved": "Notitie opgeslagen.",
+        "noteError": "Opslaan is niet gelukt.",
+        "vipOn": "VIP",
+        "vipOff": "Markeer als VIP",
+        "history": "Bezoekgeschiedenis",
+        "historyBooking": "Reservering · {count} pers.",
+        "historyQr": "QR-bestelling",
+        "historyTakeaway": "Afhaalbestelling"
+      },
+      "status": {
+        "booking": {
+          "pending": "In afwachting",
+          "confirmed": "Bevestigd",
+          "cancelled": "Geannuleerd",
+          "attended": "Aangekomen",
+          "no_show": "No-show"
+        },
+        "order": {
+          "pending": "Nieuw",
+          "confirmed": "Bevestigd",
+          "preparing": "In bereiding",
+          "ready": "Klaar",
+          "served": "Geserveerd",
+          "completed": "Afgerond",
+          "cancelled": "Geannuleerd",
+          "refunded": "Terugbetaald"
+        }
+      },
+      "teaser": {
+        "badge": "Plus",
+        "title": "Je gastenboek",
+        "body": "Weet wie je gasten zijn en laat ze terugkomen. Beschikbaar vanaf Plus.",
+        "sampleName": "Voorbeeldgast {n}",
+        "features": {
+          "search": "Zoeken op naam, e-mail of telefoon",
+          "history": "Volledige bezoekgeschiedenis",
+          "spend": "Totaal besteed per gast",
+          "notes": "Privé-notities per gast",
+          "export": "Export van je gastenlijst (CSV)",
+          "vip": "VIP-markering (Premium)"
+        },
+        "cta": "Upgrade je abonnement",
+        "askOwner": "Vraag de eigenaar om te upgraden."
       }
     }
   },

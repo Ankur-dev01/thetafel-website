@@ -70,6 +70,9 @@ const COPY = {
     booking_notes: 'Notities',
     booking_deposit: (amount: string, refunded: boolean) =>
       `Aanbetaling: ${amount}${refunded ? ' (terugbetaald)' : ''}`,
+    section_restaurant_notes: 'Notities van restaurants',
+    no_restaurant_notes: 'Geen notities van restaurants.',
+    note_vip: 'Gemarkeerd als vaste gast (VIP)',
     section_orders: 'Bestellingen',
     no_orders: 'Geen bestellingen bekend.',
     order_date: 'Datum',
@@ -118,6 +121,9 @@ const COPY = {
     booking_notes: 'Notes',
     booking_deposit: (amount: string, refunded: boolean) =>
       `Deposit: ${amount}${refunded ? ' (refunded)' : ''}`,
+    section_restaurant_notes: 'Notes from restaurants',
+    no_restaurant_notes: 'No notes from restaurants.',
+    note_vip: 'Marked as a regular (VIP)',
     section_orders: 'Orders',
     no_orders: 'No orders on file.',
     order_date: 'Date',
@@ -467,6 +473,23 @@ export async function renderDataExportPdf(payload: ExportPayload, locale: Locale
       layout.gap(10)
     }
   }
+
+  // ── Notes from restaurants (guest_notes) ─────────────────────────────────
+  layout.heading(t.section_restaurant_notes)
+  type NoteRow = { restaurant_name: string | null; note: string | null; is_vip: boolean; updated_at: string }
+  const restaurantNotes = (payload.restaurant_notes ?? []) as unknown as NoteRow[]
+  if (restaurantNotes.length === 0) {
+    layout.paragraph(t.no_restaurant_notes, { color: STONE })
+  } else {
+    for (const n of restaurantNotes) {
+      layout.heading(n.restaurant_name ?? '—', { size: 12, color: NIGHT })
+      if (n.note) layout.paragraph(n.note)
+      if (n.is_vip) layout.paragraph(t.note_vip, { color: STONE })
+      layout.paragraph(formatDate(n.updated_at, locale), { color: STONE })
+      layout.gap(6)
+    }
+  }
+  layout.gap(16)
 
   // ── Payments (flat table) ────────────────────────────────────────────────
   layout.heading(t.section_payments)

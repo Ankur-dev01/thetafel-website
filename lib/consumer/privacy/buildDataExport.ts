@@ -31,6 +31,7 @@ const NOTES = {
     payments: 'De status, het bedrag en de datum van elke betaling die bij een reservering of bestelling hoort. Nooit de ruwe gegevens van onze betaalprovider.',
     magic_links: 'Metadata over de beveiligde links die we je hebben gestuurd (doel, aanmaakdatum, vervaldatum, gebruikt) — nooit de link zelf.',
     audit_events: 'Een logboek van belangrijke gebeurtenissen op je account, zoals annuleringen of statuswijzigingen.',
+    restaurant_notes: 'Notities die restaurants over jou hebben vastgelegd (bijvoorbeeld voorkeuren) en of zij je als vaste gast (VIP) hebben gemarkeerd.',
   },
   en: {
     guest: 'Your basic details: name, email address, phone number, and preferences.',
@@ -39,6 +40,7 @@ const NOTES = {
     payments: 'The status, amount, and date of every payment tied to a booking or order. Never our payment provider’s raw data.',
     magic_links: 'Metadata about the secure links we’ve sent you (purpose, created date, expiry, whether used) — never the link itself.',
     audit_events: 'A log of significant events on your account, such as cancellations or status changes.',
+    restaurant_notes: 'Notes restaurants have recorded about you (for example preferences) and whether they marked you as a regular (VIP).',
   },
 } as const
 
@@ -54,6 +56,8 @@ export type ExportPayload = {
   payments: Array<Record<string, unknown>>
   magic_links: Array<Record<string, unknown>>
   audit_events: Array<Record<string, unknown>>
+  /** guest_notes rows: restaurant name + note + VIP flag + dates. Never staff ids. */
+  restaurant_notes: Array<Record<string, unknown>>
 }
 
 function restaurantDisplayName(r: {
@@ -170,6 +174,19 @@ export async function buildDataExport(
     auditFromLinks = data ?? []
   }
 
+  // Restaurant-private notes and VIP flags are this guest's personal data
+  // (PRD §4.5): included with the restaurant's name, never the staff id that wrote them.
+  const { data: notesRaw } = await admin
+    .from('guest_notes')
+    .select('note, is_vip, created_at, updated_at, restaurants(display_name, legal_name, name, slug)')
+    .eq('guest_id', guestId)
+  const restaurantNotes = (notesRaw ?? []).map((n) => {
+    const { restaurants, ...rest } = n as typeof n & {
+      restaurants: { display_name: string | null; legal_name: string | null; name: string | null; slug: string } | null
+    }
+    return { ...rest, restaurant_name: restaurantDisplayName(restaurants) }
+  })
+
   const auditById = new Map<string, Record<string, unknown>>()
   for (const row of [...(auditFromActor ?? []), ...auditFromLinks]) {
     auditById.set(row.id as string, row)
@@ -185,5 +202,6 @@ export async function buildDataExport(
     payments,
     magic_links: magicLinksRaw ?? [],
     audit_events: Array.from(auditById.values()),
+    restaurant_notes: restaurantNotes,
   }
 }

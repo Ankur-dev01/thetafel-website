@@ -102,7 +102,9 @@ export default function OrderDetail({ payload, locale }: OrderDetailProps) {
             ? order.table_label
               ? t('card.table', { label: order.table_label })
               : '—'
-            : order.guest_name || '—'}
+            : order.guest_anonymised
+              ? t('anonymisedGuest')
+              : order.guest_name || '—'}
         </div>
         {order.order_type === 'takeaway' && order.guest_phone && (
           <a

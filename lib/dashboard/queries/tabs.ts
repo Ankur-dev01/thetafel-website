@@ -58,6 +58,7 @@ export type TabOrderDetail = {
   created_at: string
   guest_note: string | null
   guest_name: string | null
+  guest_anonymised: boolean
   items: TabOrderItemDetail[]
 }
 
@@ -153,7 +154,7 @@ export async function getTabById(restaurantId: string, tabId: string): Promise<T
     .select(
       `id, order_ref, order_type, status, payment_status, total_cents, subtotal_cents, vat_cents,
        created_at, guest_note,
-       guest:guests(full_name)`,
+       guest:guests(full_name, anonymised_at)`,
     )
     .eq('tab_id', tabId)
     .order('created_at', { ascending: true })
@@ -170,7 +171,7 @@ export async function getTabById(restaurantId: string, tabId: string): Promise<T
     vat_cents: number
     created_at: string
     guest_note: string | null
-    guest: { full_name: string | null } | null
+    guest: { full_name: string | null; anonymised_at?: string | null } | null
   }
   const orders = (orderRows ?? []) as unknown as RawOrderRow[]
   const orderIds = orders.map((o) => o.id)
@@ -214,7 +215,8 @@ export async function getTabById(restaurantId: string, tabId: string): Promise<T
       vat_cents: o.vat_cents,
       created_at: o.created_at,
       guest_note: o.guest_note,
-      guest_name: o.guest?.full_name ?? null,
+      guest_name: o.guest?.anonymised_at ? null : o.guest?.full_name ?? null,
+      guest_anonymised: Boolean(o.guest?.anonymised_at),
       items: itemsByOrderId.get(o.id) ?? [],
     })),
   }

@@ -1459,7 +1459,8 @@
         "title": "Something went wrong",
         "body": "We couldn't load the data. Please try again.",
         "action": "Reload"
-      }
+      },
+      "anonymisedGuest": "Deleted guest"
     },
     "alerts": {
       "dismiss": "Dismiss"
@@ -2282,7 +2283,7 @@
       "deposit": {
         "pending": "Deposit pending"
       },
-      "anonymisedGuest": "Anonymous guest",
+      "anonymisedGuest": "Deleted guest",
       "detail": {
         "party": "{count} guests",
         "tables": "Table(s)",
@@ -2580,7 +2581,8 @@
           "confirm": "Yes, refund",
           "back": "Back"
         }
-      }
+      },
+      "anonymisedGuest": "Deleted guest"
     },
     "tabs": {
       "title": "Open tabs",
@@ -2960,6 +2962,98 @@
           "db_error": "Something went wrong.",
           "unknown_error": "Something went wrong."
         }
+      }
+    },
+    "guests": {
+      "title": "Guests",
+      "subtitle": "Who has visited, how often, and what you know about them.",
+      "searchLabel": "Search guests",
+      "searchPlaceholder": "Search by name, email or phone",
+      "emptyTitle": "No guests yet",
+      "emptyBody": "As soon as someone books or orders, they'll show up here.",
+      "emptySearch": "No guests found.",
+      "columns": {
+        "name": "Name",
+        "visits": "Visits",
+        "lastVisit": "Last visit"
+      },
+      "consentDotYes": "Marketing consent given",
+      "consentDotNo": "No marketing consent",
+      "pagination": "Pagination",
+      "prev": "Previous",
+      "next": "Next",
+      "total": "{count} guests",
+      "export": {
+        "button": "Export guest list",
+        "working": "Working…",
+        "done": "Guest list exported ({count} guests).",
+        "error": "Export failed.",
+        "rateLimited": "You've reached today's export limit."
+      },
+      "detail": {
+        "title": "Guest",
+        "loading": "Loading…",
+        "notFound": "This guest wasn't found.",
+        "customerSince": "Guest since {date}",
+        "contact": "Contact",
+        "email": "Email",
+        "phone": "Phone",
+        "consent": "Marketing",
+        "consentYes": "Consent given on {date}",
+        "consentNo": "No consent",
+        "consentHint": "Consent belongs to the guest; only the guest can change it.",
+        "visits": "Visits",
+        "lastVisit": "Last visit",
+        "spend": "Spent",
+        "spendExplainer": "Paid orders {orders} + deposits kept {deposits}, at your restaurant only.",
+        "notes": "Notes",
+        "notePlaceholder": "For example: vegetarian, always a table by the window",
+        "noteHint": "Note: this note is part of the guest's personal data and is included in their data export if they request it.",
+        "saveNote": "Save note",
+        "saving": "Working…",
+        "noteSaved": "Note saved.",
+        "noteError": "Couldn't save.",
+        "vipOn": "VIP",
+        "vipOff": "Mark as VIP",
+        "history": "Visit history",
+        "historyBooking": "Booking · {count} guests",
+        "historyQr": "QR order",
+        "historyTakeaway": "Takeaway order"
+      },
+      "status": {
+        "booking": {
+          "pending": "Pending",
+          "confirmed": "Confirmed",
+          "cancelled": "Cancelled",
+          "attended": "Attended",
+          "no_show": "No-show"
+        },
+        "order": {
+          "pending": "New",
+          "confirmed": "Confirmed",
+          "preparing": "Preparing",
+          "ready": "Ready",
+          "served": "Served",
+          "completed": "Completed",
+          "cancelled": "Cancelled",
+          "refunded": "Refunded"
+        }
+      },
+      "teaser": {
+        "badge": "Plus",
+        "title": "Your guest book",
+        "body": "Know who your guests are and bring them back. Available from Plus.",
+        "sampleName": "Sample guest {n}",
+        "features": {
+          "search": "Search by name, email or phone",
+          "history": "Full visit history",
+          "spend": "Total spend per guest",
+          "notes": "Private notes per guest",
+          "export": "Export your guest list (CSV)",
+          "vip": "VIP marking (Premium)"
+        },
+        "cta": "Upgrade your plan",
+        "askOwner": "Ask the owner to upgrade."
       }
     }
   },
