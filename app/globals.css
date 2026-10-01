@@ -43,6 +43,22 @@
 
   /* Dotted backdrop dot colour */
   --dot-pattern: #ead9b6;
+
+  /* Tafel official brand palette (Brandbook 2026). Used by the homepage
+   * (components/home, components/layout/Nav+Footer) in place of the
+   * one-off orange values originally picked by eye from the Figma export.
+   * -rgb siblings hold the same color as an r, g, b triplet for
+   * rgba()/color-mix() usage (tinted backgrounds, focus rings). */
+  --tafel-primary-900: #e84f03;
+  --tafel-primary-900-rgb: 232, 79, 3;
+  --tafel-primary-700: #ff6e0d;
+  --tafel-primary-700-rgb: 255, 110, 13;
+  --tafel-primary-500: #ff8d34;
+  --tafel-primary-500-rgb: 255, 141, 52;
+  --tafel-primary-300: #ffb76f;
+  --tafel-primary-300-rgb: 255, 183, 111;
+  --tafel-primary-100: #ffd5a7;
+  --tafel-primary-100-rgb: 255, 213, 167;
 }
 
 /* Dashboard design tokens (D0.2) — Tailwind v4 utilities: bg-cream, text-night,

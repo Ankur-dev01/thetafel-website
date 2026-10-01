@@ -1,4 +1,156 @@
 {
+  "home": {
+    "nav": {
+      "product": "Product",
+      "pricing": "Prijzen",
+      "about": "Over ons",
+      "login": "Inloggen",
+      "getInTouch": "Neem contact op",
+      "bookCall": "Plan een gesprek",
+      "menu": "Menu",
+      "close": "Sluiten",
+      "home": "The Tafel home"
+    },
+    "hero": {
+      "title": "Jouw gasten. Jouw data. Eén vast tarief",
+      "sub": "Reserveringen, QR-bestellen en afhalen zonder commissie.",
+      "ctaPrimary": "Blijf gratis",
+      "ctaSecondary": "Bekijk prijzen",
+      "phoneAlt": "Hand met een telefoon met de reserveringen van vandaag"
+    },
+    "commission": {
+      "title1": "Commissie",
+      "title2": "tikt aan.",
+      "sub": "€2 per gast, elke gast, elke maand op je eigen naam.",
+      "cardsAlt": "Kaarten met €847 aan betaalde commissie deze maand"
+    },
+    "products": {
+      "title": "Alles wat het huis nodig heeft.",
+      "sub": "Reserveren · QR-bestellen · Afhalen",
+      "reservations": {
+        "label": "Reserveringen",
+        "title1": "Reserveer",
+        "title2": "een tafel",
+        "body": "Goed eten smaakt beter in goed gezelschap. Kies je dag en tijd, dan houden we een plek voor je vrij.",
+        "selectDay": "Kies een dag",
+        "selectTime": "Kies een tijd",
+        "day1": "Do",
+        "day2": "Vr",
+        "day3": "Za",
+        "day4": "Zo",
+        "confirm": "Bevestig · 2 gasten"
+      },
+      "qr": {
+        "label": "QR-bestellen",
+        "title1": "Scan.",
+        "title2": "Bestel.",
+        "title3": "Geniet.",
+        "body": "Sla de rij over en bestel",
+        "phoneAlt": "Telefoon met een QR-menu voor tafel 4"
+      },
+      "takeaway": {
+        "label": "Afhalen",
+        "title1": "Bestel",
+        "title2": "Haal op",
+        "title3": "Klaar",
+        "body": "Je favorieten, klaar wanneer jij dat bent.",
+        "phoneAlt": "Telefoon met een afhaalbestelling die klaarstaat"
+      }
+    },
+    "brandMark": "The Tafel logo",
+    "ownership": {
+      "eyebrow": "Eigenaarschap",
+      "title1": "De gastenlijst",
+      "title2": "blijft",
+      "title3": "van jou",
+      "sub": "Namen, voorkeuren en allergieën in de EU, onder de AVG, van jou.",
+      "card1Alt": "Kaart met gastnamen: Sanne, John en Emma toegevoegd",
+      "card2Alt": "Kaart met gastvoorkeuren: vegetarisch, geen noten",
+      "card3Alt": "Volledig gastprofiel van Sanne, van jou"
+    },
+    "howItStarts": {
+      "eyebrow": "Zo begin je",
+      "title1": "Live vóór",
+      "title2": "vanavond.",
+      "sub": "Drie kleine stappen om reserveringen te ontvangen.",
+      "step1Alt": "Stap 1: maak je account aan",
+      "step2Alt": "Stap 2: zet de widget op je website",
+      "step3Alt": "Stap 3: ontvang je eerste reservering"
+    },
+    "pricing": {
+      "eyebrow": "Prijzen",
+      "title": "Vanaf",
+      "sub": "Alles staat op de pagina.",
+      "starter": "Starter",
+      "starterTag1": "Goede dingen",
+      "starterTag2": "beginnen hier.",
+      "plus": "Plus",
+      "plusTag1": "Meer",
+      "plusTag2": "mogelijkheden in zicht.",
+      "premium": "Premium",
+      "premiumTag1": "Gebouwd voor",
+      "premiumTag2": "wat komt.",
+      "enterprise": "Enterprise",
+      "custom": "Op maat",
+      "enterpriseTag1": "Gemaakt voor grotere",
+      "enterpriseTag2": "ambities.",
+      "mostPopular": "Meest gekozen",
+      "seeAll": "Bekijk alle plannen",
+      "ownData1": "Jouw data,",
+      "ownData2": "jouw bezit",
+      "rules1": "Jouw gasten",
+      "rules2": "Jouw regels"
+    },
+    "finalCta": {
+      "title1": "Probeer het bij je",
+      "title2": "volgende service.",
+      "sub": "Start gratis, geen creditcard nodig.",
+      "cta": "Start gratis"
+    },
+    "faq": {
+      "chip": "Vragen?",
+      "title": "FAQ",
+      "q1": "Is starten echt gratis?",
+      "a1": "Ja. Starter kost €0 per maand en bevat tot {limit} reserveringen per maand. Betaalde plannen starten met een gratis proefperiode van {days} dagen. Geen creditcard, geen contract.",
+      "q2": "Nemen jullie commissie op reserveringen of bestellingen?",
+      "a2": "Nooit. Je betaalt een vast maandbedrag, of helemaal niets met Starter. Elke gast en elke euro blijft bij jouw restaurant.",
+      "q3": "Van wie zijn onze gastgegevens?",
+      "a3": "Van jou. Namen, voorkeuren en allergieën worden in de EU opgeslagen onder de AVG, en je kunt ze altijd exporteren.",
+      "q4": "Hoe snel kunnen we reserveringen ontvangen?",
+      "a4": "De meeste restaurants zijn dezelfde dag live: maak je account aan, voeg de widget toe of deel je reserveringslink, en ontvang je eerste reservering.",
+      "q5": "Hebben we technische kennis of een IT-partner nodig?",
+      "a5": "Nee. Plak één regel code op je website, of deel gewoon je reserveringslink en QR-codes. Geen installatie nodig."
+    },
+    "footer": {
+      "newsletterTitle": "Abonneer je op Tafel",
+      "firstName": "Voornaam",
+      "email": "jouwnaam@email.com",
+      "agree": "Ik ga akkoord met het",
+      "privacyPolicy": "Privacybeleid",
+      "getUpdates": "Ontvang updates",
+      "newsletterSubject": "Aanmelding nieuwsbrief",
+      "colTafel": "Tafel",
+      "contact": "Contact",
+      "gdpr": "AVG",
+      "terms": "Voorwaarden",
+      "colProduct": "Product",
+      "reservations": "Reserveren",
+      "qrOrdering": "QR-bestellen",
+      "takeaway": "Afhalen",
+      "colCompany": "Bedrijf",
+      "about": "Over ons",
+      "pricing": "Prijzen",
+      "faqs": "FAQ",
+      "login": "Inloggen",
+      "bookCall": "Plan een gesprek",
+      "dpa": "Verwerkers",
+      "tcs": "Voorwaarden",
+      "privacy": "Privacy",
+      "cookies": "Cookies",
+      "copyright": "© 2026 TAFEL.NL",
+      "whatsapp": "WhatsApp"
+    }
+  },
   "nav": {
     "howItWorks": "Hoe het werkt",
     "forRestaurants": "Voor restaurants",

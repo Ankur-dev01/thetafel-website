@@ -1,0 +1,312 @@
+/* Header — Figma floating pill (1440px frame coordinates, scaled by --k). */
+
+.nav {
+  --k: min(1px, calc(100vw / 1440));
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  height: calc(var(--k) * 110);
+  pointer-events: none;
+  font-family: var(--font-jost), sans-serif;
+}
+
+.stage {
+  position: relative;
+  width: calc(var(--k) * 1440);
+  margin: 0 auto;
+}
+
+.pill {
+  position: absolute;
+  left: calc(var(--k) * 162);
+  top: calc(var(--k) * 19);
+  width: calc(var(--k) * 1152);
+  height: calc(var(--k) * 82);
+  border-radius: 999px;
+  background: rgba(25, 25, 25, 0.2);
+  pointer-events: auto;
+  transition: background-color 0.35s ease, box-shadow 0.35s ease;
+  opacity: 0;
+  transform: translateY(-14px);
+  animation: navIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+}
+
+@keyframes navIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill { opacity: 1; transform: none; animation: none; }
+}
+
+.scrolled .pill {
+  background: rgba(25, 25, 25, 0.86);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.logo {
+  position: absolute;
+  left: calc(var(--k) * 7);
+  top: calc(var(--k) * 27.9);
+  width: calc(var(--k) * 144.5);
+  height: calc(var(--k) * 26.2);
+  color: #fff;
+}
+
+.logoSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.links {
+  position: absolute;
+  left: calc(var(--k) * 354);
+  top: calc(var(--k) * 34);
+  display: flex;
+  gap: calc(var(--k) * 51);
+}
+
+.link {
+  color: #fff;
+  font-size: calc(var(--k) * 14);
+  line-height: calc(var(--k) * 14);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+.link:hover { opacity: 0.72; }
+
+.actions {
+  position: absolute;
+  right: calc(var(--k) * 7);
+  top: calc(var(--k) * 21);
+  display: flex;
+  align-items: center;
+  gap: calc(var(--k) * 10);
+}
+
+.locale {
+  min-width: calc(var(--k) * 44);
+  height: calc(var(--k) * 32);
+  padding: 0 calc(var(--k) * 10);
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-family: inherit;
+  font-weight: 500;
+  font-size: calc(var(--k) * 12);
+  line-height: 1;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.locale:hover { background: rgba(255, 255, 255, 0.24); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(var(--k) * 40);
+  border: 0;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: calc(var(--k) * 14);
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.btn:hover { transform: translateY(-1px); filter: brightness(1.06); }
+
+.btnWhite {
+  background: #fff;
+  color: rgba(0, 0, 0, 0.88);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.04),
+    0 0.5px 1px rgba(0, 0, 0, 0.06),
+    0 2px 2px -1px rgba(0, 0, 0, 0.04),
+    0 3px 3px -1.5px rgba(0, 0, 0, 0.04),
+    0 6px 6px -3px rgba(0, 0, 0, 0.04),
+    0 12px 12px -6px rgba(0, 0, 0, 0.04);
+}
+
+.btnBlack {
+  background: #000;
+  color: #ebebeb;
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.08),
+    0 1px 1px -0.5px rgba(27, 27, 27, 0.12),
+    0 2px 2px -1px rgba(27, 27, 27, 0.12),
+    0 4px 4px -2px rgba(27, 27, 27, 0.12),
+    0 8px 8px -4px rgba(27, 27, 27, 0.12);
+}
+
+.getInTouch { min-width: calc(var(--k) * 104); padding: 0 calc(var(--k) * 14); box-sizing: border-box; }
+.bookCall { min-width: calc(var(--k) * 114); padding: 0 calc(var(--k) * 14); box-sizing: border-box; }
+
+.link:focus-visible,
+.locale:focus-visible,
+.btn:focus-visible,
+.logo:focus-visible,
+.burger:focus-visible,
+.menu a:focus-visible,
+.menu button:focus-visible {
+  outline: 2px solid var(--tafel-primary-700);
+  outline-offset: 3px;
+}
+
+.burger { display: none; }
+
+/* Mobile menu overlay */
+
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  background: #0f0f0f;
+  color: #fff;
+  font-family: var(--font-jost), sans-serif;
+  animation: menuIn 0.25s ease;
+}
+
+.menuLink {
+  color: #fff;
+  font-size: 22px;
+  text-decoration: none;
+}
+
+.menuActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.menuBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 15px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.menuLocale {
+  height: 36px;
+  min-width: 56px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
+
+.close::before,
+.close::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 2px;
+  background: #fff;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.close::after { transform: translate(-50%, -50%) rotate(-45deg); }
+
+@keyframes menuIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1199px) {
+  .nav { --k: 1px; height: 84px; }
+  .stage { width: 100%; }
+
+  .pill {
+    left: 12px;
+    right: 12px;
+    top: 12px;
+    width: auto;
+    height: 60px;
+  }
+
+  .logo { left: 22px; top: 18px; width: 132px; height: 24px; }
+
+  .links,
+  .actions { display: none; }
+
+  .burger {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    padding: 0 11px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    cursor: pointer;
+  }
+
+  .burger span {
+    display: block;
+    height: 2px;
+    border-radius: 1px;
+    background: #fff;
+  }
+}

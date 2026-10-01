@@ -39,8 +39,8 @@ function ToggleSwitch({
         borderRadius: '100px',
         border: 'none',
         padding: '3px',
-        backgroundColor: checked ? '#d4820a' : '#fdfaf5',
-        boxShadow: checked ? 'none' : 'inset 0 0 0 1.5px rgba(156,139,106,0.35)',
+        backgroundColor: checked ? 'var(--tafel-primary-700)' : 'var(--cream)',
+        boxShadow: checked ? 'none' : 'inset 0 0 0 1.5px var(--border)',
         cursor: disabled ? 'default' : 'pointer',
         opacity: disabled ? 0.5 : 1,
         transition: 'background-color 200ms ease',
@@ -55,7 +55,7 @@ function ToggleSwitch({
           width: '20px',
           height: '20px',
           borderRadius: '50%',
-          backgroundColor: checked ? '#fdfaf5' : '#9c8b6a',
+          backgroundColor: checked ? 'var(--cream)' : 'var(--stone)',
           transition: 'transform 200ms ease',
         }}
       />
@@ -127,13 +127,29 @@ export default function CookieBanner() {
 
   const buttonBase: React.CSSProperties = {
     fontFamily: 'var(--font-jost), sans-serif',
-    fontSize: '13px',
-    fontWeight: 600,
-    letterSpacing: '0.02em',
+    fontSize: '11px',
+    fontWeight: 700,
+    letterSpacing: '0.12em',
+    textTransform: 'uppercase',
     borderRadius: '100px',
     cursor: 'pointer',
     padding: '12px 24px',
-    border: '1.5px solid #d4820a',
+    border: '1.5px solid var(--tafel-primary-700)',
+    transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+  }
+
+  const buttonPrimary: React.CSSProperties = {
+    ...buttonBase,
+    background: 'linear-gradient(135deg, var(--tafel-primary-700), var(--tafel-primary-900))',
+    color: '#fff',
+    border: 'none',
+    boxShadow: '0 4px 16px rgba(var(--tafel-primary-900-rgb), 0.3)',
+  }
+
+  const buttonGhostAmber: React.CSSProperties = {
+    ...buttonBase,
+    backgroundColor: 'transparent',
+    color: 'var(--tafel-primary-900)',
   }
 
   return (
@@ -157,9 +173,9 @@ export default function CookieBanner() {
           pointerEvents: 'auto',
           width: '100%',
           maxWidth: '640px',
-          backgroundColor: '#fdfaf5',
+          backgroundColor: 'var(--cream)',
           borderRadius: '20px',
-          boxShadow: '0 12px 40px rgba(30,21,8,0.16)',
+          boxShadow: '0 12px 40px rgba(30,21,8,0.16), 0 0 0 1px rgba(156, 139, 106, 0.08)',
           padding: 'clamp(24px, 4vw, 32px)',
           transform: leaving ? 'translateY(24px)' : 'translateY(0)',
           opacity: leaving ? 0 : 1,
@@ -175,7 +191,7 @@ export default function CookieBanner() {
             fontWeight: 900,
             fontSize: '20px',
             letterSpacing: '-0.02em',
-            color: '#1e1508',
+            color: 'var(--earth)',
             marginBottom: '12px',
           }}
         >
@@ -189,7 +205,7 @@ export default function CookieBanner() {
                 fontFamily: 'var(--font-jost), sans-serif',
                 fontSize: '14px',
                 lineHeight: 1.6,
-                color: '#3d2e18',
+                color: 'var(--earth-mid)',
                 marginBottom: '24px',
               }}
             >
@@ -203,7 +219,7 @@ export default function CookieBanner() {
                 type="button"
                 onClick={rejectAll}
                 className="tafel-tap cookie-banner-btn"
-                style={{ ...buttonBase, backgroundColor: 'transparent', color: '#d4820a' }}
+                style={buttonGhostAmber}
               >
                 {t('rejectAll')}
               </button>
@@ -215,7 +231,7 @@ export default function CookieBanner() {
                   fontFamily: 'var(--font-jost), sans-serif',
                   fontSize: '13px',
                   fontWeight: 600,
-                  color: '#d4820a',
+                  color: 'var(--tafel-primary-900)',
                   textDecoration: 'underline',
                   background: 'none',
                   border: 'none',
@@ -229,7 +245,7 @@ export default function CookieBanner() {
                 type="button"
                 onClick={acceptAll}
                 className="tafel-tap cookie-banner-btn"
-                style={{ ...buttonBase, backgroundColor: '#d4820a', color: '#fdfaf5' }}
+                style={buttonPrimary}
               >
                 {t('acceptAll')}
               </button>
@@ -240,10 +256,10 @@ export default function CookieBanner() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
                 <div>
-                  <div style={{ fontFamily: 'var(--font-jost), sans-serif', fontWeight: 600, fontSize: '14px', color: '#1e1508' }}>
+                  <div style={{ fontFamily: 'var(--font-jost), sans-serif', fontWeight: 600, fontSize: '14px', color: 'var(--earth)' }}>
                     {t('essentialName')}
                   </div>
-                  <div style={{ fontFamily: 'var(--font-jost), sans-serif', fontSize: '13px', color: '#9c8b6a', marginTop: '2px' }}>
+                  <div style={{ fontFamily: 'var(--font-jost), sans-serif', fontSize: '13px', color: 'var(--stone)', marginTop: '2px' }}>
                     {t('essentialDescription')}
                   </div>
                 </div>
@@ -251,10 +267,10 @@ export default function CookieBanner() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
                 <div>
-                  <div style={{ fontFamily: 'var(--font-jost), sans-serif', fontWeight: 600, fontSize: '14px', color: '#1e1508' }}>
+                  <div style={{ fontFamily: 'var(--font-jost), sans-serif', fontWeight: 600, fontSize: '14px', color: 'var(--earth)' }}>
                     {t('analyticsName')}
                   </div>
-                  <div style={{ fontFamily: 'var(--font-jost), sans-serif', fontSize: '13px', color: '#9c8b6a', marginTop: '2px' }}>
+                  <div style={{ fontFamily: 'var(--font-jost), sans-serif', fontSize: '13px', color: 'var(--stone)', marginTop: '2px' }}>
                     {t('analyticsDescription')}
                   </div>
                 </div>
@@ -262,10 +278,10 @@ export default function CookieBanner() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
                 <div>
-                  <div style={{ fontFamily: 'var(--font-jost), sans-serif', fontWeight: 600, fontSize: '14px', color: '#1e1508' }}>
+                  <div style={{ fontFamily: 'var(--font-jost), sans-serif', fontWeight: 600, fontSize: '14px', color: 'var(--earth)' }}>
                     {t('marketingName')}
                   </div>
-                  <div style={{ fontFamily: 'var(--font-jost), sans-serif', fontSize: '13px', color: '#9c8b6a', marginTop: '2px' }}>
+                  <div style={{ fontFamily: 'var(--font-jost), sans-serif', fontSize: '13px', color: 'var(--stone)', marginTop: '2px' }}>
                     {t('marketingDisabledNote')}
                   </div>
                 </div>
@@ -277,7 +293,7 @@ export default function CookieBanner() {
                 type="button"
                 onClick={savePreferences}
                 className="tafel-tap cookie-banner-btn"
-                style={{ ...buttonBase, backgroundColor: '#d4820a', color: '#fdfaf5' }}
+                style={buttonPrimary}
               >
                 {t('savePreferences')}
               </button>
@@ -285,7 +301,7 @@ export default function CookieBanner() {
                 type="button"
                 onClick={rejectAll}
                 className="tafel-tap cookie-banner-btn"
-                style={{ ...buttonBase, backgroundColor: 'transparent', color: '#d4820a' }}
+                style={buttonGhostAmber}
               >
                 {t('rejectAll')}
               </button>
@@ -300,7 +316,7 @@ export default function CookieBanner() {
             marginTop: '16px',
             fontFamily: 'var(--font-jost), sans-serif',
             fontSize: '12px',
-            color: '#9c8b6a',
+            color: 'var(--stone)',
             textDecoration: 'underline',
           }}
         >

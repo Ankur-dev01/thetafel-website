@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useParams, usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { TafelLogo } from '@/components/home/svgs'
 
 export default function ForgotPasswordPage() {
   const t = useTranslations('forgotPassword')
@@ -62,7 +63,7 @@ export default function ForgotPasswordPage() {
       : pathWithoutLocale
   const otherHref = `${basePath}${querySuffix}`
 
-  // ───── styles (dark theme — matches /login) ─────
+  // ───── styles (Commission-gradient background — matches /login) ─────
   const labelStyle = {
     display: 'block',
     fontFamily: 'var(--font-jost), sans-serif',
@@ -70,7 +71,8 @@ export default function ForgotPasswordPage() {
     fontWeight: 600,
     letterSpacing: '0.15em',
     textTransform: 'uppercase' as const,
-    color: '#888888',
+    // Light on the orange-middle of the gradient.
+    color: 'rgba(255,255,255,0.9)',
     marginBottom: '8px',
   }
 
@@ -80,20 +82,21 @@ export default function ForgotPasswordPage() {
     fontFamily: 'var(--font-jost), sans-serif',
     fontSize: '15px',
     fontWeight: 400,
-    color: '#ededed',
-    backgroundColor: '#111111',
-    border: '1px solid #222222',
+    color: 'var(--earth)',
+    backgroundColor: '#ffffff',
+    border: '1.5px solid var(--cream-border)',
     borderRadius: '12px',
     outline: 'none',
     boxSizing: 'border-box' as const,
-    transition: 'border-color 0.2s ease',
+    transition: 'border-color 180ms ease, box-shadow 180ms ease',
   }
 
   return (
     <main
       style={{
         minHeight: '100vh',
-        backgroundColor: '#0a0a0a',
+        // Mirrors the final homepage Commission background (components/home/home.module.css .commissionBg).
+        background: 'linear-gradient(180deg, #ffffff 0%, var(--tafel-primary-900) 50%, #111111 100%)',
         display: 'flex',
         flexDirection: 'column',
         padding: '24px',
@@ -119,7 +122,7 @@ export default function ForgotPasswordPage() {
             fontWeight: 600,
             letterSpacing: '0.2em',
             textTransform: 'uppercase',
-            color: '#888888',
+            color: 'var(--stone)',
             textDecoration: 'none',
           }}
         >
@@ -136,33 +139,22 @@ export default function ForgotPasswordPage() {
         }}
       >
         <div style={{ maxWidth: '420px', width: '100%' }}>
-          {/* Logo */}
-          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-            <div
-              style={{
-                fontFamily: 'var(--font-jost), sans-serif',
-                fontSize: '9px',
-                fontWeight: 700,
-                letterSpacing: '0.32em',
-                textTransform: 'uppercase',
-                color: '#d4820a',
-                marginBottom: '2px',
-              }}
-            >
-              THE
-            </div>
-            <div
-              style={{
-                fontFamily: 'var(--font-raleway), sans-serif',
-                fontSize: '28px',
-                fontWeight: 900,
-                color: '#ededed',
-                lineHeight: 1,
-              }}
-            >
-              TAFEL
-            </div>
-          </div>
+          {/* Logo — matches the TafelLogo mark used by the final-UI Nav */}
+          <Link
+            href={locale === 'en' ? '/en' : '/'}
+            aria-label="TAFEL"
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginBottom: '40px',
+              color: 'var(--earth)',
+              textDecoration: 'none',
+            }}
+          >
+            <TafelLogo style={{ height: '26px', width: 'auto' }} />
+            <span style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>TAFEL</span>
+          </Link>
 
           {sent ? (
             <>
@@ -173,7 +165,7 @@ export default function ForgotPasswordPage() {
                   fontWeight: 900,
                   fontSize: '32px',
                   letterSpacing: '-0.02em',
-                  color: '#ededed',
+                  color: 'var(--earth)',
                   marginBottom: '12px',
                   lineHeight: 1.1,
                   textAlign: 'center',
@@ -187,7 +179,7 @@ export default function ForgotPasswordPage() {
                   fontSize: '14px',
                   fontWeight: 300,
                   lineHeight: 1.7,
-                  color: '#888888',
+                  color: 'rgba(30,21,8,0.75)',
                   marginBottom: '32px',
                   textAlign: 'center',
                 }}
@@ -201,7 +193,7 @@ export default function ForgotPasswordPage() {
                     fontFamily: 'var(--font-jost), sans-serif',
                     fontSize: '13px',
                     fontWeight: 500,
-                    color: '#d4820a',
+                    color: 'rgba(30,21,8,0.75)',
                     textDecoration: 'none',
                   }}
                 >
@@ -217,7 +209,7 @@ export default function ForgotPasswordPage() {
                   fontWeight: 900,
                   fontSize: '32px',
                   letterSpacing: '-0.02em',
-                  color: '#ededed',
+                  color: 'var(--earth)',
                   marginBottom: '12px',
                   lineHeight: 1.1,
                   textAlign: 'center',
@@ -232,7 +224,7 @@ export default function ForgotPasswordPage() {
                   fontSize: '14px',
                   fontWeight: 300,
                   lineHeight: 1.7,
-                  color: '#888888',
+                  color: 'rgba(30,21,8,0.75)',
                   marginBottom: '32px',
                   textAlign: 'center',
                 }}
@@ -243,14 +235,14 @@ export default function ForgotPasswordPage() {
               {serverError && (
                 <div
                   style={{
-                    backgroundColor: 'rgba(239,68,68,0.12)',
-                    border: '1px solid rgba(239,68,68,0.3)',
+                    backgroundColor: 'var(--burgundy-bg)',
+                    border: '1px solid rgba(161, 52, 52, 0.25)',
                     borderRadius: '12px',
                     padding: '12px 16px',
                     marginBottom: '20px',
                     fontFamily: 'var(--font-jost), sans-serif',
                     fontSize: '13px',
-                    color: '#ef4444',
+                    color: 'var(--burgundy)',
                   }}
                 >
                   {serverError}
@@ -272,6 +264,7 @@ export default function ForgotPasswordPage() {
                     }}
                     placeholder={t('placeholderEmail')}
                     autoComplete="email"
+                    className="tafel-login-input"
                     style={inputStyle}
                   />
                 </div>
@@ -287,9 +280,10 @@ export default function ForgotPasswordPage() {
                     fontWeight: 700,
                     letterSpacing: '0.12em',
                     textTransform: 'uppercase',
-                    color: '#fdfaf5',
+                    color: '#ffffff',
                     background:
-                      'linear-gradient(135deg, #d4820a, #b86d08)',
+                      'linear-gradient(135deg, var(--tafel-primary-700), var(--tafel-primary-900))',
+                    boxShadow: '0 10px 24px rgba(var(--tafel-primary-900-rgb), 0.28)',
                     border: 'none',
                     borderRadius: '100px',
                     cursor:
@@ -309,8 +303,9 @@ export default function ForgotPasswordPage() {
                       fontFamily: 'var(--font-jost), sans-serif',
                       fontSize: '13px',
                       fontWeight: 500,
-                      color: '#888888',
-                      textDecoration: 'none',
+                      color: '#ffffff',
+                      textDecoration: 'underline',
+                      textUnderlineOffset: '3px',
                     }}
                   >
                     {t('backToLogin')}
@@ -321,6 +316,16 @@ export default function ForgotPasswordPage() {
           )}
         </div>
       </div>
+
+      <style>{`
+        .tafel-login-input:focus {
+          border-color: var(--tafel-primary-700) !important;
+          box-shadow: 0 0 0 3px rgba(var(--tafel-primary-900-rgb), 0.18);
+        }
+        .tafel-login-input::placeholder {
+          color: var(--stone-light);
+        }
+      `}</style>
     </main>
   )
 }

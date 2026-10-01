@@ -1,4 +1,156 @@
 {
+  "home": {
+    "nav": {
+      "product": "Product",
+      "pricing": "Pricing",
+      "about": "About",
+      "login": "Login",
+      "getInTouch": "Get in touch",
+      "bookCall": "Book a Call",
+      "menu": "Menu",
+      "close": "Close",
+      "home": "The Tafel home"
+    },
+    "hero": {
+      "title": "Your guests. Your data. One flat fee",
+      "sub": "Reservations, QR ordering and takeaway without commission.",
+      "ctaPrimary": "Stay free",
+      "ctaSecondary": "See pricing",
+      "phoneAlt": "Hand holding a phone showing today's reservations"
+    },
+    "commission": {
+      "title1": "Commission",
+      "title2": "adds up.",
+      "sub": "€2 per guest, every guest, every month on your own name.",
+      "cardsAlt": "Cards showing €847 commission paid this month"
+    },
+    "products": {
+      "title": "Everything the house needs.",
+      "sub": "Reservations · QR ordering · Takeaway",
+      "reservations": {
+        "label": "Reservations",
+        "title1": "Book a",
+        "title2": "table",
+        "body": "Good food tastes better with good company. Choose your day, time and we’ll save you a spot.",
+        "selectDay": "Select a day",
+        "selectTime": "Select a time",
+        "day1": "Thu",
+        "day2": "Fri",
+        "day3": "Sat",
+        "day4": "Sun",
+        "confirm": "Confirm · 2 guests"
+      },
+      "qr": {
+        "label": "QR ordering",
+        "title1": "Scan.",
+        "title2": "Order.",
+        "title3": "Enjoy.",
+        "body": "Skip the queue and order",
+        "phoneAlt": "Phone showing a QR menu for table 4"
+      },
+      "takeaway": {
+        "label": "Takeaway",
+        "title1": "Order",
+        "title2": "Pick up",
+        "title3": "Go",
+        "body": "Your favourites, ready when you are.",
+        "phoneAlt": "Phone showing a takeaway order ready for pick up"
+      }
+    },
+    "brandMark": "The Tafel logo",
+    "ownership": {
+      "eyebrow": "Ownership",
+      "title1": "The Guest List",
+      "title2": "Stays",
+      "title3": "Yours",
+      "sub": "Names, preferences, allergies in the EU, under GDPR, owned by you.",
+      "card1Alt": "Guest names card: Sanne, John and Emma added",
+      "card2Alt": "Guest preferences card: vegetarian, no nuts",
+      "card3Alt": "Full guest record for Sanne, owned by you"
+    },
+    "howItStarts": {
+      "eyebrow": "How it starts",
+      "title1": "Live by",
+      "title2": "tonight.",
+      "sub": "Three micro-steps to start taking bookings.",
+      "step1Alt": "Step 1: create your account",
+      "step2Alt": "Step 2: put the widget on your site",
+      "step3Alt": "Step 3: receive your first booking"
+    },
+    "pricing": {
+      "eyebrow": "Pricing",
+      "title": "From",
+      "sub": "All of it on the page.",
+      "starter": "Starter",
+      "starterTag1": "Good things",
+      "starterTag2": "start here.",
+      "plus": "Plus",
+      "plusTag1": "More",
+      "plusTag2": "possibilities ahead.",
+      "premium": "Premium",
+      "premiumTag1": "Built for",
+      "premiumTag2": "what’s next.",
+      "enterprise": "Enterprise",
+      "custom": "Custom",
+      "enterpriseTag1": "Made for bigger",
+      "enterpriseTag2": "visions.",
+      "mostPopular": "Most popular",
+      "seeAll": "See all plans",
+      "ownData1": "Own",
+      "ownData2": "your data",
+      "rules1": "Your Guests",
+      "rules2": "Your rules"
+    },
+    "finalCta": {
+      "title1": "Try it with your",
+      "title2": "next service.",
+      "sub": "Start free, no credit card.",
+      "cta": "Start Free"
+    },
+    "faq": {
+      "chip": "Got Questions",
+      "title": "FAQ",
+      "q1": "Is it really free to start?",
+      "a1": "Yes. Starter costs €0 per month and includes up to {limit} bookings per month. Paid plans start with a {days}-day free trial. No credit card, no contract.",
+      "q2": "Do you take commission on bookings or orders?",
+      "a2": "Never. You pay a flat monthly fee, or nothing at all on Starter. Every guest and every euro stays with your restaurant.",
+      "q3": "Who owns our guest data?",
+      "a3": "You do. Names, preferences and allergies are stored in the EU under GDPR, and you can export them whenever you want.",
+      "q4": "How quickly can we start taking bookings?",
+      "a4": "Most restaurants are live the same day: create your account, add the widget or share your booking link, and receive your first booking.",
+      "q5": "Do we need technical knowledge or an IT partner?",
+      "a5": "No. Paste one line of code into your website, or simply share your booking link and QR codes. No installation needed."
+    },
+    "footer": {
+      "newsletterTitle": "Subscribe to the Tafel",
+      "firstName": "First name",
+      "email": "yourname@email.com",
+      "agree": "I agree to the",
+      "privacyPolicy": "Privacy Policy",
+      "getUpdates": "Get updates",
+      "newsletterSubject": "Newsletter sign-up",
+      "colTafel": "Tafel",
+      "contact": "Contact",
+      "gdpr": "GDPR",
+      "terms": "Terms",
+      "colProduct": "Product",
+      "reservations": "Reservations",
+      "qrOrdering": "QR ordering",
+      "takeaway": "Takeaway",
+      "colCompany": "Company",
+      "about": "About",
+      "pricing": "Pricing",
+      "faqs": "FAQs",
+      "login": "Login",
+      "bookCall": "Book a call",
+      "dpa": "DPA",
+      "tcs": "T&Cs",
+      "privacy": "Privacy",
+      "cookies": "Cookies",
+      "copyright": "© 2026 TAFEL.NL",
+      "whatsapp": "WhatsApp"
+    }
+  },
   "nav": {
     "howItWorks": "How it works",
     "forRestaurants": "For restaurants",
