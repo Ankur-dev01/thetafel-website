@@ -32,6 +32,7 @@ export type FloorTable = {
   isBookable: boolean
   isQrEnabled: boolean
   qrImagePath: string | null
+  qrToken: string | null
 }
 
 export type FloorPlanInitialData = {
@@ -57,7 +58,7 @@ export async function getFloorPlanInitialData(
       .order('display_order', { ascending: true }),
     supabase
       .from('restaurant_tables')
-      .select('id, zone_id, label, seats, is_bookable, is_qr_enabled, qr_image_path')
+      .select('id, zone_id, label, seats, is_bookable, is_qr_enabled, qr_image_path, qr_token')
       .eq('restaurant_id', restaurantId)
       .is('deleted_at', null),
   ])
@@ -83,6 +84,7 @@ export async function getFloorPlanInitialData(
       isBookable: row.is_bookable,
       isQrEnabled: row.is_qr_enabled,
       qrImagePath: row.qr_image_path,
+      qrToken: row.qr_token ?? null,
     }
     if (!tablesByZone[table.zoneId]) tablesByZone[table.zoneId] = []
     tablesByZone[table.zoneId].push(table)
